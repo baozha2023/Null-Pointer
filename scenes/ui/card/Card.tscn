@@ -1,0 +1,210 @@
+[gd_scene format=3 uid="uid://btxmfagad05n5"]
+
+[ext_resource type="Texture2D" uid="uid://d33u8m744fh03" path="res://icon.svg" id="1_7f6u3"]
+[ext_resource type="Script" uid="uid://k4n0whn5t0m" path="res://scripts/ui/card/Card.gd" id="1_u8ksl"]
+[ext_resource type="Texture2D" uid="uid://cv2ox1n675tm3" path="res://sprites/card-borders/border_red.png" id="2_nrldd"]
+[ext_resource type="Script" uid="uid://c5i0sjwlko88l" path="res://addons/label_font_auto_sizer/rich_label_auto_sizer.gd" id="3_8gkbw"]
+
+[sub_resource type="Animation" id="Animation_qe6gy"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Pivot:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(72, 90)]
+}
+
+[sub_resource type="Animation" id="Animation_utg8m"]
+resource_name = "card_hover"
+length = 0.2
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Pivot:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.2),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(72, 90), Vector2(72, 70)]
+}
+
+[sub_resource type="Animation" id="Animation_obl53"]
+resource_name = "card_unhover"
+length = 0.2
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Pivot:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.2),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(72, 60), Vector2(72, 98)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_156sy"]
+_data = {
+&"RESET": SubResource("Animation_qe6gy"),
+&"card_hover": SubResource("Animation_utg8m"),
+&"card_unhover": SubResource("Animation_obl53")
+}
+
+[node name="Card" type="Control" unique_id=644929853 groups=["cards"]]
+custom_minimum_size = Vector2(144, 184)
+layout_mode = 3
+anchors_preset = 0
+offset_right = 144.0
+offset_bottom = 184.0
+script = ExtResource("1_u8ksl")
+
+[node name="Pivot" type="Node2D" parent="." unique_id=377233958]
+position = Vector2(72, 90)
+
+[node name="CardVisual" type="Control" parent="Pivot" unique_id=1337088244]
+custom_minimum_size = Vector2(144, 180)
+layout_mode = 3
+anchors_preset = 0
+offset_left = -72.0
+offset_top = -90.0
+offset_right = 72.0
+offset_bottom = 94.0
+
+[node name="CardGlow" type="ColorRect" parent="Pivot/CardVisual" unique_id=1441762444]
+unique_name_in_owner = true
+visible = false
+layout_mode = 0
+offset_left = -8.0
+offset_top = -8.0
+offset_right = 152.0
+offset_bottom = 192.0
+color = Color(0.909804, 0.901961, 0.992157, 0.392157)
+
+[node name="ColorBackground" type="ColorRect" parent="Pivot/CardVisual" unique_id=1750389250]
+unique_name_in_owner = true
+visible = false
+layout_mode = 0
+offset_right = 144.0
+offset_bottom = 184.0
+
+[node name="CardTexture" type="TextureRect" parent="Pivot/CardVisual" unique_id=2043221152]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 24.0
+offset_top = 15.0
+offset_right = 124.0
+offset_bottom = 115.0
+texture = ExtResource("1_7f6u3")
+expand_mode = 1
+
+[node name="CardName" type="RichTextLabel" parent="Pivot/CardVisual/CardTexture" unique_id=1200185766]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 23.0
+offset_right = 100.0
+offset_bottom = 16.0
+theme_override_font_sizes/normal_font_size = 11
+bbcode_enabled = true
+text = "卡牌名称"
+scroll_active = false
+script = ExtResource("3_8gkbw")
+_max_size = 12
+_current_font_size = 11
+_editor_defaults_set = true
+
+[node name="Background" type="TextureRect" parent="Pivot/CardVisual" unique_id=1358371467]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 1.0
+offset_top = 1.0
+offset_right = 145.0
+offset_bottom = 185.0
+texture = ExtResource("2_nrldd")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="CardDescription" type="RichTextLabel" parent="Pivot/CardVisual" unique_id=1283790728]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 22.0
+offset_top = 114.0
+offset_right = 126.0
+offset_bottom = 169.0
+theme_override_font_sizes/normal_font_size = 12
+bbcode_enabled = true
+text = "如果你能看到这个，说明出错了"
+scroll_active = false
+script = ExtResource("3_8gkbw")
+_max_size = 12
+_current_font_size = 12
+_editor_defaults_set = true
+
+[node name="EnergySprite" type="ColorRect" parent="Pivot/CardVisual" unique_id=781089470]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 7.0
+offset_top = 3.0
+offset_right = 39.0
+offset_bottom = 35.0
+color = Color(1, 1, 1, 0)
+metadata/_edit_group_ = true
+
+[node name="EnergyCost" type="Label" parent="Pivot/CardVisual/EnergySprite" unique_id=846054934]
+unique_name_in_owner = true
+layout_mode = 0
+offset_right = 32.0
+offset_bottom = 32.0
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/line_spacing = -3
+theme_override_constants/outline_size = 3
+theme_override_font_sizes/font_size = 20
+text = "??"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="CardType" type="Label" parent="Pivot/CardVisual" unique_id=19193040]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 21.0
+offset_top = 97.0
+offset_right = 128.0
+offset_bottom = 114.0
+theme_override_constants/line_spacing = -3
+theme_override_font_sizes/font_size = 12
+text = "卡牌类型"
+horizontal_alignment = 1
+
+[node name="CardDecoratorContainer" type="VBoxContainer" parent="Pivot/CardVisual" unique_id=915535294]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = -8.0
+offset_top = 24.0
+offset_right = 16.0
+offset_bottom = 104.0
+theme_override_constants/separation = 4
+
+[node name="CardButton" type="Button" parent="Pivot" unique_id=1129204414]
+unique_name_in_owner = true
+self_modulate = Color(1, 1, 1, 0)
+custom_minimum_size = Vector2(144, 184)
+offset_left = -72.0
+offset_top = -90.0
+offset_right = 72.0
+offset_bottom = 94.0
+button_mask = 3
+metadata/_edit_lock_ = true
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=544461908]
+libraries/ = SubResource("AnimationLibrary_156sy")
+
+[node name="KeywordTimer" type="Timer" parent="." unique_id=653621155]
+one_shot = true

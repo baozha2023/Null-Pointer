@@ -1,0 +1,16 @@
+[gd_resource type="Theme" format=3 uid="uid://2714jm71pkv4"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_klxee"]
+content_margin_left = 10.0
+content_margin_top = 10.0
+content_margin_right = 10.0
+content_margin_bottom = 10.0
+bg_color = Color(0.13, 0.13, 0.13, 0.95)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[resource]
+PanelContainer/styles/panel = SubResource("StyleBoxFlat_klxee")
+RichTextLabel/font_sizes/normal_font_size = 12
