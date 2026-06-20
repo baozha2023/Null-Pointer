@@ -3,7 +3,7 @@ extends BaseRewardButton
 func init(_action_on_click: BaseAction, _reward_group: int) -> void:
 	super(_action_on_click, _reward_group)
 	
-	text = "卡牌奖励"	
+	text = "脚本奖励"	
 
 
 func _on_button_up():

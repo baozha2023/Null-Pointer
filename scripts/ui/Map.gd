@@ -34,6 +34,46 @@ func populate_locations(locations: Array[LocationData] = Global.get_all_act_loca
 	
 	var current_map_location: MapLocation = null
 	
+	var loc_dict = {}
+	for loc in locations:
+		loc_dict[loc.location_id] = loc
+		max_y = max(max_y, loc.location_position.y)
+		
+	# Pass 1: Draw lines
+	for loc in locations:
+		if loc.location_type == LocationData.LOCATION_TYPES.STARTING:
+			continue # Do not draw lines from the invisible starting location
+			
+		for next_id in loc.location_next_location_ids:
+			if loc_dict.has(next_id):
+				var next_loc = loc_dict[next_id]
+				var line = Line2D.new()
+				
+				# Offset to point to the center of the MapLocation icon
+				var offset = Vector2(32, 32)
+				var start_pos = loc.location_position + offset
+				var end_pos = next_loc.location_position + offset
+				
+				line.add_point(start_pos)
+				line.add_point(end_pos)
+				line.width = 4.0
+				
+				# Style line based on cyber theme
+				if loc.location_visited and next_loc.location_visited:
+					# Historical Path
+					line.default_color = Color(0.2, 1.0, 0.5, 1.0)
+					line.width = 8.0
+				elif loc.location_visited and next_locations.has(next_loc) and can_travel:
+					# Available Next Path
+					line.default_color = Color(0.2, 1.0, 0.5, 1.0)
+					line.width = 8.0
+				else:
+					# Unvisited/Future Path
+					line.default_color = Color(0.2, 0.4, 0.5, 0.5)
+					
+				location_container.add_child(line)
+				
+	# Pass 2: Draw MapLocations
 	for location_data in locations:
 		if location_data.location_type == LocationData.LOCATION_TYPES.STARTING:
 			continue	# starting area not displayed
@@ -43,8 +83,6 @@ func populate_locations(locations: Array[LocationData] = Global.get_all_act_loca
 		map_location.init(location_data)
 		
 		map_location.map_location_button_up.connect(_on_map_location_button_up)
-		
-		max_y = max(max_y, location_data.location_position.y)
 		
 		# flash the locations the player can travel to
 		if can_travel:

@@ -37,19 +37,19 @@ func _ready() -> void:
 	# pre-set tooltips
 	# [component, bbcode, if it follows mouse, lock x position, lock y position, offset component used for placement]
 	var component_tooltip_data: Array[Array] = [
-		[pause_button, "[color=orange]暂停[/color]\n停止游戏", true, false, true, $TooltipPositions/TopLeftTooltipPos],
-		[map_button, "[color=orange]地图[/color]\n打开当前章节的地图", true, false, true, $TooltipPositions/TopLeftTooltipPos],
-		[deck_button, "[color=orange]牌库[/color]\n当前拥有的所有卡牌列表。在战斗间保留", true, false, true, $TooltipPositions/TopLeftTooltipPos],
+		[pause_button, "[color=orange]挂起[/color]\n停止进程", true, false, true, $TooltipPositions/TopLeftTooltipPos],
+		[map_button, "[color=orange]网络拓扑[/color]\n打开当前章节的网络拓扑", true, false, true, $TooltipPositions/TopLeftTooltipPos],
+		[deck_button, "[color=orange]脚本库[/color]\n当前拥有的所有脚本列表。在节点跳转间保留", true, false, true, $TooltipPositions/TopLeftTooltipPos],
 		
-		[health_label, "[color=orange]生命值[/color]\n生命值归零时，游戏失败", true, false, true, $TooltipPositions/HealthTooltipPos],
-		[money_label, "[color=orange]金币[/color]\n你当前拥有的金币数量", true, false, true, $TooltipPositions/MoneyTooltipPos],
+		[health_label, "[color=orange]完整度[/color]\n完整度归零时，系统崩溃", true, false, true, $TooltipPositions/HealthTooltipPos],
+		[money_label, "[color=orange]数据币[/color]\n你当前拥有的数据币数量", true, false, true, $TooltipPositions/MoneyTooltipPos],
 		
-		[energy, "[color=orange]能量[/color]\n用于打出卡牌", false, false, false, $TooltipPositions/EnergyTooltipPos],
-		[draw_pile_button, "[color=orange]抽牌堆[/color]\n这些卡牌将会被抽到手中", false, false, false, $TooltipPositions/EnergyTooltipPos],
+		[energy, "[color=orange]算力[/color]\n用于调用脚本", false, false, false, $TooltipPositions/EnergyTooltipPos],
+		[draw_pile_button, "[color=orange]内存队列[/color]\n这些脚本将被加载到运存中", false, false, false, $TooltipPositions/EnergyTooltipPos],
 		
-		[exhaust_pile_button, "[color=orange]消耗堆[/color]\n这些卡牌已从战斗中移除", false, false, false, $TooltipPositions/ExhaustTooltipPos],
-		[discard_pile_button, "[color=orange]弃牌堆[/color]\n这些卡牌将会被重新洗入抽牌堆", false, false, false, $TooltipPositions/DiscardTooltipPos],
-		[end_turn_button, "[color=orange]结束回合[/color]\n结束你的回合", false, false, false, $TooltipPositions/DiscardTooltipPos],
+		[exhaust_pile_button, "[color=orange]坏道区[/color]\n这些脚本已从当前时钟周期中物理删除", false, false, false, $TooltipPositions/ExhaustTooltipPos],
+		[discard_pile_button, "[color=orange]回收站[/color]\n这些脚本将会被重新分配入内存队列", false, false, false, $TooltipPositions/DiscardTooltipPos],
+		[end_turn_button, "[color=orange]结束周期[/color]\n结束当前时钟周期", false, false, false, $TooltipPositions/DiscardTooltipPos],
 		]
 	
 	for component_tooltip: Array in component_tooltip_data:
@@ -125,20 +125,20 @@ func display_artifact_tooltip(artifact: BaseArtifact) -> void:
 	display_tooltip(artifact_description, true, false, false, 0.0, 0.0, null)
 
 const ARTIFACT_RARITY_DISPLAY: Dictionary = {
-	ArtifactData.ARTIFACT_RARITIES.BASIC: "基础",
-	ArtifactData.ARTIFACT_RARITIES.COMMON: "普通",
-	ArtifactData.ARTIFACT_RARITIES.UNCOMMON: "罕见",
-	ArtifactData.ARTIFACT_RARITIES.RARE: "稀有",
-	ArtifactData.ARTIFACT_RARITIES.BOSS: "头目",
-	ArtifactData.ARTIFACT_RARITIES.SHOP: "商店",
-	ArtifactData.ARTIFACT_RARITIES.EVENT: "事件",
+	ArtifactData.ARTIFACT_RARITIES.BASIC: "内置",
+	ArtifactData.ARTIFACT_RARITIES.COMMON: "开源",
+	ArtifactData.ARTIFACT_RARITIES.UNCOMMON: "闭源",
+	ArtifactData.ARTIFACT_RARITIES.RARE: "零日",
+	ArtifactData.ARTIFACT_RARITIES.BOSS: "Boss",
+	ArtifactData.ARTIFACT_RARITIES.SHOP: "暗网",
+	ArtifactData.ARTIFACT_RARITIES.EVENT: "异常",
 }
 
 const CONSUMABLE_RARITY_DISPLAY: Dictionary = {
-	ConsumableData.CONSUMABLE_RARITIES.COMMON: "普通",
-	ConsumableData.CONSUMABLE_RARITIES.UNCOMMON: "罕见",
-	ConsumableData.CONSUMABLE_RARITIES.RARE: "稀有",
-	ConsumableData.CONSUMABLE_RARITIES.LEGENDARY: "传说",
+	ConsumableData.CONSUMABLE_RARITIES.COMMON: "开源",
+	ConsumableData.CONSUMABLE_RARITIES.UNCOMMON: "闭源",
+	ConsumableData.CONSUMABLE_RARITIES.RARE: "零日",
+	ConsumableData.CONSUMABLE_RARITIES.LEGENDARY: "最高权限",
 }
 
 func display_codex_artifact_tooltip(artifact_data: ArtifactData) -> void:

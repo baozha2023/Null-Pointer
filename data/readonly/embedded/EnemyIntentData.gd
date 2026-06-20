@@ -14,7 +14,7 @@ const INTENT_NAME_ZH: Dictionary[String, String] = {
 	"intent_attack_2": "攻击 2",
 	"intent_attack_vulnerable": "易伤攻击",
 	"intent_attack_multi": "多重攻击",
-	"intent_block": "格挡",
+	"intent_block": "防火墙",
 	"intent_summon": "召唤",
 }
 
@@ -146,7 +146,7 @@ func get_intent_codex_bbcode() -> String:
 	# blocking
 	if enemy_intent_block > 0:
 		# add to text
-		returned_bbcode += "获得 {0} 点格挡".format([enemy_intent_block])
+		returned_bbcode += "获得 {0} 点防火墙".format([enemy_intent_block])
 	
 	# attacking
 	if enemy_intent_attack_damage > 0 or enemy_intent_number_of_attacks > 0:

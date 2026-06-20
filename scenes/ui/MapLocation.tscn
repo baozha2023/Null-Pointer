@@ -1,7 +1,15 @@
-[gd_scene load_steps=5 format=3 uid="uid://bf2csrm8e8fl1"]
+[gd_scene format=3 uid="uid://bf2csrm8e8fl1"]
 
-[ext_resource type="Texture2D" uid="uid://nh32y87hcke5" path="res://icon.svg" id="1_rkvl2"]
+[ext_resource type="Texture2D" uid="uid://d33u8m744fh03" path="res://icon.svg" id="1_rkvl2"]
+[ext_resource type="Shader" uid="uid://dtbvo4ggajnqk" path="res://scripts/ui/outline.gdshader" id="1_shader"]
 [ext_resource type="Script" uid="uid://t65xqvojt1pl" path="res://scripts/ui/MapLocation.gd" id="2_7lvet"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_outline"]
+resource_local_to_scene = true
+shader = ExtResource("1_shader")
+shader_parameter/width = 0.0
+shader_parameter/outline_color = Color(1, 0.84, 0, 1)
+shader_parameter/brightness = 1.0
 
 [sub_resource type="Animation" id="Animation_i5j5c"]
 resource_name = "flash_map_location"
@@ -10,14 +18,38 @@ loop_mode = 1
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
-tracks/0/path = NodePath(".:self_modulate")
+tracks/0/path = NodePath(".:material:shader_parameter/width")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
 "times": PackedFloat32Array(0, 1, 2),
 "transitions": PackedFloat32Array(1, 1, 1),
 "update": 0,
-"values": [Color(1, 1, 1, 1), Color(0.0823529, 0.517647, 0.992157, 1), Color(1, 1, 1, 1)]
+"values": [0.0, 16.0, 0.0]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:material:shader_parameter/brightness")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 1, 2),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [1.0, 1.8, 1.0]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath(".:scale")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 1, 2),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector2(1, 1), Vector2(0.85, 0.85), Vector2(1, 1)]
 }
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_cbjtd"]
@@ -25,20 +57,20 @@ _data = {
 &"flash_map_location": SubResource("Animation_i5j5c")
 }
 
-[node name="MapLocation" type="TextureButton"]
+[node name="MapLocation" type="TextureButton" unique_id=2080372534]
+material = SubResource("ShaderMaterial_outline")
 offset_right = 64.0
 offset_bottom = 64.0
+pivot_offset = Vector2(32, 32)
 texture_normal = ExtResource("1_rkvl2")
 ignore_texture_size = true
 stretch_mode = 0
 script = ExtResource("2_7lvet")
 
-[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
-libraries = {
-"": SubResource("AnimationLibrary_cbjtd")
-}
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=1638181330]
+libraries/ = SubResource("AnimationLibrary_cbjtd")
 
-[node name="MapLabel" type="Label" parent="."]
+[node name="MapLabel" type="Label" parent="." unique_id=386133]
 layout_mode = 1
 anchors_preset = -1
 offset_top = 48.0

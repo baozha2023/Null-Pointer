@@ -237,19 +237,19 @@ func get_card_description() -> String:
 	var modified_card_description: String = card_description
 	
 	if card_first_shuffle_priority > 0:
-		modified_card_description = "[color=orange]Top Deck[/color]\n" + modified_card_description
+		modified_card_description = "[color=orange]置顶[/color]\n" + modified_card_description
 	if card_first_shuffle_priority < 0:
-		modified_card_description = "[color=orange]Bottom Deck[/color]\n" + modified_card_description
+		modified_card_description = "[color=orange]置底[/color]\n" + modified_card_description
 	if not card_is_playable:
-		modified_card_description = "[color=orange]Unplayable[/color]\n" + modified_card_description
+		modified_card_description = "[color=orange]不可打出[/color]\n" + modified_card_description
 	if card_is_retained:
-		modified_card_description = "[color=orange]Retain[/color]\n" + modified_card_description
+		modified_card_description = "[color=orange]保留[/color]\n" + modified_card_description
 	if is_card_ethereal():
-		modified_card_description = "[color=orange]Ethereal[/color]\n" + modified_card_description
+		modified_card_description = "[color=orange]虚无[/color]\n" + modified_card_description
 	if does_card_exhaust():
-		modified_card_description = modified_card_description + "\n[color=orange]Exhaust[/color]"
+		modified_card_description = modified_card_description + "\n[color=orange]消耗[/color]"
 	if does_card_banish():
-		modified_card_description = modified_card_description + "\n[color=orange]Banish[/color]"
+		modified_card_description = modified_card_description + "\n[color=orange]放逐[/color]"
 	
 	return modified_card_description
 

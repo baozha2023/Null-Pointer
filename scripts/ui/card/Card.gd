@@ -99,18 +99,18 @@ func update_card_display(selected_enemy: Enemy = null) -> void:
 	card_name.set_bbcode("[center]" + card_data.get_card_name() + "[/center]")
 	card_description.set_bbcode(get_card_description(selected_enemy))
 	const CARD_RARITY_DISPLAY: Dictionary = {
-		CardData.CARD_RARITIES.BASIC: "基础",
-		CardData.CARD_RARITIES.COMMON: "普通",
-		CardData.CARD_RARITIES.UNCOMMON: "罕见",
-		CardData.CARD_RARITIES.RARE: "稀有",
-		CardData.CARD_RARITIES.GENERATED: "生成",
+		CardData.CARD_RARITIES.BASIC: "内置",
+		CardData.CARD_RARITIES.COMMON: "开源",
+		CardData.CARD_RARITIES.UNCOMMON: "闭源",
+		CardData.CARD_RARITIES.RARE: "零日",
+		CardData.CARD_RARITIES.GENERATED: "动态生成",
 	}
 	const CARD_TYPE_DISPLAY: Dictionary = {
-		CardData.CARD_TYPES.ATTACK: "攻击",
-		CardData.CARD_TYPES.SKILL: "技能",
-		CardData.CARD_TYPES.POWER: "能力",
-		CardData.CARD_TYPES.STATUS: "状态",
-		CardData.CARD_TYPES.CURSE: "诅咒",
+		CardData.CARD_TYPES.ATTACK: "攻击指令",
+		CardData.CARD_TYPES.SKILL: "辅助脚本",
+		CardData.CARD_TYPES.POWER: "守护进程",
+		CardData.CARD_TYPES.STATUS: "状态码",
+		CardData.CARD_TYPES.CURSE: "病毒",
 	}
 	card_type.text = CARD_RARITY_DISPLAY.get(card_data.card_rarity, "???") + " " + CARD_TYPE_DISPLAY.get(card_data.card_type, "???")
 	
@@ -126,7 +126,7 @@ func _update_energy_display(selected_enemy: Enemy = null) -> void:
 	# set the energy color
 	var color_data: ColorData = Global.get_color_data(card_data.card_color_id)
 	if color_data != null:
-		card_color.color = color_data.color
+		# card_color.color = color_data.color
 		card_energy_sprite.color = Color.TRANSPARENT
 	
 	# reset energy cost display

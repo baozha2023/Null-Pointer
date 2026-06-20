@@ -5,7 +5,7 @@ class_name RunHistoryCard
 @onready var texture_rect: TextureRect = $TextureRect
 @onready var rich_text_label: RichLabelAutoSizer = $RichTextLabel
 
-const INVALID_CARD_TEXT: String = "卡牌错误"
+const INVALID_CARD_TEXT: String = "脚本错误"
 
 func init(card_id: String, card_level: int, card_count: int) -> void:
 	var card_data: CardData = Global.get_card_data(card_id)

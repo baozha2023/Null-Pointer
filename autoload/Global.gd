@@ -159,6 +159,9 @@ func register_rod(serializeable_data: SerializableData, allow_collisions: bool =
 #endregion
 
 func _ready():
+	get_tree().node_added.connect(_on_node_added_global)
+	call_deferred("_apply_cursor_to_tree", get_tree().root)
+	
 	### Schema
 	# generate the schema. This must be done before everything else in Global or errors will ensue
 	# when loading data or generating test data.
@@ -202,6 +205,15 @@ func _ready():
 	### Exporting Data
 	# FileLoader.export_read_only_data() # uncomment to output all unexported test data to file
 
+func _on_node_added_global(node: Node) -> void:
+	if node is BaseButton:
+		if node.mouse_default_cursor_shape == Control.CURSOR_ARROW:
+			node.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+
+func _apply_cursor_to_tree(node: Node) -> void:
+	_on_node_added_global(node)
+	for child in node.get_children():
+		_apply_cursor_to_tree(child)
 
 #region Run
 ## Starts a new run under a given seed with a given character

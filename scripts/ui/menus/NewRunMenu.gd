@@ -18,7 +18,6 @@ extends BaseMenu
 
 @onready var character_button_container: GridContainer = %CharacterButtonContainer
 
-@onready var seed_visibility_toggle: Button = %SeedVisibilityToggle
 @onready var seed_input: LineEdit = %SeedInput
 @onready var start_run_button: Button = %StartRunButton
 
@@ -32,7 +31,6 @@ func _ready():
 	super()
 	start_run_button.pressed.connect(_on_start_run_button_presssed)
 	
-	seed_visibility_toggle.toggled.connect(_on_seed_visibility_toggled)
 	decrease_difficulty_button.pressed.connect(_on_decrease_difficulty_button_pressed)
 	increase_difficulty_button.pressed.connect(_on_increase_difficulty_button_pressed)
 	
@@ -84,8 +82,8 @@ func populate_character_info(character_object_id: String) -> void:
 	var character_data: CharacterData = Global.get_character_data(character_object_id)
 	if character_data != null:
 		character_name_label.text = character_data.character_name
-		character_health_label.text = "生命: {0}".format([character_data.character_starting_health])
-		character_money_label.text = "金币: {0}".format([character_data.character_starting_money])
+		character_health_label.text = "完整度: {0}".format([character_data.character_starting_health])
+		character_money_label.text = "数据币: {0}".format([character_data.character_starting_money])
 		character_description_label.text = character_data.character_description
 		
 		# TODO potentially update ui to support multiple starter artifacts displayed
@@ -107,9 +105,6 @@ func _on_character_selected(character_object_id: String):
 #endregion
 
 #region Seed
-func _on_seed_visibility_toggled(toggle: bool) -> void:
-	seed_input.visible = toggle
-
 func _on_seed_input_text_changed(new_text: String):
 	# validate the input of the line edit
 	var caret_column: int = seed_input.caret_column	# store cursor position as changing text resets it
@@ -180,6 +175,9 @@ func _on_custom_run_modifier_toggled(toggle: bool, run_modifier_data: RunModifie
 func _on_start_run_button_presssed():
 	# get the seed and start the run
 	var run_seed: int = seed_input.text.to_int()
+	if seed_input.text.is_empty() or seed_input.text == "1234567890123456":
+		randomize()
+		run_seed = randi()
 	Global.start_run(selected_character_object_id, run_seed, selected_difficulty_level, selected_custom_run_modififers)
 
 func _on_run_ended():

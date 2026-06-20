@@ -69,7 +69,7 @@ func _populate_run_history(run_index: int = -1) -> void:
 	
 	# portrait and name
 	if character_data == null:
-		run_history_character_name_label.text = "无效角色"
+		run_history_character_name_label.text = "无效进程"
 		run_history_character_icon.texture = FileLoader.MISSING_TEXTURE
 	else:
 		run_history_character_name_label.text = character_data.character_name
@@ -77,8 +77,8 @@ func _populate_run_history(run_index: int = -1) -> void:
 	
 	run_history_difficulty_label.text = str(run_stats_data.run_difficulty_level)
 	run_history_seed_label.text = "种子: {0}".format([run_stats_data.run_seed])
-	run_history_health_label.text = "生命: {0}/{1}".format([run_stats_data.run_player_health, run_stats_data.run_player_health_max])
-	run_history_money_label.text = "金币: {0}".format([run_stats_data.run_player_money])
+	run_history_health_label.text = "完整度: {0}/{1}".format([run_stats_data.run_player_health, run_stats_data.run_player_health_max])
+	run_history_money_label.text = "数据币: {0}".format([run_stats_data.run_player_money])
 	run_history_floor_label.text = "层数: {0}".format([run_stats_data.run_floor])
 	
 	if run_stats_data.run_victory:

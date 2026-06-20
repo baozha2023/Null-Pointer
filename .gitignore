@@ -11,3 +11,4 @@ export_presets.cfg
 .mono/
 /external/saves
 external/profile.json
+.idea/

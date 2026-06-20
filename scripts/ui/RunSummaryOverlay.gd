@@ -17,12 +17,12 @@ const VICTORY_MESSAGE: String = "你赢了！"
 ## Formatted as a grid with newlines and tabs and the end of the string appended with the given stat number
 const SUMMARY_TEMPLATE: Dictionary[String, String] =  {
 	"标准战斗": "COMBAT_STANDARD_COUNT",
-	"小Boss": "COMBAT_MINIBOSS_COUNT",
+	"精英怪": "COMBAT_MINIBOSS_COUNT",
 	"Boss": "COMBAT_BOSS_COUNT",
 	"休息次数": "REST_REST_COUNT",
 	"升级次数": "REST_UPGRADE_CARDS_COUNT",
-	"获得金币": "MONEY_GAINED_AMOUNT",
-	"卡牌使用": "CARDS_PLAYED",
+	"获得数据币": "MONEY_GAINED_AMOUNT",
+	"脚本使用": "CARDS_PLAYED",
 	"受到伤害": "PLAYER_DAMAGED_AMOUNT",
 	"造成伤害": "ENEMY_DAMAGED_CAPPED_AMOUNT",
 }
