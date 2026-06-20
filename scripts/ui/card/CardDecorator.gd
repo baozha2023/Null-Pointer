@@ -32,7 +32,6 @@ func init(_parent_card: Card, _card_decorator_id: String) -> void:
 	visible = false
 	if card_decorator_data.card_decorator_texture_path != "":
 		visible = true
-		texture = FileLoader.load_texture(card_decorator_data.card_decorator_texture_path)
 	
 	_update_card_decorator_value_label()
 

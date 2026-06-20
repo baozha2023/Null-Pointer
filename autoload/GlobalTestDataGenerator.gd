@@ -1525,37 +1525,37 @@ func add_test_colors() -> void:
 	var color_green: ColorData = ColorData.new("color_green")
 	color_green.color = Color.WEB_GREEN
 	color_green.color_name = "绿色"
-	color_green.color_energy_icon_texture_path = "external/sprites/colors/green_energy_icon.png"
+	color_green.color_energy_icon_texture_path = "sprites/ui/icon_energy.png"
 	Global.register_rod(color_green)
 	
 	var color_orange: ColorData = ColorData.new("color_orange")
 	color_orange.color = Color.CORAL
 	color_orange.color_name = "橙色"
-	color_orange.color_energy_icon_texture_path = "external/sprites/colors/orange_energy_icon.png"
+	color_orange.color_energy_icon_texture_path = "sprites/ui/icon_energy.png"
 	Global.register_rod(color_orange)
 	
 	var color_red: ColorData = ColorData.new("color_red")
 	color_red.color = Color.FIREBRICK
 	color_red.color_name = "红色"
-	color_red.color_energy_icon_texture_path = "external/sprites/colors/red_energy_icon.png"
+	color_red.color_energy_icon_texture_path = "sprites/ui/icon_energy.png"
 	Global.register_rod(color_red)
 	
 	var color_blue: ColorData = ColorData.new("color_blue")
 	color_blue.color = Color.ROYAL_BLUE
 	color_blue.color_name = "蓝色"
-	color_blue.color_energy_icon_texture_path = "external/sprites/colors/blue_energy_icon.png"
+	color_blue.color_energy_icon_texture_path = "sprites/ui/icon_energy.png"
 	Global.register_rod(color_blue)
 	
 	var color_white: ColorData = ColorData.new("color_white")
 	color_white.color = Color.WHITE_SMOKE
 	color_white.color_name = "白色"
-	color_white.color_energy_icon_texture_path = "external/sprites/colors/white_energy_icon.png"
+	color_white.color_energy_icon_texture_path = "sprites/ui/icon_energy.png"
 	Global.register_rod(color_white)
 	
 	var color_purple: ColorData = ColorData.new("color_purple")
 	color_purple.color = Color.REBECCA_PURPLE
 	color_purple.color_name = "紫色"
-	color_purple.color_energy_icon_texture_path = "external/sprites/colors/purple_energy_icon.png"
+	color_purple.color_energy_icon_texture_path = "sprites/ui/icon_energy.png"
 	Global.register_rod(color_purple)
 
 #endregion
@@ -2408,7 +2408,7 @@ func add_test_card_decorators() -> void:
 		# add a flag to the card used to check for first time
 		"decorator_value_extra_draw": 2
 	}
-	card_decorator_extra_draw.card_decorator_post_description = "[center][color=green]Draw 2 cards when first drawn.[/color][/center]\n"
+	card_decorator_extra_draw.card_decorator_post_description = "[center][color=green]首次抽到时，抽取 2 个脚本。[/color][/center]\n"
 	card_decorator_extra_draw.card_decorator_label_value_name = "decorator_value_extra_draw"
 	card_decorator_extra_draw.card_decorator_post_draw_actions = [
 		{

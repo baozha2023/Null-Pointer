@@ -1023,7 +1023,6 @@ layout_mode = 0
 offset_left = 216.0
 offset_right = 360.0
 offset_bottom = 31.0
-button_pressed = true
 text = "稀有度"
 
 [node name="CodexCardCostSortButton" type="Button" parent="TitleScreen/CodexMenu/VSplitContainer/CodexContentDisplay/CodexCardsMenu" unique_id=651014274]
@@ -1032,7 +1031,6 @@ layout_mode = 0
 offset_left = 536.0
 offset_right = 680.0
 offset_bottom = 31.0
-button_pressed = true
 text = "费用"
 
 [node name="CodexCardTypeSortButton" type="Button" parent="TitleScreen/CodexMenu/VSplitContainer/CodexContentDisplay/CodexCardsMenu" unique_id=1897095373]
@@ -1041,7 +1039,6 @@ layout_mode = 0
 offset_left = 376.0
 offset_right = 520.0
 offset_bottom = 31.0
-button_pressed = true
 text = "类型"
 
 [node name="CodexCardAlphaSortButton" type="Button" parent="TitleScreen/CodexMenu/VSplitContainer/CodexContentDisplay/CodexCardsMenu" unique_id=710390932]
@@ -1050,7 +1047,6 @@ layout_mode = 0
 offset_left = 696.0
 offset_right = 840.0
 offset_bottom = 31.0
-button_pressed = true
 text = "A - Z"
 
 [node name="CodexArtifactMenu" type="Control" parent="TitleScreen/CodexMenu/VSplitContainer/CodexContentDisplay" unique_id=1533613949]
@@ -1235,6 +1231,7 @@ offset_left = -64.0
 offset_bottom = -0.200001
 grow_horizontal = 0
 grow_vertical = 2
+toggle_mode = true
 text = "意图"
 
 [node name="CodexEnemyTexture" type="TextureRect" parent="TitleScreen/CodexMenu/VSplitContainer/CodexContentDisplay/CodexEnemiesMenu/MarginContainer/HSplitContainer/HSplitContainer/EnemyInfo" unique_id=515187530]
