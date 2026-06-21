@@ -37,7 +37,7 @@ func init(_enemy_data: EnemyData):
 	selection_button.mouse_exited.connect(_on_mouse_exited)
 	
 	animated_sprite_2d.sprite_frames = get_animation_sprite_frames()
-	animated_sprite_2d.play(AnimationData.ANIMATION_IDLE)
+	play_animation(AnimationData.ANIMATION_IDLE)
 	
 	# apply initial effects
 	for status_effect_object_id in enemy_data.enemy_initial_status_effects.keys():
@@ -99,7 +99,7 @@ func damage(_damage: int, bypass_block: bool = false) -> Array[int]:
 		update_health_bar(true)
 		if enemy_data.enemy_health <= 0:
 			if not death_animation_player.is_playing():
-				animated_sprite_2d.play(AnimationData.ANIMATION_DEATH)
+				play_animation(AnimationData.ANIMATION_DEATH)
 				death_animation_player.play("Enemy/death")
 				remove_from_group("enemies")
 				Signals.enemy_killed.emit(self)

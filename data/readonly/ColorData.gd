@@ -3,7 +3,7 @@ extends SerializableData
 class_name ColorData
 
 @export var color: Color = Color.WHITE
-@export var color_name: String = "White"
+@export var color_name: String = "白色"
 @export var color_energy_icon_texture_path: String = ""
 
 func _get_native_properties() -> Dictionary:

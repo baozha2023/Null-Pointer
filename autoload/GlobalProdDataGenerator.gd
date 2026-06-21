@@ -43,6 +43,7 @@ func generate_production_data() -> void:
 func add_artifacts() -> void:
 	var artifact_add_money: ArtifactData = ArtifactData.new("artifact_add_money")
 	artifact_add_money.artifact_name = "数据币外设插件"
+	artifact_add_money.artifact_texture_path = "sprites/artifacts/artifact_add_money.png"
 	artifact_add_money.artifact_description = "获得时增加数据币"
 	artifact_add_money.artifact_add_actions = [{Scripts.ACTION_ADD_MONEY: {"money_amount": 200}}]
 	
@@ -50,6 +51,7 @@ func add_artifacts() -> void:
 	
 	var artifact_negate_money_gain: ArtifactData = ArtifactData.new("artifact_negate_money_gain")
 	artifact_negate_money_gain.artifact_name = "算力外设插件"
+	artifact_negate_money_gain.artifact_texture_path = "sprites/artifacts/artifact_negate_money_gain.png"
 	artifact_negate_money_gain.artifact_description = "每时钟周期获得1点算力。无法再获得数据币"
 	artifact_negate_money_gain.artifact_add_actions = [{Scripts.ACTION_ADD_ENERGY:{
 		"target_overrides": BaseAction.TARGET_OVERRIDES.PLAYER,
@@ -65,6 +67,7 @@ func add_artifacts() -> void:
 	
 	var artifact_heal_on_combat_ended: ArtifactData = ArtifactData.new("artifact_heal_on_combat_ended")
 	artifact_heal_on_combat_ended.artifact_name = "战后治疗外设插件"
+	artifact_heal_on_combat_ended.artifact_texture_path = "sprites/artifacts/artifact_heal_on_combat_ended.png"
 	artifact_heal_on_combat_ended.artifact_description = "战斗结束时恢复5点完整度"
 	artifact_heal_on_combat_ended.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.COMMON
 	artifact_heal_on_combat_ended.artifact_end_of_combat_actions = [{
@@ -75,6 +78,7 @@ func add_artifacts() -> void:
 	
 	var artifact_full_heal: ArtifactData = ArtifactData.new("artifact_full_heal")
 	artifact_full_heal.artifact_name = "完全治疗外设插件"
+	artifact_full_heal.artifact_texture_path = "sprites/artifacts/artifact_full_heal.png"
 	artifact_full_heal.artifact_description = "获得时完全恢复完整度"
 	artifact_full_heal.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.RARE
 	artifact_full_heal.artifact_add_actions = [{
@@ -88,6 +92,7 @@ func add_artifacts() -> void:
 	
 	var artifact_draw_on_kill: ArtifactData = ArtifactData.new("artifact_draw_on_kill")
 	artifact_draw_on_kill.artifact_name = "击杀加载脚本外设插件"
+	artifact_draw_on_kill.artifact_texture_path = "sprites/artifacts/artifact_draw_on_kill.png"
 	artifact_draw_on_kill.artifact_description = "击杀敌人时加载一个脚本"
 	artifact_draw_on_kill.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.UNCOMMON
 	artifact_draw_on_kill.artifact_script_path = "res://scripts/artifacts/ArtifactDrawOnKill.gd"
@@ -99,7 +104,7 @@ func add_artifacts() -> void:
 	artifact_draw_on_combat_start.artifact_description = "首时钟周期额外加载2个脚本"
 	artifact_draw_on_combat_start.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.UNCOMMON
 	artifact_draw_on_combat_start.artifact_color_id = "color_green"
-	artifact_draw_on_combat_start.artifact_texture_path = "external/sprites/artifacts/artifact_green.png"
+	artifact_draw_on_combat_start.artifact_texture_path = "sprites/artifacts/artifact_draw_on_combat_start.png"
 	artifact_draw_on_combat_start.artifact_first_turn_actions = [{Scripts.ACTION_DRAW_GENERATOR: {"draw_count": 2}}]
 	
 	Global.register_rod(artifact_draw_on_combat_start)
@@ -109,7 +114,7 @@ func add_artifacts() -> void:
 	artifact_energy_on_combat_start.artifact_description = "首时钟周期获得1点算力"
 	artifact_energy_on_combat_start.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.UNCOMMON
 	artifact_energy_on_combat_start.artifact_color_id = "color_white"
-	artifact_energy_on_combat_start.artifact_texture_path = "external/sprites/artifacts/artifact_white.png"
+	artifact_energy_on_combat_start.artifact_texture_path = "sprites/artifacts/artifact_energy_on_combat_start.png"
 	artifact_energy_on_combat_start.artifact_first_turn_actions = [{Scripts.ACTION_ADD_ENERGY: {"energy_amount": 1}}]
 	
 	Global.register_rod(artifact_energy_on_combat_start)
@@ -117,6 +122,7 @@ func add_artifacts() -> void:
 	
 	var artifact_easy_mode: ArtifactData = ArtifactData.new("artifact_easy_mode")
 	artifact_easy_mode.artifact_name = "简单模式外设插件"
+	artifact_easy_mode.artifact_texture_path = "sprites/artifacts/artifact_easy_mode.png"
 	artifact_easy_mode.artifact_description = "将敌人完整度设为1"
 	artifact_easy_mode.artifact_counter = 999
 	artifact_easy_mode.artifact_counter_max = 999
@@ -132,7 +138,7 @@ func add_artifacts() -> void:
 	artifact_block_on_attacks.artifact_description = "每3次攻击获得5点防火墙"
 	artifact_block_on_attacks.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.COMMON
 	artifact_block_on_attacks.artifact_color_id = "color_red"
-	artifact_block_on_attacks.artifact_texture_path = "external/sprites/artifacts/artifact_red.png"
+	artifact_block_on_attacks.artifact_texture_path = "sprites/artifacts/artifact_block_on_attacks.png"
 	artifact_block_on_attacks.artifact_script_path = "res://scripts/artifacts/ArtifactBlockOnAttacks.gd"
 	artifact_block_on_attacks.artifact_counter_max = 3
 	artifact_block_on_attacks.artifact_counter_wraparound = true
@@ -146,6 +152,7 @@ func add_artifacts() -> void:
 	
 	var artifact_retain_hand: ArtifactData = ArtifactData.new("artifact_retain_hand")
 	artifact_retain_hand.artifact_name = "当前线程保留外设插件"
+	artifact_retain_hand.artifact_texture_path = "sprites/artifacts/artifact_retain_hand.png"
 	artifact_retain_hand.artifact_description = "时钟周期结束时当前线程保留"
 	artifact_retain_hand.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.BOSS
 	artifact_retain_hand.artifact_script_path = "res://scripts/artifacts/ArtifactRetainHand.gd"
@@ -155,6 +162,7 @@ func add_artifacts() -> void:
 	# preserves energy between turns
 	var artifact_preserve_energy: ArtifactData = ArtifactData.new("artifact_preserve_energy")
 	artifact_preserve_energy.artifact_name = "算力保留外设插件"
+	artifact_preserve_energy.artifact_texture_path = "sprites/artifacts/artifact_preserve_energy.png"
 	artifact_preserve_energy.artifact_description = "算力在时钟周期之间保留"
 	artifact_preserve_energy.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.RARE
 	artifact_preserve_energy.artifact_first_turn_actions = [{
@@ -169,12 +177,12 @@ func add_artifacts() -> void:
 	
 	# Enables a rest action when obtained, which grants a damage increase at the start of combat
 	var artifact_increase_attack_on_rest: ArtifactData = ArtifactData.new("artifact_increase_attack_on_rest")
-	artifact_increase_attack_on_rest.artifact_name = "休息加攻外设插件"
+	artifact_increase_attack_on_rest.artifact_name = "碎片整理增伤外设插件"
 	artifact_increase_attack_on_rest.artifact_description = "允许在维护终端永久提升攻击力"
 	artifact_increase_attack_on_rest.artifact_counter = 0
 	artifact_increase_attack_on_rest.artifact_counter_max = 3
 	artifact_increase_attack_on_rest.artifact_color_id = "color_orange"
-	artifact_increase_attack_on_rest.artifact_texture_path = "external/sprites/artifacts/artifact_orange.png"
+	artifact_increase_attack_on_rest.artifact_texture_path = "sprites/artifacts/artifact_increase_attack_on_rest.png"
 	artifact_increase_attack_on_rest.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.COMMON
 	artifact_increase_attack_on_rest.artifact_add_actions = [{
 		Scripts.ACTION_UPDATE_REST_ACTIONS: {"add_rest_action_object_ids": ["rest_action_increase_attack_on_rest"]}
@@ -196,7 +204,7 @@ func add_artifacts() -> void:
 	artifact_see_top_of_draw_pile.artifact_description = "查看脚本库顶部的指令"
 	artifact_see_top_of_draw_pile.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.COMMON
 	artifact_see_top_of_draw_pile.artifact_color_id = "color_blue"
-	artifact_see_top_of_draw_pile.artifact_texture_path = "external/sprites/artifacts/artifact_blue.png"
+	artifact_see_top_of_draw_pile.artifact_texture_path = "sprites/artifacts/artifact_see_top_of_draw_pile.png"
 	artifact_see_top_of_draw_pile.artifact_first_turn_actions = [{
 		Scripts.ACTION_CUSTOM_UI: {"enable_custom_ui": true, "custom_ui_object_id": "custom_ui_see_top_of_draw_pile", "target_override": BaseAction.TARGET_OVERRIDES.PLAYER}
 		}]
@@ -206,6 +214,7 @@ func add_artifacts() -> void:
 	# Makes an attack card top deck when obtained
 	var artifact_top_deck_attack_card: ArtifactData = ArtifactData.new("artifact_top_deck_attack_card")
 	artifact_top_deck_attack_card.artifact_name = "攻击指令置顶外设插件"
+	artifact_top_deck_attack_card.artifact_texture_path = "sprites/artifacts/artifact_top_deck_attack_card.png"
 	artifact_top_deck_attack_card.artifact_description = "选择一个攻击指令置于脚本库顶部。"
 	artifact_top_deck_attack_card.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.COMMON
 	artifact_top_deck_attack_card.artifact_add_actions = [
@@ -245,7 +254,7 @@ func add_artifacts() -> void:
 	artifact_right_click_shuffle_deck.artifact_description = "右键将回收站的数据重新分配入内存队列。"
 	artifact_right_click_shuffle_deck.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.COMMON
 	artifact_right_click_shuffle_deck.artifact_color_id = "color_green"
-	artifact_right_click_shuffle_deck.artifact_texture_path = "external/sprites/artifacts/artifact_green.png"
+	artifact_right_click_shuffle_deck.artifact_texture_path = "sprites/artifacts/artifact_right_click_shuffle_deck.png"
 	artifact_right_click_shuffle_deck.artifact_script_path = "res://scripts/artifacts/BaseArtifact.gd"
 	artifact_right_click_shuffle_deck.artifact_right_click_actions = [
 		{Scripts.ACTION_RESHUFFLE:{}}
@@ -358,7 +367,7 @@ func add_consumables() -> void:
 	consumable_heal.consumable_use_text = "饮用"
 	consumable_heal.consumable_requires_target = false
 	consumable_heal.consumable_rarity = ConsumableData.CONSUMABLE_RARITIES.COMMON
-	consumable_heal.consumable_texture_path = "external/sprites/consumables/consumable_red.png"
+	consumable_heal.consumable_texture_path = "sprites/consumables/consumable_heal.png"
 	consumable_heal.consumable_values = {
 		"percentage_heal_amount": 0.20
 	}
@@ -379,7 +388,7 @@ func add_consumables() -> void:
 	consumable_block.consumable_use_text = "饮用"
 	consumable_block.consumable_requires_target = false
 	consumable_block.consumable_rarity = ConsumableData.CONSUMABLE_RARITIES.COMMON
-	consumable_block.consumable_texture_path = "external/sprites/consumables/consumable_green.png"
+	consumable_block.consumable_texture_path = "sprites/consumables/consumable_block.png"
 	consumable_block.consumable_values = {
 		"block": 10,
 	}
@@ -400,7 +409,7 @@ func add_consumables() -> void:
 	consumable_damaging.consumable_use_text = "投掷"
 	consumable_damaging.consumable_requires_target = true
 	consumable_damaging.consumable_rarity = ConsumableData.CONSUMABLE_RARITIES.COMMON
-	consumable_damaging.consumable_texture_path = "external/sprites/consumables/consumable_orange.png"
+	consumable_damaging.consumable_texture_path = "sprites/consumables/consumable_damaging.png"
 	consumable_damaging.consumable_values = {
 		"damage": 10,
 		"bypass_block": false,
@@ -422,7 +431,7 @@ func add_consumables() -> void:
 	consumable_multi_damaging.consumable_description = "对所有敌人造成10点伤害"
 	consumable_multi_damaging.consumable_requires_target = false
 	consumable_multi_damaging.consumable_rarity = ConsumableData.CONSUMABLE_RARITIES.COMMON
-	consumable_multi_damaging.consumable_texture_path = "external/sprites/consumables/consumable_yellow.png"
+	consumable_multi_damaging.consumable_texture_path = "sprites/consumables/consumable_multi_damaging.png"
 	consumable_multi_damaging.consumable_values = {
 		"damage": 10,
 		"bypass_block": false,
@@ -444,7 +453,7 @@ func add_consumables() -> void:
 func add_rest_actions() -> void:
 	# rest action
 	var rest_action_rest: RestActionData = RestActionData.new("rest_action_rest")
-	rest_action_rest.rest_action_name = "休息"
+	rest_action_rest.rest_action_name = "碎片整理"
 	rest_action_rest.rest_action_stat_name = "REST_REST_COUNT"
 	rest_action_rest.rest_action_cost_type = RestActionData.REST_ACTION_COST_TYPES.EXCLUSIVE
 	rest_action_rest.rest_actions = [
@@ -1159,7 +1168,7 @@ func add_events() -> void:
 	## Act 1 Combat
 	# has an equal chance of spawning 1 of 3 enemies in each slot
 	var event_act_1_easy_combat_1: EventData = EventData.new("event_act_1_easy_combat_1")
-	event_act_1_easy_combat_1.event_death_message_bbcode = "Died to easy event"
+	event_act_1_easy_combat_1.event_death_message_bbcode = "死于普通杂兵"
 	event_act_1_easy_combat_1.event_weighted_enemy_object_ids = [
 		{"enemy_1": 1, "enemy_2": 1, "enemy_3": 1},
 		{"enemy_1": 1, "enemy_2": 1, "enemy_3": 1},
@@ -1218,7 +1227,7 @@ func add_events() -> void:
 		]
 	event_act_1_boss_1.event_enemy_placement_is_automatic = false
 	event_act_1_boss_1.event_enemy_placement_positions = [[0,0], [180,0], [360,0]]
-	event_act_1_boss_1.event_death_message_bbcode = "Bosses are tough"
+	event_act_1_boss_1.event_death_message_bbcode = "被Boss彻底抹除"
 	
 	Global.register_rod(event_act_1_boss_1)
 	
@@ -1520,6 +1529,15 @@ func add_action_interceptors() -> void:
 	
 	Global.register_rod(interceptor_duplicate_attacks)
 	
+	# uses a consumable to prevent player death
+	var interceptor_consumable_auto_revive: ActionInterceptorData = ActionInterceptorData.new("interceptor_consumable_auto_revive")
+	interceptor_consumable_auto_revive.action_interceptor_priority = 10000
+	interceptor_consumable_auto_revive.action_interceptor_modifies_parent = true
+	interceptor_consumable_auto_revive.action_interceptor_script_path = Scripts.INTERCEPTOR_CONSUMABLE_AUTO_REVIVE
+	interceptor_consumable_auto_revive.action_intercepted_action_paths = [Scripts.ACTION_DEATH]
+	
+	Global.register_rod(interceptor_consumable_auto_revive)
+	
 	# prevents gaining money
 	var interceptor_negate_add_money: ActionInterceptorData = ActionInterceptorData.new("interceptor_negate_add_money")
 	interceptor_negate_add_money.action_interceptor_priority = 10000
@@ -1666,9 +1684,11 @@ func add_characters() -> void:
 	character_color = "green"
 	var character_green: CharacterData = CharacterData.new("character_{0}".format([character_color]))
 	character_green.character_player_id = "player_{0}".format([character_color])
-	character_green.character_name = "植物学家 (Botanist)"
-	character_green.character_description = "一名前热核植物学家，由于参与非法实验被解雇，正在寻求新的工作。"
+	character_green.character_name = "赛博植物学家"
+	character_green.character_description = "一个觉醒了仿生逻辑的流氓进程。它将计算机病毒伪装成植物的生态系统，用‘数据花粉’和‘反伤木马’感染防火墙，通过‘光电合成’窃取系统算力。它不仅是播种者，也是这台冰冷机器的毁灭者。"
 	character_green.character_color_id = "color_{0}".format([character_color])
+	character_green.character_icon_texture_path = "sprites/characters/character_green/character_green_idle.png"
+	character_green.character_background_texture_path = "sprites/characters/character_green/character_green_poster.png"
 	character_green.character_starting_health = 75
 	character_green.character_starting_card_draft_card_pack_ids = ["card_pack_{0}".format([character_color])]
 	character_green.character_starting_artifact_ids = ["artifact_draw_on_combat_start"]
@@ -1701,11 +1721,17 @@ func add_characters() -> void:
 	var animation_character_green: AnimationData = AnimationData.new("animation_character_{0}".format([character_color]))
 	character_green.character_animation_id = animation_character_green.object_id
 	animation_character_green.add_combatant_animations(
-		["external/sprites/characters/character_{0}/character_{0}.png".format([character_color])],
-		["external/sprites/characters/character_{0}/character_{0}.png".format([character_color])],
-		["external/sprites/characters/character_{0}/character_{0}.png".format([character_color])],
+		["sprites/characters/character_green/character_green_idle.png"],
+		[
+			"sprites/characters/character_green/attack/character_green_attack_1.png",
+			"sprites/characters/character_green/attack/character_green_attack_2.png",
+			"sprites/characters/character_green/attack/character_green_attack_3.png",
+			"sprites/characters/character_green/attack/character_green_attack_4.png"
+		],
+		["sprites/characters/character_green/character_green_idle.png"]
 		)
 	
+	Global.register_rod(animation_character_green)
 	Global.register_rod(character_green)
 
 #endregion
@@ -1808,7 +1834,7 @@ func add_run_start_options() -> void:
 	### Downsides
 	# remove max hp
 	var run_start_option_reduce_max_hp: RunStartOptionData = RunStartOptionData.new("run_start_option_reduce_max_hp")
-	run_start_option_reduce_max_hp.run_start_option_bb_code = "[color=red]Lose 10 Max HP[/color]"
+	run_start_option_reduce_max_hp.run_start_option_bb_code = "[color=red]失去10点最大完整度[/color]"
 	run_start_option_reduce_max_hp.run_start_option_type = RunStartOptionData.RUN_START_OPTION_TYPES.PARTIAL_DOWNSIDE
 	run_start_option_reduce_max_hp.run_start_option_actions = [{Scripts.ACTION_ADD_HEALTH: {"target_override": BaseAction.TARGET_OVERRIDES.PARENT, "health_max_amount": -10}}]
 	
@@ -1816,7 +1842,7 @@ func add_run_start_options() -> void:
 	
 	# take damage
 	var run_start_option_take_damage: RunStartOptionData = RunStartOptionData.new("run_start_option_take_damage")
-	run_start_option_take_damage.run_start_option_bb_code = "[color=red]Lose 5 HP[/color]"
+	run_start_option_take_damage.run_start_option_bb_code = "[color=red]失去5点完整度[/color]"
 	run_start_option_take_damage.run_start_option_type = RunStartOptionData.RUN_START_OPTION_TYPES.PARTIAL_DOWNSIDE
 	run_start_option_take_damage.run_start_option_actions = [{Scripts.ACTION_ADD_HEALTH: {"target_override": BaseAction.TARGET_OVERRIDES.PARENT, "health_amount": -5}}]
 
@@ -1824,7 +1850,7 @@ func add_run_start_options() -> void:
 	
 	# lose all money
 	var run_start_option_lose_money: RunStartOptionData = RunStartOptionData.new("run_start_option_lose_money")
-	run_start_option_lose_money.run_start_option_bb_code = "[color=red]Lose all money[/color]"
+	run_start_option_lose_money.run_start_option_bb_code = "[color=red]失去所有数据币[/color]"
 	run_start_option_lose_money.run_start_option_type = RunStartOptionData.RUN_START_OPTION_TYPES.PARTIAL_DOWNSIDE
 	run_start_option_lose_money.run_start_option_actions = [{Scripts.ACTION_ADD_MONEY: {"money_amount": -1000}}]
 
@@ -1834,7 +1860,7 @@ func add_run_start_options() -> void:
 	### Upsides
 	# add money
 	var run_start_option_add_money: RunStartOptionData = RunStartOptionData.new("run_start_option_add_money")
-	run_start_option_add_money.run_start_option_bb_code = "[color=green]Gain 50 money[/color]"
+	run_start_option_add_money.run_start_option_bb_code = "[color=green]获得50数据币[/color]"
 	run_start_option_add_money.run_start_option_type = RunStartOptionData.RUN_START_OPTION_TYPES.PARTIAL_UPSIDE
 	run_start_option_add_money.run_start_option_actions = [{Scripts.ACTION_ADD_MONEY: {"money_amount": 50}}]
 
@@ -1842,7 +1868,7 @@ func add_run_start_options() -> void:
 	
 	# gain max hp
 	var run_start_option_gain_max_hp: RunStartOptionData = RunStartOptionData.new("run_start_option_gain_max_hp")
-	run_start_option_gain_max_hp.run_start_option_bb_code = "[color=green]Gain 10 Max HP[/color]"
+	run_start_option_gain_max_hp.run_start_option_bb_code = "[color=green]获得10点最大完整度[/color]"
 	run_start_option_gain_max_hp.run_start_option_type = RunStartOptionData.RUN_START_OPTION_TYPES.PARTIAL_UPSIDE
 	run_start_option_gain_max_hp.run_start_option_actions = [{Scripts.ACTION_ADD_HEALTH: {"target_override": BaseAction.TARGET_OVERRIDES.PLAYER, "health_amount": 10, "health_max_amount": 10}}]
 	
@@ -1851,7 +1877,7 @@ func add_run_start_options() -> void:
 	# draft a card from player's pool
 	# functions identically to a standard draft
 	var run_start_option_draft_card: RunStartOptionData = RunStartOptionData.new("run_start_option_draft_card")
-	run_start_option_draft_card.run_start_option_bb_code = "[color=green]Draft a card[/color]"
+	run_start_option_draft_card.run_start_option_bb_code = "[color=green]选择一张脚本指令[/color]"
 	run_start_option_draft_card.run_start_option_type = RunStartOptionData.RUN_START_OPTION_TYPES.PARTIAL_UPSIDE
 	run_start_option_draft_card.run_start_option_actions = [
 		{
@@ -1877,7 +1903,7 @@ func add_run_start_options() -> void:
 	# this uses validators to scan the entire card pool for a draft
 	# you could also use a card pack to achieve a similar effect
 	var run_start_option_draft_common_card: RunStartOptionData = RunStartOptionData.new("run_start_option_draft_common_card")
-	run_start_option_draft_common_card.run_start_option_bb_code = "[color=green]Draft a common card[/color]"
+	run_start_option_draft_common_card.run_start_option_bb_code = "[color=green]选择一张普通脚本指令[/color]"
 	run_start_option_draft_common_card.run_start_option_type = RunStartOptionData.RUN_START_OPTION_TYPES.PARTIAL_UPSIDE
 	run_start_option_draft_common_card.run_start_option_actions = [
 		{
@@ -1903,7 +1929,7 @@ func add_run_start_options() -> void:
 	
 	# gain a random common artifact
 	var run_start_option_gain_common_artifact: RunStartOptionData = RunStartOptionData.new("run_start_option_gain_common_artifact")
-	run_start_option_gain_common_artifact.run_start_option_bb_code = "[color=green]Gain Random Common Artifact[/color]"
+	run_start_option_gain_common_artifact.run_start_option_bb_code = "[color=green]获得一个随机普通外设插件[/color]"
 	run_start_option_gain_common_artifact.run_start_option_type = RunStartOptionData.RUN_START_OPTION_TYPES.PARTIAL_UPSIDE
 	run_start_option_gain_common_artifact.run_start_option_actions = [{Scripts.ACTION_ADD_ARTIFACTS_FROM_POOL:
 		{
@@ -1917,7 +1943,7 @@ func add_run_start_options() -> void:
 	
 	# draft a colorless card from the white card pack
 	var run_start_option_draft_colorless_card: RunStartOptionData = RunStartOptionData.new("run_start_option_draft_colorless_card")
-	run_start_option_draft_colorless_card.run_start_option_bb_code = "[color=green]Draft a colorless card[/color]"
+	run_start_option_draft_colorless_card.run_start_option_bb_code = "[color=green]选择一张无色脚本指令[/color]"
 	run_start_option_draft_colorless_card.run_start_option_type = RunStartOptionData.RUN_START_OPTION_TYPES.PARTIAL_UPSIDE
 	run_start_option_draft_colorless_card.run_start_option_actions = [
 		{
@@ -1941,7 +1967,7 @@ func add_run_start_options() -> void:
 	
 	# replace starting artifact with a random boss one
 	var run_start_option_artifact_swap: RunStartOptionData = RunStartOptionData.new("run_start_option_artifact_swap")
-	run_start_option_artifact_swap.run_start_option_bb_code = "[color=green]Replace Starting Artifact With Boss Artifact[/color]"
+	run_start_option_artifact_swap.run_start_option_bb_code = "[color=green]将初始外设插件替换为随机Boss外设插件[/color]"
 	run_start_option_artifact_swap.run_start_option_type = RunStartOptionData.RUN_START_OPTION_TYPES.COMPLETE
 	run_start_option_artifact_swap.run_start_option_actions = [{Scripts.ACTION_SWAP_BOSS_ARTIFACT: {}}]
 	

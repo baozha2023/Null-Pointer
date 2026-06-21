@@ -5,7 +5,7 @@ class_name DialogueData
 
 ## The display name for the event
 ## Rich text supported
-@export var dialogue_name_bbcode: String = "No Event Name Provided"
+@export var dialogue_name_bbcode: String = "未定义的事件"
 
 ## The initial embedded DialogueStateData object_id used when starting this dialogue. This is used to
 ## populate the initial prompt and dialogue choices. 

@@ -5,23 +5,23 @@ extends BaseMenu
 @onready var no_runs_label: Label = $NoRunsLabel
 
 # selects between next and previous run histories
-@onready var previous_run_button: Button = $RunsExistContainer/PreviousRunButton
-@onready var run_history_character_icon: TextureRect = $RunsExistContainer/RunHistoryCharacterIcon
-@onready var run_history_difficulty_label: Label = $RunsExistContainer/RunHistoryCharacterIcon/RunHistoryDifficultyLabel
-@onready var next_run_button: Button = $RunsExistContainer/NextRunButton
+@onready var previous_run_button: Button = %PreviousRunButton
+@onready var run_history_character_icon: TextureRect = %RunHistoryCharacterIcon
+@onready var run_history_difficulty_label: Label = %RunHistoryDifficultyLabel
+@onready var next_run_button: Button = %NextRunButton
 
-@onready var run_history_character_name_label: Label = $RunsExistContainer/RunHistoryCharacterNameLabel
-@onready var run_history_seed_label: Label = $RunsExistContainer/RunHistorySeedLabel
-@onready var run_history_completion_date_label: Label = $RunsExistContainer/RunHistoryCompletionDateLabel
-@onready var run_history_message_label: RichTextLabel = $RunsExistContainer/RunHistoryMessageLabel
-@onready var run_history_health_label: Label = $RunsExistContainer/RunHistoryHealthLabel
-@onready var run_history_money_label: Label = $RunsExistContainer/RunHistoryMoneyLabel
-@onready var run_history_run_time_label: Label = $RunsExistContainer/RunHistoryRunTimeLabel
-@onready var run_history_floor_label: Label = $RunsExistContainer/RunHistoryFloorLabel
+@onready var run_history_character_name_label: Label = %RunHistoryCharacterNameLabel
+@onready var run_history_seed_label: Label = %RunHistorySeedLabel
+@onready var run_history_completion_date_label: Label = %RunHistoryCompletionDateLabel
+@onready var run_history_message_label: RichTextLabel = %RunHistoryMessageLabel
+@onready var run_history_health_label: Label = %RunHistoryHealthLabel
+@onready var run_history_money_label: Label = %RunHistoryMoneyLabel
+@onready var run_history_run_time_label: Label = %RunHistoryRunTimeLabel
+@onready var run_history_floor_label: Label = %RunHistoryFloorLabel
 
-@onready var run_history_consumable_container: HBoxContainer = %RunHistoryConsumableContainer
-@onready var run_history_card_container: GridContainer = %RunHistoryCardContainer
-@onready var run_history_artifact_container: GridContainer = %RunHistoryArtifactContainer
+@onready var run_history_consumable_container: FlowContainer = %RunHistoryConsumableContainer
+@onready var run_history_card_container: FlowContainer = %RunHistoryCardContainer
+@onready var run_history_artifact_container: FlowContainer = %RunHistoryArtifactContainer
 
 ## Selected index of all player runs
 ## If negative (default) it will select the most current run if it exists. 
@@ -75,7 +75,7 @@ func _populate_run_history(run_index: int = -1) -> void:
 		run_history_character_name_label.text = character_data.character_name
 		run_history_character_icon.texture = FileLoader.load_texture(character_data.character_icon_texture_path)
 	
-	run_history_difficulty_label.text = str(run_stats_data.run_difficulty_level)
+	run_history_difficulty_label.text = "难度: " + str(run_stats_data.run_difficulty_level)
 	run_history_seed_label.text = "种子: {0}".format([run_stats_data.run_seed])
 	run_history_health_label.text = "完整度: {0}/{1}".format([run_stats_data.run_player_health, run_stats_data.run_player_health_max])
 	run_history_money_label.text = "数据币: {0}".format([run_stats_data.run_player_money])

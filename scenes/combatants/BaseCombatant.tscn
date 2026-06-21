@@ -1,8 +1,8 @@
-[gd_scene load_steps=9 format=3 uid="uid://yp2thojcml5h"]
+[gd_scene format=3 uid="uid://yp2thojcml5h"]
 
 [ext_resource type="Script" uid="uid://c2ftr3dvpi75p" path="res://scripts/combatants/BaseCombatant.gd" id="1_fjkbl"]
 [ext_resource type="AnimationLibrary" uid="uid://dvbwuh87t2tha" path="res://animations/Combatant.res" id="2_38nwr"]
-[ext_resource type="Texture2D" uid="uid://nh32y87hcke5" path="res://icon.svg" id="2_nc4eu"]
+[ext_resource type="Texture2D" uid="uid://d33u8m744fh03" path="res://icon.svg" id="2_nc4eu"]
 [ext_resource type="PackedScene" uid="uid://b0qk0vn81d0kp" path="res://scenes/combatants/LayeredHealthBar.tscn" id="3_bf3nk"]
 [ext_resource type="Texture2D" uid="uid://dw4k1k81ap581" path="res://sprites/missing_texture.png" id="3_vo0gv"]
 [ext_resource type="PackedScene" uid="uid://d3ay0q2ywlmkj" path="res://scenes/combatants/SpeechBubble.tscn" id="5_yv466"]
@@ -38,7 +38,7 @@ animations = [{
 "speed": 5.0
 }]
 
-[node name="BaseCombatant" type="Control"]
+[node name="BaseCombatant" type="Control" unique_id=431108974]
 custom_minimum_size = Vector2(200, 144)
 layout_mode = 3
 anchors_preset = 0
@@ -46,44 +46,49 @@ offset_right = 200.0
 offset_bottom = 144.0
 script = ExtResource("1_fjkbl")
 
-[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
-libraries = {
-&"Combatant": ExtResource("2_38nwr")
-}
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=2144833403]
+libraries/Combatant = ExtResource("2_38nwr")
 
-[node name="Visible" type="Control" parent="."]
+[node name="Visible" type="Control" parent="." unique_id=1700537288]
 anchors_preset = 0
 offset_right = 40.0
 offset_bottom = 40.0
 
-[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="Visible"]
+[node name="CombatantCenter" type="Node2D" parent="Visible" unique_id=1496561905]
 position = Vector2(64, 48)
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="Visible/CombatantCenter"]
+unique_name_in_owner = true
+scale = Vector2(2, 2)
 sprite_frames = SubResource("SpriteFrames_e5l7p")
 animation = &"idle"
 
-[node name="LayeredHealthBar" parent="Visible/AnimatedSprite2D" instance=ExtResource("3_bf3nk")]
+[node name="LayeredHealthBar" parent="Visible/CombatantCenter" instance=ExtResource("3_bf3nk")]
 unique_name_in_owner = true
+offset_left = -64.0
+offset_top = 70.0
+offset_right = 64.0
+offset_bottom = 86.0
 
-[node name="SelectionButton" type="Button" parent="Visible/AnimatedSprite2D"]
+[node name="SelectionButton" type="Button" parent="Visible/CombatantCenter" unique_id=935374447]
 unique_name_in_owner = true
 self_modulate = Color(1, 1, 1, 0)
-offset_left = -67.0
+offset_left = -64.0
 offset_top = -64.0
-offset_right = 69.0
+offset_right = 64.0
 offset_bottom = 64.0
 
-[node name="ImageFadeContainer" type="Node2D" parent="Visible/AnimatedSprite2D"]
+[node name="ImageFadeContainer" type="Node2D" parent="Visible/CombatantCenter" unique_id=808977065]
 unique_name_in_owner = true
 
-[node name="IncomingDamage" type="Control" parent="Visible"]
-layout_mode = 3
+[node name="IncomingDamage" type="Control" parent="Visible" unique_id=1314413203]
 anchors_preset = 0
 offset_left = -40.0
 offset_top = -64.0
 offset_right = 168.0
 offset_bottom = -40.0
 
-[node name="TextureRect" type="TextureRect" parent="Visible/IncomingDamage"]
+[node name="TextureRect" type="TextureRect" parent="Visible/IncomingDamage" unique_id=1257468564]
 layout_mode = 0
 offset_left = 80.0
 offset_top = -16.0
@@ -92,7 +97,7 @@ offset_bottom = 32.0
 texture = ExtResource("2_nc4eu")
 expand_mode = 1
 
-[node name="IncomingDamageAmount" type="Label" parent="Visible/IncomingDamage"]
+[node name="IncomingDamageAmount" type="Label" parent="Visible/IncomingDamage" unique_id=1577283462]
 layout_mode = 0
 offset_left = 104.0
 offset_top = 16.0
@@ -100,10 +105,10 @@ offset_right = 144.0
 offset_bottom = 39.0
 text = "15"
 
-[node name="FadeContainer" type="Node2D" parent="Visible"]
+[node name="FadeContainer" type="Node2D" parent="Visible" unique_id=1116273955]
 position = Vector2(64, -96)
 
-[node name="Block" type="Sprite2D" parent="Visible"]
+[node name="Block" type="Sprite2D" parent="Visible" unique_id=176878287]
 visible = false
 self_modulate = Color(0.188235, 0.188235, 0.188235, 1)
 position = Vector2(32, 168)
@@ -111,7 +116,7 @@ scale = Vector2(0.25, 0.25)
 texture = ExtResource("2_nc4eu")
 metadata/_edit_group_ = true
 
-[node name="BlockAmount" type="Label" parent="Visible/Block"]
+[node name="BlockAmount" type="Label" parent="Visible/Block" unique_id=1538525232]
 offset_left = -64.0
 offset_top = -64.0
 offset_right = 64.0
@@ -121,7 +126,7 @@ text = "999"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="StatusContainer" type="GridContainer" parent="Visible"]
+[node name="StatusContainer" type="GridContainer" parent="Visible" unique_id=616507041]
 layout_mode = 0
 offset_left = -16.0
 offset_top = 144.0
@@ -129,7 +134,7 @@ offset_right = 24.0
 offset_bottom = 184.0
 columns = 6
 
-[node name="SpeechBubble" parent="Visible" instance=ExtResource("5_yv466")]
+[node name="SpeechBubble" parent="Visible" unique_id=1512178821 instance=ExtResource("5_yv466")]
 unique_name_in_owner = true
 layout_mode = 0
 offset_left = 152.0
@@ -137,7 +142,7 @@ offset_top = -16.0
 offset_right = 280.0
 offset_bottom = 48.0
 
-[node name="CustomUIContainer" type="Control" parent="Visible"]
+[node name="CustomUIContainer" type="Control" parent="Visible" unique_id=1866051308]
 anchors_preset = 0
 offset_right = 40.0
 offset_bottom = 40.0

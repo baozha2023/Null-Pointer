@@ -5,8 +5,8 @@
 extends SerializableData
 class_name CharacterData
 
-@export var character_name: String = "Character 1"
-@export var character_description: String = "Description of Character 1"	# blurb of character on select screen
+@export var character_name: String = "测试角色"
+@export var character_description: String = "测试角色的详细描述"	# blurb of character on select screen
 ## Color id ascociated with this character
 @export var character_color_id: String = ""
 

@@ -43,6 +43,7 @@ func _on_selection_button_up():
 ## Keep.
 func play_animation(animation_name: String) -> void:
 	animated_sprite_2d.play(animation_name)
+	_resize_sprite_to_fixed_size()
 
 ## Keep
 func get_animation_sprite_frames() -> SpriteFrames:
@@ -65,6 +66,15 @@ func play_next_animation() -> void:
 	var next_animation_name: String = animation_data.get_next_animation_name(current_animation_name)
 	if next_animation_name != AnimationData.ANIMATION_NONE:
 		animated_sprite_2d.play(next_animation_name)
+		_resize_sprite_to_fixed_size()
+
+func _resize_sprite_to_fixed_size() -> void:
+	if animated_sprite_2d.sprite_frames and animated_sprite_2d.sprite_frames.has_animation(animated_sprite_2d.animation):
+		var texture: Texture2D = animated_sprite_2d.sprite_frames.get_frame_texture(animated_sprite_2d.animation, 0)
+		if texture:
+			var tex_size = texture.get_size()
+			if tex_size.x > 0 and tex_size.y > 0:
+				animated_sprite_2d.scale = Vector2(128.0 / tex_size.x, 128.0 / tex_size.y)
 
 func _on_animation_finished() -> void:
 	play_next_animation()

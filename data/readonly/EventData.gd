@@ -81,7 +81,7 @@ enum FailedEventPoolStrategies {
 ## Flavor text that displays if you die during this event.
 ## This can be in or out of combat and will display on the end run summary screen.
 ## Rich text supported.
-@export var event_death_message_bbcode: String = "Standard Event Death Message"
+@export var event_death_message_bbcode: String = "死于普通事件"
 #endregion
 
 

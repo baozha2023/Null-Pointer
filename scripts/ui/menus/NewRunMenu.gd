@@ -10,6 +10,7 @@ extends BaseMenu
 @onready var character_artifact_name_label = %CharacterArtifactNameLabel
 @onready var character_artifact_description_label = %CharacterArtifactDescriptionLabel
 
+@onready var character_poster_texture_rect: TextureRect = %CharacterPosterTextureRect
 @onready var decrease_difficulty_button: Button = %DecreaseDifficultyButton
 @onready var difficulty_label: LabelAutoSizer = %DifficultyLabel
 @onready var increase_difficulty_button: Button = %IncreaseDifficultyButton
@@ -85,6 +86,11 @@ func populate_character_info(character_object_id: String) -> void:
 		character_health_label.text = "完整度: {0}".format([character_data.character_starting_health])
 		character_money_label.text = "数据币: {0}".format([character_data.character_starting_money])
 		character_description_label.text = character_data.character_description
+		
+		if character_data.character_background_texture_path != "":
+			character_poster_texture_rect.texture = FileLoader.load_texture(character_data.character_background_texture_path)
+		else:
+			character_poster_texture_rect.texture = null
 		
 		# TODO potentially update ui to support multiple starter artifacts displayed
 		if len(character_data.character_starting_artifact_ids) > 0:

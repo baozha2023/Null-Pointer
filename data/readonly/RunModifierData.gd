@@ -2,8 +2,8 @@
 extends SerializableData
 class_name RunModifierData
 
-@export var run_modifier_name: String = "Modifier 1"
-@export var run_modifier_description: String = "Description of Modifier"
+@export var run_modifier_name: String = "未定义修改器"
+@export var run_modifier_description: String = "未定义修改器的描述"
 
 @export var run_modifier_exclusive_to_modifier_ids: Array[String] = []	# ids of modifiers that are exclusive to this one (unchecks them on selecting this one). Only useful for custom modifiers
 

@@ -23,7 +23,7 @@ func _ready():
 func reset_player() -> void:
 	var character_data: CharacterData = Global.get_player_character_data()
 	animated_sprite_2d.sprite_frames = get_animation_sprite_frames()
-	animated_sprite_2d.play(AnimationData.ANIMATION_IDLE)
+	play_animation(AnimationData.ANIMATION_IDLE)
 	
 	reset_block()
 	clear_all_status_effects()
@@ -241,6 +241,6 @@ func play_attack_animation() -> void:
 
 func play_death_animation() -> void:
 	if not animation_player.is_playing():
-		animated_sprite_2d.play(AnimationData.ANIMATION_DEATH)
+		play_animation(AnimationData.ANIMATION_DEATH)
 		animation_player.play("Player/death")
 		Signals.player_killed.emit(self)

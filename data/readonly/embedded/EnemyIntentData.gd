@@ -18,7 +18,7 @@ const INTENT_NAME_ZH: Dictionary[String, String] = {
 	"intent_summon": "召唤",
 }
 
-func _init(intent_object_id: String, difficulty_level: int = 0, intent_attack_damage: int = 1, intent_number_of_attacks: int = 1, intent_attack_impact_animation_id: String = "", intent_block: int = 0, intent_audio_path: String = "",
+func _init(intent_object_id: String = "", difficulty_level: int = 0, intent_attack_damage: int = 1, intent_number_of_attacks: int = 1, intent_attack_impact_animation_id: String = "", intent_block: int = 0, intent_audio_path: String = "",
 intent_next_intent_weights: Dictionary[String, int] = {}, intent_custom_actions: Array[Dictionary] = [], intent_display_types: Array[int] = []) -> void:
 	object_id = intent_object_id
 	enemy_intent_overrides_id = intent_object_id

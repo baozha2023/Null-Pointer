@@ -12,3 +12,4 @@ export_presets.cfg
 /external/saves
 external/profile.json
 .idea/
+.claude/

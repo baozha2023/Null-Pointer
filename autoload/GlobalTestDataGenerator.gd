@@ -55,6 +55,7 @@ func add_test_artifacts_to_player() -> void:
 func add_test_artifacts() -> void:
 	var artifact_add_money: ArtifactData = ArtifactData.new("artifact_add_money")
 	artifact_add_money.artifact_name = "外设插件：获得数据币"
+	artifact_add_money.artifact_texture_path = "sprites/artifacts/artifact_add_money.png"
 	artifact_add_money.artifact_description = "获得时增加数据币"
 	artifact_add_money.artifact_add_actions = [{Scripts.ACTION_ADD_MONEY: {"money_amount": 200}}]
 	
@@ -62,6 +63,7 @@ func add_test_artifacts() -> void:
 	
 	var artifact_negate_money_gain: ArtifactData = ArtifactData.new("artifact_negate_money_gain")
 	artifact_negate_money_gain.artifact_name = "外设插件：数据币禁止"
+	artifact_negate_money_gain.artifact_texture_path = "sprites/artifacts/artifact_negate_money_gain.png"
 	artifact_negate_money_gain.artifact_description = "每时钟周期获得1点算力。无法再获得数据币"
 	artifact_negate_money_gain.artifact_add_actions = [{Scripts.ACTION_ADD_ENERGY:{
 		"target_overrides": BaseAction.TARGET_OVERRIDES.PLAYER,
@@ -77,6 +79,7 @@ func add_test_artifacts() -> void:
 	
 	var artifact_heal_on_combat_ended: ArtifactData = ArtifactData.new("artifact_heal_on_combat_ended")
 	artifact_heal_on_combat_ended.artifact_name = "外设插件：战后回复"
+	artifact_heal_on_combat_ended.artifact_texture_path = "sprites/artifacts/artifact_heal_on_combat_ended.png"
 	artifact_heal_on_combat_ended.artifact_description = "战斗结束时回复5点完整度"
 	artifact_heal_on_combat_ended.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.COMMON
 	artifact_heal_on_combat_ended.artifact_end_of_combat_actions = [{
@@ -90,6 +93,7 @@ func add_test_artifacts() -> void:
 	
 	var artifact_full_heal: ArtifactData = ArtifactData.new("artifact_full_heal")
 	artifact_full_heal.artifact_name = "外设插件：完全回复"
+	artifact_full_heal.artifact_texture_path = "sprites/artifacts/artifact_full_heal.png"
 	artifact_full_heal.artifact_description = "获得时完全回复玩家完整度"
 	artifact_full_heal.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.RARE
 	artifact_full_heal.artifact_add_actions = [{
@@ -103,6 +107,7 @@ func add_test_artifacts() -> void:
 	
 	var artifact_draw_on_kill: ArtifactData = ArtifactData.new("artifact_draw_on_kill")
 	artifact_draw_on_kill.artifact_name = "外设插件：击杀加载脚本"
+	artifact_draw_on_kill.artifact_texture_path = "sprites/artifacts/artifact_draw_on_kill.png"
 	artifact_draw_on_kill.artifact_description = "击杀敌人时加载一个脚本"
 	artifact_draw_on_kill.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.UNCOMMON
 	artifact_draw_on_kill.artifact_script_path = "res://scripts/artifacts/ArtifactDrawOnKill.gd"
@@ -114,7 +119,7 @@ func add_test_artifacts() -> void:
 	artifact_draw_on_combat_start.artifact_description = "首时钟周期额外加载2个脚本"
 	artifact_draw_on_combat_start.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.UNCOMMON
 	artifact_draw_on_combat_start.artifact_color_id = "color_green"
-	artifact_draw_on_combat_start.artifact_texture_path = "external/sprites/artifacts/artifact_green.png"
+	artifact_draw_on_combat_start.artifact_texture_path = "sprites/artifacts/artifact_draw_on_combat_start.png"
 	artifact_draw_on_combat_start.artifact_first_turn_actions = [{Scripts.ACTION_DRAW_GENERATOR: {"draw_count": 2}}]
 	
 	Global.register_rod(artifact_draw_on_combat_start)
@@ -122,6 +127,7 @@ func add_test_artifacts() -> void:
 	
 	var artifact_easy_mode: ArtifactData = ArtifactData.new("artifact_easy_mode")
 	artifact_easy_mode.artifact_name = "外设插件：简单模式"
+	artifact_easy_mode.artifact_texture_path = "sprites/artifacts/artifact_easy_mode.png"
 	artifact_easy_mode.artifact_description = "将所有敌人的完整度设为1"
 	artifact_easy_mode.artifact_counter = 999
 	artifact_easy_mode.artifact_counter_max = 999
@@ -137,7 +143,7 @@ func add_test_artifacts() -> void:
 	artifact_block_on_attacks.artifact_description = "每攻击3次获得5点防火墙"
 	artifact_block_on_attacks.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.COMMON
 	artifact_block_on_attacks.artifact_color_id = "color_red"
-	artifact_block_on_attacks.artifact_texture_path = "external/sprites/artifacts/artifact_red.png"
+	artifact_block_on_attacks.artifact_texture_path = "sprites/artifacts/artifact_block_on_attacks.png"
 	artifact_block_on_attacks.artifact_script_path = "res://scripts/artifacts/ArtifactBlockOnAttacks.gd"
 	artifact_block_on_attacks.artifact_counter_max = 3
 	artifact_block_on_attacks.artifact_counter_wraparound = true
@@ -151,6 +157,7 @@ func add_test_artifacts() -> void:
 	
 	var artifact_retain_hand: ArtifactData = ArtifactData.new("artifact_retain_hand")
 	artifact_retain_hand.artifact_name = "外设插件：当前线程保留"
+	artifact_retain_hand.artifact_texture_path = "sprites/artifacts/artifact_retain_hand.png"
 	artifact_retain_hand.artifact_description = "时钟周期结束时当前线程不会丢弃"
 	artifact_retain_hand.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.BOSS
 	artifact_retain_hand.artifact_script_path = "res://scripts/artifacts/ArtifactRetainHand.gd"
@@ -159,12 +166,12 @@ func add_test_artifacts() -> void:
 	
 	# Enables a rest action when obtained, which grants a damage increase at the start of combat
 	var artifact_increase_attack_on_rest: ArtifactData = ArtifactData.new("artifact_increase_attack_on_rest")
-	artifact_increase_attack_on_rest.artifact_name = "外设插件：休息增伤"
-	artifact_increase_attack_on_rest.artifact_description = "在休息点可以获得永久攻击力提升"
+	artifact_increase_attack_on_rest.artifact_name = "外设插件：碎片整理增伤"
+	artifact_increase_attack_on_rest.artifact_description = "在待机节点可以获得永久攻击力提升"
 	artifact_increase_attack_on_rest.artifact_counter = 0
 	artifact_increase_attack_on_rest.artifact_counter_max = 3
 	artifact_increase_attack_on_rest.artifact_color_id = "color_orange"
-	artifact_increase_attack_on_rest.artifact_texture_path = "external/sprites/artifacts/artifact_orange.png"
+	artifact_increase_attack_on_rest.artifact_texture_path = "sprites/artifacts/artifact_increase_attack_on_rest.png"
 	artifact_increase_attack_on_rest.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.COMMON
 	artifact_increase_attack_on_rest.artifact_add_actions = [{
 		Scripts.ACTION_UPDATE_REST_ACTIONS: {"add_rest_action_object_ids": ["rest_action_increase_attack_on_rest"]}
@@ -186,7 +193,7 @@ func add_test_artifacts() -> void:
 	artifact_see_top_of_draw_pile.artifact_description = "可以查看内存队列顶部的脚本"
 	artifact_see_top_of_draw_pile.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.COMMON
 	artifact_see_top_of_draw_pile.artifact_color_id = "color_blue"
-	artifact_see_top_of_draw_pile.artifact_texture_path = "external/sprites/artifacts/artifact_blue.png"
+	artifact_see_top_of_draw_pile.artifact_texture_path = "sprites/artifacts/artifact_see_top_of_draw_pile.png"
 	artifact_see_top_of_draw_pile.artifact_first_turn_actions = [{
 		Scripts.ACTION_CUSTOM_UI: {"enable_custom_ui": true, "custom_ui_object_id": "custom_ui_see_top_of_draw_pile", "target_override": BaseAction.TARGET_OVERRIDES.PLAYER}
 		}]
@@ -196,6 +203,7 @@ func add_test_artifacts() -> void:
 	# Makes an attack card top deck when obtained
 	var artifact_top_deck_attack_card: ArtifactData = ArtifactData.new("artifact_top_deck_attack_card")
 	artifact_top_deck_attack_card.artifact_name = "外设插件：攻击指令置顶"
+	artifact_top_deck_attack_card.artifact_texture_path = "sprites/artifacts/artifact_top_deck_attack_card.png"
 	artifact_top_deck_attack_card.artifact_description = "选择一个攻击指令，使其出现在脚本库顶部。"
 	artifact_top_deck_attack_card.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.COMMON
 	artifact_top_deck_attack_card.artifact_add_actions = [
@@ -235,7 +243,7 @@ func add_test_artifacts() -> void:
 	artifact_right_click_shuffle_deck.artifact_description = "右键将回收站重新分配入内存队列。"
 	artifact_right_click_shuffle_deck.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.COMMON
 	artifact_right_click_shuffle_deck.artifact_color_id = "color_green"
-	artifact_right_click_shuffle_deck.artifact_texture_path = "external/sprites/artifacts/artifact_green.png"
+	artifact_right_click_shuffle_deck.artifact_texture_path = "sprites/artifacts/artifact_right_click_shuffle_deck.png"
 	artifact_right_click_shuffle_deck.artifact_script_path = "res://scripts/artifacts/BaseArtifact.gd"
 	artifact_right_click_shuffle_deck.artifact_right_click_actions = [
 		{Scripts.ACTION_RESHUFFLE:{}}
@@ -469,7 +477,7 @@ func add_test_consumables() -> void:
 func add_test_rest_actions() -> void:
 	# rest action
 	var rest_action_rest: RestActionData = RestActionData.new("rest_action_rest")
-	rest_action_rest.rest_action_name = "休息"
+	rest_action_rest.rest_action_name = "碎片整理"
 	rest_action_rest.rest_action_stat_name = "REST_REST_COUNT"
 	rest_action_rest.rest_action_cost_type = RestActionData.REST_ACTION_COST_TYPES.EXCLUSIVE
 	rest_action_rest.rest_actions = [
@@ -4524,7 +4532,7 @@ func add_test_cards() -> void:
 	card_quest.card_name = "后台任务脚本"
 	card_quest.card_color_id = "color_white"
 	card_quest.card_texture_path = "external/sprites/cards/white/card_white.png"
-	card_quest.card_description = "在休息点可将其转化为奖励"
+	card_quest.card_description = "在待机节点可将其转化为奖励"
 	card_quest.card_type = CardData.CARD_TYPES.CURSE
 	card_quest.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_quest.card_appears_in_card_packs = false # cannot appear in packs

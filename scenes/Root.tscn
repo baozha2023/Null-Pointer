@@ -27,6 +27,7 @@
 [ext_resource type="Script" uid="uid://b5htysy0x53ab" path="res://scripts/ui/Consumables.gd" id="11_c46y0"]
 [ext_resource type="PackedScene" uid="uid://b7itoxbnyegis" path="res://scenes/ui/codex/CodexCardPackButton.tscn" id="11_kw7ld"]
 [ext_resource type="Script" uid="uid://dj8cttlgi1fow" path="res://scripts/ui/codex/CodexCardsMenu.gd" id="11_nownq"]
+[ext_resource type="Texture2D" uid="uid://csm0chktmbxho" path="res://sprites/characters/character_green/character_green_poster.png" id="11_ug4o1"]
 [ext_resource type="Script" uid="uid://bepy2gle06uwf" path="res://scripts/ui/CardDraftSelectionOverlay.gd" id="11_yys3c"]
 [ext_resource type="Script" uid="uid://dm6o2678kafwr" path="res://scripts/ui/menus/RunScreen.gd" id="12_elxq6"]
 [ext_resource type="Script" uid="uid://c2i6b2ert5jls" path="res://scripts/ui/PauseButton.gd" id="13_i7igs"]
@@ -54,7 +55,6 @@
 [ext_resource type="Script" uid="uid://b3nvcsku8u75w" path="res://addons/smooth_scroll_container/scroll_damper/expo_scroll_damper.gd" id="26_08sam"]
 [ext_resource type="StyleBox" uid="uid://605w3novehok" path="res://themes/panel_theme.tres" id="26_yjgj2"]
 [ext_resource type="PackedScene" uid="uid://dk0ka4eceu1y5" path="res://scenes/ui/profile/CharacterStat.tscn" id="27_edqbv"]
-[ext_resource type="PackedScene" uid="uid://cvury56p7bbe8" path="res://scenes/ui/run_summary/RunHistoryCard.tscn" id="29_edqbv"]
 [ext_resource type="Script" uid="uid://6xsavir53fvp" path="res://scripts/ui/PauseOverlay.gd" id="29_p8axl"]
 [ext_resource type="Script" uid="uid://cwt4a5keff86t" path="res://scripts/ui/RunTimer.gd" id="30_plfau"]
 [ext_resource type="Script" uid="uid://cv2h3ccb6uytr" path="res://scripts/ui/Tooltips.gd" id="40_wtekq"]
@@ -432,6 +432,21 @@ theme = ExtResource("2_bi5lp")
 text = "新建进程"
 horizontal_alignment = 1
 
+[node name="CharacterPosterTextureRect" type="TextureRect" parent="TitleScreen/NewRunMenu" unique_id=-1214215298]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -175.0
+offset_top = 100.0
+offset_right = 125.0
+offset_bottom = 400.0
+grow_horizontal = 2
+texture = ExtResource("11_ug4o1")
+expand_mode = 1
+stretch_mode = 5
+
 [node name="CharacterSelect" type="Control" parent="TitleScreen/NewRunMenu" unique_id=1360860974]
 layout_mode = 1
 anchors_preset = 9
@@ -475,7 +490,7 @@ offset_bottom = 12.0
 grow_vertical = 2
 theme = ExtResource("2_bi5lp")
 theme_override_font_sizes/font_size = 17
-text = "HP: "
+text = "完整度： "
 vertical_alignment = 1
 
 [node name="CharacterMoneyLabel" type="Label" parent="TitleScreen/NewRunMenu/CharacterSelect/VBoxContainer/Control" unique_id=948848595]
@@ -1438,11 +1453,9 @@ NodePath("MainMenuButton"): NodePath("../MainMenu")
 }
 
 [node name="MainMenuButton" type="Button" parent="TitleScreen/RunHistoryMenu" unique_id=816864416]
-layout_mode = 0
-offset_left = 8.0
-offset_top = 64.0
-offset_right = 192.0
-offset_bottom = 128.0
+layout_mode = 1
+offset_right = 184.0
+offset_bottom = 64.0
 text = "返回上一级"
 
 [node name="NoRunsLabel" type="Label" parent="TitleScreen/RunHistoryMenu" unique_id=175013954]
@@ -1456,309 +1469,153 @@ text = "没有找到记录"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="RunsExistContainer" type="Control" parent="TitleScreen/RunHistoryMenu" unique_id=1277151591]
+[node name="RunsExistContainer" type="MarginContainer" parent="TitleScreen/RunHistoryMenu" unique_id=1277151591]
 visible = false
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
-
-[node name="PreviousRunButton" type="Button" parent="TitleScreen/RunHistoryMenu/RunsExistContainer" unique_id=772743588]
-layout_mode = 0
-offset_left = 208.0
-offset_top = 24.0
-offset_right = 318.0
-offset_bottom = 55.0
-text = "上一局"
-
-[node name="RunHistoryCharacterIcon" type="TextureRect" parent="TitleScreen/RunHistoryMenu/RunsExistContainer" unique_id=397167289]
-custom_minimum_size = Vector2(48, 48)
-layout_mode = 0
-offset_left = 328.0
-offset_top = 8.0
-offset_right = 392.0
-offset_bottom = 72.0
-texture = ExtResource("3_8ax2e")
-expand_mode = 1
-
-[node name="RunHistoryDifficultyLabel" type="Label" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/RunHistoryCharacterIcon" unique_id=737344213]
-layout_mode = 0
-offset_left = 32.0
-offset_top = 32.0
-offset_right = 72.0
-offset_bottom = 72.0
-theme_override_font_sizes/font_size = 24
-text = "10"
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="NextRunButton" type="Button" parent="TitleScreen/RunHistoryMenu/RunsExistContainer" unique_id=244079638]
-layout_mode = 0
-offset_left = 400.0
-offset_top = 24.0
-offset_right = 510.0
-offset_bottom = 55.0
-text = "下一局"
-
-[node name="RunHistoryCharacterNameLabel" type="Label" parent="TitleScreen/RunHistoryMenu/RunsExistContainer" unique_id=1186691118]
-layout_mode = 0
-offset_left = 208.0
-offset_top = 64.0
-offset_right = 792.0
-offset_bottom = 88.0
-text = "进程名称"
-
-[node name="RunHistorySeedLabel" type="Label" parent="TitleScreen/RunHistoryMenu/RunsExistContainer" unique_id=818351509]
-layout_mode = 0
-offset_left = 536.0
-offset_top = 96.0
-offset_right = 776.0
-offset_bottom = 119.0
-text = "游戏种子"
-
-[node name="RunHistoryCompletionDateLabel" type="Label" parent="TitleScreen/RunHistoryMenu/RunsExistContainer" unique_id=352968888]
-layout_mode = 0
-offset_left = 536.0
-offset_top = 64.0
-offset_right = 840.0
-offset_bottom = 87.0
-text = "完成日期"
-
-[node name="RunHistoryMessageLabel" type="RichTextLabel" parent="TitleScreen/RunHistoryMenu/RunsExistContainer" unique_id=1971599030]
-layout_mode = 0
-offset_left = 208.0
-offset_top = 128.0
-offset_right = 792.0
-offset_bottom = 152.0
-bbcode_enabled = true
-text = "胜利/死亡信息"
-scroll_active = false
-
-[node name="RunHistoryHealthLabel" type="Label" parent="TitleScreen/RunHistoryMenu/RunsExistContainer" unique_id=2046085025]
-layout_mode = 0
-offset_left = 536.0
-offset_top = 24.0
-offset_right = 664.0
-offset_bottom = 56.0
-text = "完整度: 100/100"
-vertical_alignment = 1
-
-[node name="RunHistoryMoneyLabel" type="Label" parent="TitleScreen/RunHistoryMenu/RunsExistContainer" unique_id=1200969089]
-layout_mode = 0
-offset_left = 648.0
-offset_top = 24.0
-offset_right = 760.0
-offset_bottom = 56.0
-text = "数据币: 99999"
-vertical_alignment = 1
-
-[node name="RunHistoryRunTimeLabel" type="Label" parent="TitleScreen/RunHistoryMenu/RunsExistContainer" unique_id=1423510278]
-layout_mode = 0
-offset_left = 208.0
-offset_top = 96.0
-offset_right = 368.0
-offset_bottom = 119.0
-text = "用时: HH:MM:SS"
-
-[node name="RunHistoryFloorLabel" type="Label" parent="TitleScreen/RunHistoryMenu/RunsExistContainer" unique_id=2053730622]
-layout_mode = 0
-offset_left = 768.0
-offset_top = 24.0
-offset_right = 844.0
-offset_bottom = 56.0
-text = "层数: 999"
-vertical_alignment = 1
-
-[node name="RunHistoryConsumableContainer" type="HBoxContainer" parent="TitleScreen/RunHistoryMenu/RunsExistContainer" unique_id=1004632530]
-unique_name_in_owner = true
-layout_mode = 0
-offset_left = 872.0
-offset_top = 16.0
-offset_right = 1184.0
-offset_bottom = 56.0
-
-[node name="CodexConsumable" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/RunHistoryConsumableContainer" unique_id=1019465046 instance=ExtResource("19_o7n0g")]
-layout_mode = 2
-
-[node name="Label" type="Label" parent="TitleScreen/RunHistoryMenu/RunsExistContainer" unique_id=1476206504]
-custom_minimum_size = Vector2(1016, 0)
-layout_mode = 0
-offset_top = 176.0
-offset_right = 1200.0
-offset_bottom = 221.0
-theme_override_font_sizes/font_size = 32
-text = "脚本"
-horizontal_alignment = 1
-
-[node name="SmoothScrollContainer" type="ScrollContainer" parent="TitleScreen/RunHistoryMenu/RunsExistContainer" unique_id=1675255001]
 layout_mode = 1
-anchors_preset = -1
-anchor_left = 1.2
-anchor_top = 5.6
-anchor_right = 28.6
-anchor_bottom = 10.0
-script = ExtResource("25_t3i5t")
-metadata/_custom_type_script = "uid://b2t515tpjrija"
-metadata/_edit_use_anchors_ = true
-metadata/_edit_group_ = true
-
-[node name="RunHistoryCardContainer" type="GridContainer" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/SmoothScrollContainer" unique_id=1360651530]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_constants/h_separation = 0
-theme_override_constants/v_separation = 8
-columns = 5
-
-[node name="RunHistoryCard" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/SmoothScrollContainer/RunHistoryCardContainer" unique_id=1750654742 instance=ExtResource("29_edqbv")]
-layout_mode = 2
-
-[node name="RunHistoryCard2" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/SmoothScrollContainer/RunHistoryCardContainer" unique_id=643545175 instance=ExtResource("29_edqbv")]
-layout_mode = 2
-
-[node name="RunHistoryCard3" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/SmoothScrollContainer/RunHistoryCardContainer" unique_id=1880235332 instance=ExtResource("29_edqbv")]
-layout_mode = 2
-
-[node name="RunHistoryCard4" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/SmoothScrollContainer/RunHistoryCardContainer" unique_id=1906141724 instance=ExtResource("29_edqbv")]
-layout_mode = 2
-
-[node name="RunHistoryCard5" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/SmoothScrollContainer/RunHistoryCardContainer" unique_id=440158718 instance=ExtResource("29_edqbv")]
-layout_mode = 2
-
-[node name="RunHistoryCard6" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/SmoothScrollContainer/RunHistoryCardContainer" unique_id=1112756263 instance=ExtResource("29_edqbv")]
-layout_mode = 2
-
-[node name="RunHistoryCard7" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/SmoothScrollContainer/RunHistoryCardContainer" unique_id=296673516 instance=ExtResource("29_edqbv")]
-layout_mode = 2
-
-[node name="RunHistoryCard8" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/SmoothScrollContainer/RunHistoryCardContainer" unique_id=1528842993 instance=ExtResource("29_edqbv")]
-layout_mode = 2
-
-[node name="RunHistoryCard9" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/SmoothScrollContainer/RunHistoryCardContainer" unique_id=1778084514 instance=ExtResource("29_edqbv")]
-layout_mode = 2
-
-[node name="RunHistoryCard10" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/SmoothScrollContainer/RunHistoryCardContainer" unique_id=91746111 instance=ExtResource("29_edqbv")]
-layout_mode = 2
-
-[node name="RunHistoryCard11" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/SmoothScrollContainer/RunHistoryCardContainer" unique_id=1045720158 instance=ExtResource("29_edqbv")]
-layout_mode = 2
-
-[node name="RunHistoryCard12" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/SmoothScrollContainer/RunHistoryCardContainer" unique_id=1681910840 instance=ExtResource("29_edqbv")]
-layout_mode = 2
-
-[node name="RunHistoryCard13" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/SmoothScrollContainer/RunHistoryCardContainer" unique_id=981052677 instance=ExtResource("29_edqbv")]
-layout_mode = 2
-
-[node name="RunHistoryCard14" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/SmoothScrollContainer/RunHistoryCardContainer" unique_id=74213259 instance=ExtResource("29_edqbv")]
-layout_mode = 2
-
-[node name="RunHistoryCard15" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/SmoothScrollContainer/RunHistoryCardContainer" unique_id=800863053 instance=ExtResource("29_edqbv")]
-layout_mode = 2
-
-[node name="Label2" type="Label" parent="TitleScreen/RunHistoryMenu/RunsExistContainer" unique_id=644984926]
-custom_minimum_size = Vector2(846.67, 0)
-layout_mode = 0
-offset_top = 424.0
-offset_right = 1200.0
-offset_bottom = 469.0
-theme_override_font_sizes/font_size = 32
-text = "外设插件"
-horizontal_alignment = 1
-
-[node name="SmoothScrollContainer2" type="ScrollContainer" parent="TitleScreen/RunHistoryMenu/RunsExistContainer" unique_id=1820487054]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 4.0
-anchor_top = 11.8
-anchor_right = 27.0
-anchor_bottom = 14.4
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("25_t3i5t")
-metadata/_custom_type_script = "uid://b2t515tpjrija"
-metadata/_edit_group_ = true
-metadata/_edit_use_anchors_ = true
+mouse_filter = 2
+theme_override_constants/margin_left = 64
+theme_override_constants/margin_top = 80
+theme_override_constants/margin_right = 64
+theme_override_constants/margin_bottom = 64
 
-[node name="RunHistoryArtifactContainer" type="GridContainer" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/SmoothScrollContainer2" unique_id=1424454000]
+[node name="MainScroll" type="ScrollContainer" parent="TitleScreen/RunHistoryMenu/RunsExistContainer" unique_id=624359263]
+layout_mode = 2
+horizontal_scroll_mode = 0
+vertical_scroll_mode = 2
+
+[node name="MainVBox" type="VBoxContainer" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/MainScroll" unique_id=1859392995]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 24
+
+[node name="HeaderHBox" type="HBoxContainer" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/MainScroll/MainVBox" unique_id=440504618]
+layout_mode = 2
+theme_override_constants/separation = 32
+
+[node name="NavVBox" type="VBoxContainer" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/MainScroll/MainVBox/HeaderHBox" unique_id=2033866119]
+layout_mode = 2
+alignment = 1
+
+[node name="PreviousRunButton" type="Button" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/MainScroll/MainVBox/HeaderHBox/NavVBox" unique_id=369908327]
 unique_name_in_owner = true
 layout_mode = 2
-columns = 20
+text = "上一局"
 
-[node name="CodexArtifact" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/SmoothScrollContainer2/RunHistoryArtifactContainer" unique_id=925942397 instance=ExtResource("15_u5j4q")]
+[node name="NextRunButton" type="Button" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/MainScroll/MainVBox/HeaderHBox/NavVBox" unique_id=1105965722]
+unique_name_in_owner = true
+layout_mode = 2
+text = "下一局"
+
+[node name="RunHistoryCharacterIcon" type="TextureRect" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/MainScroll/MainVBox/HeaderHBox" unique_id=1427997373]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(96, 96)
+layout_mode = 2
+texture = ExtResource("3_8ax2e")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="StatsGrid" type="GridContainer" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/MainScroll/MainVBox/HeaderHBox" unique_id=2009854308]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/h_separation = 32
+theme_override_constants/v_separation = 8
+columns = 2
+
+[node name="RunHistoryCharacterNameLabel" type="Label" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/MainScroll/MainVBox/HeaderHBox/StatsGrid" unique_id=1402995821]
+unique_name_in_owner = true
+layout_mode = 2
+text = "进程名称"
+
+[node name="RunHistoryDifficultyLabel" type="Label" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/MainScroll/MainVBox/HeaderHBox/StatsGrid" unique_id=1589094704]
+unique_name_in_owner = true
+layout_mode = 2
+text = "难度: 10"
+
+[node name="RunHistorySeedLabel" type="Label" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/MainScroll/MainVBox/HeaderHBox/StatsGrid" unique_id=21406727]
+unique_name_in_owner = true
+layout_mode = 2
+text = "游戏种子"
+
+[node name="RunHistoryCompletionDateLabel" type="Label" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/MainScroll/MainVBox/HeaderHBox/StatsGrid" unique_id=1428248192]
+unique_name_in_owner = true
+layout_mode = 2
+text = "完成日期"
+
+[node name="RunHistoryFloorLabel" type="Label" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/MainScroll/MainVBox/HeaderHBox/StatsGrid" unique_id=1018872653]
+unique_name_in_owner = true
+layout_mode = 2
+text = "层数: 999"
+
+[node name="RunHistoryHealthLabel" type="Label" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/MainScroll/MainVBox/HeaderHBox/StatsGrid" unique_id=1841387095]
+unique_name_in_owner = true
+layout_mode = 2
+text = "完整度: 100/100"
+
+[node name="RunHistoryMoneyLabel" type="Label" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/MainScroll/MainVBox/HeaderHBox/StatsGrid" unique_id=2046860614]
+unique_name_in_owner = true
+layout_mode = 2
+text = "数据币: 99999"
+
+[node name="RunHistoryRunTimeLabel" type="Label" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/MainScroll/MainVBox/HeaderHBox/StatsGrid" unique_id=1297247883]
+unique_name_in_owner = true
+layout_mode = 2
+text = "用时: HH:MM:SS"
+
+[node name="RunHistoryMessageLabel" type="RichTextLabel" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/MainScroll/MainVBox" unique_id=1099865017]
+unique_name_in_owner = true
+layout_mode = 2
+bbcode_enabled = true
+text = "胜利/死亡信息"
+fit_content = true
+scroll_active = false
+
+[node name="HSeparator1" type="HSeparator" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/MainScroll/MainVBox" unique_id=1145327686]
 layout_mode = 2
 
-[node name="CodexArtifact2" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/SmoothScrollContainer2/RunHistoryArtifactContainer" unique_id=120053389 instance=ExtResource("15_u5j4q")]
+[node name="ConsumableTitle" type="Label" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/MainScroll/MainVBox" unique_id=34866031]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "物理删除品"
+
+[node name="RunHistoryConsumableContainer" type="HFlowContainer" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/MainScroll/MainVBox" unique_id=1124760162]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/h_separation = 8
+theme_override_constants/v_separation = 8
+
+[node name="HSeparator2" type="HSeparator" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/MainScroll/MainVBox" unique_id=1369326621]
 layout_mode = 2
 
-[node name="CodexArtifact3" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/SmoothScrollContainer2/RunHistoryArtifactContainer" unique_id=654350558 instance=ExtResource("15_u5j4q")]
+[node name="ArtifactTitle" type="Label" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/MainScroll/MainVBox" unique_id=476153908]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "外设插件"
+
+[node name="RunHistoryArtifactContainer" type="HFlowContainer" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/MainScroll/MainVBox" unique_id=227126276]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/h_separation = 8
+theme_override_constants/v_separation = 8
+
+[node name="HSeparator3" type="HSeparator" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/MainScroll/MainVBox" unique_id=1850158059]
 layout_mode = 2
 
-[node name="CodexArtifact4" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/SmoothScrollContainer2/RunHistoryArtifactContainer" unique_id=45086388 instance=ExtResource("15_u5j4q")]
+[node name="CardTitle" type="Label" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/MainScroll/MainVBox" unique_id=1966800858]
 layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "脚本"
 
-[node name="CodexArtifact5" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/SmoothScrollContainer2/RunHistoryArtifactContainer" unique_id=1773873351 instance=ExtResource("15_u5j4q")]
+[node name="RunHistoryCardContainer" type="HFlowContainer" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/MainScroll/MainVBox" unique_id=867812220]
+unique_name_in_owner = true
 layout_mode = 2
-
-[node name="CodexArtifact6" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/SmoothScrollContainer2/RunHistoryArtifactContainer" unique_id=749672826 instance=ExtResource("15_u5j4q")]
-layout_mode = 2
-
-[node name="CodexArtifact7" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/SmoothScrollContainer2/RunHistoryArtifactContainer" unique_id=1358668672 instance=ExtResource("15_u5j4q")]
-layout_mode = 2
-
-[node name="CodexArtifact8" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/SmoothScrollContainer2/RunHistoryArtifactContainer" unique_id=1926419162 instance=ExtResource("15_u5j4q")]
-layout_mode = 2
-
-[node name="CodexArtifact9" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/SmoothScrollContainer2/RunHistoryArtifactContainer" unique_id=283182379 instance=ExtResource("15_u5j4q")]
-layout_mode = 2
-
-[node name="CodexArtifact10" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/SmoothScrollContainer2/RunHistoryArtifactContainer" unique_id=1136223477 instance=ExtResource("15_u5j4q")]
-layout_mode = 2
-
-[node name="CodexArtifact11" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/SmoothScrollContainer2/RunHistoryArtifactContainer" unique_id=1147499401 instance=ExtResource("15_u5j4q")]
-layout_mode = 2
-
-[node name="CodexArtifact12" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/SmoothScrollContainer2/RunHistoryArtifactContainer" unique_id=331874237 instance=ExtResource("15_u5j4q")]
-layout_mode = 2
-
-[node name="CodexArtifact13" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/SmoothScrollContainer2/RunHistoryArtifactContainer" unique_id=910394155 instance=ExtResource("15_u5j4q")]
-layout_mode = 2
-
-[node name="CodexArtifact14" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/SmoothScrollContainer2/RunHistoryArtifactContainer" unique_id=827140413 instance=ExtResource("15_u5j4q")]
-layout_mode = 2
-
-[node name="CodexArtifact15" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/SmoothScrollContainer2/RunHistoryArtifactContainer" unique_id=126359997 instance=ExtResource("15_u5j4q")]
-layout_mode = 2
-
-[node name="CodexArtifact16" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/SmoothScrollContainer2/RunHistoryArtifactContainer" unique_id=1339043742 instance=ExtResource("15_u5j4q")]
-layout_mode = 2
-
-[node name="CodexArtifact17" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/SmoothScrollContainer2/RunHistoryArtifactContainer" unique_id=704005385 instance=ExtResource("15_u5j4q")]
-layout_mode = 2
-
-[node name="CodexArtifact18" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/SmoothScrollContainer2/RunHistoryArtifactContainer" unique_id=1640278245 instance=ExtResource("15_u5j4q")]
-layout_mode = 2
-
-[node name="CodexArtifact19" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/SmoothScrollContainer2/RunHistoryArtifactContainer" unique_id=1975568868 instance=ExtResource("15_u5j4q")]
-layout_mode = 2
-
-[node name="CodexArtifact20" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/SmoothScrollContainer2/RunHistoryArtifactContainer" unique_id=1214844534 instance=ExtResource("15_u5j4q")]
-layout_mode = 2
-
-[node name="CodexArtifact21" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/SmoothScrollContainer2/RunHistoryArtifactContainer" unique_id=494391751 instance=ExtResource("15_u5j4q")]
-layout_mode = 2
-
-[node name="CodexArtifact22" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/SmoothScrollContainer2/RunHistoryArtifactContainer" unique_id=1685445994 instance=ExtResource("15_u5j4q")]
-layout_mode = 2
-
-[node name="CodexArtifact23" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/SmoothScrollContainer2/RunHistoryArtifactContainer" unique_id=1022869693 instance=ExtResource("15_u5j4q")]
-layout_mode = 2
-
-[node name="CodexArtifact24" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/SmoothScrollContainer2/RunHistoryArtifactContainer" unique_id=269032720 instance=ExtResource("15_u5j4q")]
-layout_mode = 2
-
-[node name="CodexArtifact25" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/SmoothScrollContainer2/RunHistoryArtifactContainer" unique_id=238282496 instance=ExtResource("15_u5j4q")]
-layout_mode = 2
-
-[node name="CodexArtifact26" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/SmoothScrollContainer2/RunHistoryArtifactContainer" unique_id=2104661367 instance=ExtResource("15_u5j4q")]
-layout_mode = 2
+theme_override_constants/h_separation = 8
+theme_override_constants/v_separation = 8
 
 [node name="RunScreen" type="Control" parent="." unique_id=2146255345]
 visible = false
@@ -1878,17 +1735,17 @@ script = ExtResource("5_a7j3r")
 [node name="Player" parent="RunScreen/Combat" unique_id=524412048 instance=ExtResource("5_7crh0")]
 unique_name_in_owner = true
 layout_mode = 0
-offset_left = 200.0
-offset_top = 336.0
-offset_right = 400.0
-offset_bottom = 480.0
+offset_left = 264.0
+offset_top = 400.0
+offset_right = 464.0
+offset_bottom = 544.0
 
 [node name="EnemyContainer" type="Control" parent="RunScreen/Combat" unique_id=754159237]
 anchors_preset = 0
-offset_left = 568.0
-offset_top = 256.0
-offset_right = 1176.0
-offset_bottom = 448.0
+offset_left = 667.0
+offset_top = 384.0
+offset_right = 1275.0
+offset_bottom = 576.0
 mouse_filter = 2
 script = ExtResource("4_kvn7e")
 metadata/_edit_group_ = true

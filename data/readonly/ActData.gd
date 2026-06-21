@@ -3,7 +3,7 @@ extends SerializableData
 class_name ActData
 
 ## How the act should appear in text.
-@export var act_name: String = "Act 1"
+@export var act_name: String = "第一扇区"
 
 ## The act number this act is expected to be in. This is just used for the codex for
 ## sorting purposes. If there are multiple acts in parallel they can both be the same number.
