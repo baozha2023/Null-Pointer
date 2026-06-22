@@ -1,15 +1,15 @@
-[gd_scene load_steps=2 format=3 uid="uid://dxoib0a0v5top"]
+[gd_scene format=3 uid="uid://dxoib0a0v5top"]
 
-[ext_resource type="Texture2D" uid="uid://nh32y87hcke5" path="res://icon.svg" id="1_gbc1c"]
+[ext_resource type="Texture2D" uid="uid://d33u8m744fh03" path="res://icon.svg" id="1_gbc1c"]
 
-[node name="CardRemovalShopButton" type="Button"]
+[node name="CardRemovalShopButton" type="Button" unique_id=1646525152]
 offset_right = 112.0
 offset_bottom = 31.0
 text = "奖励 1"
 icon = ExtResource("1_gbc1c")
 expand_icon = true
 
-[node name="PriceLabel" type="Label" parent="."]
+[node name="PriceLabel" type="Label" parent="." unique_id=1338538581]
 layout_mode = 0
 offset_top = 40.0
 offset_right = 112.0

@@ -20,8 +20,8 @@ const EXTERNAL_DIR_DATA_PATH: String = EXTERNAL_DIR_PATH + "data/"
 const MOD_LIST_FILE_NAME: String = "mod_list.json" # name of file containing info on how to load all mods
 const MOD_INFO_FILE_NAME: String = "mod_info.json" # name of file for info on loading a single mod
 
-var MISSING_TEXTURE: ImageTexture = ImageTexture.create_from_image(Image.load_from_file("res://sprites/missing_texture.png"))
-var MISSING_AUDIO: AudioStreamWAV = AudioStreamWAV.load_from_file("res://sounds/missing_audio.wav")
+var MISSING_TEXTURE: Texture2D = preload("res://sprites/missing_texture.png")
+var MISSING_AUDIO: AudioStream = preload("res://sounds/missing_audio.wav")
 
 
 const SAVE_DIR_PATH: String = EXTERNAL_DIR_PATH + "saves/" # file path of the save directory
@@ -123,14 +123,20 @@ func load_audio(audio_partial_path, is_absolute: bool = false, audio_loops: bool
 				MISSING_AUDIO.take_over_path(full_path)
 				return MISSING_AUDIO	# return a debug audio
 		else:
-			DebugLogger.log_error("Audio failed to load: \"{0}\"".format([full_path]))
+			# Fallback: check internal packed resources
+			var internal_path: String = "res://" + audio_partial_path
+			if ResourceLoader.exists(internal_path):
+				var audio = load(internal_path)
+				if audio != null:
+					self._cached_audio[full_path] = audio
+					return audio
+
+			DebugLogger.log_error("Audio failed to load from \"{0}\" and no fallback found at \"{1}\"".format([full_path, internal_path]))
 			self._cached_audio[full_path] = MISSING_AUDIO
-			MISSING_AUDIO.take_over_path(full_path)
 			return MISSING_AUDIO	# return a debug audio
-			
 ## Loads and caches a texture from external images.
 ## Can use an absolute or partial (same directory as code in debug, or directory of exported game) path.
-func load_texture(image_partial_path, is_absolute: bool = false) -> ImageTexture:
+func load_texture(image_partial_path, is_absolute: bool = false) -> Texture2D:
 	var full_path: String = image_partial_path
 	if not is_absolute:
 		full_path = _get_modified_filepath(image_partial_path)
@@ -149,9 +155,16 @@ func load_texture(image_partial_path, is_absolute: bool = false) -> ImageTexture
 			self._cached_textures[full_path] = texture
 			return texture
 		else:
-			DebugLogger.log_error("FileLoader.load_texture(): Image failed to load from \"{0}\"".format([full_path]))
+			# Fallback: check internal packed resources
+			var internal_path: String = "res://" + image_partial_path
+			if ResourceLoader.exists(internal_path):
+				var texture = load(internal_path)
+				if texture != null:
+					self._cached_textures[full_path] = texture
+					return texture
+					
+			DebugLogger.log_error("FileLoader.load_texture(): Image failed to load from \"{0}\" and no fallback found at \"{1}\"".format([full_path, internal_path]))
 			self._cached_textures[full_path] = MISSING_TEXTURE
-			MISSING_TEXTURE.take_over_path(full_path)
 			return MISSING_TEXTURE	# return an empty image
 
 ## Goes through all animation data objects and forcibly regenerates animation data.

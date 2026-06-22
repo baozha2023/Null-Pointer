@@ -217,7 +217,7 @@ func get_card_description(selected_target: BaseCombatant = null) -> String:
 			var key_name: String = preview_data[0]
 			var action_script_path: String = preview_data[1]
 			
-			if card_data.card_description.contains("[" + key_name + "]"):
+			if card_data.card_description.contains("[" + key_name + "]") or card_data.card_description.contains("[" + key_name + "_energy_icons]"):
 				var action_data: Array[Dictionary] = [{action_script_path: {}}]
 				var generated_action: BaseAction = ActionGenerator.create_actions(player, card_play_request, [selected_target], action_data, null)[0]
 				var action_interceptor_processor: ActionInterceptorProcessor = generated_action._intercept_action([selected_target], true)[0]
@@ -225,8 +225,10 @@ func get_card_description(selected_target: BaseCombatant = null) -> String:
 				var card_value: int = card_data.card_values.get(key_name, 0)
 				var value_substring: String = str(card_value)
 				
+				var final_val: int = card_value
 				if action_interceptor_processor.shadowed_action_values.has(key_name):
 					var intercepted_value: int = action_interceptor_processor.get_shadowed_action_values(key_name, card_value)
+					final_val = intercepted_value
 					
 					# compare the intercepted valus to the card's values
 					if intercepted_value < card_value:
@@ -235,16 +237,60 @@ func get_card_description(selected_target: BaseCombatant = null) -> String:
 						value_substring = "[color=green]" + str(intercepted_value) + "[/color]" # better: green
 				
 				modified_description_bb_code = modified_description_bb_code.replace("["+key_name+"]", value_substring)
+				
+				var icons_str: String = ""
+				if final_val <= 0:
+					icons_str = "0 个"
+				else:
+					for i in range(final_val):
+						icons_str += ENERGY_ICON_KEYWORD
+				modified_description_bb_code = modified_description_bb_code.replace("["+key_name+"_energy_icons]", icons_str)
 			
 	# do a second pass for non intercepted values in card description
 	for key_name in card_data.card_values.keys():
 		var non_intercepted_value: Variant = card_data.card_values[key_name]
-		if non_intercepted_value is float:
-			non_intercepted_value = int(non_intercepted_value)
+		var val_int: int = 0
+		if typeof(non_intercepted_value) == TYPE_FLOAT or typeof(non_intercepted_value) == TYPE_INT:
+			val_int = int(non_intercepted_value)
+			non_intercepted_value = val_int
 		modified_description_bb_code = modified_description_bb_code.replace("["+key_name+"]", str(non_intercepted_value))
+		
+		var icons_str: String = ""
+		if val_int <= 0:
+			icons_str = "0 个"
+		else:
+			for i in range(val_int):
+				icons_str += ENERGY_ICON_KEYWORD
+		modified_description_bb_code = modified_description_bb_code.replace("["+key_name+"_energy_icons]", icons_str)
+	
+	if modified_description_bb_code.contains("[variable_energy_icons]"):
+		var offset: int = card_data.card_values.get("multiplier_offset", 0)
+		var offset_str: String = ""
+		if offset > 0:
+			offset_str = " + " + str(offset)
+		elif offset < 0:
+			offset_str = " - " + str(abs(offset))
+		
+		var variable_icons_str: String = "X" + offset_str + " " + ENERGY_ICON_KEYWORD
+		if Global.player_data != null and card_data.card_energy_cost_is_variable:
+			var consumed_energy: int = Global.player_data.player_energy
+			var upper_bound: int = card_data.card_energy_cost_variable_upper_bound
+			if upper_bound > 0:
+				consumed_energy = min(consumed_energy, upper_bound)
+			
+			# Variable cost cards might have a multiplier offset (like X + 1)
+			consumed_energy += offset
+			
+			if consumed_energy <= 0:
+				variable_icons_str = "0 个"
+			else:
+				variable_icons_str = ""
+				for i in range(consumed_energy):
+					variable_icons_str += ENERGY_ICON_KEYWORD
+		modified_description_bb_code = modified_description_bb_code.replace("[variable_energy_icons]", variable_icons_str)
 	
 	# replace energy icon with external image bbcode
-	if card_data.card_description.contains(ENERGY_ICON_KEYWORD):
+	if modified_description_bb_code.contains(ENERGY_ICON_KEYWORD):
 		if card_data.card_color_id != "":
 			var color_data: ColorData = Global.get_color_data(card_data.card_color_id)
 			if color_data != null:

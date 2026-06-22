@@ -49,6 +49,13 @@ func init(_enemy_data: EnemyData):
 	# update_health_bar()
 	layered_health_bar.init(enemy_data.enemy_health, enemy_data.enemy_health_max)
 	
+	# Dynamic Mod Support
+	attacking_intent.texture = FileLoader.load_texture("sprites/intents/enemy_intent_attacking.png")
+	blocking_intent.texture = FileLoader.load_texture("sprites/intents/enemy_intent_blocking.png")
+	debuffing_intent.texture = FileLoader.load_texture("sprites/intents/enemy_intent_debuffing.png")
+	buffing_intent.texture = FileLoader.load_texture("sprites/intents/enemy_intent_buffing.png")
+	summoning_intent.texture = FileLoader.load_texture("sprites/intents/enemy_intent_summoning.png")
+	
 func get_animation_data() -> AnimationData:
 	var animation_data: AnimationData = Global.get_animation_data(enemy_data.enemy_animation_id)
 	return animation_data

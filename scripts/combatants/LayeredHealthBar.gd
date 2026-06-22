@@ -24,6 +24,10 @@ var _health_is_rerendering: bool = false
 
 func _ready():
 	damage_timer.timeout.connect(_on_damage_delay_timeout)
+	
+	# Dynamic Mod Support
+	if "texture" in self:
+		set("texture", FileLoader.load_texture("sprites/health_bar_frame.PNG"))
 
 func init(health: int, health_max: int) -> void:
 	new_health = health

@@ -61,6 +61,7 @@
 [ext_resource type="Theme" uid="uid://2714jm71pkv4" path="res://themes/keyword_tooltip_theme.tres" id="41_0h1ar"]
 [ext_resource type="Script" uid="uid://d2fxhtmdfmtdf" path="res://scripts/ui/general/KeywordContainer.gd" id="42_wtekq"]
 [ext_resource type="Script" uid="uid://c5i0sjwlko88l" path="res://addons/label_font_auto_sizer/rich_label_auto_sizer.gd" id="43_gs3rm"]
+[ext_resource type="Script" path="res://scripts/ui/codex/CodexGlossaryMenu.gd" id="99_glossary"]
 [ext_resource type="Texture2D" uid="uid://bi6lu6igtqj20" path="res://sprites/ui/btn_deck_icon.png" id="deck_icon"]
 [ext_resource type="Texture2D" uid="uid://cr6a63jqnlrsl" path="res://sprites/ui/btn_map_icon.png" id="map_icon"]
 [ext_resource type="Texture2D" uid="uid://qf8rdrmsdx7m" path="res://sprites/ui/btn_pause_icon.png" id="pause_icon"]
@@ -230,6 +231,16 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("2_m6atk")
 metadata/_edit_lock_ = true
+
+[node name="ColorRect" type="ColorRect" parent="TitleScreen" unique_id=1816241860]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 1)
 
 [node name="TextureRect" type="TextureRect" parent="TitleScreen" unique_id=1379049545]
 layout_mode = 1
@@ -523,7 +534,7 @@ layout_direction = 2
 layout_mode = 2
 theme_override_font_sizes/font_size = 16
 text = "进程描述"
-autowrap_mode = 2
+autowrap_mode = 3
 
 [node name="Control2" type="Control" parent="TitleScreen/NewRunMenu/CharacterSelect/VBoxContainer" unique_id=455039422]
 custom_minimum_size = Vector2(0, 200)
@@ -843,7 +854,8 @@ navigation_button_to_sub_menu = {
 NodePath("VSplitContainer/VBoxContainer/MarginContainer2/VBoxContainer/MarginContainer/CodexShowCardsButton"): NodePath("VSplitContainer/CodexContentDisplay/CodexCardsMenu"),
 NodePath("VSplitContainer/VBoxContainer/MarginContainer2/VBoxContainer/MarginContainer2/CodexShowArtifactsButton"): NodePath("VSplitContainer/CodexContentDisplay/CodexArtifactMenu"),
 NodePath("VSplitContainer/VBoxContainer/MarginContainer2/VBoxContainer/MarginContainer3/CodexShowConsumablesButton"): NodePath("VSplitContainer/CodexContentDisplay/CodexConsumablesMenu"),
-NodePath("VSplitContainer/VBoxContainer/MarginContainer2/VBoxContainer/MarginContainer4/CodexShowEnemiesButton"): NodePath("VSplitContainer/CodexContentDisplay/CodexEnemiesMenu")
+NodePath("VSplitContainer/VBoxContainer/MarginContainer2/VBoxContainer/MarginContainer4/CodexShowEnemiesButton"): NodePath("VSplitContainer/CodexContentDisplay/CodexEnemiesMenu"),
+NodePath("VSplitContainer/VBoxContainer/MarginContainer2/VBoxContainer/MarginContainer5/CodexShowGlossaryButton"): NodePath("VSplitContainer/CodexContentDisplay/CodexGlossaryMenu")
 }
 default_sub_menu = NodePath("VSplitContainer/CodexContentDisplay/CodexCardsMenu")
 
@@ -888,7 +900,7 @@ layout_mode = 2
 [node name="MarginContainer" type="MarginContainer" parent="TitleScreen/CodexMenu/VSplitContainer/VBoxContainer/MarginContainer2/VBoxContainer" unique_id=1923671595]
 layout_mode = 1
 anchors_preset = -1
-anchor_right = 0.25
+anchor_right = 0.2
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
@@ -905,8 +917,8 @@ text = "脚本"
 [node name="MarginContainer2" type="MarginContainer" parent="TitleScreen/CodexMenu/VSplitContainer/VBoxContainer/MarginContainer2/VBoxContainer" unique_id=1292057516]
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 0.25
-anchor_right = 0.5
+anchor_left = 0.2
+anchor_right = 0.4
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
@@ -923,8 +935,8 @@ text = "外设插件"
 [node name="MarginContainer3" type="MarginContainer" parent="TitleScreen/CodexMenu/VSplitContainer/VBoxContainer/MarginContainer2/VBoxContainer" unique_id=1789177042]
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 0.5
-anchor_right = 0.75
+anchor_left = 0.4
+anchor_right = 0.6
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
@@ -941,8 +953,8 @@ text = "物理删除品"
 [node name="MarginContainer4" type="MarginContainer" parent="TitleScreen/CodexMenu/VSplitContainer/VBoxContainer/MarginContainer2/VBoxContainer" unique_id=1151655601]
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 0.75
-anchor_right = 1.0
+anchor_left = 0.6
+anchor_right = 0.8
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
@@ -955,6 +967,24 @@ theme_override_constants/margin_bottom = 8
 unique_name_in_owner = true
 layout_mode = 2
 text = "敌人"
+
+[node name="MarginContainer5" type="MarginContainer" parent="TitleScreen/CodexMenu/VSplitContainer/VBoxContainer/MarginContainer2/VBoxContainer" unique_id=203692060]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.8
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="CodexShowGlossaryButton" type="Button" parent="TitleScreen/CodexMenu/VSplitContainer/VBoxContainer/MarginContainer2/VBoxContainer/MarginContainer5" unique_id=203692061]
+unique_name_in_owner = true
+layout_mode = 2
+text = "词语讲解"
 
 [node name="CodexContentDisplay" type="Control" parent="TitleScreen/CodexMenu/VSplitContainer" unique_id=1879933480]
 layout_mode = 2
@@ -1298,6 +1328,37 @@ theme_override_constants/separation = 8
 
 [node name="CodexEnemyIntent" parent="TitleScreen/CodexMenu/VSplitContainer/CodexContentDisplay/CodexEnemiesMenu/MarginContainer/HSplitContainer/HSplitContainer/CodexEnemyIntents/ScrollContainer/CodexEnemyIntentsContainer" unique_id=1990704091 instance=ExtResource("24_gs3rm")]
 layout_mode = 2
+
+[node name="CodexGlossaryMenu" type="Control" parent="TitleScreen/CodexMenu/VSplitContainer/CodexContentDisplay" unique_id=203692062]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("99_glossary")
+
+[node name="MarginContainer" type="MarginContainer" parent="TitleScreen/CodexMenu/VSplitContainer/CodexContentDisplay/CodexGlossaryMenu" unique_id=203692063]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 32
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 32
+theme_override_constants/margin_bottom = 16
+
+[node name="ScrollContainer" type="ScrollContainer" parent="TitleScreen/CodexMenu/VSplitContainer/CodexContentDisplay/CodexGlossaryMenu/MarginContainer" unique_id=203692064]
+layout_mode = 2
+
+[node name="CodexGlossaryContainer" type="VBoxContainer" parent="TitleScreen/CodexMenu/VSplitContainer/CodexContentDisplay/CodexGlossaryMenu/MarginContainer/ScrollContainer" unique_id=203692065]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
 
 [node name="ProfileStatsMenu" type="Control" parent="TitleScreen" unique_id=187253601 node_paths=PackedStringArray("navigation_button_to_menu")]
 visible = false
@@ -1736,16 +1797,16 @@ script = ExtResource("5_a7j3r")
 unique_name_in_owner = true
 layout_mode = 0
 offset_left = 264.0
-offset_top = 400.0
+offset_top = 340.0
 offset_right = 464.0
-offset_bottom = 544.0
+offset_bottom = 484.0
 
 [node name="EnemyContainer" type="Control" parent="RunScreen/Combat" unique_id=754159237]
 anchors_preset = 0
 offset_left = 667.0
-offset_top = 384.0
+offset_top = 324.0
 offset_right = 1275.0
-offset_bottom = 576.0
+offset_bottom = 516.0
 mouse_filter = 2
 script = ExtResource("4_kvn7e")
 metadata/_edit_group_ = true
@@ -2029,10 +2090,10 @@ text = "确认"
 [node name="Hand" type="Control" parent="RunScreen/Combat" unique_id=1468352038]
 unique_name_in_owner = true
 anchors_preset = 0
-offset_left = 168.0
-offset_top = 632.0
-offset_right = 1048.0
-offset_bottom = 692.0
+offset_left = 157.0
+offset_top = 553.0
+offset_right = 1059.0
+offset_bottom = 698.0
 script = ExtResource("4_i2yfj")
 
 [node name="CardContainer" type="Control" parent="RunScreen/Combat/Hand" unique_id=2017383676]

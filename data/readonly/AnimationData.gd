@@ -66,7 +66,7 @@ func add_animation(animation_name: String, animation_next_animation_name: String
 	animations.remove_animation(animation_name)
 	animations.add_animation(animation_name)
 	for texture_path: String in animation_frame_texture_paths:
-		var texture: ImageTexture = FileLoader.load_texture(texture_path)
+		var texture: Texture2D = FileLoader.load_texture(texture_path)
 		animations.add_frame(animation_name, texture)
 	
 	# set loop if next anim is same as this one
@@ -119,7 +119,7 @@ func regenerate_animations() -> void:
 			var frame_duration: float = 1.0
 			if len(animation_frame_durations) > i:
 				frame_duration = animation_frame_durations[i]
-			var texture: ImageTexture = FileLoader.load_texture(texture_path)
+			var texture: Texture2D = FileLoader.load_texture(texture_path)
 			animations.add_frame(animation_name, texture, frame_duration)
 		
 		# set loop if next anim is same as this one

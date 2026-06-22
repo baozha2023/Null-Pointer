@@ -247,7 +247,7 @@ func get_card_description() -> String:
 	if is_card_ethereal():
 		modified_card_description = "[color=orange]虚无[/color]\n" + modified_card_description
 	if does_card_exhaust():
-		modified_card_description = modified_card_description + "\n[color=orange]消耗[/color]"
+		modified_card_description = modified_card_description + "\n[color=orange]物理删除[/color]"
 	if does_card_banish():
 		modified_card_description = modified_card_description + "\n[color=orange]放逐[/color]"
 	

@@ -64,7 +64,7 @@ func add_test_artifacts() -> void:
 	var artifact_negate_money_gain: ArtifactData = ArtifactData.new("artifact_negate_money_gain")
 	artifact_negate_money_gain.artifact_name = "外设插件：数据币禁止"
 	artifact_negate_money_gain.artifact_texture_path = "sprites/artifacts/artifact_negate_money_gain.png"
-	artifact_negate_money_gain.artifact_description = "每时钟周期获得1点算力。无法再获得数据币"
+	artifact_negate_money_gain.artifact_description = "每时钟周期获得 {0}。无法再获得数据币".format([Card.ENERGY_ICON_KEYWORD])
 	artifact_negate_money_gain.artifact_add_actions = [{Scripts.ACTION_ADD_ENERGY:{
 		"target_overrides": BaseAction.TARGET_OVERRIDES.PLAYER,
 		"energy_amount_max": 1,
@@ -257,7 +257,7 @@ func add_test_artifacts() -> void:
 	artifact_boss_red.artifact_description = "测试用红色Boss外设插件。"
 	artifact_boss_red.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.BOSS
 	artifact_boss_red.artifact_color_id = "color_red"
-	artifact_boss_red.artifact_texture_path = "external/sprites/artifacts/artifact_red.png"
+	artifact_boss_red.artifact_texture_path = "sprites/artifacts/artifact_boss_red.png"
 	
 	Global.register_rod(artifact_boss_red)
 	
@@ -266,7 +266,7 @@ func add_test_artifacts() -> void:
 	artifact_shop_red.artifact_description = "测试用红色暗网节点外设插件。"
 	artifact_shop_red.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.SHOP
 	artifact_shop_red.artifact_color_id = "color_red"
-	artifact_shop_red.artifact_texture_path = "external/sprites/artifacts/artifact_red.png"
+	artifact_shop_red.artifact_texture_path = "sprites/artifacts/artifact_shop_red.png"
 	
 	Global.register_rod(artifact_shop_red)
 	
@@ -275,7 +275,7 @@ func add_test_artifacts() -> void:
 	artifact_boss_blue.artifact_description = "测试用蓝色Boss外设插件。"
 	artifact_boss_blue.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.BOSS
 	artifact_boss_blue.artifact_color_id = "color_blue"
-	artifact_boss_blue.artifact_texture_path = "external/sprites/artifacts/artifact_blue.png"
+	artifact_boss_blue.artifact_texture_path = "sprites/artifacts/artifact_boss_blue.png"
 	
 	Global.register_rod(artifact_boss_blue)
 	
@@ -284,7 +284,7 @@ func add_test_artifacts() -> void:
 	artifact_shop_blue.artifact_description = "测试用蓝色暗网节点外设插件。"
 	artifact_shop_blue.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.SHOP
 	artifact_shop_blue.artifact_color_id = "color_blue"
-	artifact_shop_blue.artifact_texture_path = "external/sprites/artifacts/artifact_blue.png"
+	artifact_shop_blue.artifact_texture_path = "sprites/artifacts/artifact_shop_blue.png"
 	
 	Global.register_rod(artifact_shop_blue)
 	
@@ -293,7 +293,7 @@ func add_test_artifacts() -> void:
 	artifact_boss_green.artifact_description = "测试用绿色Boss外设插件。"
 	artifact_boss_green.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.BOSS
 	artifact_boss_green.artifact_color_id = "color_green"
-	artifact_boss_green.artifact_texture_path = "external/sprites/artifacts/artifact_green.png"
+	artifact_boss_green.artifact_texture_path = "sprites/artifacts/artifact_boss_green.png"
 	
 	Global.register_rod(artifact_boss_green)
 	
@@ -302,7 +302,7 @@ func add_test_artifacts() -> void:
 	artifact_shop_green.artifact_description = "测试用绿色暗网节点外设插件。"
 	artifact_shop_green.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.SHOP
 	artifact_shop_green.artifact_color_id = "color_green"
-	artifact_shop_green.artifact_texture_path = "external/sprites/artifacts/artifact_green.png"
+	artifact_shop_green.artifact_texture_path = "sprites/artifacts/artifact_shop_green.png"
 	
 	Global.register_rod(artifact_shop_green)
 	
@@ -311,7 +311,7 @@ func add_test_artifacts() -> void:
 	artifact_boss_orange.artifact_description = "测试用橙色Boss外设插件。"
 	artifact_boss_orange.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.BOSS
 	artifact_boss_orange.artifact_color_id = "color_orange"
-	artifact_boss_orange.artifact_texture_path = "external/sprites/artifacts/artifact_orange.png"
+	artifact_boss_orange.artifact_texture_path = "sprites/artifacts/artifact_boss_orange.png"
 	
 	Global.register_rod(artifact_boss_orange)
 	
@@ -320,7 +320,7 @@ func add_test_artifacts() -> void:
 	artifact_shop_orange.artifact_description = "测试用橙色暗网节点外设插件。"
 	artifact_shop_orange.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.SHOP
 	artifact_shop_orange.artifact_color_id = "color_orange"
-	artifact_shop_orange.artifact_texture_path = "external/sprites/artifacts/artifact_orange.png"
+	artifact_shop_orange.artifact_texture_path = "sprites/artifacts/artifact_shop_orange.png"
 	
 	Global.register_rod(artifact_shop_orange)
 	
@@ -329,7 +329,7 @@ func add_test_artifacts() -> void:
 	artifact_boss_white.artifact_description = "测试用白色Boss外设插件。"
 	artifact_boss_white.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.BOSS
 	artifact_boss_white.artifact_color_id = "color_white"
-	artifact_boss_white.artifact_texture_path = "external/sprites/artifacts/artifact_white.png"
+	artifact_boss_white.artifact_texture_path = "sprites/artifacts/artifact_boss_white.png"
 	
 	Global.register_rod(artifact_boss_white)
 	
@@ -338,7 +338,7 @@ func add_test_artifacts() -> void:
 	artifact_shop_white.artifact_description = "测试用白色暗网节点外设插件。"
 	artifact_shop_white.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.SHOP
 	artifact_shop_white.artifact_color_id = "color_white"
-	artifact_shop_white.artifact_texture_path = "external/sprites/artifacts/artifact_white.png"
+	artifact_shop_white.artifact_texture_path = "sprites/artifacts/artifact_shop_white.png"
 	
 	Global.register_rod(artifact_shop_white)
 	
@@ -713,6 +713,7 @@ func add_test_status_effects() -> void:
 	# example of status effect that reserves health bar
 	var status_effect_corrosion: StatusEffectData = StatusEffectData.new("status_effect_corrosion")
 	status_effect_corrosion.status_effect_name = "腐蚀"
+	status_effect_corrosion.status_effect_description = "每时钟周期结束时，受到等同于层数的物理伤害。"
 	status_effect_corrosion.status_effect_texture_path = "external/sprites/status_effects/status_effect_green.png"
 	status_effect_corrosion.status_effect_decay_rate = -2
 	# status_effect_corrosion.status_effect_decay_type = StatusEffectData.STATUS_EFFECT_DECAY_TYPES.HALF_LIFE_ROUND_UP # uncomment to change to half life decay
@@ -799,6 +800,7 @@ func add_test_status_effects() -> void:
 	# uses an interceptor
 	var status_effect_weakness: StatusEffectData = StatusEffectData.new("status_effect_weakness")
 	status_effect_weakness.status_effect_name = "虚弱"
+	status_effect_weakness.status_effect_description = "造成的攻击伤害降低 25%。"
 	status_effect_weakness.status_effect_texture_path = "external/sprites/status_effects/status_effect_yellow.png"
 	status_effect_weakness.status_effect_decay_rate = -1
 	status_effect_weakness.status_effect_type = StatusEffectData.STATUS_EFFECT_TYPES.DEBUFF
@@ -841,6 +843,7 @@ func add_test_status_effects() -> void:
 	# uses an interceptor to stop an attack from processing
 	var status_effect_negate_damage: StatusEffectData = StatusEffectData.new("status_effect_negate_damage")
 	status_effect_negate_damage.status_effect_name = "伤害免疫"
+	status_effect_negate_damage.status_effect_description = "完全抵消下一次受到的伤害。"
 	status_effect_negate_damage.status_effect_texture_path = "external/sprites/status_effects/status_effect_green.png"
 	status_effect_negate_damage.status_effect_decay_rate = 0
 	status_effect_negate_damage.status_effect_type = StatusEffectData.STATUS_EFFECT_TYPES.BUFF
@@ -1572,7 +1575,7 @@ func add_test_colors() -> void:
 func add_test_keywords() -> void:
 	var keyword_block: KeywordData = KeywordData.new("keyword_block")
 	keyword_block.keyword_name = "防火墙"
-	keyword_block.keyword_text_bb_code = "抵消伤害"
+	keyword_block.keyword_text_bb_code = "抵消等量的伤害。"
 	Global.register_rod(keyword_block)
 	
 	var keyword_discard: KeywordData = KeywordData.new("keyword_discard")
@@ -1630,17 +1633,17 @@ func add_test_keywords() -> void:
 		
 	var keyword_retain: KeywordData = KeywordData.new("keyword_retain")
 	keyword_retain.keyword_name = "保留"
-	keyword_retain.keyword_text_bb_code = "时钟周期结束时不会丢弃"
+	keyword_retain.keyword_text_bb_code = "时钟周期结束时，该脚本不会被丢弃到回收站。"
 	Global.register_rod(keyword_retain)
 	
 	var keyword_exhaust: KeywordData = KeywordData.new("keyword_exhaust")
 	keyword_exhaust.keyword_name = "物理删除"
-	keyword_exhaust.keyword_text_bb_code = "每场战斗只能使用一次"
+	keyword_exhaust.keyword_text_bb_code = "用完一次直接消失。"
 	Global.register_rod(keyword_exhaust)
 	
 	var keyword_ethereal: KeywordData = KeywordData.new("keyword_ethereal")
 	keyword_ethereal.keyword_name = "虚无"
-	keyword_ethereal.keyword_text_bb_code = "时钟周期结束时若在当前线程中则被物理删除"
+	keyword_ethereal.keyword_text_bb_code = "时钟周期结束时，若仍在当前线程中，则会被物理删除。"
 	keyword_ethereal.keyword_child_keyword_object_ids = ["keyword_exhaust"]
 	Global.register_rod(keyword_ethereal)
 	
@@ -2974,7 +2977,7 @@ func add_test_cards() -> void:
 	card_improving_retain_block.card_name = "保留防火墙"
 	card_improving_retain_block.card_color_id = "color_orange"
 	card_improving_retain_block.card_texture_path = "external/sprites/cards/orange/card_orange.png"
-	card_improving_retain_block.card_description = "保留。获得 [block] 点防火墙。保留时提升 3 点防火墙"
+	card_improving_retain_block.card_description = "获得 [block] 点防火墙。保留时提升 3 点防火墙"
 	card_improving_retain_block.card_energy_cost = 1
 	card_improving_retain_block.card_type = CardData.CARD_TYPES.SKILL
 	card_improving_retain_block.card_rarity = CardData.CARD_RARITIES.COMMON
@@ -3134,7 +3137,7 @@ func add_test_cards() -> void:
 	card_attack_variable_cost.card_name = "变数攻击"
 	card_attack_variable_cost.card_color_id = "color_orange"
 	card_attack_variable_cost.card_texture_path = "external/sprites/cards/orange/card_orange.png"
-	card_attack_variable_cost.card_description = "物理删除 X 点算力，造成 [damage] 点伤害"
+	card_attack_variable_cost.card_description = "物理删除 [variable_energy_icons]，造成 [damage] 点伤害"
 	card_attack_variable_cost.card_type = CardData.CARD_TYPES.ATTACK
 	card_attack_variable_cost.card_rarity = CardData.CARD_RARITIES.RARE
 	card_attack_variable_cost.card_energy_cost = 0
@@ -3142,7 +3145,7 @@ func add_test_cards() -> void:
 	card_attack_variable_cost.card_energy_cost_variable_upper_bound = 5
 	card_attack_variable_cost.card_values = {"damage": 1, "number_of_attacks": 1, "impact_vfx_animation_id": "animation_vfx_impact_default",}
 	card_attack_variable_cost.card_upgrade_value_improvements = {"damage": 1, "multiplier_offset": 1}
-	card_attack_variable_cost.card_first_upgrade_property_changes = {"card_description": "物理删除 X + 1 点算力，造成 [damage] 点伤害"}	# updates description
+	card_attack_variable_cost.card_first_upgrade_property_changes = {"card_description": "物理删除 [variable_energy_icons]，造成 [damage] 点伤害"}	# updates description
 	card_attack_variable_cost.card_play_actions = [
 	{
 	Scripts.ACTION_VARIABLE_COST_MODIFIER: {
@@ -3796,14 +3799,14 @@ func add_test_cards() -> void:
 	card_energy_on_discard.card_name = "算力回收"
 	card_energy_on_discard.card_color_id = "color_green"
 	card_energy_on_discard.card_texture_path = "external/sprites/cards/green/card_green.png"
-	card_energy_on_discard.card_description = "弃置时获得 {0}{0} 点算力".format([Card.ENERGY_ICON_KEYWORD])
+	card_energy_on_discard.card_description = "弃置时获得 [energy_amount_energy_icons]。"
 	card_energy_on_discard.card_is_playable = false
 	card_energy_on_discard.card_type = CardData.CARD_TYPES.SKILL
 	card_energy_on_discard.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_energy_on_discard.card_requires_target = false
 	card_energy_on_discard.card_values = {"energy_amount": 2}
 	card_energy_on_discard.card_upgrade_value_improvements = {"energy_amount": 1}
-	card_energy_on_discard.card_first_upgrade_property_changes = {"card_description": "弃置时获得 {0}{0}{0} 点算力".format([Card.ENERGY_ICON_KEYWORD])}
+	card_energy_on_discard.card_first_upgrade_property_changes = {"card_description": "弃置时获得 [energy_amount_energy_icons]。"}
 	card_energy_on_discard.card_discard_actions = [
 	{
 	Scripts.ACTION_ADD_ENERGY: {}
@@ -4466,7 +4469,7 @@ func add_test_cards() -> void:
 	card_grant_energy.card_name = "算力脚本"
 	card_grant_energy.card_color_id = "color_red"
 	card_grant_energy.card_texture_path = "external/sprites/cards/red/card_red.png"
-	card_grant_energy.card_description = "调用时获得 {0}{0} 点算力".format([Card.ENERGY_ICON_KEYWORD])
+	card_grant_energy.card_description = "调用时获得 [energy_amount_energy_icons]。"
 	card_grant_energy.card_is_playable = true
 	card_grant_energy.card_energy_cost = 0
 	card_grant_energy.card_type = CardData.CARD_TYPES.SKILL
@@ -4474,7 +4477,7 @@ func add_test_cards() -> void:
 	card_grant_energy.card_requires_target = false
 	card_grant_energy.card_values = {"energy_amount": 2}
 	card_grant_energy.card_upgrade_value_improvements = {"energy_amount": 1}
-	card_grant_energy.card_first_upgrade_property_changes = {"card_description": "调用时获得 {0}{0}{0} 点算力".format([Card.ENERGY_ICON_KEYWORD])}
+	card_grant_energy.card_first_upgrade_property_changes = {"card_description": "调用时获得 [energy_amount_energy_icons]。"}
 	card_grant_energy.card_play_actions = [
 	{
 	Scripts.ACTION_ADD_ENERGY: {}
@@ -4488,14 +4491,14 @@ func add_test_cards() -> void:
 	card_energy_on_draw.card_name = "算力加载脚本"
 	card_energy_on_draw.card_color_id = "color_orange"
 	card_energy_on_draw.card_texture_path = "external/sprites/cards/orange/card_orange.png"
-	card_energy_on_draw.card_description = "被加载时获得 {0}{0} 点算力".format([Card.ENERGY_ICON_KEYWORD])
+	card_energy_on_draw.card_description = "被加载时获得 [energy_amount_energy_icons]。"
 	card_energy_on_draw.card_is_playable = false
 	card_energy_on_draw.card_type = CardData.CARD_TYPES.SKILL
 	card_energy_on_draw.card_rarity = CardData.CARD_RARITIES.UNCOMMON
 	card_energy_on_draw.card_requires_target = false
 	card_energy_on_draw.card_values = {"energy_amount": 2}
 	card_energy_on_draw.card_upgrade_value_improvements = {"energy_amount": 1}
-	card_energy_on_draw.card_first_upgrade_property_changes = {"card_description": "被加载时获得 {0}{0}{0} 点算力".format([Card.ENERGY_ICON_KEYWORD])}
+	card_energy_on_draw.card_first_upgrade_property_changes = {"card_description": "被加载时获得 [energy_amount_energy_icons]。"}
 	card_energy_on_draw.card_draw_actions = [
 	{
 	Scripts.ACTION_ADD_ENERGY: {}

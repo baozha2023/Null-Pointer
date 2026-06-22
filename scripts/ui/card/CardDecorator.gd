@@ -15,7 +15,8 @@ var card_decorator_id: String = ""
 var parent_card: Card = null
 
 func _ready() -> void:
-	pass
+	# Dynamic Mod Support
+	texture = FileLoader.load_texture("sprites/card-borders/decorator_bg.png")
 
 func init(_parent_card: Card, _card_decorator_id: String) -> void:
 	parent_card = _parent_card

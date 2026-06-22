@@ -5,6 +5,8 @@ class_name StatusEffectData
 #region General
 ## How this status appears in tooltips
 @export var status_effect_name: String = ""
+## Text description of what the status does
+@export var status_effect_description: String = ""
 ## Script inheriting from BaseStatusEffect determining behavior of the status.
 ## Used for logical component of status.
 @export var status_effect_script_path: String = "res://scripts/status_effects/BaseStatusEffect.gd"

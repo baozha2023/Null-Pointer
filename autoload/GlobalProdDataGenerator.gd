@@ -7,37 +7,36 @@ extends Node
 func generate_production_data() -> void:
 	add_rest_actions()
 	add_consumables()
-	
+
 	add_status_effects() # must be defined before enemies
 	add_action_interceptors()
-	
+
 	add_enemies()
 	add_events()
 	add_dialogue()
 	add_acts()
-	
+
 	add_colors()
 	add_keywords()
-	
+
 	add_combat_vfx_animations()
-	
+
 	add_characters()
 	add_player_data()
-	
+
 	add_run_modifiers()
 	add_run_start_options()
-	
+
 	add_custom_ui()
 	add_custom_signals()
-	
+
 	add_artifacts()
 	add_card_decorators()
 	add_cards()
-	
+
 	add_card_packs()
 	add_artifact_packs()
 	add_consumable_packs()
-
 
 #region Artifacts
 func add_artifacts() -> void:
@@ -45,51 +44,63 @@ func add_artifacts() -> void:
 	artifact_add_money.artifact_name = "数据币外设插件"
 	artifact_add_money.artifact_texture_path = "sprites/artifacts/artifact_add_money.png"
 	artifact_add_money.artifact_description = "获得时增加数据币"
-	artifact_add_money.artifact_add_actions = [{Scripts.ACTION_ADD_MONEY: {"money_amount": 200}}]
-	
+	artifact_add_money.artifact_add_actions = [{ Scripts.ACTION_ADD_MONEY: { "money_amount": 200 } }]
+
 	Global.register_rod(artifact_add_money)
-	
+
 	var artifact_negate_money_gain: ArtifactData = ArtifactData.new("artifact_negate_money_gain")
 	artifact_negate_money_gain.artifact_name = "算力外设插件"
 	artifact_negate_money_gain.artifact_texture_path = "sprites/artifacts/artifact_negate_money_gain.png"
-	artifact_negate_money_gain.artifact_description = "每时钟周期获得1点算力。无法再获得数据币"
-	artifact_negate_money_gain.artifact_add_actions = [{Scripts.ACTION_ADD_ENERGY:{
-		"target_overrides": BaseAction.TARGET_OVERRIDES.PLAYER,
-		"energy_amount_max": 1,
-	}}]
-	artifact_negate_money_gain.artifact_remove_actions = [{Scripts.ACTION_ADD_ENERGY:{
-		"target_overrides": BaseAction.TARGET_OVERRIDES.PLAYER,
-		"energy_amount_max": -1,
-	}}]
+	artifact_negate_money_gain.artifact_description = "每时钟周期获得 {0}。无法再获得数据币".format([Card.ENERGY_ICON_KEYWORD])
+	artifact_negate_money_gain.artifact_add_actions = [
+		{
+			Scripts.ACTION_ADD_ENERGY: {
+				"target_overrides": BaseAction.TARGET_OVERRIDES.PLAYER,
+				"energy_amount_max": 1,
+			},
+		},
+	]
+	artifact_negate_money_gain.artifact_remove_actions = [
+		{
+			Scripts.ACTION_ADD_ENERGY: {
+				"target_overrides": BaseAction.TARGET_OVERRIDES.PLAYER,
+				"energy_amount_max": -1,
+			},
+		},
+	]
 	artifact_negate_money_gain.artifact_interceptor_ids = ["interceptor_negate_add_money"]
-	
+
 	Global.register_rod(artifact_negate_money_gain)
-	
+
 	var artifact_heal_on_combat_ended: ArtifactData = ArtifactData.new("artifact_heal_on_combat_ended")
 	artifact_heal_on_combat_ended.artifact_name = "战后治疗外设插件"
 	artifact_heal_on_combat_ended.artifact_texture_path = "sprites/artifacts/artifact_heal_on_combat_ended.png"
 	artifact_heal_on_combat_ended.artifact_description = "战斗结束时恢复5点完整度"
 	artifact_heal_on_combat_ended.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.COMMON
-	artifact_heal_on_combat_ended.artifact_end_of_combat_actions = [{
-			Scripts.ACTION_ADD_HEALTH: {"target_override": BaseAction.TARGET_OVERRIDES.PLAYER, "health_amount": 5}
-			}]
-	
+	artifact_heal_on_combat_ended.artifact_end_of_combat_actions = [
+		{
+			Scripts.ACTION_ADD_HEALTH: { "target_override": BaseAction.TARGET_OVERRIDES.PLAYER, "health_amount": 5 },
+		},
+	]
+
 	Global.register_rod(artifact_heal_on_combat_ended)
-	
+
 	var artifact_full_heal: ArtifactData = ArtifactData.new("artifact_full_heal")
 	artifact_full_heal.artifact_name = "完全治疗外设插件"
 	artifact_full_heal.artifact_texture_path = "sprites/artifacts/artifact_full_heal.png"
 	artifact_full_heal.artifact_description = "获得时完全恢复完整度"
 	artifact_full_heal.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.RARE
-	artifact_full_heal.artifact_add_actions = [{
+	artifact_full_heal.artifact_add_actions = [
+		{
 			Scripts.ACTION_HEAL_PERCENT: {
 				"target_override": BaseAction.TARGET_OVERRIDES.PLAYER,
-				"percentage_heal_amount": 1.0
-				}
-			}]
-	
+				"percentage_heal_amount": 1.0,
+			},
+		},
+	]
+
 	Global.register_rod(artifact_full_heal)
-	
+
 	var artifact_draw_on_kill: ArtifactData = ArtifactData.new("artifact_draw_on_kill")
 	artifact_draw_on_kill.artifact_name = "击杀加载脚本外设插件"
 	artifact_draw_on_kill.artifact_texture_path = "sprites/artifacts/artifact_draw_on_kill.png"
@@ -97,29 +108,27 @@ func add_artifacts() -> void:
 	artifact_draw_on_kill.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.UNCOMMON
 	artifact_draw_on_kill.artifact_script_path = "res://scripts/artifacts/ArtifactDrawOnKill.gd"
 	Global.register_rod(artifact_draw_on_kill)
-	
-	
+
 	var artifact_draw_on_combat_start: ArtifactData = ArtifactData.new("artifact_draw_on_combat_start")
 	artifact_draw_on_combat_start.artifact_name = "初始加载脚本外设插件"
 	artifact_draw_on_combat_start.artifact_description = "首时钟周期额外加载2个脚本"
 	artifact_draw_on_combat_start.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.UNCOMMON
 	artifact_draw_on_combat_start.artifact_color_id = "color_green"
 	artifact_draw_on_combat_start.artifact_texture_path = "sprites/artifacts/artifact_draw_on_combat_start.png"
-	artifact_draw_on_combat_start.artifact_first_turn_actions = [{Scripts.ACTION_DRAW_GENERATOR: {"draw_count": 2}}]
-	
+	artifact_draw_on_combat_start.artifact_first_turn_actions = [{ Scripts.ACTION_DRAW_GENERATOR: { "draw_count": 2 } }]
+
 	Global.register_rod(artifact_draw_on_combat_start)
-	
+
 	var artifact_energy_on_combat_start: ArtifactData = ArtifactData.new("artifact_energy_on_combat_start")
 	artifact_energy_on_combat_start.artifact_name = "初始算力外设插件"
-	artifact_energy_on_combat_start.artifact_description = "首时钟周期获得1点算力"
+	artifact_energy_on_combat_start.artifact_description = "首时钟周期获得 {0}。".format([Card.ENERGY_ICON_KEYWORD])
 	artifact_energy_on_combat_start.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.UNCOMMON
 	artifact_energy_on_combat_start.artifact_color_id = "color_white"
 	artifact_energy_on_combat_start.artifact_texture_path = "sprites/artifacts/artifact_energy_on_combat_start.png"
-	artifact_energy_on_combat_start.artifact_first_turn_actions = [{Scripts.ACTION_ADD_ENERGY: {"energy_amount": 1}}]
-	
+	artifact_energy_on_combat_start.artifact_first_turn_actions = [{ Scripts.ACTION_ADD_ENERGY: { "energy_amount": 1 } }]
+
 	Global.register_rod(artifact_energy_on_combat_start)
-	
-	
+
 	var artifact_easy_mode: ArtifactData = ArtifactData.new("artifact_easy_mode")
 	artifact_easy_mode.artifact_name = "简单模式外设插件"
 	artifact_easy_mode.artifact_texture_path = "sprites/artifacts/artifact_easy_mode.png"
@@ -130,9 +139,9 @@ func add_artifacts() -> void:
 	artifact_easy_mode.artifact_counter_reset_on_turn_start = -1
 	artifact_easy_mode.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.EVENT
 	artifact_easy_mode.artifact_script_path = "res://scripts/artifacts/ArtifactEasyMode.gd"
-	
+
 	Global.register_rod(artifact_easy_mode)
-	
+
 	var artifact_block_on_attacks: ArtifactData = ArtifactData.new("artifact_block_on_attacks")
 	artifact_block_on_attacks.artifact_name = "攻击防火墙外设插件"
 	artifact_block_on_attacks.artifact_description = "每3次攻击获得5点防火墙"
@@ -144,37 +153,41 @@ func add_artifacts() -> void:
 	artifact_block_on_attacks.artifact_counter_wraparound = true
 	artifact_block_on_attacks.artifact_counter_reset_on_turn_start = 0
 	artifact_block_on_attacks.artifact_counter_reset_on_combat_end = 0
-	artifact_block_on_attacks.artifact_max_counter_actions = [{
-			Scripts.ACTION_BLOCK: {"block": 5, "target_override": BaseAction.TARGET_OVERRIDES.PLAYER}
-			}]
-	
+	artifact_block_on_attacks.artifact_max_counter_actions = [
+		{
+			Scripts.ACTION_BLOCK: { "block": 5, "target_override": BaseAction.TARGET_OVERRIDES.PLAYER },
+		},
+	]
+
 	Global.register_rod(artifact_block_on_attacks)
-	
+
 	var artifact_retain_hand: ArtifactData = ArtifactData.new("artifact_retain_hand")
 	artifact_retain_hand.artifact_name = "当前线程保留外设插件"
 	artifact_retain_hand.artifact_texture_path = "sprites/artifacts/artifact_retain_hand.png"
 	artifact_retain_hand.artifact_description = "时钟周期结束时当前线程保留"
 	artifact_retain_hand.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.BOSS
 	artifact_retain_hand.artifact_script_path = "res://scripts/artifacts/ArtifactRetainHand.gd"
-	
+
 	Global.register_rod(artifact_retain_hand)
-	
+
 	# preserves energy between turns
 	var artifact_preserve_energy: ArtifactData = ArtifactData.new("artifact_preserve_energy")
 	artifact_preserve_energy.artifact_name = "算力保留外设插件"
 	artifact_preserve_energy.artifact_texture_path = "sprites/artifacts/artifact_preserve_energy.png"
 	artifact_preserve_energy.artifact_description = "算力在时钟周期之间保留"
 	artifact_preserve_energy.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.RARE
-	artifact_preserve_energy.artifact_first_turn_actions = [{
-		Scripts.ACTION_APPLY_STATUS: {
-			"target_override": BaseAction.TARGET_OVERRIDES.PLAYER,
-			"status_effect_object_id": "status_effect_preserve_energy"
-			}
-		}]
+	artifact_preserve_energy.artifact_first_turn_actions = [
+		{
+			Scripts.ACTION_APPLY_STATUS: {
+				"target_override": BaseAction.TARGET_OVERRIDES.PLAYER,
+				"status_effect_object_id": "status_effect_preserve_energy",
+			},
+		},
+	]
 	artifact_preserve_energy.artifact_script_path = "res://scripts/artifacts/BaseArtifact.gd"
-	
+
 	Global.register_rod(artifact_preserve_energy)
-	
+
 	# Enables a rest action when obtained, which grants a damage increase at the start of combat
 	var artifact_increase_attack_on_rest: ArtifactData = ArtifactData.new("artifact_increase_attack_on_rest")
 	artifact_increase_attack_on_rest.artifact_name = "碎片整理增伤外设插件"
@@ -184,33 +197,40 @@ func add_artifacts() -> void:
 	artifact_increase_attack_on_rest.artifact_color_id = "color_orange"
 	artifact_increase_attack_on_rest.artifact_texture_path = "sprites/artifacts/artifact_increase_attack_on_rest.png"
 	artifact_increase_attack_on_rest.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.COMMON
-	artifact_increase_attack_on_rest.artifact_add_actions = [{
-		Scripts.ACTION_UPDATE_REST_ACTIONS: {"add_rest_action_object_ids": ["rest_action_increase_attack_on_rest"]}
-	}]
-	artifact_increase_attack_on_rest.artifact_first_turn_actions = [{
+	artifact_increase_attack_on_rest.artifact_add_actions = [
+		{
+			Scripts.ACTION_UPDATE_REST_ACTIONS: { "add_rest_action_object_ids": ["rest_action_increase_attack_on_rest"] },
+		},
+	]
+	artifact_increase_attack_on_rest.artifact_first_turn_actions = [
+		{
 			Scripts.ACTION_APPLY_STATUS: {
 				"target_override": BaseAction.TARGET_OVERRIDES.PLAYER,
 				"status_effect_object_id": "status_effect_damage_increase",
 				"custom_key_names": {
 					# convert artifact counter passed in from BaseArtifact, into the status charges
-					"status_charge_amount": "artifact_counter"
-				}}
-			}]
-	
+					"status_charge_amount": "artifact_counter",
+				},
+			},
+		},
+	]
+
 	Global.register_rod(artifact_increase_attack_on_rest)
-	
+
 	var artifact_see_top_of_draw_pile: ArtifactData = ArtifactData.new("artifact_see_top_of_draw_pile")
 	artifact_see_top_of_draw_pile.artifact_name = "查看脚本库外设插件"
 	artifact_see_top_of_draw_pile.artifact_description = "查看脚本库顶部的指令"
 	artifact_see_top_of_draw_pile.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.COMMON
 	artifact_see_top_of_draw_pile.artifact_color_id = "color_blue"
 	artifact_see_top_of_draw_pile.artifact_texture_path = "sprites/artifacts/artifact_see_top_of_draw_pile.png"
-	artifact_see_top_of_draw_pile.artifact_first_turn_actions = [{
-		Scripts.ACTION_CUSTOM_UI: {"enable_custom_ui": true, "custom_ui_object_id": "custom_ui_see_top_of_draw_pile", "target_override": BaseAction.TARGET_OVERRIDES.PLAYER}
-		}]
-	
+	artifact_see_top_of_draw_pile.artifact_first_turn_actions = [
+		{
+			Scripts.ACTION_CUSTOM_UI: { "enable_custom_ui": true, "custom_ui_object_id": "custom_ui_see_top_of_draw_pile", "target_override": BaseAction.TARGET_OVERRIDES.PLAYER },
+		},
+	]
+
 	Global.register_rod(artifact_see_top_of_draw_pile)
-	
+
 	# Makes an attack card top deck when obtained
 	var artifact_top_deck_attack_card: ArtifactData = ArtifactData.new("artifact_top_deck_attack_card")
 	artifact_top_deck_attack_card.artifact_name = "攻击指令置顶外设插件"
@@ -218,37 +238,36 @@ func add_artifacts() -> void:
 	artifact_top_deck_attack_card.artifact_description = "选择一个攻击指令置于脚本库顶部。"
 	artifact_top_deck_attack_card.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.COMMON
 	artifact_top_deck_attack_card.artifact_add_actions = [
-	{
-	Scripts.ACTION_PICK_CARDS: {
-		"max_card_amount": 1,
-		"min_card_amount": 1,
-		"min_cards_are_required_for_action": true,
-		"random_selection": false,
-		"quick_pick": true,
-		"card_pick_type": HandManager.DECK,
-		"card_pick_text": "选择一个脚本置于脚本库顶",
-		"action_data": [
-			# convert the card to top deck
-			{Scripts.ACTION_CHANGE_CARD_PROPERTIES: 
-				{
-				"modify_parent_card": false,
-				"card_properties": {"card_unremovable_from_deck": true, "card_untransformable_from_deck": true, "card_first_shuffle_priority": 1, }
-				}
-				},
-			],
-		# only non-generated removable attack cards allowed
-		"validator_data": [
-			{Scripts.VALIDATOR_CARD_TYPE: {"card_types": [CardData.CARD_TYPES.ATTACK]}},
-			{Scripts.VALIDATOR_CARD_RARITY: {"card_rarities_exclude": [CardData.CARD_RARITIES.GENERATED]}},
-			{Scripts.VALIDATOR_CARD_PROPERTIES: {"card_property_name": "card_unremovable_from_deck", "operator": "==", "comparison_value": false}},
-		],
-		}
-	},
+		{
+			Scripts.ACTION_PICK_CARDS: {
+				"max_card_amount": 1,
+				"min_card_amount": 1,
+				"min_cards_are_required_for_action": true,
+				"random_selection": false,
+				"quick_pick": true,
+				"card_pick_type": HandManager.DECK,
+				"card_pick_text": "选择一个脚本置于脚本库顶",
+				"action_data": [
+					# convert the card to top deck
+					{
+						Scripts.ACTION_CHANGE_CARD_PROPERTIES: {
+							"modify_parent_card": false,
+							"card_properties": { "card_unremovable_from_deck": true, "card_untransformable_from_deck": true, "card_first_shuffle_priority": 1 },
+						},
+					},
+				],
+				# only non-generated removable attack cards allowed
+				"validator_data": [
+					{ Scripts.VALIDATOR_CARD_TYPE: { "card_types": [CardData.CARD_TYPES.ATTACK] } },
+					{ Scripts.VALIDATOR_CARD_RARITY: { "card_rarities_exclude": [CardData.CARD_RARITIES.GENERATED] } },
+					{ Scripts.VALIDATOR_CARD_PROPERTIES: { "card_property_name": "card_unremovable_from_deck", "operator": "==", "comparison_value": false } },
+				],
+			},
+		},
 	]
-	
+
 	Global.register_rod(artifact_top_deck_attack_card)
-	
-	
+
 	var artifact_right_click_shuffle_deck: ArtifactData = ArtifactData.new("artifact_right_click_shuffle_deck")
 	artifact_right_click_shuffle_deck.artifact_name = "重洗外设插件"
 	artifact_right_click_shuffle_deck.artifact_description = "右键将回收站的数据重新分配入内存队列。"
@@ -257,103 +276,101 @@ func add_artifacts() -> void:
 	artifact_right_click_shuffle_deck.artifact_texture_path = "sprites/artifacts/artifact_right_click_shuffle_deck.png"
 	artifact_right_click_shuffle_deck.artifact_script_path = "res://scripts/artifacts/BaseArtifact.gd"
 	artifact_right_click_shuffle_deck.artifact_right_click_actions = [
-		{Scripts.ACTION_RESHUFFLE:{}}
+		{ Scripts.ACTION_RESHUFFLE: { } },
 	]
-	
+
 	Global.register_rod(artifact_right_click_shuffle_deck)
-	
+
 	### Filler Artifacts
 	var artifact_boss_red: ArtifactData = ArtifactData.new("artifact_boss_red")
 	artifact_boss_red.artifact_name = "红色头目外设插件"
 	artifact_boss_red.artifact_description = "测试红色头目外设插件。"
 	artifact_boss_red.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.BOSS
 	artifact_boss_red.artifact_color_id = "color_red"
-	artifact_boss_red.artifact_texture_path = "external/sprites/artifacts/artifact_red.png"
-	
+	artifact_boss_red.artifact_texture_path = "sprites/artifacts/artifact_boss_red.png"
+
 	Global.register_rod(artifact_boss_red)
-	
+
 	var artifact_shop_red: ArtifactData = ArtifactData.new("artifact_shop_red")
 	artifact_shop_red.artifact_name = "红色暗网节点外设插件"
 	artifact_shop_red.artifact_description = "测试红色暗网节点外设插件。"
 	artifact_shop_red.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.SHOP
 	artifact_shop_red.artifact_color_id = "color_red"
-	artifact_shop_red.artifact_texture_path = "external/sprites/artifacts/artifact_red.png"
-	
+	artifact_shop_red.artifact_texture_path = "sprites/artifacts/artifact_shop_red.png"
+
 	Global.register_rod(artifact_shop_red)
-	
+
 	var artifact_boss_blue: ArtifactData = ArtifactData.new("artifact_boss_blue")
 	artifact_boss_blue.artifact_name = "蓝色头目外设插件"
 	artifact_boss_blue.artifact_description = "测试蓝色头目外设插件。"
 	artifact_boss_blue.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.BOSS
 	artifact_boss_blue.artifact_color_id = "color_blue"
-	artifact_boss_blue.artifact_texture_path = "external/sprites/artifacts/artifact_blue.png"
-	
+	artifact_boss_blue.artifact_texture_path = "sprites/artifacts/artifact_boss_blue.png"
+
 	Global.register_rod(artifact_boss_blue)
-	
+
 	var artifact_shop_blue: ArtifactData = ArtifactData.new("artifact_shop_blue")
 	artifact_shop_blue.artifact_name = "蓝色暗网节点外设插件"
 	artifact_shop_blue.artifact_description = "测试蓝色暗网节点外设插件。"
 	artifact_shop_blue.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.SHOP
 	artifact_shop_blue.artifact_color_id = "color_blue"
-	artifact_shop_blue.artifact_texture_path = "external/sprites/artifacts/artifact_blue.png"
-	
+	artifact_shop_blue.artifact_texture_path = "sprites/artifacts/artifact_shop_blue.png"
+
 	Global.register_rod(artifact_shop_blue)
-	
+
 	var artifact_boss_green: ArtifactData = ArtifactData.new("artifact_boss_green")
 	artifact_boss_green.artifact_name = "绿色头目外设插件"
 	artifact_boss_green.artifact_description = "测试绿色头目外设插件。"
 	artifact_boss_green.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.BOSS
 	artifact_boss_green.artifact_color_id = "color_green"
-	artifact_boss_green.artifact_texture_path = "external/sprites/artifacts/artifact_green.png"
-	
+	artifact_boss_green.artifact_texture_path = "sprites/artifacts/artifact_boss_green.png"
+
 	Global.register_rod(artifact_boss_green)
-	
+
 	var artifact_shop_green: ArtifactData = ArtifactData.new("artifact_shop_green")
 	artifact_shop_green.artifact_name = "绿色暗网节点外设插件"
 	artifact_shop_green.artifact_description = "测试绿色暗网节点外设插件。"
 	artifact_shop_green.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.SHOP
 	artifact_shop_green.artifact_color_id = "color_green"
-	artifact_shop_green.artifact_texture_path = "external/sprites/artifacts/artifact_green.png"
-	
+	artifact_shop_green.artifact_texture_path = "sprites/artifacts/artifact_shop_green.png"
+
 	Global.register_rod(artifact_shop_green)
-	
+
 	var artifact_boss_orange: ArtifactData = ArtifactData.new("artifact_boss_orange")
 	artifact_boss_orange.artifact_name = "橙色头目外设插件"
 	artifact_boss_orange.artifact_description = "测试橙色头目外设插件。"
 	artifact_boss_orange.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.BOSS
 	artifact_boss_orange.artifact_color_id = "color_orange"
-	artifact_boss_orange.artifact_texture_path = "external/sprites/artifacts/artifact_orange.png"
-	
+	artifact_boss_orange.artifact_texture_path = "sprites/artifacts/artifact_boss_orange.png"
+
 	Global.register_rod(artifact_boss_orange)
-	
+
 	var artifact_shop_orange: ArtifactData = ArtifactData.new("artifact_shop_orange")
 	artifact_shop_orange.artifact_name = "橙色暗网节点外设插件"
 	artifact_shop_orange.artifact_description = "测试橙色暗网节点外设插件。"
 	artifact_shop_orange.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.SHOP
 	artifact_shop_orange.artifact_color_id = "color_orange"
-	artifact_shop_orange.artifact_texture_path = "external/sprites/artifacts/artifact_orange.png"
-	
+	artifact_shop_orange.artifact_texture_path = "sprites/artifacts/artifact_shop_orange.png"
+
 	Global.register_rod(artifact_shop_orange)
-	
+
 	var artifact_boss_white: ArtifactData = ArtifactData.new("artifact_boss_white")
 	artifact_boss_white.artifact_name = "白色头目外设插件"
 	artifact_boss_white.artifact_description = "测试白色头目外设插件。"
 	artifact_boss_white.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.BOSS
 	artifact_boss_white.artifact_color_id = "color_white"
-	artifact_boss_white.artifact_texture_path = "external/sprites/artifacts/artifact_white.png"
-	
+	artifact_boss_white.artifact_texture_path = "sprites/artifacts/artifact_boss_white.png"
+
 	Global.register_rod(artifact_boss_white)
-	
+
 	var artifact_shop_white: ArtifactData = ArtifactData.new("artifact_shop_white")
 	artifact_shop_white.artifact_name = "白色暗网节点外设插件"
 	artifact_shop_white.artifact_description = "测试白色暗网节点外设插件。"
 	artifact_shop_white.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.SHOP
 	artifact_shop_white.artifact_color_id = "color_white"
-	artifact_shop_white.artifact_texture_path = "external/sprites/artifacts/artifact_white.png"
-	
+	artifact_shop_white.artifact_texture_path = "sprites/artifacts/artifact_shop_white.png"
+
 	Global.register_rod(artifact_shop_white)
-	
-	
 
 #endregion
 
@@ -369,17 +386,17 @@ func add_consumables() -> void:
 	consumable_heal.consumable_rarity = ConsumableData.CONSUMABLE_RARITIES.COMMON
 	consumable_heal.consumable_texture_path = "sprites/consumables/consumable_heal.png"
 	consumable_heal.consumable_values = {
-		"percentage_heal_amount": 0.20
+		"percentage_heal_amount": 0.20,
 	}
 	consumable_heal.consumable_actions = [
 		{
-		Scripts.ACTION_HEAL_PERCENT: {
-			"target_override": BaseAction.TARGET_OVERRIDES.PLAYER
-		}
-		}
+			Scripts.ACTION_HEAL_PERCENT: {
+				"target_override": BaseAction.TARGET_OVERRIDES.PLAYER,
+			},
+		},
 	]
 	Global.register_rod(consumable_heal)
-	
+
 	# block consumable
 	var consumable_block: ConsumableData = ConsumableData.new("consumable_block")
 	consumable_block.consumable_name = "防火墙道具"
@@ -394,13 +411,13 @@ func add_consumables() -> void:
 	}
 	consumable_block.consumable_actions = [
 		{
-		Scripts.ACTION_BLOCK: {
-			"target_override": BaseAction.TARGET_OVERRIDES.PLAYER
-			}
-		}
+			Scripts.ACTION_BLOCK: {
+				"target_override": BaseAction.TARGET_OVERRIDES.PLAYER,
+			},
+		},
 	]
 	Global.register_rod(consumable_block)
-	
+
 	# damaging consumable
 	var consumable_damaging: ConsumableData = ConsumableData.new("consumable_damaging")
 	consumable_damaging.consumable_name = "伤害道具"
@@ -416,13 +433,13 @@ func add_consumables() -> void:
 	}
 	consumable_damaging.consumable_actions = [
 		{
-		Scripts.ACTION_DIRECT_DAMAGE: {
-			"target_override": BaseAction.TARGET_OVERRIDES.SELECTED_TARGETS
-			}
-		}
+			Scripts.ACTION_DIRECT_DAMAGE: {
+				"target_override": BaseAction.TARGET_OVERRIDES.SELECTED_TARGETS,
+			},
+		},
 	]
 	Global.register_rod(consumable_damaging)
-	
+
 	# multi enemy damaging consumable
 	var consumable_multi_damaging: ConsumableData = ConsumableData.new("consumable_multi_damaging")
 	consumable_multi_damaging.consumable_name = "群体伤害道具"
@@ -438,14 +455,12 @@ func add_consumables() -> void:
 	}
 	consumable_multi_damaging.consumable_actions = [
 		{
-		Scripts.ACTION_DIRECT_DAMAGE: 
-			{
-			"target_override": BaseAction.TARGET_OVERRIDES.ALL_ENEMIES,
-			}
-		}
+			Scripts.ACTION_DIRECT_DAMAGE: {
+				"target_override": BaseAction.TARGET_OVERRIDES.ALL_ENEMIES,
+			},
+		},
 	]
 	Global.register_rod(consumable_multi_damaging)
-
 
 #endregion
 
@@ -458,15 +473,15 @@ func add_rest_actions() -> void:
 	rest_action_rest.rest_action_cost_type = RestActionData.REST_ACTION_COST_TYPES.EXCLUSIVE
 	rest_action_rest.rest_actions = [
 		{
-		Scripts.ACTION_HEAL_PERCENT: {
-			"target_override": BaseAction.TARGET_OVERRIDES.PLAYER,
-			"percentage_heal_amount": 0.40
-			}
-		}
+			Scripts.ACTION_HEAL_PERCENT: {
+				"target_override": BaseAction.TARGET_OVERRIDES.PLAYER,
+				"percentage_heal_amount": 0.40,
+			},
+		},
 	]
-	
+
 	Global.register_rod(rest_action_rest)
-	
+
 	# upgrade card rest action
 	# example of a cancelable rest action
 	var rest_action_upgrade_card: RestActionData = RestActionData.new("rest_action_upgrade_card")
@@ -475,37 +490,37 @@ func add_rest_actions() -> void:
 	rest_action_upgrade_card.rest_action_cost_type = RestActionData.REST_ACTION_COST_TYPES.INCLUSIVE_REPEATABLE
 	rest_action_upgrade_card.rest_action_auto_end = false # allows canceling
 	rest_action_upgrade_card.rest_actions = [
-	{
-	Scripts.ACTION_PICK_CARDS: {
-		"min_card_amount": 1,
-		"max_card_amount": 1,
-		"card_pick_type": HandManager.DECK,
-		"card_pick_text": "选择至多 {0} 个脚本升级。已选 {1} 个",
-		"min_cards_are_required_for_action": true, # won't fire if you cancel it
-		"quick_pick": false,
-		"can_back_out": true, # allows rest action to be canceled
-		"random_selection": false,
-		# only upgradeable cards allowed
-		"validator_data": [
-			{Scripts.VALIDATOR_CARD_UPGRADEABLE: {}}
-		],
-		"action_data": [
-			# embed the rest action end in the pick card action payload
-			{Scripts.ACTION_REST_ACTION_END: {"rest_action_id": "rest_action_upgrade_card"}},
-			{Scripts.ACTION_UPGRADE_CARDS: {"upgrade_parent_card": true}}
-			]
-		}
-	}
+		{
+			Scripts.ACTION_PICK_CARDS: {
+				"min_card_amount": 1,
+				"max_card_amount": 1,
+				"card_pick_type": HandManager.DECK,
+				"card_pick_text": "选择至多 {0} 个脚本升级。已选 {1} 个",
+				"min_cards_are_required_for_action": true, # won't fire if you cancel it
+				"quick_pick": false,
+				"can_back_out": true, # allows rest action to be canceled
+				"random_selection": false,
+				# only upgradeable cards allowed
+				"validator_data": [
+					{ Scripts.VALIDATOR_CARD_UPGRADEABLE: { } },
+				],
+				"action_data": [
+					# embed the rest action end in the pick card action payload
+					{ Scripts.ACTION_REST_ACTION_END: { "rest_action_id": "rest_action_upgrade_card" } },
+					{ Scripts.ACTION_UPGRADE_CARDS: { "upgrade_parent_card": true } },
+				],
+			},
+		},
 	]
-	
+
 	rest_action_upgrade_card.rest_action_validators = [
 		{
-		Scripts.VALIDATOR_DECK_HAS_UPGRADEABLE_CARD: {}
-		}
+			Scripts.VALIDATOR_DECK_HAS_UPGRADEABLE_CARD: { },
+		},
 	]
-	
+
 	Global.register_rod(rest_action_upgrade_card)
-	
+
 	# remove cards action
 	# example of a cancelable rest action
 	var rest_action_remove_cards: RestActionData = RestActionData.new("rest_action_remove_cards")
@@ -515,38 +530,37 @@ func add_rest_actions() -> void:
 	rest_action_remove_cards.rest_action_auto_end = false # can be cancelled
 	rest_action_remove_cards.rest_actions = [
 		{
-		Scripts.ACTION_PICK_CARDS: {
-			"use_parent_card": false,
-			"min_card_amount": 1,
-			"max_card_amount": 2,
-			"min_cards_are_required_for_action": true,
-			"quick_pick": false,
-			"can_back_out": true, # allows rest action to be canceled
-			"random_selection": false,
-			"card_pick_text": "选择 {0} 个脚本移除。已选 {1} 个",
-			"card_pick_type": HandManager.DECK,
-			"action_data": [
-				# embed the rest action end in the pick card action payload
-				{Scripts.ACTION_REST_ACTION_END: {"rest_action_id": "rest_action_remove_cards"}},
-				{Scripts.ACTION_REMOVE_CARDS_FROM_DECK: {}}
-				]
-			}
-		}
+			Scripts.ACTION_PICK_CARDS: {
+				"use_parent_card": false,
+				"min_card_amount": 1,
+				"max_card_amount": 2,
+				"min_cards_are_required_for_action": true,
+				"quick_pick": false,
+				"can_back_out": true, # allows rest action to be canceled
+				"random_selection": false,
+				"card_pick_text": "选择 {0} 个脚本移除。已选 {1} 个",
+				"card_pick_type": HandManager.DECK,
+				"action_data": [
+					# embed the rest action end in the pick card action payload
+					{ Scripts.ACTION_REST_ACTION_END: { "rest_action_id": "rest_action_remove_cards" } },
+					{ Scripts.ACTION_REMOVE_CARDS_FROM_DECK: { } },
+				],
+			},
+		},
 	]
 	rest_action_remove_cards.rest_action_validators = [
 		{
-		Scripts.VALIDATOR_PILE_SIZE: 
-			{
-			"card_pick_type": HandManager.DECK,
-			"card_type_maximum": 4,
-			"card_types": CardData.CARD_TYPES.values(),	# any card
-			"invert_validation": false,
-			}
-		}
+			Scripts.VALIDATOR_PILE_SIZE: {
+				"card_pick_type": HandManager.DECK,
+				"card_type_maximum": 4,
+				"card_types": CardData.CARD_TYPES.values(), # any card
+				"invert_validation": false,
+			},
+		},
 	]
-	
+
 	Global.register_rod(rest_action_remove_cards)
-	
+
 	# enchant a selected card from your deck
 	# randomly chooses an enchant
 	# must have at least one card that can be decorated and enough money
@@ -558,82 +572,80 @@ func add_rest_actions() -> void:
 	rest_action_enchant_cards.rest_action_auto_end = false
 	rest_action_enchant_cards.rest_actions = [
 		{
-		Scripts.ACTION_PICK_CARDS: {
-			"use_parent_card": false,
-			"min_card_amount": 1,
-			"max_card_amount": 2,
-			"min_cards_are_required_for_action": true,
-			"quick_pick": false,
-			"can_back_out": true, # allows rest action to be canceled
-			"random_selection": false,
-			"card_pick_text": "选择一个脚本附魔",
-			"card_pick_type": HandManager.DECK,
-			# only decoratable cards allowed, must be able to slot one of the provided decorators
-			"validator_data": [
-				{Scripts.VALIDATOR_CARD_IS_DECORATABLE: {
-					"card_decorator_ids": 
-					[
-						"card_decorator_extra_draw",
-						"card_decorator_block_on_play"
-					]
-				}}
-			],
-			"action_data": [
-				# finish rest action
-				{Scripts.ACTION_REST_ACTION_END: {"rest_action_id": "rest_action_enchant_cards"}},
-				# remove money
-				{Scripts.ACTION_ADD_MONEY:{"money_amount": -25}},
-				# randomly decorate the card
-				{Scripts.ACTION_DECORATE_CARDS: 
-				{
-					"decorate_parent_card": false, # already selecting the deck card
-					"random_card_decorators": 
-						{
-							"card_decorator_extra_draw": {},
-							"card_decorator_block_on_play": {}
-						}
-				}}
-				]
-			}
-		}
+			Scripts.ACTION_PICK_CARDS: {
+				"use_parent_card": false,
+				"min_card_amount": 1,
+				"max_card_amount": 2,
+				"min_cards_are_required_for_action": true,
+				"quick_pick": false,
+				"can_back_out": true, # allows rest action to be canceled
+				"random_selection": false,
+				"card_pick_text": "选择一个脚本附魔",
+				"card_pick_type": HandManager.DECK,
+				# only decoratable cards allowed, must be able to slot one of the provided decorators
+				"validator_data": [
+					{
+						Scripts.VALIDATOR_CARD_IS_DECORATABLE: {
+							"card_decorator_ids": [
+								"card_decorator_extra_draw",
+								"card_decorator_block_on_play",
+							],
+						},
+					},
+				],
+				"action_data": [
+					# finish rest action
+					{ Scripts.ACTION_REST_ACTION_END: { "rest_action_id": "rest_action_enchant_cards" } },
+					# remove money
+					{ Scripts.ACTION_ADD_MONEY: { "money_amount": -25 } },
+					# randomly decorate the card
+					{
+						Scripts.ACTION_DECORATE_CARDS: {
+							"decorate_parent_card": false, # already selecting the deck card
+							"random_card_decorators": {
+								"card_decorator_extra_draw": { },
+								"card_decorator_block_on_play": { },
+							},
+						},
+					},
+				],
+			},
+		},
 	]
 	rest_action_enchant_cards.rest_action_validators = [
 		{
-		# must have enough money
-		Scripts.VALIDATOR_MONEY:
-			{
-				"money_amount": 25
-			}
+			# must have enough money
+			Scripts.VALIDATOR_MONEY: {
+				"money_amount": 25,
+			},
 		},
 		{
-		# must have at least one card that can slot a decorator
-		Scripts.VALIDATOR_DECK_HAS_DECORATABLE_CARD: 
-			{
-			"card_pick_type": HandManager.DECK,
-			"card_decorator_ids": 
-				[
+			# must have at least one card that can slot a decorator
+			Scripts.VALIDATOR_DECK_HAS_DECORATABLE_CARD: {
+				"card_pick_type": HandManager.DECK,
+				"card_decorator_ids": [
 					"card_decorator_extra_draw",
-					"card_decorator_block_on_play"
+					"card_decorator_block_on_play",
 				],
-			"card_types": CardData.CARD_TYPES.values(),	# any card
-			"invert_validation": false,
-			}
-		}
+				"card_types": CardData.CARD_TYPES.values(), # any card
+				"invert_validation": false,
+			},
+		},
 	]
-	
+
 	Global.register_rod(rest_action_enchant_cards)
-	
+
 	# add random consumable action
 	var rest_action_add_random_consumable: RestActionData = RestActionData.new("rest_action_add_random_consumable")
 	rest_action_add_random_consumable.rest_action_name = "随机物理删除品"
 	rest_action_add_random_consumable.rest_action_stat_name = "REST_GAIN_CONSUMABLE_COUNT"
 	rest_action_add_random_consumable.rest_action_cost_type = RestActionData.REST_ACTION_COST_TYPES.EXCLUSIVE
 	rest_action_add_random_consumable.rest_actions = [
-		{Scripts.ACTION_ADD_CONSUMABLE: {"random_consumable": true}},
+		{ Scripts.ACTION_ADD_CONSUMABLE: { "random_consumable": true } },
 	]
-	
+
 	Global.register_rod(rest_action_add_random_consumable)
-	
+
 	# increase damage artifact action
 	# paired with corresponding artifact
 	var rest_action_increase_attack_on_rest: RestActionData = RestActionData.new("rest_action_increase_attack_on_rest")
@@ -641,13 +653,10 @@ func add_rest_actions() -> void:
 	rest_action_increase_attack_on_rest.rest_action_stat_name = "REST_INCREASE_DAMAGE_COUNT"
 	rest_action_increase_attack_on_rest.rest_action_cost_type = RestActionData.REST_ACTION_COST_TYPES.EXCLUSIVE
 	rest_action_increase_attack_on_rest.rest_actions = [
-		{Scripts.ACTION_INCREASE_ARTIFACT_CHARGE: {"artifact_id": "artifact_increase_attack_on_rest"}},
+		{ Scripts.ACTION_INCREASE_ARTIFACT_CHARGE: { "artifact_id": "artifact_increase_attack_on_rest" } },
 	]
-	
+
 	Global.register_rod(rest_action_increase_attack_on_rest)
-	
-
-
 
 #endregion
 
@@ -665,9 +674,9 @@ func add_status_effects() -> void:
 		StatusEffectData.STATUS_EFFECT_PROCESS_TIMES.POST_DRAW_PLAYER_START_TURN,
 		StatusEffectData.STATUS_EFFECT_PROCESS_TIMES.POST_ENEMY_INTENT,
 	]
-	
+
 	Global.register_rod(status_effect_overshield)
-	
+
 	# Preserve Energy
 	var status_effect_preserve_energy: StatusEffectData = StatusEffectData.new("status_effect_preserve_energy")
 	status_effect_preserve_energy.status_effect_name = "算力保留"
@@ -680,11 +689,12 @@ func add_status_effects() -> void:
 	status_effect_preserve_energy.status_effect_interceptor_ids = ["interceptor_preserve_energy"]
 	status_effect_preserve_energy.status_effect_healthbar_reserve_type = StatusEffectData.STATUS_EFFECT_HEALTHBAR_RESERVE_TYPES.ZERO
 	status_effect_preserve_energy.status_effect_action_process_times = []
-	
+
 	Global.register_rod(status_effect_preserve_energy)
-	
+
 	var status_effect_preserve_overshield: StatusEffectData = StatusEffectData.new("status_effect_preserve_overshield")
 	status_effect_preserve_overshield.status_effect_name = "持久化过载"
+	status_effect_preserve_overshield.status_effect_description = "时钟周期结束时，保留所有未使用的算力。"
 	status_effect_preserve_overshield.status_effect_texture_path = "external/sprites/status_effects/status_effect_green.png"
 	status_effect_preserve_overshield.status_effect_decay_rate = 0
 	status_effect_preserve_overshield.status_effect_decay_type = StatusEffectData.STATUS_EFFECT_DECAY_TYPES.LINEAR
@@ -692,11 +702,12 @@ func add_status_effects() -> void:
 	status_effect_preserve_overshield.status_effect_interceptor_ids = ["interceptor_preserve_overshield"]
 	status_effect_preserve_overshield.status_effect_healthbar_reserve_type = StatusEffectData.STATUS_EFFECT_HEALTHBAR_RESERVE_TYPES.ZERO
 	status_effect_preserve_overshield.status_effect_action_process_times = []
-	
+
 	Global.register_rod(status_effect_preserve_overshield)
-	
+
 	var status_effect_pointy: StatusEffectData = StatusEffectData.new("status_effect_pointy")
 	status_effect_pointy.status_effect_name = "反伤模块"
+	status_effect_pointy.status_effect_description = "受到攻击时，对攻击者造成等同于层数的伤害。"
 	status_effect_pointy.status_effect_texture_path = "external/sprites/status_effects/status_effect_green.png"
 	status_effect_pointy.status_effect_decay_rate = 0
 	status_effect_pointy.status_effect_decay_type = StatusEffectData.STATUS_EFFECT_DECAY_TYPES.LINEAR
@@ -704,12 +715,13 @@ func add_status_effects() -> void:
 	status_effect_pointy.status_effect_interceptor_ids = ["interceptor_pointy"]
 	status_effect_pointy.status_effect_healthbar_reserve_type = StatusEffectData.STATUS_EFFECT_HEALTHBAR_RESERVE_TYPES.ZERO
 	status_effect_pointy.status_effect_action_process_times = []
-	
+
 	Global.register_rod(status_effect_pointy)
-	
+
 	# damages the player at the start of their turn and increases number of cards drawn
 	var status_effect_pollen: StatusEffectData = StatusEffectData.new("status_effect_pollen")
 	status_effect_pollen.status_effect_name = "数据污染"
+	status_effect_pollen.status_effect_description = "受到的所有伤害额外增加等同于层数的数值。"
 	status_effect_pollen.status_effect_texture_path = "external/sprites/status_effects/status_effect_green.png"
 	status_effect_pollen.status_effect_decay_rate = 0
 	status_effect_pollen.status_effect_priority = 10
@@ -720,34 +732,35 @@ func add_status_effects() -> void:
 	status_effect_pollen.status_effect_action_process_times = [StatusEffectData.STATUS_EFFECT_PROCESS_TIMES.PRE_DRAW_PLAYER_START_TURN]
 	status_effect_pollen.status_effect_player_process_actions = [
 		{
-		Scripts.ACTION_DRAW_GENERATOR: {
-			"custom_key_names": {
-						# convert the secondary status charges, passed in from BaseStatusEffect, into card draw
-						"draw_count": "invoking_status_effect_secondary_charges"
-					},
-			"time_delay": 0.0,
-			"is_start_of_turn_draw": false,
-			}
+			Scripts.ACTION_DRAW_GENERATOR: {
+				"custom_key_names": {
+					# convert the secondary status charges, passed in from BaseStatusEffect, into card draw
+					"draw_count": "invoking_status_effect_secondary_charges",
+				},
+				"time_delay": 0.0,
+				"is_start_of_turn_draw": false,
+			},
 		},
 		{
-		Scripts.ACTION_DIRECT_DAMAGE: {
-			"custom_key_names": {
-						# convert the status charges, passed in from BaseStatusEffect, into poison damage
-						"damage": "invoking_status_effect_charges"
-					},
-			"time_delay": 0.2,
-			"bypass_block": true,
-			"target_override": BaseAction.TARGET_OVERRIDES.PARENT
-			}
+			Scripts.ACTION_DIRECT_DAMAGE: {
+				"custom_key_names": {
+					# convert the status charges, passed in from BaseStatusEffect, into poison damage
+					"damage": "invoking_status_effect_charges",
+				},
+				"time_delay": 0.2,
+				"bypass_block": true,
+				"target_override": BaseAction.TARGET_OVERRIDES.PARENT,
+			},
 		},
 	]
-	
+
 	Global.register_rod(status_effect_pollen)
-	
+
 	# poison like effect
 	# example of status effect that reserves health bar
 	var status_effect_corrosion: StatusEffectData = StatusEffectData.new("status_effect_corrosion")
 	status_effect_corrosion.status_effect_name = "腐蚀"
+	status_effect_corrosion.status_effect_description = "每时钟周期结束时，受到等同于层数的物理伤害。"
 	status_effect_corrosion.status_effect_texture_path = "external/sprites/status_effects/status_effect_green.png"
 	status_effect_corrosion.status_effect_decay_rate = -2
 	# status_effect_corrosion.status_effect_decay_type = StatusEffectData.STATUS_EFFECT_DECAY_TYPES.HALF_LIFE_ROUND_UP # uncomment to change to half life decay
@@ -761,24 +774,25 @@ func add_status_effects() -> void:
 	]
 	status_effect_corrosion.status_effect_player_process_actions = [
 		{
-		Scripts.ACTION_DIRECT_DAMAGE: {
-			"custom_key_names": {
-						# convert the status charges, passed in from BaseStatusEffect, into poison damage
-						"damage": "invoking_status_effect_charges"
-					},
-			"time_delay": 0.5,
-			"bypass_block": true,
-			"target_override": BaseAction.TARGET_OVERRIDES.PARENT
-			}
-		}
+			Scripts.ACTION_DIRECT_DAMAGE: {
+				"custom_key_names": {
+					# convert the status charges, passed in from BaseStatusEffect, into poison damage
+					"damage": "invoking_status_effect_charges",
+				},
+				"time_delay": 0.5,
+				"bypass_block": true,
+				"target_override": BaseAction.TARGET_OVERRIDES.PARENT,
+			},
+		},
 	]
 	status_effect_corrosion.status_effect_enemy_process_actions = status_effect_corrosion.status_effect_player_process_actions.duplicate()
-	
+
 	Global.register_rod(status_effect_corrosion)
-	
+
 	# status effect that grants overheat each turn
 	var status_effect_critical: StatusEffectData = StatusEffectData.new("status_effect_critical")
 	status_effect_critical.status_effect_name = "致命错误"
+	status_effect_critical.status_effect_description = "下一次造成的攻击伤害翻倍。"
 	status_effect_critical.status_effect_texture_path = "external/sprites/status_effects/status_effect_green.png"
 	status_effect_critical.status_effect_decay_type = StatusEffectData.STATUS_EFFECT_DECAY_TYPES.LINEAR
 	status_effect_critical.status_effect_type = StatusEffectData.STATUS_EFFECT_TYPES.BUFF
@@ -789,24 +803,25 @@ func add_status_effects() -> void:
 	]
 	status_effect_critical.status_effect_player_process_actions = [
 		{
-				Scripts.ACTION_APPLY_STATUS: {
-					"custom_key_names": {
-						"status_charge_amount": "invoking_status_effect_charges"
-					},
-					"time_delay": 0.1,
-					"status_effect_object_id": "status_effect_overheat",
-					"target_override": BaseAction.TARGET_OVERRIDES.PARENT
-					}
-				}
+			Scripts.ACTION_APPLY_STATUS: {
+				"custom_key_names": {
+					"status_charge_amount": "invoking_status_effect_charges",
+				},
+				"time_delay": 0.1,
+				"status_effect_object_id": "status_effect_overheat",
+				"target_override": BaseAction.TARGET_OVERRIDES.PARENT,
+			},
+		},
 	]
 	status_effect_critical.status_effect_enemy_process_actions = []
 	status_effect_critical.status_effect_interceptor_ids = []
-	
+
 	Global.register_rod(status_effect_critical)
-	
+
 	# status effect that damages all combatants when overflowed
 	var status_effect_overheat: StatusEffectData = StatusEffectData.new("status_effect_overheat")
 	status_effect_overheat.status_effect_name = "内核过热"
+	status_effect_overheat.status_effect_description = "每次打出攻击类脚本或受到伤害时，额外附加等同于层数的伤害。"
 	status_effect_overheat.status_effect_texture_path = "external/sprites/status_effects/status_effect_green.png"
 	status_effect_overheat.status_effect_decay_type = StatusEffectData.STATUS_EFFECT_DECAY_TYPES.HALF_LIFE_ROUND_UP
 	status_effect_overheat.status_effect_type = StatusEffectData.STATUS_EFFECT_TYPES.BUFF
@@ -821,7 +836,7 @@ func add_status_effects() -> void:
 			Scripts.ACTION_EMIT_CUSTOM_SIGNAL: {
 				"custom_signal_object_id": "custom_signal_overheated",
 				"custom_signal_value": 1,
-			}
+			},
 		},
 		{
 			Scripts.ACTION_DIRECT_DAMAGE: {
@@ -829,17 +844,18 @@ func add_status_effects() -> void:
 				"bypass_block": false,
 				"time_delay": 0.5,
 				"target_override": BaseAction.TARGET_OVERRIDES.ALL_COMBATANTS,
-			}
-		}
+			},
+		},
 	]
 	status_effect_overheat.status_effect_enemy_process_actions = []
 	status_effect_overheat.status_effect_interceptor_ids = []
-	
+
 	Global.register_rod(status_effect_overheat)
-	
+
 	# grants energy on overheat
 	var status_effect_feedback_loop: StatusEffectData = StatusEffectData.new("status_effect_feedback_loop")
 	status_effect_feedback_loop.status_effect_name = "无限递归"
+	status_effect_feedback_loop.status_effect_description = "每次打出脚本时，对随机敌人造成等同于层数的伤害。"
 	status_effect_feedback_loop.status_effect_texture_path = "external/sprites/status_effects/status_effect_green.png"
 	status_effect_feedback_loop.status_effect_script_path = "res://scripts/status_effects/StatusEffectFeedbackLoop.gd"
 	status_effect_feedback_loop.status_effect_decay_rate = 0
@@ -847,13 +863,14 @@ func add_status_effects() -> void:
 	status_effect_feedback_loop.status_effect_action_process_times = [] # does not process or decay normally. See status script
 	status_effect_feedback_loop.status_effect_type = StatusEffectData.STATUS_EFFECT_TYPES.BUFF
 	status_effect_feedback_loop.status_effect_interceptor_ids = []
-	
+
 	Global.register_rod(status_effect_feedback_loop)
-	
+
 	# bomb effect that counts down and damages all enemies
 	# uses unique status logic
 	var status_effect_bomb: StatusEffectData = StatusEffectData.new("status_effect_bomb")
 	status_effect_bomb.status_effect_name = "逻辑炸弹"
+	status_effect_bomb.status_effect_description = "倒计时结束时，对所有敌人造成巨额伤害。"
 	status_effect_bomb.status_effect_texture_path = "external/sprites/status_effects/status_effect_green.png"
 	status_effect_bomb.status_effect_script_path = "res://scripts/status_effects/StatusEffectBomb.gd"
 	status_effect_bomb.status_effect_decay_rate = -1
@@ -864,51 +881,53 @@ func add_status_effects() -> void:
 		StatusEffectData.STATUS_EFFECT_PROCESS_TIMES.POST_ENEMY_INTENT,
 	]
 	status_effect_bomb.status_effect_player_process_actions = [
-				{
-				Scripts.ACTION_DIRECT_DAMAGE: {
-					"custom_key_names": {
-						# convert the bomb's status secondary charges, passed in from BaseStatusEffect, into bomb damage
-						"damage": "invoking_status_effect_secondary_charges"
-					},
-					"bypass_block": false,
-					"time_delay": 0.5,
-					"target_override": BaseAction.TARGET_OVERRIDES.ALL_ENEMIES # player bombs hit all enemies
-					}
-				}
-			]
+		{
+			Scripts.ACTION_DIRECT_DAMAGE: {
+				"custom_key_names": {
+					# convert the bomb's status secondary charges, passed in from BaseStatusEffect, into bomb damage
+					"damage": "invoking_status_effect_secondary_charges",
+				},
+				"bypass_block": false,
+				"time_delay": 0.5,
+				"target_override": BaseAction.TARGET_OVERRIDES.ALL_ENEMIES, # player bombs hit all enemies
+			},
+		},
+	]
 	status_effect_bomb.status_effect_enemy_process_actions = [
-				{
-				Scripts.ACTION_DIRECT_DAMAGE: {
-					"custom_key_names": {
-						# convert the bomb's status secondary charges, passed in from BaseStatusEffect, into bomb damage
-						"damage": "invoking_status_effect_secondary_charges"
-					},
-					"bypass_block": false,
-					"time_delay": 0.5,
-					"target_override": BaseAction.TARGET_OVERRIDES.PLAYER # enemy bombs hit player
-					}
-				}
-			]
+		{
+			Scripts.ACTION_DIRECT_DAMAGE: {
+				"custom_key_names": {
+					# convert the bomb's status secondary charges, passed in from BaseStatusEffect, into bomb damage
+					"damage": "invoking_status_effect_secondary_charges",
+				},
+				"bypass_block": false,
+				"time_delay": 0.5,
+				"target_override": BaseAction.TARGET_OVERRIDES.PLAYER, # enemy bombs hit player
+			},
+		},
+	]
 	status_effect_bomb.status_effect_type = StatusEffectData.STATUS_EFFECT_TYPES.BUFF
 	status_effect_bomb.status_effect_interceptor_ids = []
-	
+
 	Global.register_rod(status_effect_bomb)
-	
+
 	# increases attack damage by charge amount
 	# uses an interceptor
 	var status_effect_damage_increase: StatusEffectData = StatusEffectData.new("status_effect_damage_increase")
 	status_effect_damage_increase.status_effect_name = "算力增幅"
+	status_effect_damage_increase.status_effect_description = "造成的攻击伤害增加等同于层数的数值。"
 	status_effect_damage_increase.status_effect_texture_path = "external/sprites/status_effects/status_effect_green.png"
 	status_effect_damage_increase.status_effect_decay_rate = 0
 	status_effect_damage_increase.status_effect_type = StatusEffectData.STATUS_EFFECT_TYPES.BUFF
 	status_effect_damage_increase.status_effect_interceptor_ids = ["interceptor_damage_increase"]
-	
+
 	Global.register_rod(status_effect_damage_increase)
-	
+
 	# decreases damage done by attackers
 	# uses an interceptor
 	var status_effect_weaken: StatusEffectData = StatusEffectData.new("status_effect_weaken")
 	status_effect_weaken.status_effect_name = "虚弱"
+	status_effect_weaken.status_effect_description = "造成的攻击伤害降低 25%。"
 	status_effect_weaken.status_effect_texture_path = "external/sprites/status_effects/status_effect_green.png"
 	status_effect_weaken.status_effect_decay_rate = -1
 	status_effect_weaken.status_effect_type = StatusEffectData.STATUS_EFFECT_TYPES.DEBUFF
@@ -917,13 +936,14 @@ func add_status_effects() -> void:
 		StatusEffectData.STATUS_EFFECT_PROCESS_TIMES.POST_ENEMY_INTENT,
 	]
 	status_effect_weaken.status_effect_interceptor_ids = ["interceptor_weaken"]
-	
+
 	Global.register_rod(status_effect_weaken)
-	
+
 	# increases attack damage on attacked combatant
 	# uses an interceptor
 	var status_effect_vulnerable: StatusEffectData = StatusEffectData.new("status_effect_vulnerable")
 	status_effect_vulnerable.status_effect_name = "漏洞暴露"
+	status_effect_vulnerable.status_effect_description = "受到的攻击伤害增加 50%。"
 	status_effect_vulnerable.status_effect_texture_path = "external/sprites/status_effects/status_effect_green.png"
 	status_effect_vulnerable.status_effect_decay_rate = -1
 	status_effect_vulnerable.status_effect_type = StatusEffectData.STATUS_EFFECT_TYPES.DEBUFF
@@ -932,13 +952,14 @@ func add_status_effects() -> void:
 		StatusEffectData.STATUS_EFFECT_PROCESS_TIMES.POST_ENEMY_INTENT,
 	]
 	status_effect_vulnerable.status_effect_interceptor_ids = ["interceptor_vulnerable"]
-	
+
 	Global.register_rod(status_effect_vulnerable)
-	
+
 	# gain block at the end of the turn
 	# doesn't use an interceptor
 	var status_effect_block_on_turn_end: StatusEffectData = StatusEffectData.new("status_effect_block_on_turn_end")
 	status_effect_block_on_turn_end.status_effect_name = "时钟周期结束防火墙"
+	status_effect_block_on_turn_end.status_effect_description = "时钟周期结束时，获得等同于层数的防火墙。"
 	status_effect_block_on_turn_end.status_effect_texture_path = "external/sprites/status_effects/status_effect_green.png"
 	status_effect_block_on_turn_end.status_effect_decay_rate = 0
 	status_effect_block_on_turn_end.status_effect_type = StatusEffectData.STATUS_EFFECT_TYPES.BUFF
@@ -950,28 +971,29 @@ func add_status_effects() -> void:
 		{
 			Scripts.ACTION_BLOCK: {
 				"target_override": BaseAction.TARGET_OVERRIDES.PARENT,
-				"custom_key_names": {"block": "invoking_status_effect_charges"},
+				"custom_key_names": { "block": "invoking_status_effect_charges" },
 				"time_delay": 0.5,
-			}
-		}
+			},
+		},
 	]
 	status_effect_block_on_turn_end.status_effect_enemy_process_actions = [
 		{
 			Scripts.ACTION_BLOCK: {
 				"target_override": BaseAction.TARGET_OVERRIDES.PARENT,
-				"custom_key_names": {"block": "invoking_status_effect_charges"},
+				"custom_key_names": { "block": "invoking_status_effect_charges" },
 				"time_delay": 0.5,
-			}
-		}
+			},
+		},
 	]
 	status_effect_block_on_turn_end.status_effect_interceptor_ids = []
-	
+
 	Global.register_rod(status_effect_block_on_turn_end)
-	
+
 	# gain energy at the start of next turn
 	# doesn't use an interceptor
 	var status_effect_energy_next_turn: StatusEffectData = StatusEffectData.new("status_effect_energy_next_turn")
 	status_effect_energy_next_turn.status_effect_name = "算力预分配"
+	status_effect_energy_next_turn.status_effect_description = "下个时钟周期开始时，额外获得等同于层数的算力。"
 	status_effect_energy_next_turn.status_effect_texture_path = "external/sprites/status_effects/status_effect_green.png"
 	status_effect_energy_next_turn.status_effect_decay_type = StatusEffectData.STATUS_EFFECT_DECAY_TYPES.ZERO_OUT
 	status_effect_energy_next_turn.status_effect_type = StatusEffectData.STATUS_EFFECT_TYPES.BUFF
@@ -983,21 +1005,22 @@ func add_status_effects() -> void:
 		{
 			Scripts.ACTION_ADD_ENERGY: {
 				"target_override": BaseAction.TARGET_OVERRIDES.PARENT,
-				"custom_key_names": {"energy_amount": "invoking_status_effect_charges"},
+				"custom_key_names": { "energy_amount": "invoking_status_effect_charges" },
 				"time_delay": 0.5,
-			}
-		}
+			},
+		},
 	]
 	status_effect_energy_next_turn.status_effect_enemy_process_actions = []
 	status_effect_energy_next_turn.status_effect_interceptor_ids = []
-	
+
 	Global.register_rod(status_effect_energy_next_turn)
-	
+
 	# draws extra cards next turn
 	# uses an interceptor
 	# this status does not decay naturally. It is removed after turn draw
 	var status_effect_increase_turn_draw: StatusEffectData = StatusEffectData.new("status_effect_increase_turn_draw")
 	status_effect_increase_turn_draw.status_effect_name = "扩容内存队列"
+	status_effect_increase_turn_draw.status_effect_description = "每个时钟周期开始时，额外抽取等同于层数的脚本。"
 	status_effect_increase_turn_draw.status_effect_texture_path = "external/sprites/status_effects/status_effect_green.png"
 	status_effect_increase_turn_draw.status_effect_decay_rate = 0
 	status_effect_increase_turn_draw.status_effect_allows_multiples = false
@@ -1005,12 +1028,13 @@ func add_status_effects() -> void:
 	status_effect_increase_turn_draw.status_effect_type = StatusEffectData.STATUS_EFFECT_TYPES.BUFF
 	status_effect_increase_turn_draw.status_effect_action_process_times = []
 	status_effect_increase_turn_draw.status_effect_interceptor_ids = ["interceptor_increase_turn_draw"]
-	
+
 	Global.register_rod(status_effect_increase_turn_draw)
-	
+
 	# status that binds a card to an enemy, adding it to the player's hand when killed
 	var status_effect_attached_card: StatusEffectData = StatusEffectData.new("status_effect_attached_card")
 	status_effect_attached_card.status_effect_name = "捆绑进程"
+	status_effect_attached_card.status_effect_description = "由于机制原因，附着了一个或多个特定脚本。"
 	status_effect_attached_card.status_effect_texture_path = "external/sprites/status_effects/status_effect_green.png"
 	status_effect_attached_card.status_effect_script_path = "res://scripts/status_effects/StatusEffectAttachedCard.gd"
 	status_effect_attached_card.status_effect_decay_rate = 0
@@ -1018,63 +1042,69 @@ func add_status_effects() -> void:
 	status_effect_attached_card.status_effect_charge_upper_bound = 1
 	status_effect_attached_card.status_effect_type = StatusEffectData.STATUS_EFFECT_TYPES.NEUTRAL
 	status_effect_attached_card.status_effect_interceptor_ids = []
-	
+
 	Global.register_rod(status_effect_attached_card)
-	
+
 	# uses an interceptor to stop an attack from processing
 	var status_effect_negate_damage: StatusEffectData = StatusEffectData.new("status_effect_negate_damage")
 	status_effect_negate_damage.status_effect_name = "伤害阻断"
+	status_effect_negate_damage.status_effect_description = "完全抵消下一次受到的伤害。"
 	status_effect_negate_damage.status_effect_texture_path = "external/sprites/status_effects/status_effect_green.png"
 	status_effect_negate_damage.status_effect_decay_rate = 0
 	status_effect_negate_damage.status_effect_type = StatusEffectData.STATUS_EFFECT_TYPES.BUFF
 	status_effect_negate_damage.status_effect_interceptor_ids = ["interceptor_negate_damage"]
-	
+
 	Global.register_rod(status_effect_negate_damage)
-	
+
 	# uses an interceptor to cap incoming damage
 	var status_effect_cap_damage: StatusEffectData = StatusEffectData.new("status_effect_cap_damage")
 	status_effect_cap_damage.status_effect_name = "算力封顶"
+	status_effect_cap_damage.status_effect_description = "单次受到的伤害最多不会超过特定数值。"
 	status_effect_cap_damage.status_effect_texture_path = "external/sprites/status_effects/status_effect_green.png"
 	status_effect_cap_damage.status_effect_decay_rate = -1
 	status_effect_cap_damage.status_effect_allows_multiples = false
 	status_effect_cap_damage.status_effect_type = StatusEffectData.STATUS_EFFECT_TYPES.BUFF
 	status_effect_cap_damage.status_effect_secondary_charge_collision_strategy = StatusEffectData.STATUS_EFFECT_SECONDARY_CHARGE_COLLISION_STRATEGIES.KEEP
 	status_effect_cap_damage.status_effect_interceptor_ids = ["interceptor_cap_damage"]
-	
+
 	Global.register_rod(status_effect_cap_damage)
-	
+
 	# uses an interceptor to prevent block from resetting
 	var status_effect_temp_preserve_block: StatusEffectData = StatusEffectData.new("status_effect_temp_preserve_block")
 	status_effect_temp_preserve_block.status_effect_name = "缓存防御"
+	status_effect_temp_preserve_block.status_effect_description = "本时钟周期结束时，所有防火墙都不会被清除。"
 	status_effect_temp_preserve_block.status_effect_texture_path = "external/sprites/status_effects/status_effect_green.png"
 	status_effect_temp_preserve_block.status_effect_decay_rate = -1
 	status_effect_temp_preserve_block.status_effect_interceptor_ids = ["interceptor_temp_preserve_block"]
-	
+
 	Global.register_rod(status_effect_temp_preserve_block)
-	
+
 	# uses an interceptor to prevent block from resetting
 	var status_effect_preserve_block: StatusEffectData = StatusEffectData.new("status_effect_preserve_block")
 	status_effect_preserve_block.status_effect_name = "持久化防御"
+	status_effect_preserve_block.status_effect_description = "每个时钟周期结束时，所有防火墙都不会被清除。"
 	status_effect_preserve_block.status_effect_texture_path = "external/sprites/status_effects/status_effect_green.png"
 	status_effect_preserve_block.status_effect_decay_rate = 0
 	status_effect_preserve_block.status_effect_charge_upper_bound = 1
 	status_effect_preserve_block.status_effect_interceptor_ids = ["interceptor_preserve_block"]
-	
+
 	Global.register_rod(status_effect_preserve_block)
-	
+
 	# uses an interceptor to stop a debuff from happening
 	var status_effect_negate_debuff: StatusEffectData = StatusEffectData.new("status_effect_negate_debuff")
 	status_effect_negate_debuff.status_effect_name = "异常阻断"
+	status_effect_negate_debuff.status_effect_description = "完全抵消下一次受到的减益效果。"
 	status_effect_negate_debuff.status_effect_texture_path = "external/sprites/status_effects/status_effect_green.png"
 	status_effect_negate_debuff.status_effect_decay_rate = 0
 	status_effect_negate_debuff.status_effect_type = StatusEffectData.STATUS_EFFECT_TYPES.NEUTRAL
 	status_effect_negate_debuff.status_effect_interceptor_ids = ["interceptor_negate_debuff"]
-	
+
 	Global.register_rod(status_effect_negate_debuff)
-	
+
 	# uses an interceptor to rebound card plays to draw pile
 	var status_effect_rebound_card_plays: StatusEffectData = StatusEffectData.new("status_effect_rebound_card_plays")
 	status_effect_rebound_card_plays.status_effect_name = "回调执行"
+	status_effect_rebound_card_plays.status_effect_description = "下一次打出的脚本将直接返回脚本库顶部。"
 	status_effect_rebound_card_plays.status_effect_texture_path = "external/sprites/status_effects/status_effect_green.png"
 	status_effect_rebound_card_plays.status_effect_decay_type = StatusEffectData.STATUS_EFFECT_DECAY_TYPES.ZERO_OUT
 	status_effect_rebound_card_plays.status_effect_type = StatusEffectData.STATUS_EFFECT_TYPES.BUFF
@@ -1083,47 +1113,50 @@ func add_status_effects() -> void:
 		StatusEffectData.STATUS_EFFECT_PROCESS_TIMES.PRE_ENEMY_TURN,
 	]
 	status_effect_rebound_card_plays.status_effect_interceptor_ids = ["interceptor_rebound_card_plays"]
-	
+
 	Global.register_rod(status_effect_rebound_card_plays)
-	
+
 	# rebounds incoming card plays to the draw pile
 	var interceptor_rebound_card_plays: ActionInterceptorData = ActionInterceptorData.new("interceptor_rebound_card_plays")
 	interceptor_rebound_card_plays.action_interceptor_priority = 10000
 	interceptor_rebound_card_plays.action_interceptor_modifies_parent = true
 	interceptor_rebound_card_plays.action_interceptor_script_path = Scripts.INTERCEPTOR_REBOUND_CARD_PLAYS
 	interceptor_rebound_card_plays.action_intercepted_action_paths = [Scripts.ACTION_CARD_PLAY]
-	
+
 	Global.register_rod(interceptor_rebound_card_plays)
-	
+
 	# uses an interceptor to duplicate the first card play each turn
 	var status_effect_duplicate_card_plays: StatusEffectData = StatusEffectData.new("status_effect_duplicate_card_plays")
 	status_effect_duplicate_card_plays.status_effect_name = "多线程执行"
+	status_effect_duplicate_card_plays.status_effect_description = "下一次打出的（攻击）脚本将被立刻额外执行一次。"
 	status_effect_duplicate_card_plays.status_effect_texture_path = "external/sprites/status_effects/status_effect_green.png"
 	status_effect_duplicate_card_plays.status_effect_script_path = "res://scripts/status_effects/StatusEffectDuplicateCardPlays.gd"
 	status_effect_duplicate_card_plays.status_effect_decay_rate = 0
 	status_effect_duplicate_card_plays.status_effect_type = StatusEffectData.STATUS_EFFECT_TYPES.BUFF
 	status_effect_duplicate_card_plays.status_effect_interceptor_ids = ["interceptor_duplicate_card_plays"]
-	
+
 	Global.register_rod(status_effect_duplicate_card_plays)
 
 	# uses an interceptor to duplicate attack card plays
 	var status_effect_duplicate_attacks: StatusEffectData = StatusEffectData.new("status_effect_duplicate_attacks")
 	status_effect_duplicate_attacks.status_effect_name = "多线程执行"
+	status_effect_duplicate_attacks.status_effect_description = "下一次打出的（攻击）脚本将被立刻额外执行一次。"
 	status_effect_duplicate_attacks.status_effect_texture_path = "external/sprites/status_effects/status_effect_green.png"
 	status_effect_duplicate_attacks.status_effect_decay_rate = -999
 	status_effect_duplicate_attacks.status_effect_type = StatusEffectData.STATUS_EFFECT_TYPES.BUFF
 	status_effect_duplicate_attacks.status_effect_interceptor_ids = ["interceptor_duplicate_attacks"]
-	
+
 	Global.register_rod(status_effect_duplicate_attacks)
-	
+
 	# uses an interceptor to duplicate attack card plays
 	var status_effect_block_on_special_discard: StatusEffectData = StatusEffectData.new("status_effect_block_on_special_discard")
 	status_effect_block_on_special_discard.status_effect_name = "销毁时触发防御"
+	status_effect_block_on_special_discard.status_effect_description = "每次因效果将脚本放入回收站时，获得等同于层数的防火墙。"
 	status_effect_block_on_special_discard.status_effect_texture_path = "external/sprites/status_effects/status_effect_green.png"
 	status_effect_block_on_special_discard.status_effect_decay_rate = 0
 	status_effect_block_on_special_discard.status_effect_type = StatusEffectData.STATUS_EFFECT_TYPES.BUFF
 	status_effect_block_on_special_discard.status_effect_interceptor_ids = ["interceptor_duplicate_attacks"]
-	
+
 	Global.register_rod(status_effect_block_on_special_discard)
 
 #endregion
@@ -1138,9 +1171,9 @@ func add_acts() -> void:
 	act_1.act_miniboss_event_pool_object_id = "event_pool_act_1_miniboss"
 	act_1.act_non_combat_event_pool_object_id = "event_pool_act_1_dialogue"
 	act_1.act_boss_event_pool_object_id = "event_pool_act_1_boss"
-	
+
 	Global.register_rod(act_1)
-	
+
 	var act_2: ActData = ActData.new("act_2")
 	act_2.act_name = "第二章：渗透"
 	act_2.act_next_act_ids = ["act_3"]
@@ -1150,7 +1183,7 @@ func add_acts() -> void:
 	act_2.act_non_combat_event_pool_object_id = "event_pool_act_1_dialogue"
 	act_2.act_boss_event_pool_object_id = "event_pool_act_1_boss"
 	Global.register_rod(act_2)
-	
+
 	var act_3: ActData = ActData.new("act_3")
 	act_3.act_name = "第三章：核心超载"
 	act_3.act_next_act_ids = ["act_1"] # only works in endless
@@ -1162,7 +1195,7 @@ func add_acts() -> void:
 	Global.register_rod(act_3)
 
 #endregion
-	
+
 #region Events and Event Pools
 func add_events() -> void:
 	## Act 1 Combat
@@ -1170,131 +1203,135 @@ func add_events() -> void:
 	var event_act_1_easy_combat_1: EventData = EventData.new("event_act_1_easy_combat_1")
 	event_act_1_easy_combat_1.event_death_message_bbcode = "死于普通杂兵"
 	event_act_1_easy_combat_1.event_weighted_enemy_object_ids = [
-		{"enemy_1": 1, "enemy_2": 1, "enemy_3": 1},
-		{"enemy_1": 1, "enemy_2": 1, "enemy_3": 1},
-		{"enemy_1": 1, "enemy_2": 1, "enemy_3": 1},
-		]
-	
+		{ "enemy_1": 1, "enemy_2": 1, "enemy_3": 1 },
+		{ "enemy_1": 1, "enemy_2": 1, "enemy_3": 1 },
+		{ "enemy_1": 1, "enemy_2": 1, "enemy_3": 1 },
+	]
+
 	Global.register_rod(event_act_1_easy_combat_1)
-	
+
 	var event_act_1_easy_combat_2: EventData = EventData.new("event_act_1_easy_combat_2")
 	event_act_1_easy_combat_2.event_weighted_enemy_object_ids = [
-		{"enemy_3": 1}
-		]
-	
+		{ "enemy_3": 1 },
+	]
+
 	Global.register_rod(event_act_1_easy_combat_2)
-	
+
 	var event_act_1_easy_combat_3: EventData = EventData.new("event_act_1_easy_combat_3")
 	event_act_1_easy_combat_3.event_weighted_enemy_object_ids = [
-		{"enemy_1": 1},
-		{"enemy_2": 1},
-		]
-	
+		{ "enemy_1": 1 },
+		{ "enemy_2": 1 },
+	]
+
 	Global.register_rod(event_act_1_easy_combat_3)
-	
+
 	var event_act_1_easy_combat_4: EventData = EventData.new("event_act_1_easy_combat_4")
 	event_act_1_easy_combat_4.event_weighted_enemy_object_ids = [
-		{"enemy_4": 1},
-		]
-	
+		{ "enemy_4": 1 },
+	]
+
 	Global.register_rod(event_act_1_easy_combat_4)
-	
+
 	var event_act_1_miniboss_1: EventData = EventData.new("event_act_1_miniboss_1")
 	event_act_1_miniboss_1.event_weighted_enemy_object_ids = [
-		{"enemy_act_1_miniboss_1": 1},
-		]
-	
+		{ "enemy_act_1_miniboss_1": 1 },
+	]
+
 	Global.register_rod(event_act_1_miniboss_1)
-	
+
 	var event_act_1_miniboss_2: EventData = EventData.new("event_act_1_miniboss_2")
 	event_act_1_miniboss_2.event_weighted_enemy_object_ids = [
-		{"enemy_act_1_miniboss_2": 1},
-		{"enemy_act_1_miniboss_2": 1},
-		]
-	
+		{ "enemy_act_1_miniboss_2": 1 },
+		{ "enemy_act_1_miniboss_2": 1 },
+	]
+
 	Global.register_rod(event_act_1_miniboss_2)
-	
+
 	var event_act_1_miniboss_3: EventData = EventData.new("event_act_1_miniboss_3")
 	event_act_1_miniboss_3.event_weighted_enemy_object_ids = [
-		{"enemy_act_1_miniboss_1": 1},
-		]
-	
+		{ "enemy_act_1_miniboss_1": 1 },
+	]
+
 	Global.register_rod(event_act_1_miniboss_3)
-	
+
 	var event_act_1_boss_1: EventData = EventData.new("event_act_1_boss_1")
 	event_act_1_boss_1.event_weighted_enemy_object_ids = [
-		{"enemy_act_1_boss_1": 1},
-		]
+		{ "enemy_act_1_boss_1": 1 },
+	]
 	event_act_1_boss_1.event_enemy_placement_is_automatic = false
-	event_act_1_boss_1.event_enemy_placement_positions = [[0,0], [180,0], [360,0]]
+	event_act_1_boss_1.event_enemy_placement_positions = [[0, 0], [180, 0], [360, 0]]
 	event_act_1_boss_1.event_death_message_bbcode = "被Boss彻底抹除"
-	
+
 	Global.register_rod(event_act_1_boss_1)
-	
+
 	## Act 1 Dialogue Events
 	# see add_test_dialogue()
-	
+
 	var event_pick_something: EventData = EventData.new("event_pick_something")
 	event_pick_something.event_dialogue_object_id = "dialogue_pick_something"
-	
+
 	Global.register_rod(event_pick_something)
-	
-	
+
 	### Event Pools
 	# act 1 easy pool
 	var event_pool_act_1_easy: EventPoolData = EventPoolData.new("event_pool_act_1_easy")
 	event_pool_act_1_easy.add_events_to_pool(
 		event_act_1_easy_combat_1,
 		[
-		event_act_1_easy_combat_1,
-		event_act_1_easy_combat_2,
-		event_act_1_easy_combat_3,
-		event_act_1_easy_combat_4,
-		])
-	
+			event_act_1_easy_combat_1,
+			event_act_1_easy_combat_2,
+			event_act_1_easy_combat_3,
+			event_act_1_easy_combat_4,
+		],
+	)
+
 	Global.register_rod(event_pool_act_1_easy)
-	
+
 	# act 1 hard pool
 	var event_pool_act_1_hard: EventPoolData = EventPoolData.new("event_pool_act_1_hard")
 	event_pool_act_1_hard.add_events_to_pool(
 		event_act_1_easy_combat_1,
 		[
-		event_act_1_easy_combat_1,
-		event_act_1_easy_combat_2,
-		event_act_1_easy_combat_3,
-		event_act_1_easy_combat_4,
-		])
-	
+			event_act_1_easy_combat_1,
+			event_act_1_easy_combat_2,
+			event_act_1_easy_combat_3,
+			event_act_1_easy_combat_4,
+		],
+	)
+
 	Global.register_rod(event_pool_act_1_hard)
-	
+
 	# act 1 dialogue event pool
 	var event_pool_act_1_dialogue: EventPoolData = EventPoolData.new("event_pool_act_1_dialogue")
 	event_pool_act_1_dialogue.add_events_to_pool(
 		event_pick_something,
 		[
-		event_pick_something,
-		])
-	
+			event_pick_something,
+		],
+	)
+
 	Global.register_rod(event_pool_act_1_dialogue)
-	
+
 	# act 1 miniboss pool
 	var event_pool_act_1_miniboss: EventPoolData = EventPoolData.new("event_pool_act_1_miniboss")
 	event_pool_act_1_miniboss.add_events_to_pool(
 		event_act_1_miniboss_1,
 		[
-		event_act_1_miniboss_1,
-		event_act_1_miniboss_2,
-		])
+			event_act_1_miniboss_1,
+			event_act_1_miniboss_2,
+		],
+	)
 	Global.register_rod(event_pool_act_1_miniboss)
-	
+
 	# act 1 boss pool
 	var event_pool_act_1_boss: EventPoolData = EventPoolData.new("event_pool_act_1_boss")
 	event_pool_act_1_boss.add_events_to_pool(
 		event_act_1_boss_1,
 		[
-		event_act_1_boss_1,
-		])
-	
+			event_act_1_boss_1,
+		],
+	)
+
 	Global.register_rod(event_pool_act_1_boss)
 
 #endregion
@@ -1306,67 +1343,67 @@ func add_dialogue() -> void:
 	### Dialogue Event 1
 	# Dialogue 1
 	var dialogue_pick_something: DialogueData = DialogueData.new("dialogue_pick_something")
-	dialogue_pick_something.dialogue_name_bbcode = "[wave amp=50.0 freq=2.0 connected=1][color=green]Pick something[/color][/wave]"
+	dialogue_pick_something.dialogue_name_bbcode = "[wave amp=50.0 freq=2.0 connected=1][color=green]选择操作[/color][/wave]"
 	Global.register_rod(dialogue_pick_something)
-	
+
 	# Option 1
 	var dialogue_pick_something_option_1: DialogueOptionData = DialogueOptionData.new("dialogue_pick_something_option_1")
-	dialogue_pick_something_option_1.dialogue_option_bbcode = "[color=red]Lose 10 HP[/color] and [color=green]Gain 100 Money[/color]"
-	dialogue_pick_something_option_1.dialogue_option_failed_validator_bbcode = "[color=grey][Locked]: Insufficient Health[/color]"
+	dialogue_pick_something_option_1.dialogue_option_bbcode = "[color=red]失去 10 点完整度[/color] 并且 [color=green]获得 100 数据币[/color]"
+	dialogue_pick_something_option_1.dialogue_option_failed_validator_bbcode = "[color=grey][锁定]: 完整度不足[/color]"
 	dialogue_pick_something_option_1.dialogue_option_actions = [
-		{Scripts.ACTION_ADD_HEALTH: {"target_override": BaseAction.TARGET_OVERRIDES.PLAYER, "health_amount": -10}},
-		{Scripts.ACTION_ADD_MONEY: {"money_amount": 100}},
-		]
+		{ Scripts.ACTION_ADD_HEALTH: { "target_override": BaseAction.TARGET_OVERRIDES.PLAYER, "health_amount": -10 } },
+		{ Scripts.ACTION_ADD_MONEY: { "money_amount": 100 } },
+	]
 	dialogue_pick_something_option_1.dialogue_option_validators = [
-		{Scripts.VALIDATOR_PLAYER_HEALTH: {"health_amount": 11}},
+		{ Scripts.VALIDATOR_PLAYER_HEALTH: { "health_amount": 11 } },
 	]
 	dialogue_pick_something_option_1.dialogue_option_next_dialogue_state_id = "" # empty ends dialogue
-	
+
 	dialogue_pick_something._assign_option(dialogue_pick_something_option_1)
-	
+
 	# Option 2
 	var dialogue_pick_something_option_2: DialogueOptionData = DialogueOptionData.new("dialogue_pick_something_option_2")
-	dialogue_pick_something_option_2.dialogue_option_bbcode = "[color=red]Lose 50 Money[/color] and [color=green]Gain Random Rare Card[/color]"
-	dialogue_pick_something_option_2.dialogue_option_failed_validator_bbcode = "[color=grey][Locked]: Insufficient Money[/color]"
+	dialogue_pick_something_option_2.dialogue_option_bbcode = "[color=red]失去 50 数据币[/color] 并且 [color=green]随机获得 1 张零日脚本[/color]"
+	dialogue_pick_something_option_2.dialogue_option_failed_validator_bbcode = "[color=grey][锁定]: 数据币不足[/color]"
 	dialogue_pick_something_option_2.dialogue_option_actions = [
 		{
-		Scripts.ACTION_PICK_CARDS: {
-			"card_pick_type": ActionBasePickCards.PICK_DRAFT,
-			"pick_draft_cards": false,
-			"draft_from_card_pool": true,
-			"action_data": [{Scripts.ACTION_ADD_CARDS_TO_DECK: {}}],
-			"validator_data": [
-				{Scripts.VALIDATOR_CARD_RARITY: {"card_rarities": [CardData.CARD_RARITIES.RARE]}},
-				{Scripts.VALIDATOR_CARD_DRAFTABLE: {}},
-			],
-			"rng_name": "rng_events",
-			"draft_use_player_draft": false, # this should always be false if using a validator based draft
-			"draft_is_weighted": false,
-			"draft_use_pity_system": false,
-			"random_selection": true, # auto pick it
-			"draft_max_card_amount": 1, # auto pick it
-			"min_card_amount": 1,
-			"max_card_amount": 1,
-			}
+			Scripts.ACTION_PICK_CARDS: {
+				"card_pick_type": ActionBasePickCards.PICK_DRAFT,
+				"pick_draft_cards": false,
+				"draft_from_card_pool": true,
+				"action_data": [{ Scripts.ACTION_ADD_CARDS_TO_DECK: { } }],
+				"validator_data": [
+					{ Scripts.VALIDATOR_CARD_RARITY: { "card_rarities": [CardData.CARD_RARITIES.RARE] } },
+					{ Scripts.VALIDATOR_CARD_DRAFTABLE: { } },
+				],
+				"rng_name": "rng_events",
+				"draft_use_player_draft": false, # this should always be false if using a validator based draft
+				"draft_is_weighted": false,
+				"draft_use_pity_system": false,
+				"random_selection": true, # auto pick it
+				"draft_max_card_amount": 1, # auto pick it
+				"min_card_amount": 1,
+				"max_card_amount": 1,
+			},
 		},
-		{Scripts.ACTION_ADD_MONEY: {"money_amount": -50}},
+		{ Scripts.ACTION_ADD_MONEY: { "money_amount": -50 } },
 	]
 	dialogue_pick_something_option_2.dialogue_option_validators = [
-		{Scripts.VALIDATOR_MONEY: {"money_amount": 50}},
+		{ Scripts.VALIDATOR_MONEY: { "money_amount": 50 } },
 	]
 	dialogue_pick_something_option_2.dialogue_option_next_dialogue_state_id = "" # empty ends dialogue
-	
+
 	dialogue_pick_something._assign_option(dialogue_pick_something_option_2)
-	
+
 	# State 1
 	var dialogue_state_pick_something_initial: DialogueStateData = DialogueStateData.new("dialogue_state_pick_something_initial")
-	dialogue_state_pick_something_initial.dialogue_state_prompt_bbcode = "Test Event. Select an option..."
+	dialogue_state_pick_something_initial.dialogue_state_prompt_bbcode = "测试事件。请选择一个选项..."
 	dialogue_state_pick_something_initial.dialogue_state_dialogue_texture_path = "external/sprites/events/event_pick_something.png"
 	dialogue_state_pick_something_initial.dialogue_state_dialogue_option_object_ids = [
 		dialogue_pick_something_option_1.object_id,
 		dialogue_pick_something_option_2.object_id,
 	]
-	
+
 	dialogue_pick_something._assign_state(dialogue_state_pick_something_initial)
 	dialogue_pick_something._assign_initial_state(dialogue_state_pick_something_initial)
 
@@ -1380,72 +1417,72 @@ func add_action_interceptors() -> void:
 	interceptor_damage_increase.action_interceptor_modifies_parent = true
 	interceptor_damage_increase.action_interceptor_script_path = Scripts.INTERCEPTOR_DAMAGE_INCREASE
 	interceptor_damage_increase.action_intercepted_action_paths = [Scripts.ACTION_ATTACK]
-	
+
 	Global.register_rod(interceptor_damage_increase)
-	
+
 	# decreases damage done by attackers
 	var interceptor_weaken: ActionInterceptorData = ActionInterceptorData.new("interceptor_weaken")
 	interceptor_weaken.action_interceptor_priority = 9500
 	interceptor_weaken.action_interceptor_modifies_parent = true
 	interceptor_weaken.action_interceptor_script_path = Scripts.INTERCEPTOR_WEAKEN
 	interceptor_weaken.action_intercepted_action_paths = [Scripts.ACTION_ATTACK]
-	
+
 	Global.register_rod(interceptor_weaken)
-	
+
 	# increases damage done to the attacked
 	var interceptor_vulnerable: ActionInterceptorData = ActionInterceptorData.new("interceptor_vulnerable")
 	interceptor_vulnerable.action_interceptor_priority = 9000
 	interceptor_vulnerable.action_interceptor_modifies_parent = false
 	interceptor_vulnerable.action_interceptor_script_path = Scripts.INTERCEPTOR_VULNERABLE
 	interceptor_vulnerable.action_intercepted_action_paths = [Scripts.ACTION_ATTACK]
-	
+
 	Global.register_rod(interceptor_vulnerable)
-	
+
 	# increases number of cards drawn
 	var interceptor_increase_turn_draw: ActionInterceptorData = ActionInterceptorData.new("interceptor_increase_turn_draw")
 	interceptor_increase_turn_draw.action_interceptor_priority = 9000
 	interceptor_increase_turn_draw.action_interceptor_modifies_parent = true
 	interceptor_increase_turn_draw.action_interceptor_script_path = Scripts.INTERCEPTOR_INCREASE_TURN_DRAW
 	interceptor_increase_turn_draw.action_intercepted_action_paths = [Scripts.ACTION_DRAW_GENERATOR]
-	
+
 	Global.register_rod(interceptor_increase_turn_draw)
-	
+
 	# provides extra health
 	var interceptor_overshield: ActionInterceptorData = ActionInterceptorData.new("interceptor_overshield")
 	interceptor_overshield.action_interceptor_priority = 8000
 	interceptor_overshield.action_interceptor_modifies_parent = false
 	interceptor_overshield.action_interceptor_script_path = Scripts.INTERCEPTOR_OVERSHIELD
 	interceptor_overshield.action_intercepted_action_paths = [Scripts.ACTION_ATTACK, Scripts.ACTION_DIRECT_DAMAGE]
-	
+
 	Global.register_rod(interceptor_overshield)
-	
+
 	# prevents energy from reseting
 	var interceptor_preserve_energy: ActionInterceptorData = ActionInterceptorData.new("interceptor_preserve_energy")
 	interceptor_preserve_energy.action_interceptor_priority = 10000
 	interceptor_preserve_energy.action_interceptor_modifies_parent = true
 	interceptor_preserve_energy.action_interceptor_script_path = Scripts.INTERCEPTOR_PRESERVE_ENERGY
 	interceptor_preserve_energy.action_intercepted_action_paths = [Scripts.ACTION_RESET_ENERGY]
-	
+
 	Global.register_rod(interceptor_preserve_energy)
-	
+
 	# prevents overshield from decaying
 	var interceptor_preserve_overshield: ActionInterceptorData = ActionInterceptorData.new("interceptor_preserve_overshield")
 	interceptor_preserve_overshield.action_interceptor_priority = 10000
 	interceptor_preserve_overshield.action_interceptor_modifies_parent = false
 	interceptor_preserve_overshield.action_interceptor_script_path = Scripts.INTERCEPTOR_PRESERVE_OVERSHIELD
 	interceptor_preserve_overshield.action_intercepted_action_paths = [Scripts.ACTION_DECAY_STATUS]
-	
+
 	Global.register_rod(interceptor_preserve_overshield)
-	
+
 	# damages attackers
 	var interceptor_pointy: ActionInterceptorData = ActionInterceptorData.new("interceptor_pointy")
 	interceptor_pointy.action_interceptor_priority = 0
 	interceptor_pointy.action_interceptor_modifies_parent = false
 	interceptor_pointy.action_interceptor_script_path = Scripts.INTERCEPTOR_POINTY
 	interceptor_pointy.action_intercepted_action_paths = [Scripts.ACTION_ATTACK]
-	
+
 	Global.register_rod(interceptor_pointy)
-	
+
 	# increases attack power from overshield charges
 	# typically a forced interceptor
 	var interceptor_damage_from_overshield: ActionInterceptorData = ActionInterceptorData.new("interceptor_damage_from_overshield")
@@ -1453,9 +1490,9 @@ func add_action_interceptors() -> void:
 	interceptor_damage_from_overshield.action_interceptor_modifies_parent = false
 	interceptor_damage_from_overshield.action_interceptor_script_path = Scripts.INTERCEPTOR_DAMAGE_FROM_OVERSHIELD
 	interceptor_damage_from_overshield.action_intercepted_action_paths = [Scripts.ACTION_ATTACK]
-	
+
 	Global.register_rod(interceptor_damage_from_overshield)
-	
+
 	# increases attack power from block
 	# typically a forced interceptor
 	var interceptor_damage_from_block: ActionInterceptorData = ActionInterceptorData.new("interceptor_damage_from_block")
@@ -1463,88 +1500,88 @@ func add_action_interceptors() -> void:
 	interceptor_damage_from_block.action_interceptor_modifies_parent = false
 	interceptor_damage_from_block.action_interceptor_script_path = Scripts.INTERCEPTOR_DAMAGE_FROM_BLOCK
 	interceptor_damage_from_block.action_intercepted_action_paths = [Scripts.ACTION_ATTACK]
-	
+
 	Global.register_rod(interceptor_damage_from_block)
-	
+
 	# negates incoming non zero damage actions
 	var interceptor_negate_damage: ActionInterceptorData = ActionInterceptorData.new("interceptor_negate_damage")
 	interceptor_negate_damage.action_interceptor_priority = -10000
 	interceptor_negate_damage.action_interceptor_modifies_parent = false
 	interceptor_negate_damage.action_interceptor_script_path = Scripts.INTERCEPTOR_NEGATE_DAMAGE
 	interceptor_negate_damage.action_intercepted_action_paths = [Scripts.ACTION_ATTACK, Scripts.ACTION_DIRECT_DAMAGE]
-	
+
 	Global.register_rod(interceptor_negate_damage)
-	
+
 	# caps incoming damage to status effect secondary charges
 	var interceptor_cap_damage: ActionInterceptorData = ActionInterceptorData.new("interceptor_cap_damage")
 	interceptor_cap_damage.action_interceptor_priority = -9000
 	interceptor_cap_damage.action_interceptor_modifies_parent = false
 	interceptor_cap_damage.action_interceptor_script_path = Scripts.INTERCEPTOR_CAP_DAMAGE
 	interceptor_cap_damage.action_intercepted_action_paths = [Scripts.ACTION_ATTACK, Scripts.ACTION_DIRECT_DAMAGE]
-	
+
 	Global.register_rod(interceptor_cap_damage)
-	
+
 	# rejects block reset actions
 	var interceptor_temp_preserve_block: ActionInterceptorData = ActionInterceptorData.new("interceptor_temp_preserve_block")
 	interceptor_temp_preserve_block.action_interceptor_priority = 10000
 	interceptor_temp_preserve_block.action_interceptor_modifies_parent = true
 	interceptor_temp_preserve_block.action_interceptor_script_path = Scripts.INTERCEPTOR_TEMP_PRESERVE_BLOCK
 	interceptor_temp_preserve_block.action_intercepted_action_paths = [Scripts.ACTION_RESET_BLOCK]
-	
+
 	Global.register_rod(interceptor_temp_preserve_block)
-	
+
 	# rejects block reset actions
 	var interceptor_preserve_block: ActionInterceptorData = ActionInterceptorData.new("interceptor_preserve_block")
 	interceptor_preserve_block.action_interceptor_priority = 10000
 	interceptor_preserve_block.action_interceptor_modifies_parent = true
 	interceptor_preserve_block.action_interceptor_script_path = Scripts.INTERCEPTOR_PRESERVE_BLOCK
 	interceptor_preserve_block.action_intercepted_action_paths = [Scripts.ACTION_RESET_BLOCK]
-	
+
 	Global.register_rod(interceptor_preserve_block)
-	
+
 	# rejects debuffing status actions
 	var interceptor_negate_debuff: ActionInterceptorData = ActionInterceptorData.new("interceptor_negate_debuff")
 	interceptor_negate_debuff.action_interceptor_priority = 10000
 	interceptor_negate_debuff.action_interceptor_modifies_parent = false
 	interceptor_negate_debuff.action_interceptor_script_path = Scripts.INTERCEPTOR_NEGATE_DEBUFF
 	interceptor_negate_debuff.action_intercepted_action_paths = [Scripts.ACTION_APPLY_STATUS]
-	
+
 	Global.register_rod(interceptor_negate_debuff)
-	
+
 	# duplicates incoming card plays
 	var interceptor_duplicate_card_plays: ActionInterceptorData = ActionInterceptorData.new("interceptor_duplicate_card_plays")
 	interceptor_duplicate_card_plays.action_interceptor_priority = 10000
 	interceptor_duplicate_card_plays.action_interceptor_modifies_parent = true
 	interceptor_duplicate_card_plays.action_interceptor_script_path = Scripts.INTERCEPTOR_DUPLICATE_CARD_PLAYS
 	interceptor_duplicate_card_plays.action_intercepted_action_paths = [Scripts.ACTION_CARD_PLAY]
-	
+
 	Global.register_rod(interceptor_duplicate_card_plays)
-	
+
 	# duplicates incoming attack card plays
 	var interceptor_duplicate_attacks: ActionInterceptorData = ActionInterceptorData.new("interceptor_duplicate_attacks")
 	interceptor_duplicate_attacks.action_interceptor_priority = 10000
 	interceptor_duplicate_attacks.action_interceptor_modifies_parent = true
 	interceptor_duplicate_attacks.action_interceptor_script_path = Scripts.INTERCEPTOR_DUPLICATE_ATTACKS
 	interceptor_duplicate_attacks.action_intercepted_action_paths = [Scripts.ACTION_CARD_PLAY]
-	
+
 	Global.register_rod(interceptor_duplicate_attacks)
-	
+
 	# uses a consumable to prevent player death
 	var interceptor_consumable_auto_revive: ActionInterceptorData = ActionInterceptorData.new("interceptor_consumable_auto_revive")
 	interceptor_consumable_auto_revive.action_interceptor_priority = 10000
 	interceptor_consumable_auto_revive.action_interceptor_modifies_parent = true
 	interceptor_consumable_auto_revive.action_interceptor_script_path = Scripts.INTERCEPTOR_CONSUMABLE_AUTO_REVIVE
 	interceptor_consumable_auto_revive.action_intercepted_action_paths = [Scripts.ACTION_DEATH]
-	
+
 	Global.register_rod(interceptor_consumable_auto_revive)
-	
+
 	# prevents gaining money
 	var interceptor_negate_add_money: ActionInterceptorData = ActionInterceptorData.new("interceptor_negate_add_money")
 	interceptor_negate_add_money.action_interceptor_priority = 10000
 	interceptor_negate_add_money.action_interceptor_modifies_parent = true
 	interceptor_negate_add_money.action_interceptor_script_path = Scripts.INTERCEPTOR_NEGATE_ADD_MONEY
 	interceptor_negate_add_money.action_intercepted_action_paths = [Scripts.ACTION_ADD_MONEY]
-	
+
 	Global.register_rod(interceptor_negate_add_money)
 
 #endregion
@@ -1557,31 +1594,31 @@ func add_colors() -> void:
 	color_green.color_name = "青绿"
 	color_green.color_energy_icon_texture_path = "sprites/ui/icon_energy.png"
 	Global.register_rod(color_green)
-	
+
 	var color_orange: ColorData = ColorData.new("color_orange")
 	color_orange.color = Color.CORAL
 	color_orange.color_name = "亮橙"
 	color_orange.color_energy_icon_texture_path = "sprites/ui/icon_energy.png"
 	Global.register_rod(color_orange)
-	
+
 	var color_red: ColorData = ColorData.new("color_red")
 	color_red.color = Color.FIREBRICK
 	color_red.color_name = "猩红"
 	color_red.color_energy_icon_texture_path = "sprites/ui/icon_energy.png"
 	Global.register_rod(color_red)
-	
+
 	var color_blue: ColorData = ColorData.new("color_blue")
 	color_blue.color = Color.ROYAL_BLUE
 	color_blue.color_name = "深蓝"
 	color_blue.color_energy_icon_texture_path = "sprites/ui/icon_energy.png"
 	Global.register_rod(color_blue)
-	
+
 	var color_white: ColorData = ColorData.new("color_white")
 	color_white.color = Color.WHITE_SMOKE
 	color_white.color_name = "纯白"
 	color_white.color_energy_icon_texture_path = "sprites/ui/icon_energy.png"
 	Global.register_rod(color_white)
-	
+
 	var color_purple: ColorData = ColorData.new("color_purple")
 	color_purple.color = Color.REBECCA_PURPLE
 	color_purple.color_name = "暗紫"
@@ -1594,84 +1631,87 @@ func add_colors() -> void:
 func add_keywords() -> void:
 	var keyword_block: KeywordData = KeywordData.new("keyword_block")
 	keyword_block.keyword_name = "防火墙"
-	keyword_block.keyword_text_bb_code = "抵挡伤害"
+	keyword_block.keyword_text_bb_code = "抵消等量的伤害。"
 	Global.register_rod(keyword_block)
-	
+
 	var keyword_corrosion: KeywordData = KeywordData.new("keyword_corrosion")
 	keyword_corrosion.keyword_name = "腐蚀"
 	keyword_corrosion.keyword_status_effect_id = "status_effect_corrosion"
 	keyword_corrosion.keyword_text_bb_code = "每时钟周期造成伤害"
 	Global.register_rod(keyword_corrosion)
-	
+
 	var keyword_bomb: KeywordData = KeywordData.new("keyword_bomb")
 	keyword_bomb.keyword_name = "炸弹"
 	keyword_bomb.keyword_text_bb_code = "计时结束时对所有敌人造成伤害"
 	Global.register_rod(keyword_bomb)
-	
+
 	### These are automatically added to cards based on flags
 	var keyword_top_deck: KeywordData = KeywordData.new("keyword_top_deck")
 	keyword_top_deck.keyword_name = "置顶"
 	keyword_top_deck.keyword_text_bb_code = "战斗开始时置于脚本库顶部"
 	Global.register_rod(keyword_top_deck)
-	
+
 	var keyword_bottom_deck: KeywordData = KeywordData.new("keyword_bottom_deck")
 	keyword_bottom_deck.keyword_name = "置底"
 	keyword_bottom_deck.keyword_text_bb_code = "战斗开始时置于脚本库底部"
 	Global.register_rod(keyword_bottom_deck)
-		
+
 	var keyword_retain: KeywordData = KeywordData.new("keyword_retain")
 	keyword_retain.keyword_name = "保留"
-	keyword_retain.keyword_text_bb_code = "时钟周期结束时不会被丢弃"
+	keyword_retain.keyword_text_bb_code = "时钟周期结束时，该脚本不会被丢弃到回收站。"
 	Global.register_rod(keyword_retain)
-	
+
 	var keyword_exhaust: KeywordData = KeywordData.new("keyword_exhaust")
 	keyword_exhaust.keyword_name = "物理删除"
-	keyword_exhaust.keyword_text_bb_code = "每场战斗只能使用一次"
+	keyword_exhaust.keyword_text_bb_code = "用完一次直接消失。"
 	Global.register_rod(keyword_exhaust)
-	
+
 	var keyword_rebound: KeywordData = KeywordData.new("keyword_rebound")
 	keyword_rebound.keyword_name = "回弹"
-	keyword_rebound.keyword_text_bb_code = "调用时将下一个脚本置于脚本库顶部。不影响不会进入回收站的脚本。"
+	keyword_rebound.keyword_text_bb_code = "打出下一个脚本后，将其置于脚本库顶部。对不会进入回收站的脚本无效。"
 	Global.register_rod(keyword_rebound)
-	
+
 	var keyword_discard: KeywordData = KeywordData.new("keyword_discard")
 	keyword_discard.keyword_name = "丢弃"
-	keyword_discard.keyword_text_bb_code = "放入回收站"
+	keyword_discard.keyword_text_bb_code = "将脚本直接放入回收站。"
 	Global.register_rod(keyword_discard)
-	
+
 	var keyword_ethereal: KeywordData = KeywordData.new("keyword_ethereal")
 	keyword_ethereal.keyword_name = "虚无"
-	keyword_ethereal.keyword_text_bb_code = "时钟周期结束时若仍在当前线程中则被物理删除"
+	keyword_ethereal.keyword_text_bb_code = "时钟周期结束时，若仍在当前线程中，则会被物理删除。"
 	keyword_ethereal.keyword_child_keyword_object_ids = ["keyword_exhaust"]
 	Global.register_rod(keyword_ethereal)
-	
+
 	var keyword_banish: KeywordData = KeywordData.new("keyword_banish")
 	keyword_banish.keyword_name = "放逐"
-	keyword_banish.keyword_text_bb_code = "在本场战斗中将一个脚本完全移除"
+	keyword_banish.keyword_text_bb_code = "从本场战斗中将一个脚本完全移除。"
 	keyword_banish.keyword_child_keyword_object_ids = []
 	Global.register_rod(keyword_banish)
-	
+
 #endregion
 
 #region VFX Animations
 func add_combat_vfx_animations() -> void:
 	var animation_vfx_impact_default: AnimationData = AnimationData.new("animation_vfx_impact_default")
-	animation_vfx_impact_default.add_vfx_animations([
-		"external/sprites/animated_effects/impact_default/vfx_impact_default_01.png",
-		"external/sprites/animated_effects/impact_default/vfx_impact_default_02.png",
-		"external/sprites/animated_effects/impact_default/vfx_impact_default_03.png",
-		"external/sprites/animated_effects/impact_default/vfx_impact_default_04.png",
-		"external/sprites/animated_effects/impact_default/vfx_impact_default_05.png",
-		"external/sprites/animated_effects/impact_default/vfx_impact_default_06.png",
-		"external/sprites/animated_effects/impact_default/vfx_impact_default_07.png",
-		"external/sprites/animated_effects/impact_default/vfx_impact_default_08.png",
-		"external/sprites/animated_effects/impact_default/vfx_impact_default_09.png",
-		"external/sprites/animated_effects/impact_default/vfx_impact_default_10.png",
-		"external/sprites/animated_effects/impact_default/vfx_impact_default_11.png",
-		"external/sprites/animated_effects/impact_default/vfx_impact_default_12.png",
-		"external/sprites/animated_effects/impact_default/vfx_impact_default_13.png",
-		"external/sprites/animated_effects/impact_default/vfx_impact_default_14.png",
-	], 25)
+	animation_vfx_impact_default.add_vfx_animations(
+		[
+			"external/sprites/animated_effects/impact_default/vfx_impact_default_01.png",
+			"external/sprites/animated_effects/impact_default/vfx_impact_default_02.png",
+			"external/sprites/animated_effects/impact_default/vfx_impact_default_03.png",
+			"external/sprites/animated_effects/impact_default/vfx_impact_default_04.png",
+			"external/sprites/animated_effects/impact_default/vfx_impact_default_05.png",
+			"external/sprites/animated_effects/impact_default/vfx_impact_default_06.png",
+			"external/sprites/animated_effects/impact_default/vfx_impact_default_07.png",
+			"external/sprites/animated_effects/impact_default/vfx_impact_default_08.png",
+			"external/sprites/animated_effects/impact_default/vfx_impact_default_09.png",
+			"external/sprites/animated_effects/impact_default/vfx_impact_default_10.png",
+			"external/sprites/animated_effects/impact_default/vfx_impact_default_11.png",
+			"external/sprites/animated_effects/impact_default/vfx_impact_default_12.png",
+			"external/sprites/animated_effects/impact_default/vfx_impact_default_13.png",
+			"external/sprites/animated_effects/impact_default/vfx_impact_default_14.png",
+		],
+		25,
+	)
 	Global.register_rod(animation_vfx_impact_default)
 #endregion
 
@@ -1679,7 +1719,7 @@ func add_combat_vfx_animations() -> void:
 
 func add_characters() -> void:
 	var character_color: String = "" # used to make writing boilerplate colors faster
-	
+
 	# green character
 	character_color = "green"
 	var character_green: CharacterData = CharacterData.new("character_{0}".format([character_color]))
@@ -1695,28 +1735,40 @@ func add_characters() -> void:
 	character_green.character_starting_artifact_pack_ids = ["artifact_pack_white", "artifact_pack_{0}".format([character_color])]
 	character_green.character_starting_consumable_pack_ids = ["consumable_pack_white", "consumable_pack_{0}".format([character_color])]
 	character_green.character_starting_card_object_ids = [
-		"card_basic_attack_green", "card_basic_attack_green", "card_basic_attack_green", "card_basic_attack_green",
-		"card_basic_block_green", "card_basic_block_green", "card_basic_block_green", "card_basic_block_green",
+		"card_basic_attack_green",
+		"card_basic_attack_green",
+		"card_basic_attack_green",
+		"card_basic_attack_green",
+		"card_basic_block_green",
+		"card_basic_block_green",
+		"card_basic_block_green",
+		"card_basic_block_green",
 		#"card_growth", "card_growth", "card_growth", "card_fertilize",
 		#"card_cell_wall", "card_thorns",
 		#"card_datum", "card_conclusion",
 		#"card_clippers", "card_petals",
-		"card_particle_accelerator", "card_particle_accelerator",
+		"card_particle_accelerator",
+		"card_particle_accelerator",
 		#"card_fusion_cannon", "card_fusion_cannon",
 		#"card_verdant", "card_verdant",
 		#"card_containment", "card_containment",
 		"card_critical",
-		"card_wildflower", "card_wildflower", "card_wildflower", "card_wildflower", 
+		"card_wildflower",
+		"card_wildflower",
+		"card_wildflower",
+		"card_wildflower",
 		#"card_energy_next_turn", "card_energy_next_turn",
-		"card_meltdown", "card_meltdown",
-		"card_photoelectric_synthesis", "card_photoelectric_synthesis",
+		"card_meltdown",
+		"card_meltdown",
+		"card_photoelectric_synthesis",
+		"card_photoelectric_synthesis",
 		#"card_feedback_loop",
 		#"card_pollen",
 		#"card_symbiosis",
 		#"card_bud", "card_bud", "card_bud", 
 		#"card_moss", "card_moss",
 	]
-	
+
 	# green character animations
 	var animation_character_green: AnimationData = AnimationData.new("animation_character_{0}".format([character_color]))
 	character_green.character_animation_id = animation_character_green.object_id
@@ -1726,11 +1778,16 @@ func add_characters() -> void:
 			"sprites/characters/character_green/attack/character_green_attack_1.png",
 			"sprites/characters/character_green/attack/character_green_attack_2.png",
 			"sprites/characters/character_green/attack/character_green_attack_3.png",
-			"sprites/characters/character_green/attack/character_green_attack_4.png"
+			"sprites/characters/character_green/attack/character_green_attack_4.png",
 		],
-		["sprites/characters/character_green/character_green_idle.png"]
-		)
-	
+		[
+			"sprites/characters/character_green/death/character_green_death_1.png",
+			"sprites/characters/character_green/death/character_green_death_2.png",
+			"sprites/characters/character_green/death/character_green_death_3.png",
+			"sprites/characters/character_green/death/character_green_death_4.png",
+		],
+	)
+
 	Global.register_rod(animation_character_green)
 	Global.register_rod(character_green)
 
@@ -1745,77 +1802,79 @@ func add_run_modifiers() -> void:
 	run_modifier_difficulty_0.run_modifier_modifier_script_path = ""
 
 	Global.register_rod(run_modifier_difficulty_0)
-	
+
 	var run_modifier_difficulty_1: RunModifierData = RunModifierData.new("run_modifier_difficulty_1")
 	run_modifier_difficulty_1.run_modifier_name = "难度 1：强化敌方进程"
 	run_modifier_difficulty_1.run_modifier_modifier_script_path = Scripts.RUN_MODIFIER_DIFFICULTY_1
 
 	Global.register_rod(run_modifier_difficulty_1)
-	
+
 	var run_modifier_difficulty_2: RunModifierData = RunModifierData.new("run_modifier_difficulty_2")
 	run_modifier_difficulty_2.run_modifier_name = "难度 2：强化精英怪"
 	run_modifier_difficulty_2.run_modifier_modifier_script_path = Scripts.RUN_MODIFIER_DIFFICULTY_2
 
 	Global.register_rod(run_modifier_difficulty_2)
-	
+
 	var run_modifier_difficulty_3: RunModifierData = RunModifierData.new("run_modifier_difficulty_3")
 	run_modifier_difficulty_3.run_modifier_name = "难度 3：强化Boss"
 	run_modifier_difficulty_3.run_modifier_modifier_script_path = Scripts.RUN_MODIFIER_DIFFICULTY_3
 
 	Global.register_rod(run_modifier_difficulty_3)
-	
+
 	var run_modifier_difficulty_4: RunModifierData = RunModifierData.new("run_modifier_difficulty_4")
 	run_modifier_difficulty_4.run_modifier_name = "难度 4：内存压缩"
 	run_modifier_difficulty_4.run_modifier_modifier_script_path = Scripts.RUN_MODIFIER_DIFFICULTY_4
 
 	Global.register_rod(run_modifier_difficulty_4)
-	
+
 	var run_modifier_difficulty_5: RunModifierData = RunModifierData.new("run_modifier_difficulty_5")
 	run_modifier_difficulty_5.run_modifier_name = "难度 5：内核级危机"
 	run_modifier_difficulty_5.run_modifier_modifier_script_path = Scripts.RUN_MODIFIER_DIFFICULTY_5
 
 	Global.register_rod(run_modifier_difficulty_5)
-	
+
 	# register the modifiers as standard difficulty
-	Global.STANDARD_DIFFICULTY_RUN_MODIFIER_IDS.append_array([
-		run_modifier_difficulty_0.object_id,
-		run_modifier_difficulty_1.object_id,
-		run_modifier_difficulty_2.object_id,
-		run_modifier_difficulty_3.object_id,
-		run_modifier_difficulty_4.object_id,
-		run_modifier_difficulty_5.object_id,
-	])
-	
+	Global.STANDARD_DIFFICULTY_RUN_MODIFIER_IDS.append_array(
+		[
+			run_modifier_difficulty_0.object_id,
+			run_modifier_difficulty_1.object_id,
+			run_modifier_difficulty_2.object_id,
+			run_modifier_difficulty_3.object_id,
+			run_modifier_difficulty_4.object_id,
+			run_modifier_difficulty_5.object_id,
+		],
+	)
+
 	### Custom Run Modifiers
 	var run_modifier_custom_easy_mode: RunModifierData = RunModifierData.new("run_modifier_custom_easy_mode")
 	run_modifier_custom_easy_mode.run_modifier_name = "安全模式 (Safe Mode)"
 	run_modifier_custom_easy_mode.run_modifier_description = "所有敌方进程将被重置为 1 完整度"
-	run_modifier_custom_easy_mode.run_modifier_is_custom =  true
+	run_modifier_custom_easy_mode.run_modifier_is_custom = true
 	run_modifier_custom_easy_mode.run_modifier_exclusive_to_modifier_ids = []
 	run_modifier_custom_easy_mode.run_modifier_modifier_script_path = Scripts.RUN_MODIFIER_CUSTOM_EASYMODE
 
 	Global.register_rod(run_modifier_custom_easy_mode)
-	
+
 	var run_modifier_endless_mode: RunModifierData = RunModifierData.new("run_modifier_endless_mode")
 	run_modifier_endless_mode.run_modifier_name = "死循环模式 (Infinite Loop)"
 	run_modifier_endless_mode.run_modifier_description = "进程将在核心损毁时才会终止"
-	run_modifier_endless_mode.run_modifier_is_custom =  true
+	run_modifier_endless_mode.run_modifier_is_custom = true
 	run_modifier_endless_mode.run_modifier_exclusive_to_modifier_ids = []
 	run_modifier_endless_mode.run_modifier_modifier_script_path = Scripts.RUN_MODIFIER_CUSTOM_ENDLESS_MODE
 
 	Global.register_rod(run_modifier_endless_mode)
-	
+
 	var run_modifier_draft_all_colors: RunModifierData = RunModifierData.new("run_modifier_draft_all_colors")
 	run_modifier_draft_all_colors.run_modifier_name = "跨域授权"
 	run_modifier_draft_all_colors.run_modifier_description = "允许调用所有权限级别的脚本"
-	run_modifier_draft_all_colors.run_modifier_is_custom =  true
+	run_modifier_draft_all_colors.run_modifier_is_custom = true
 	run_modifier_draft_all_colors.run_modifier_exclusive_to_modifier_ids = []
 	run_modifier_draft_all_colors.run_modifier_modifier_script_path = Scripts.RUN_MODIFIER_CUSTOM_DRAFT_ALL_COLORS
 
 	Global.register_rod(run_modifier_draft_all_colors)
-	
+
 	### Automatic Modifiers
-	
+
 	# this allows for auto revive consumables to work each run
 	var run_modifier_consumable_auto_revive: RunModifierData = RunModifierData.new("run_modifier_consumable_auto_revive")
 	run_modifier_consumable_auto_revive.run_modifier_name = "自动重启"
@@ -1823,9 +1882,9 @@ func add_run_modifiers() -> void:
 	run_modifier_consumable_auto_revive.run_modifier_is_automatic = true # registered regardless of difficulty
 	run_modifier_consumable_auto_revive.run_modifier_modifier_script_path = Scripts.BASE_RUN_MODIFIER # does nothing
 	run_modifier_consumable_auto_revive.run_modifier_interceptor_ids = ["interceptor_consumable_auto_revive"] # ensures auto revive always active
-	
+
 	Global.register_rod(run_modifier_consumable_auto_revive)
-	
+
 #endregion
 
 #region Run Start Options
@@ -1836,44 +1895,43 @@ func add_run_start_options() -> void:
 	var run_start_option_reduce_max_hp: RunStartOptionData = RunStartOptionData.new("run_start_option_reduce_max_hp")
 	run_start_option_reduce_max_hp.run_start_option_bb_code = "[color=red]失去10点最大完整度[/color]"
 	run_start_option_reduce_max_hp.run_start_option_type = RunStartOptionData.RUN_START_OPTION_TYPES.PARTIAL_DOWNSIDE
-	run_start_option_reduce_max_hp.run_start_option_actions = [{Scripts.ACTION_ADD_HEALTH: {"target_override": BaseAction.TARGET_OVERRIDES.PARENT, "health_max_amount": -10}}]
-	
+	run_start_option_reduce_max_hp.run_start_option_actions = [{ Scripts.ACTION_ADD_HEALTH: { "target_override": BaseAction.TARGET_OVERRIDES.PARENT, "health_max_amount": -10 } }]
+
 	Global.register_rod(run_start_option_reduce_max_hp)
-	
+
 	# take damage
 	var run_start_option_take_damage: RunStartOptionData = RunStartOptionData.new("run_start_option_take_damage")
 	run_start_option_take_damage.run_start_option_bb_code = "[color=red]失去5点完整度[/color]"
 	run_start_option_take_damage.run_start_option_type = RunStartOptionData.RUN_START_OPTION_TYPES.PARTIAL_DOWNSIDE
-	run_start_option_take_damage.run_start_option_actions = [{Scripts.ACTION_ADD_HEALTH: {"target_override": BaseAction.TARGET_OVERRIDES.PARENT, "health_amount": -5}}]
+	run_start_option_take_damage.run_start_option_actions = [{ Scripts.ACTION_ADD_HEALTH: { "target_override": BaseAction.TARGET_OVERRIDES.PARENT, "health_amount": -5 } }]
 
 	Global.register_rod(run_start_option_take_damage)
-	
+
 	# lose all money
 	var run_start_option_lose_money: RunStartOptionData = RunStartOptionData.new("run_start_option_lose_money")
 	run_start_option_lose_money.run_start_option_bb_code = "[color=red]失去所有数据币[/color]"
 	run_start_option_lose_money.run_start_option_type = RunStartOptionData.RUN_START_OPTION_TYPES.PARTIAL_DOWNSIDE
-	run_start_option_lose_money.run_start_option_actions = [{Scripts.ACTION_ADD_MONEY: {"money_amount": -1000}}]
+	run_start_option_lose_money.run_start_option_actions = [{ Scripts.ACTION_ADD_MONEY: { "money_amount": -1000 } }]
 
 	Global.register_rod(run_start_option_lose_money)
-	
-	
+
 	### Upsides
 	# add money
 	var run_start_option_add_money: RunStartOptionData = RunStartOptionData.new("run_start_option_add_money")
 	run_start_option_add_money.run_start_option_bb_code = "[color=green]获得50数据币[/color]"
 	run_start_option_add_money.run_start_option_type = RunStartOptionData.RUN_START_OPTION_TYPES.PARTIAL_UPSIDE
-	run_start_option_add_money.run_start_option_actions = [{Scripts.ACTION_ADD_MONEY: {"money_amount": 50}}]
+	run_start_option_add_money.run_start_option_actions = [{ Scripts.ACTION_ADD_MONEY: { "money_amount": 50 } }]
 
 	Global.register_rod(run_start_option_add_money)
-	
+
 	# gain max hp
 	var run_start_option_gain_max_hp: RunStartOptionData = RunStartOptionData.new("run_start_option_gain_max_hp")
 	run_start_option_gain_max_hp.run_start_option_bb_code = "[color=green]获得10点最大完整度[/color]"
 	run_start_option_gain_max_hp.run_start_option_type = RunStartOptionData.RUN_START_OPTION_TYPES.PARTIAL_UPSIDE
-	run_start_option_gain_max_hp.run_start_option_actions = [{Scripts.ACTION_ADD_HEALTH: {"target_override": BaseAction.TARGET_OVERRIDES.PLAYER, "health_amount": 10, "health_max_amount": 10}}]
-	
+	run_start_option_gain_max_hp.run_start_option_actions = [{ Scripts.ACTION_ADD_HEALTH: { "target_override": BaseAction.TARGET_OVERRIDES.PLAYER, "health_amount": 10, "health_max_amount": 10 } }]
+
 	Global.register_rod(run_start_option_gain_max_hp)
-	
+
 	# draft a card from player's pool
 	# functions identically to a standard draft
 	var run_start_option_draft_card: RunStartOptionData = RunStartOptionData.new("run_start_option_draft_card")
@@ -1881,24 +1939,24 @@ func add_run_start_options() -> void:
 	run_start_option_draft_card.run_start_option_type = RunStartOptionData.RUN_START_OPTION_TYPES.PARTIAL_UPSIDE
 	run_start_option_draft_card.run_start_option_actions = [
 		{
-		Scripts.ACTION_PICK_CARDS: {
-			"card_pick_type": ActionBasePickCards.PICK_DRAFT,
-			"pick_draft_cards": false,
-			"draft_from_card_pool": true,
-			"action_data": [{Scripts.ACTION_ADD_CARDS_TO_DECK: {}}],
-			# use same rng as player drafting so it counts as draft
-			"rng_name": "rng_card_drafting",
-			"validator_data": [], # this should always be empty if draft_use_player_draft = true
-			# weighted draft from player draft pool with pity system
-			"draft_use_player_draft": true,
-			"draft_is_weighted": false,
-			"draft_use_pity_system": false,
-			}
-		}
+			Scripts.ACTION_PICK_CARDS: {
+				"card_pick_type": ActionBasePickCards.PICK_DRAFT,
+				"pick_draft_cards": false,
+				"draft_from_card_pool": true,
+				"action_data": [{ Scripts.ACTION_ADD_CARDS_TO_DECK: { } }],
+				# use same rng as player drafting so it counts as draft
+				"rng_name": "rng_card_drafting",
+				"validator_data": [], # this should always be empty if draft_use_player_draft = true
+				# weighted draft from player draft pool with pity system
+				"draft_use_player_draft": true,
+				"draft_is_weighted": false,
+				"draft_use_pity_system": false,
+			},
+		},
 	]
-	
+
 	Global.register_rod(run_start_option_draft_card)
-	
+
 	# draft common card available to the player
 	# this uses validators to scan the entire card pool for a draft
 	# you could also use a card pack to achieve a similar effect
@@ -1907,72 +1965,74 @@ func add_run_start_options() -> void:
 	run_start_option_draft_common_card.run_start_option_type = RunStartOptionData.RUN_START_OPTION_TYPES.PARTIAL_UPSIDE
 	run_start_option_draft_common_card.run_start_option_actions = [
 		{
-		Scripts.ACTION_PICK_CARDS: {
-			"card_pick_type": ActionBasePickCards.PICK_DRAFT,
-			"pick_draft_cards": false,
-			"draft_from_card_pool": true,
-			"action_data": [{Scripts.ACTION_ADD_CARDS_TO_DECK: {}}],
-			"validator_data": [
-				{Scripts.VALIDATOR_CARD_RARITY: {"card_rarities": [CardData.CARD_RARITIES.COMMON]}},
-				{Scripts.VALIDATOR_CARD_DRAFTABLE: {}},
-			],
-			# use same rng as player drafting so it counts as draft
-			"rng_name": "rng_card_drafting",
-			"draft_use_player_draft": false, # this should always be false if using a validator based draft
-			"draft_is_weighted": false,
-			"draft_use_pity_system": false,
-			}
-		}
+			Scripts.ACTION_PICK_CARDS: {
+				"card_pick_type": ActionBasePickCards.PICK_DRAFT,
+				"pick_draft_cards": false,
+				"draft_from_card_pool": true,
+				"action_data": [{ Scripts.ACTION_ADD_CARDS_TO_DECK: { } }],
+				"validator_data": [
+					{ Scripts.VALIDATOR_CARD_RARITY: { "card_rarities": [CardData.CARD_RARITIES.COMMON] } },
+					{ Scripts.VALIDATOR_CARD_DRAFTABLE: { } },
+				],
+				# use same rng as player drafting so it counts as draft
+				"rng_name": "rng_card_drafting",
+				"draft_use_player_draft": false, # this should always be false if using a validator based draft
+				"draft_is_weighted": false,
+				"draft_use_pity_system": false,
+			},
+		},
 	]
-	
+
 	Global.register_rod(run_start_option_draft_common_card)
-	
+
 	# gain a random common artifact
 	var run_start_option_gain_common_artifact: RunStartOptionData = RunStartOptionData.new("run_start_option_gain_common_artifact")
 	run_start_option_gain_common_artifact.run_start_option_bb_code = "[color=green]获得一个随机普通外设插件[/color]"
 	run_start_option_gain_common_artifact.run_start_option_type = RunStartOptionData.RUN_START_OPTION_TYPES.PARTIAL_UPSIDE
-	run_start_option_gain_common_artifact.run_start_option_actions = [{Scripts.ACTION_ADD_ARTIFACTS_FROM_POOL:
+	run_start_option_gain_common_artifact.run_start_option_actions = [
 		{
-		"target_override": BaseAction.TARGET_OVERRIDES.PLAYER,
-		"artifact_count": 1,
-		"artifact_rarities": [ArtifactData.ARTIFACT_RARITIES.COMMON]
-		}
-		}]
-	
+			Scripts.ACTION_ADD_ARTIFACTS_FROM_POOL: {
+				"target_override": BaseAction.TARGET_OVERRIDES.PLAYER,
+				"artifact_count": 1,
+				"artifact_rarities": [ArtifactData.ARTIFACT_RARITIES.COMMON],
+			},
+		},
+	]
+
 	Global.register_rod(run_start_option_gain_common_artifact)
-	
+
 	# draft a colorless card from the white card pack
 	var run_start_option_draft_colorless_card: RunStartOptionData = RunStartOptionData.new("run_start_option_draft_colorless_card")
 	run_start_option_draft_colorless_card.run_start_option_bb_code = "[color=green]选择一张无色脚本指令[/color]"
 	run_start_option_draft_colorless_card.run_start_option_type = RunStartOptionData.RUN_START_OPTION_TYPES.PARTIAL_UPSIDE
 	run_start_option_draft_colorless_card.run_start_option_actions = [
 		{
-		Scripts.ACTION_PICK_CARDS: {
-			"card_pick_type": ActionBasePickCards.PICK_DRAFT,
-			"pick_draft_cards": false,
-			"draft_from_card_pool": true,
-			"action_data": [{Scripts.ACTION_ADD_CARDS_TO_DECK: {}}],
-			"validator_data": [],
-			# use same rng as player drafting so it counts as draft
-			"rng_name": "rng_card_drafting",
-			# get white cards
-			"draft_card_pack_id": "card_pack_white"
-			}
-		}
+			Scripts.ACTION_PICK_CARDS: {
+				"card_pick_type": ActionBasePickCards.PICK_DRAFT,
+				"pick_draft_cards": false,
+				"draft_from_card_pool": true,
+				"action_data": [{ Scripts.ACTION_ADD_CARDS_TO_DECK: { } }],
+				"validator_data": [],
+				# use same rng as player drafting so it counts as draft
+				"rng_name": "rng_card_drafting",
+				# get white cards
+				"draft_card_pack_id": "card_pack_white",
+			},
+		},
 	]
-	
+
 	Global.register_rod(run_start_option_draft_colorless_card)
-	
+
 	### Complete
-	
+
 	# replace starting artifact with a random boss one
 	var run_start_option_artifact_swap: RunStartOptionData = RunStartOptionData.new("run_start_option_artifact_swap")
 	run_start_option_artifact_swap.run_start_option_bb_code = "[color=green]将初始外设插件替换为随机Boss外设插件[/color]"
 	run_start_option_artifact_swap.run_start_option_type = RunStartOptionData.RUN_START_OPTION_TYPES.COMPLETE
-	run_start_option_artifact_swap.run_start_option_actions = [{Scripts.ACTION_SWAP_BOSS_ARTIFACT: {}}]
-	
+	run_start_option_artifact_swap.run_start_option_actions = [{ Scripts.ACTION_SWAP_BOSS_ARTIFACT: { } }]
+
 	Global.register_rod(run_start_option_artifact_swap)
-	
+
 #endregion
 
 #region Custom UI
@@ -1992,13 +2052,11 @@ func add_custom_signals() -> void:
 	custom_signal_special_discard.custom_signal_is_stat = true
 	custom_signal_special_discard.custom_signal_stat_name = "CUSTOM_STAT_SPECIAL_DISCARD"
 	Global.register_rod(custom_signal_special_discard)
-	
+
 	var custom_signal_overheated: CustomSignalData = CustomSignalData.new("custom_signal_overheated")
 	custom_signal_overheated.custom_signal_is_stat = true
 	custom_signal_overheated.custom_signal_stat_name = "CUSTOM_STAT_OVERHEATED"
 	Global.register_rod(custom_signal_overheated)
-	
-	
 
 #endregion
 
@@ -2008,59 +2066,71 @@ func add_enemies() -> void:
 	const DIFFICULTY_STANDARD_ENEMIES_HARDER: int = 1
 	const DIFFICULTY_MINIBOSS_ENEMIES_HARDER: int = 2
 	const DIFFICULTY_BOSS_ENEMIES_HARDER: int = 3
-	
+
 	# enemy that negates the first damage instance against it
 	var enemy_1: EnemyData = EnemyData.new("enemy_1")
 	enemy_1.enemy_name = "红色敌人"
 	enemy_1.add_health_bounds(17, 20)
 	enemy_1.add_health_bounds(25, 30, DIFFICULTY_STANDARD_ENEMIES_HARDER) # gets more health on later difficulty
-	enemy_1.enemy_initial_status_effects = {"status_effect_negate_damage": 1}
+	enemy_1.enemy_initial_status_effects = { "status_effect_negate_damage": 1 }
 	enemy_1.enemy_texture_path = "external/sprites/enemies/enemy_red_small.png"
 	# initial dummy state used to map initial attack pattern weights on starting combat
-	enemy_1.add_intent_state([
-		EnemyIntentData.new(EnemyIntentData.INTENT_INITIAL, DIFFICULTY_STARTING, 0, 0, "", 0, "", {"intent_attack_1": 1, "intent_attack_2": 1}),
-		])
+	enemy_1.add_intent_state(
+		[
+			EnemyIntentData.new(EnemyIntentData.INTENT_INITIAL, DIFFICULTY_STARTING, 0, 0, "", 0, "", { "intent_attack_1": 1, "intent_attack_2": 1 }),
+		],
+	)
 	# an attack that hits harder on higher difficulties
-	enemy_1.add_intent_state([
-		EnemyIntentData.new("intent_attack_1", DIFFICULTY_STARTING, 5, 1, "", 0, "", {"intent_attack_1": 1, "intent_attack_2": 1}),
-		EnemyIntentData.new("intent_attack_1", DIFFICULTY_STANDARD_ENEMIES_HARDER, 6, 1, "", 0, "", {"intent_attack_1": 1, "intent_attack_2": 1}),
-		])
-	enemy_1.add_intent_state([
-		EnemyIntentData.new("intent_attack_2", DIFFICULTY_STARTING, 3, 2, "", 0, "", {"intent_attack_1": 1, "intent_attack_2": 1}),
-		EnemyIntentData.new("intent_attack_2", DIFFICULTY_STANDARD_ENEMIES_HARDER, 4, 2, "", 0, "", {"intent_attack_1": 1, "intent_attack_2": 1}),
-		])
-		
+	enemy_1.add_intent_state(
+		[
+			EnemyIntentData.new("intent_attack_1", DIFFICULTY_STARTING, 5, 1, "", 0, "", { "intent_attack_1": 1, "intent_attack_2": 1 }),
+			EnemyIntentData.new("intent_attack_1", DIFFICULTY_STANDARD_ENEMIES_HARDER, 6, 1, "", 0, "", { "intent_attack_1": 1, "intent_attack_2": 1 }),
+		],
+	)
+	enemy_1.add_intent_state(
+		[
+			EnemyIntentData.new("intent_attack_2", DIFFICULTY_STARTING, 3, 2, "", 0, "", { "intent_attack_1": 1, "intent_attack_2": 1 }),
+			EnemyIntentData.new("intent_attack_2", DIFFICULTY_STANDARD_ENEMIES_HARDER, 4, 2, "", 0, "", { "intent_attack_1": 1, "intent_attack_2": 1 }),
+		],
+	)
+
 	var _enemy_1_anim: AnimationData = enemy_1.add_standard_animations(
-		["external/sprites/enemies/enemy_red_small.png"]
+		["external/sprites/enemies/enemy_red_small.png"],
 	)
 
 	Global.register_rod(enemy_1)
-	
+
 	# enemy that negates the first debuff against it
 	var enemy_2: EnemyData = EnemyData.new("enemy_2")
 	enemy_2.enemy_name = "蓝色敌人"
 	enemy_2.add_health_bounds(5, 7)
 	enemy_2.add_health_bounds(8, 12, DIFFICULTY_STANDARD_ENEMIES_HARDER) # gets more health on later difficulty
-	enemy_2.enemy_initial_status_effects = {"status_effect_negate_debuff": 1}
+	enemy_2.enemy_initial_status_effects = { "status_effect_negate_debuff": 1 }
 	enemy_2.enemy_texture_path = "external/sprites/enemies/enemy_blue_small.png"
-	enemy_2.add_intent_state([
-		EnemyIntentData.new(EnemyIntentData.INTENT_INITIAL, DIFFICULTY_STARTING, 0, 0, "", 0, "", {"intent_attack_1": 1, "intent_attack_2": 1})
-		])
-	enemy_2.add_intent_state([
-		EnemyIntentData.new("intent_attack_1", DIFFICULTY_STARTING, 5, 1, "", 0, "", {"intent_attack_1": 1, "intent_attack_2": 1}),
-		EnemyIntentData.new("intent_attack_1", DIFFICULTY_STANDARD_ENEMIES_HARDER, 6, 1, "", 0, "", {"intent_attack_1": 1, "intent_attack_2": 1}),
-		])
-	enemy_2.add_intent_state([
-		EnemyIntentData.new("intent_attack_2", DIFFICULTY_STARTING, 3, 2, "", 0, "", {"intent_attack_1": 1, "intent_attack_2": 1}),
-		EnemyIntentData.new("intent_attack_2", DIFFICULTY_STANDARD_ENEMIES_HARDER, 4, 2, "", 0, "", {"intent_attack_1": 1, "intent_attack_2": 1}),
-		])
-		
-	var _enemy_2_anim: AnimationData = enemy_2.add_standard_animations(
-		["external/sprites/enemies/enemy_blue_small.png"]
+	enemy_2.add_intent_state(
+		[
+			EnemyIntentData.new(EnemyIntentData.INTENT_INITIAL, DIFFICULTY_STARTING, 0, 0, "", 0, "", { "intent_attack_1": 1, "intent_attack_2": 1 }),
+		],
 	)
-	
+	enemy_2.add_intent_state(
+		[
+			EnemyIntentData.new("intent_attack_1", DIFFICULTY_STARTING, 5, 1, "", 0, "", { "intent_attack_1": 1, "intent_attack_2": 1 }),
+			EnemyIntentData.new("intent_attack_1", DIFFICULTY_STANDARD_ENEMIES_HARDER, 6, 1, "", 0, "", { "intent_attack_1": 1, "intent_attack_2": 1 }),
+		],
+	)
+	enemy_2.add_intent_state(
+		[
+			EnemyIntentData.new("intent_attack_2", DIFFICULTY_STARTING, 3, 2, "", 0, "", { "intent_attack_1": 1, "intent_attack_2": 1 }),
+			EnemyIntentData.new("intent_attack_2", DIFFICULTY_STANDARD_ENEMIES_HARDER, 4, 2, "", 0, "", { "intent_attack_1": 1, "intent_attack_2": 1 }),
+		],
+	)
+
+	var _enemy_2_anim: AnimationData = enemy_2.add_standard_animations(
+		["external/sprites/enemies/enemy_blue_small.png"],
+	)
+
 	Global.register_rod(enemy_2)
-	
+
 	# enemy that applies poison to everyone on death
 	var enemy_3: EnemyData = EnemyData.new("enemy_3")
 	enemy_3.add_health_bounds(15, 25)
@@ -2069,27 +2139,33 @@ func add_enemies() -> void:
 	enemy_3.enemy_texture_path = "external/sprites/enemies/enemy_green_small.png"
 	enemy_3.enemy_actions_on_death = [
 		{
-		Scripts.ACTION_APPLY_STATUS: {"status_charge_amount": 5, "status_effect_object_id": "status_effect_corrosion", "time_delay": 0.5, "target_override": BaseAction.TARGET_OVERRIDES.ALL_COMBATANTS}
-		}
+			Scripts.ACTION_APPLY_STATUS: { "status_charge_amount": 5, "status_effect_object_id": "status_effect_corrosion", "time_delay": 0.5, "target_override": BaseAction.TARGET_OVERRIDES.ALL_COMBATANTS },
+		},
 	]
-	enemy_3.add_intent_state([
-		EnemyIntentData.new(EnemyIntentData.INTENT_INITIAL, DIFFICULTY_STARTING, 0, 0, "", 0, "", {"intent_attack_1": 1, "intent_attack_2": 1}),
-		])
-	enemy_3.add_intent_state([
-		EnemyIntentData.new("intent_attack_1", DIFFICULTY_STARTING, 5, 1, "", 0, "", {"intent_attack_1": 1, "intent_attack_2": 1}),
-		EnemyIntentData.new("intent_attack_1", DIFFICULTY_STANDARD_ENEMIES_HARDER, 7, 1, "", 0, "", {"intent_attack_1": 1, "intent_attack_2": 1}),
-		])
-	enemy_3.add_intent_state([
-		EnemyIntentData.new("intent_attack_2", DIFFICULTY_STARTING, 3, 2, "", 0, "", {"intent_attack_1": 1, "intent_attack_2": 1}),
-		EnemyIntentData.new("intent_attack_2", DIFFICULTY_STANDARD_ENEMIES_HARDER, 3, 3, "", 0, "", {"intent_attack_1": 1, "intent_attack_2": 1}),
-	])
-	
-	var _enemy_3_anim: AnimationData = enemy_3.add_standard_animations(
-		["external/sprites/enemies/enemy_green_small.png"]
+	enemy_3.add_intent_state(
+		[
+			EnemyIntentData.new(EnemyIntentData.INTENT_INITIAL, DIFFICULTY_STARTING, 0, 0, "", 0, "", { "intent_attack_1": 1, "intent_attack_2": 1 }),
+		],
 	)
-	
+	enemy_3.add_intent_state(
+		[
+			EnemyIntentData.new("intent_attack_1", DIFFICULTY_STARTING, 5, 1, "", 0, "", { "intent_attack_1": 1, "intent_attack_2": 1 }),
+			EnemyIntentData.new("intent_attack_1", DIFFICULTY_STANDARD_ENEMIES_HARDER, 7, 1, "", 0, "", { "intent_attack_1": 1, "intent_attack_2": 1 }),
+		],
+	)
+	enemy_3.add_intent_state(
+		[
+			EnemyIntentData.new("intent_attack_2", DIFFICULTY_STARTING, 3, 2, "", 0, "", { "intent_attack_1": 1, "intent_attack_2": 1 }),
+			EnemyIntentData.new("intent_attack_2", DIFFICULTY_STANDARD_ENEMIES_HARDER, 3, 3, "", 0, "", { "intent_attack_1": 1, "intent_attack_2": 1 }),
+		],
+	)
+
+	var _enemy_3_anim: AnimationData = enemy_3.add_standard_animations(
+		["external/sprites/enemies/enemy_green_small.png"],
+	)
+
 	Global.register_rod(enemy_3)
-	
+
 	# enemy that applies vulnerable to player
 	var enemy_4: EnemyData = EnemyData.new("enemy_4")
 	enemy_4.add_health_bounds(37, 43)
@@ -2097,113 +2173,139 @@ func add_enemies() -> void:
 	enemy_4.enemy_name = "重击敌人"
 	enemy_4.enemy_texture_path = "external/sprites/enemies/enemy_purple_medium.png"
 	enemy_4.enemy_actions_on_death = [
-	{
-	Scripts.ACTION_APPLY_STATUS: {"status_charge_amount": 5, "status_effect_object_id": "status_effect_corrosion", "time_delay": 0.5, "target_override": BaseAction.TARGET_OVERRIDES.ALL_COMBATANTS}
-	}
+		{
+			Scripts.ACTION_APPLY_STATUS: { "status_charge_amount": 5, "status_effect_object_id": "status_effect_corrosion", "time_delay": 0.5, "target_override": BaseAction.TARGET_OVERRIDES.ALL_COMBATANTS },
+		},
 	]
-	enemy_4.add_intent_state([
-		EnemyIntentData.new(EnemyIntentData.INTENT_INITIAL, DIFFICULTY_STARTING, 0, 0, "", 0, "", {"intent_attack_vulnerable": 1})
-		])
-	var enemy_4_status_charge_1: int = 2
-	var enemy_4_status_actions_1: Array[Dictionary] = [{Scripts.ACTION_APPLY_STATUS: {"status_effect_object_id": "status_effect_vulnerable", "status_charge_amount": enemy_4_status_charge_1, "target_override": BaseAction.TARGET_OVERRIDES.PLAYER}}]
-	var enemy_4_status_charge_2: int = 4
-	var enemy_4_status_actions_2: Array[Dictionary] = [{Scripts.ACTION_APPLY_STATUS: {"status_effect_object_id": "status_effect_vulnerable", "status_charge_amount": enemy_4_status_charge_2, "target_override": BaseAction.TARGET_OVERRIDES.PLAYER}}]
-	enemy_4.add_intent_state([
-		EnemyIntentData.new("intent_attack_vulnerable", DIFFICULTY_STARTING, 10, 1, "", 0, "", {"intent_attack_multi": 1}, enemy_4_status_actions_1),
-		EnemyIntentData.new("intent_attack_vulnerable", DIFFICULTY_STANDARD_ENEMIES_HARDER, 12, 1, "", 0, "", {"intent_attack_multi": 1}, enemy_4_status_actions_2),
-	])
-	enemy_4.add_intent_state([
-		EnemyIntentData.new("intent_attack_multi", DIFFICULTY_STARTING, 5, 2, "", 0, "", {"intent_block": 1}),
-		EnemyIntentData.new("intent_attack_multi", DIFFICULTY_STANDARD_ENEMIES_HARDER, 6, 2, "", 0, "", {"intent_block": 1}),
-		])
-	enemy_4.add_intent_state([
-		EnemyIntentData.new("intent_block", DIFFICULTY_STARTING, 0, 0, "", 10, "", {"intent_attack_vulnerable": 1}),
-		EnemyIntentData.new("intent_block", DIFFICULTY_STANDARD_ENEMIES_HARDER, 0, 0, "", 12, "", {"intent_attack_vulnerable": 1}),
-	])
-	
-	var _enemy_4_anim: AnimationData = enemy_4.add_standard_animations(
-		["external/sprites/enemies/enemy_purple_medium.png"]
+	enemy_4.add_intent_state(
+		[
+			EnemyIntentData.new(EnemyIntentData.INTENT_INITIAL, DIFFICULTY_STARTING, 0, 0, "", 0, "", { "intent_attack_vulnerable": 1 }),
+		],
 	)
-	
+	var enemy_4_status_charge_1: int = 2
+	var enemy_4_status_actions_1: Array[Dictionary] = [{ Scripts.ACTION_APPLY_STATUS: { "status_effect_object_id": "status_effect_vulnerable", "status_charge_amount": enemy_4_status_charge_1, "target_override": BaseAction.TARGET_OVERRIDES.PLAYER } }]
+	var enemy_4_status_charge_2: int = 4
+	var enemy_4_status_actions_2: Array[Dictionary] = [{ Scripts.ACTION_APPLY_STATUS: { "status_effect_object_id": "status_effect_vulnerable", "status_charge_amount": enemy_4_status_charge_2, "target_override": BaseAction.TARGET_OVERRIDES.PLAYER } }]
+	enemy_4.add_intent_state(
+		[
+			EnemyIntentData.new("intent_attack_vulnerable", DIFFICULTY_STARTING, 10, 1, "", 0, "", { "intent_attack_multi": 1 }, enemy_4_status_actions_1),
+			EnemyIntentData.new("intent_attack_vulnerable", DIFFICULTY_STANDARD_ENEMIES_HARDER, 12, 1, "", 0, "", { "intent_attack_multi": 1 }, enemy_4_status_actions_2),
+		],
+	)
+	enemy_4.add_intent_state(
+		[
+			EnemyIntentData.new("intent_attack_multi", DIFFICULTY_STARTING, 5, 2, "", 0, "", { "intent_block": 1 }),
+			EnemyIntentData.new("intent_attack_multi", DIFFICULTY_STANDARD_ENEMIES_HARDER, 6, 2, "", 0, "", { "intent_block": 1 }),
+		],
+	)
+	enemy_4.add_intent_state(
+		[
+			EnemyIntentData.new("intent_block", DIFFICULTY_STARTING, 0, 0, "", 10, "", { "intent_attack_vulnerable": 1 }),
+			EnemyIntentData.new("intent_block", DIFFICULTY_STANDARD_ENEMIES_HARDER, 0, 0, "", 12, "", { "intent_attack_vulnerable": 1 }),
+		],
+	)
+
+	var _enemy_4_anim: AnimationData = enemy_4.add_standard_animations(
+		["external/sprites/enemies/enemy_purple_medium.png"],
+	)
+
 	Global.register_rod(enemy_4)
-	
+
 	var enemy_act_1_miniboss_1: EnemyData = EnemyData.new("enemy_act_1_miniboss_1")
-	enemy_act_1_miniboss_1.add_health_bounds(100,100)
-	enemy_act_1_miniboss_1.add_health_bounds(120,120, DIFFICULTY_MINIBOSS_ENEMIES_HARDER) # gets more health on later difficulty
+	enemy_act_1_miniboss_1.add_health_bounds(100, 100)
+	enemy_act_1_miniboss_1.add_health_bounds(120, 120, DIFFICULTY_MINIBOSS_ENEMIES_HARDER) # gets more health on later difficulty
 	enemy_act_1_miniboss_1.enemy_type = EnemyData.ENEMY_TYPES.MINIBOSS
 	enemy_act_1_miniboss_1.enemy_name = "第一章 精英怪"
 	enemy_act_1_miniboss_1.enemy_texture_path = "external/sprites/enemies/enemy_green_medium.png"
-	enemy_act_1_miniboss_1.add_intent_state([
-		EnemyIntentData.new(EnemyIntentData.INTENT_INITIAL, DIFFICULTY_STARTING, 0, 0, "", 0, "", {"intent_attack_1": 1, "intent_attack_2": 1})
-	])
-	enemy_act_1_miniboss_1.add_intent_state([
-		EnemyIntentData.new("intent_attack_1", DIFFICULTY_STARTING, 18, 1, "", 0, "", {"intent_attack_1": 1, "intent_attack_2": 1}),
-		EnemyIntentData.new("intent_attack_1", DIFFICULTY_MINIBOSS_ENEMIES_HARDER, 22, 1, "", 0, "", {"intent_attack_1": 1, "intent_attack_2": 1}),
-		])
-	enemy_act_1_miniboss_1.add_intent_state([
-		EnemyIntentData.new("intent_attack_2", DIFFICULTY_STARTING, 8, 2, "", 0, "", {"intent_attack_1": 1, "intent_attack_2": 1}),
-		EnemyIntentData.new("intent_attack_2", DIFFICULTY_MINIBOSS_ENEMIES_HARDER, 10, 2, "", 0, "", {"intent_attack_1": 1, "intent_attack_2": 1}),
-		])
-	
-	var _enemy_act_1_miniboss_1_anim: AnimationData = enemy_act_1_miniboss_1.add_standard_animations(
-		["external/sprites/enemies/enemy_green_medium.png"]
+	enemy_act_1_miniboss_1.add_intent_state(
+		[
+			EnemyIntentData.new(EnemyIntentData.INTENT_INITIAL, DIFFICULTY_STARTING, 0, 0, "", 0, "", { "intent_attack_1": 1, "intent_attack_2": 1 }),
+		],
 	)
-	
+	enemy_act_1_miniboss_1.add_intent_state(
+		[
+			EnemyIntentData.new("intent_attack_1", DIFFICULTY_STARTING, 18, 1, "", 0, "", { "intent_attack_1": 1, "intent_attack_2": 1 }),
+			EnemyIntentData.new("intent_attack_1", DIFFICULTY_MINIBOSS_ENEMIES_HARDER, 22, 1, "", 0, "", { "intent_attack_1": 1, "intent_attack_2": 1 }),
+		],
+	)
+	enemy_act_1_miniboss_1.add_intent_state(
+		[
+			EnemyIntentData.new("intent_attack_2", DIFFICULTY_STARTING, 8, 2, "", 0, "", { "intent_attack_1": 1, "intent_attack_2": 1 }),
+			EnemyIntentData.new("intent_attack_2", DIFFICULTY_MINIBOSS_ENEMIES_HARDER, 10, 2, "", 0, "", { "intent_attack_1": 1, "intent_attack_2": 1 }),
+		],
+	)
+
+	var _enemy_act_1_miniboss_1_anim: AnimationData = enemy_act_1_miniboss_1.add_standard_animations(
+		["external/sprites/enemies/enemy_green_medium.png"],
+	)
+
 	Global.register_rod(enemy_act_1_miniboss_1)
-	
+
 	var enemy_act_1_miniboss_2: EnemyData = EnemyData.new("enemy_act_1_miniboss_2")
 	enemy_act_1_miniboss_2.add_health_bounds(45, 55)
 	enemy_act_1_miniboss_2.add_health_bounds(70, 80, DIFFICULTY_MINIBOSS_ENEMIES_HARDER) # gets more health on later difficulty
 	enemy_act_1_miniboss_2.enemy_type = EnemyData.ENEMY_TYPES.MINIBOSS
 	enemy_act_1_miniboss_2.enemy_name = "第一章 精英怪"
 	enemy_act_1_miniboss_2.enemy_texture_path = "external/sprites/enemies/enemy_red_medium.png"
-	enemy_act_1_miniboss_2.add_intent_state([
-		EnemyIntentData.new(EnemyIntentData.INTENT_INITIAL, DIFFICULTY_STARTING, 0, 0, "", 0, "", {"intent_attack_1": 1, "intent_attack_2": 1})
-		])
-	enemy_act_1_miniboss_2.add_intent_state([
-		EnemyIntentData.new("intent_attack_1", DIFFICULTY_STARTING, 8, 1, "", 0, "", {"intent_attack_1": 1, "intent_attack_2": 1}),
-		EnemyIntentData.new("intent_attack_1", DIFFICULTY_MINIBOSS_ENEMIES_HARDER, 10, 1, "", 0, "", {"intent_attack_1": 1, "intent_attack_2": 1}),
-		])
-	enemy_act_1_miniboss_2.add_intent_state([
-		EnemyIntentData.new("intent_attack_2", DIFFICULTY_STARTING, 4, 2, "", 0, "", {"intent_attack_1": 1, "intent_attack_2": 1}),
-		EnemyIntentData.new("intent_attack_2", DIFFICULTY_MINIBOSS_ENEMIES_HARDER, 5, 2, "", 0, "", {"intent_attack_1": 1, "intent_attack_2": 1}),
-		])
-	
-	var _enemy_act_1_miniboss_2_anim: AnimationData = enemy_act_1_miniboss_2.add_standard_animations(
-		["external/sprites/enemies/enemy_red_medium.png"]
+	enemy_act_1_miniboss_2.add_intent_state(
+		[
+			EnemyIntentData.new(EnemyIntentData.INTENT_INITIAL, DIFFICULTY_STARTING, 0, 0, "", 0, "", { "intent_attack_1": 1, "intent_attack_2": 1 }),
+		],
 	)
-	
+	enemy_act_1_miniboss_2.add_intent_state(
+		[
+			EnemyIntentData.new("intent_attack_1", DIFFICULTY_STARTING, 8, 1, "", 0, "", { "intent_attack_1": 1, "intent_attack_2": 1 }),
+			EnemyIntentData.new("intent_attack_1", DIFFICULTY_MINIBOSS_ENEMIES_HARDER, 10, 1, "", 0, "", { "intent_attack_1": 1, "intent_attack_2": 1 }),
+		],
+	)
+	enemy_act_1_miniboss_2.add_intent_state(
+		[
+			EnemyIntentData.new("intent_attack_2", DIFFICULTY_STARTING, 4, 2, "", 0, "", { "intent_attack_1": 1, "intent_attack_2": 1 }),
+			EnemyIntentData.new("intent_attack_2", DIFFICULTY_MINIBOSS_ENEMIES_HARDER, 5, 2, "", 0, "", { "intent_attack_1": 1, "intent_attack_2": 1 }),
+		],
+	)
+
+	var _enemy_act_1_miniboss_2_anim: AnimationData = enemy_act_1_miniboss_2.add_standard_animations(
+		["external/sprites/enemies/enemy_red_medium.png"],
+	)
+
 	Global.register_rod(enemy_act_1_miniboss_2)
-	
+
 	# boss that summons minions
 	var enemy_act_1_boss_1: EnemyData = EnemyData.new("enemy_act_1_boss_1")
 	enemy_act_1_boss_1.add_health_bounds(200, 200)
 	enemy_act_1_boss_1.add_health_bounds(250, 250, DIFFICULTY_BOSS_ENEMIES_HARDER)
 	enemy_act_1_boss_1.enemy_type = EnemyData.ENEMY_TYPES.BOSS
 	enemy_act_1_boss_1.enemy_name = "第一章头目"
-	enemy_act_1_boss_1.enemy_texture_path =  "external/sprites/enemies/enemy_red_large.png"
-	enemy_act_1_boss_1.add_intent_state([
-		EnemyIntentData.new(EnemyIntentData.INTENT_INITIAL, DIFFICULTY_STARTING, 0, 0, "", 0, "", {"intent_summon": 1})
-		])
-	var enemy_act_1_boss_1_summon_actions: Array[Dictionary] = [
-				{
-				Scripts.ACTION_SUMMON_ENEMIES: {"number_of_spawns": 2, "spawn_slots": [1,2], "time_delay": 0.5, "random_enemy_object_ids": ["enemy_minion_1", "enemy_minion_2"], "target_override": BaseAction.TARGET_OVERRIDES.PARENT}
-				}
-			]
-	enemy_act_1_boss_1.add_intent_state([
-		EnemyIntentData.new("intent_summon", DIFFICULTY_STARTING, 0, 0, "", 0, "", {"intent_attack": 1}, enemy_act_1_boss_1_summon_actions)
-		])
-	enemy_act_1_boss_1.add_intent_state([
-		EnemyIntentData.new("intent_attack", DIFFICULTY_STARTING, 3, 2, "", 7, "", {"intent_attack": 1}),
-		EnemyIntentData.new("intent_attack", DIFFICULTY_BOSS_ENEMIES_HARDER, 5, 2, "", 7, "", {"intent_attack": 1}),
-	])
-	
-	var _enemy_act_1_boss_1_anim: AnimationData = enemy_act_1_boss_1.add_standard_animations(
-		["external/sprites/enemies/enemy_red_large.png"]
+	enemy_act_1_boss_1.enemy_texture_path = "external/sprites/enemies/enemy_red_large.png"
+	enemy_act_1_boss_1.add_intent_state(
+		[
+			EnemyIntentData.new(EnemyIntentData.INTENT_INITIAL, DIFFICULTY_STARTING, 0, 0, "", 0, "", { "intent_summon": 1 }),
+		],
 	)
-	
+	var enemy_act_1_boss_1_summon_actions: Array[Dictionary] = [
+		{
+			Scripts.ACTION_SUMMON_ENEMIES: { "number_of_spawns": 2, "spawn_slots": [1, 2], "time_delay": 0.5, "random_enemy_object_ids": ["enemy_minion_1", "enemy_minion_2"], "target_override": BaseAction.TARGET_OVERRIDES.PARENT },
+		},
+	]
+	enemy_act_1_boss_1.add_intent_state(
+		[
+			EnemyIntentData.new("intent_summon", DIFFICULTY_STARTING, 0, 0, "", 0, "", { "intent_attack": 1 }, enemy_act_1_boss_1_summon_actions),
+		],
+	)
+	enemy_act_1_boss_1.add_intent_state(
+		[
+			EnemyIntentData.new("intent_attack", DIFFICULTY_STARTING, 3, 2, "", 7, "", { "intent_attack": 1 }),
+			EnemyIntentData.new("intent_attack", DIFFICULTY_BOSS_ENEMIES_HARDER, 5, 2, "", 7, "", { "intent_attack": 1 }),
+		],
+	)
+
+	var _enemy_act_1_boss_1_anim: AnimationData = enemy_act_1_boss_1.add_standard_animations(
+		["external/sprites/enemies/enemy_red_large.png"],
+	)
+
 	Global.register_rod(enemy_act_1_boss_1)
-	
+
 	# example of minion enemy
 	var enemy_minion_1: EnemyData = EnemyData.new("enemy_minion_1")
 	enemy_minion_1.add_health_bounds(4, 4)
@@ -2211,20 +2313,24 @@ func add_enemies() -> void:
 	enemy_minion_1.enemy_name = "爪牙 1"
 	enemy_minion_1.enemy_texture_path = "external/sprites/enemies/enemy_purple_small.png"
 	enemy_minion_1.enemy_is_minion = true
-	enemy_minion_1.add_intent_state([
-		EnemyIntentData.new(EnemyIntentData.INTENT_INITIAL, DIFFICULTY_STARTING, 0, 0, "", 0, "", {"intent_attack": 1})
-	])
-	enemy_minion_1.add_intent_state([
-		EnemyIntentData.new("intent_attack", DIFFICULTY_STARTING, 5, 1, "", 0, "", {"intent_attack": 1}),
-		EnemyIntentData.new("intent_attack", DIFFICULTY_BOSS_ENEMIES_HARDER, 8, 1, "", 5, "", {"intent_attack": 1}),
-		])
-	
-	var _enemy_minion_1_anim: AnimationData = enemy_minion_1.add_standard_animations(
-		["external/sprites/enemies/enemy_purple_small.png"]
+	enemy_minion_1.add_intent_state(
+		[
+			EnemyIntentData.new(EnemyIntentData.INTENT_INITIAL, DIFFICULTY_STARTING, 0, 0, "", 0, "", { "intent_attack": 1 }),
+		],
 	)
-	
+	enemy_minion_1.add_intent_state(
+		[
+			EnemyIntentData.new("intent_attack", DIFFICULTY_STARTING, 5, 1, "", 0, "", { "intent_attack": 1 }),
+			EnemyIntentData.new("intent_attack", DIFFICULTY_BOSS_ENEMIES_HARDER, 8, 1, "", 5, "", { "intent_attack": 1 }),
+		],
+	)
+
+	var _enemy_minion_1_anim: AnimationData = enemy_minion_1.add_standard_animations(
+		["external/sprites/enemies/enemy_purple_small.png"],
+	)
+
 	Global.register_rod(enemy_minion_1)
-	
+
 	# example of minion enemy
 	var enemy_minion_2: EnemyData = EnemyData.new("enemy_minion_2")
 	enemy_minion_2.add_health_bounds(3, 5)
@@ -2232,18 +2338,22 @@ func add_enemies() -> void:
 	enemy_minion_2.enemy_name = "爪牙 2"
 	enemy_minion_2.enemy_texture_path = "external/sprites/enemies/enemy_green_small.png"
 	enemy_minion_2.enemy_is_minion = true
-	enemy_minion_2.add_intent_state([
-		EnemyIntentData.new(EnemyIntentData.INTENT_INITIAL, DIFFICULTY_STARTING, 0, 0, "", 0, "", {"intent_attack": 1})
-		])
-	enemy_minion_2.add_intent_state([
-		EnemyIntentData.new("intent_attack", DIFFICULTY_STARTING, 3, 1, "", 5, "", {"intent_attack": 1}),
-		EnemyIntentData.new("intent_attack", DIFFICULTY_BOSS_ENEMIES_HARDER, 5, 1, "", 5, "", {"intent_attack": 1}),
-		])
-	
-	var _enemy_minion_2_anim: AnimationData = enemy_minion_2.add_standard_animations(
-		["external/sprites/enemies/enemy_green_small.png"]
+	enemy_minion_2.add_intent_state(
+		[
+			EnemyIntentData.new(EnemyIntentData.INTENT_INITIAL, DIFFICULTY_STARTING, 0, 0, "", 0, "", { "intent_attack": 1 }),
+		],
 	)
-	
+	enemy_minion_2.add_intent_state(
+		[
+			EnemyIntentData.new("intent_attack", DIFFICULTY_STARTING, 3, 1, "", 5, "", { "intent_attack": 1 }),
+			EnemyIntentData.new("intent_attack", DIFFICULTY_BOSS_ENEMIES_HARDER, 5, 1, "", 5, "", { "intent_attack": 1 }),
+		],
+	)
+
+	var _enemy_minion_2_anim: AnimationData = enemy_minion_2.add_standard_animations(
+		["external/sprites/enemies/enemy_green_small.png"],
+	)
+
 	Global.register_rod(enemy_minion_2)
 
 #endregion
@@ -2253,22 +2363,22 @@ func add_enemies() -> void:
 func add_player_data() -> void:
 	var player_red: PlayerData = PlayerData.new("player_red")
 	player_red.player_character_object_id = "character_red"
-	
+
 	Global.register_rod(player_red)
-	
+
 	var player_blue: PlayerData = PlayerData.new("player_blue")
 	player_blue.player_character_object_id = "character_blue"
-	
+
 	Global.register_rod(player_blue)
-	
+
 	var player_green: PlayerData = PlayerData.new("player_green")
 	player_green.player_character_object_id = "character_green"
-	
+
 	Global.register_rod(player_green)
-	
+
 	var player_orange: PlayerData = PlayerData.new("player_orange")
 	player_orange.player_character_object_id = "character_orange"
-	
+
 	Global.register_rod(player_orange)
 
 #endregion
@@ -2278,53 +2388,53 @@ func add_card_decorators() -> void:
 	# decorator that changes card cost based on combat stats
 	var card_decorator_dynamic_cost_modifier: CardDecoratorData = CardDecoratorData.new("card_decorator_dynamic_cost_modifier")
 	card_decorator_dynamic_cost_modifier.card_decorator_script_path = Scripts.DECORATOR_DYNAMIC_COST_MODIFIER
-	
+
 	Global.register_rod(card_decorator_dynamic_cost_modifier)
-	
+
 	# decorator that modifies card_values based on combat stats
 	var card_decorator_dynamic_value_modifier: CardDecoratorData = CardDecoratorData.new("card_decorator_dynamic_value_modifier")
 	card_decorator_dynamic_value_modifier.card_decorator_script_path = Scripts.DECORATOR_DYNAMIC_VALUE_MODIFIER
-	
+
 	Global.register_rod(card_decorator_dynamic_value_modifier)
-	
+
 	# decorator that applies block on card play
 	# applies a custom decorator value to the card and displays the number on the decorator
 	var card_decorator_block_on_play: CardDecoratorData = CardDecoratorData.new("card_decorator_block_on_play")
 	card_decorator_block_on_play.card_decorator_texture_path = "external/sprites/card_decorators/purple_decorator.png"
 	card_decorator_block_on_play.card_decorator_value_improvements = {
-		"decorator_value_block": 5
+		"decorator_value_block": 5,
 	}
 	card_decorator_block_on_play.card_decorator_pre_description = "[center][color=purple]Block [decorator_value_block][/color][/center]\n"
 	card_decorator_block_on_play.card_decorator_label_value_name = "decorator_value_block"
 	card_decorator_block_on_play.card_decorator_add_keyword_ids = ["keyword_block"]
-	card_decorator_block_on_play.card_decorator_pre_play_actions = 	[
-	{
-	Scripts.ACTION_BLOCK: 
+	card_decorator_block_on_play.card_decorator_pre_play_actions = [
 		{
-			# convert the decorator's block into actual block
-			"custom_key_names": {"block": "decorator_value_block"},
-			"time_delay": 0.5,
-			"target_override": BaseAction.TARGET_OVERRIDES.PARENT
-		}
-	}]
+			Scripts.ACTION_BLOCK: {
+				# convert the decorator's block into actual block
+				"custom_key_names": { "block": "decorator_value_block" },
+				"time_delay": 0.5,
+				"target_override": BaseAction.TARGET_OVERRIDES.PARENT,
+			},
+		},
+	]
 	Global.register_rod(card_decorator_block_on_play)
-	
+
 	# decorator that removes exhaust from a card
 	# should be combined with a validator to prevent it from being applied to a non exhausting card
 	var card_decorator_remove_exhaust: CardDecoratorData = CardDecoratorData.new("card_decorator_remove_exhaust")
 	card_decorator_remove_exhaust.card_decorator_texture_path = "external/sprites/card_decorators/yellow_decorator.png"
 	card_decorator_remove_exhaust.card_decorator_property_changes = {
-		"card_play_destination": HandManager.DISCARD_PILE
+		"card_play_destination": HandManager.DISCARD_PILE,
 	}
 	Global.register_rod(card_decorator_remove_exhaust)
-	
+
 	# decorator that draws extra cards when the card is drawn the first time
 	# applies a custom decorator value to the card and displays the number on the decorator
 	var card_decorator_extra_draw: CardDecoratorData = CardDecoratorData.new("card_decorator_extra_draw")
 	card_decorator_extra_draw.card_decorator_texture_path = "external/sprites/card_decorators/green_decorator.png"
 	card_decorator_extra_draw.card_decorator_value_changes = {
 		# add a flag to the card used to check for first time
-		"decorator_value_extra_draw": 2
+		"decorator_value_extra_draw": 2,
 	}
 	card_decorator_extra_draw.card_decorator_post_description = "[center][color=green]首次抽到时，抽取 2 个脚本。[/color][/center]\n"
 	card_decorator_extra_draw.card_decorator_label_value_name = "decorator_value_extra_draw"
@@ -2332,36 +2442,35 @@ func add_card_decorators() -> void:
 		{
 			# check flag when drawn
 			Scripts.ACTION_VALIDATOR: {
-				"validator_data":
-				[
+				"validator_data": [
 					{
-					Scripts.VALIDATOR_CARD_VALUES: 
-						{
-						"card_value_name": "decorator_value_extra_draw",
-						"operator": ">",
-						"comparison_value": 0,
-						"invert_validation": false,
-						}
-					}
-				],
-				# draw cards and change flag
-				"passed_action_data": 
-				[
-					{
-					Scripts.ACTION_CHANGE_CARD_VALUES: {
-						"pick_played_card": true,
-						"modify_parent_card": false,
-						"new_card_values": {"decorator_value_extra_draw": 0}
+						Scripts.VALIDATOR_CARD_VALUES: {
+							"card_value_name": "decorator_value_extra_draw",
+							"operator": ">",
+							"comparison_value": 0,
+							"invert_validation": false,
 						},
 					},
-					{Scripts.ACTION_DRAW_GENERATOR: {
-						# alias the extra draw count
-						"custom_key_names": {"draw_count": "decorator_value_extra_draw"}
-					}},
-				]
-			}
-		}
-		]
+				],
+				# draw cards and change flag
+				"passed_action_data": [
+					{
+						Scripts.ACTION_CHANGE_CARD_VALUES: {
+							"pick_played_card": true,
+							"modify_parent_card": false,
+							"new_card_values": { "decorator_value_extra_draw": 0 },
+						},
+					},
+					{
+						Scripts.ACTION_DRAW_GENERATOR: {
+							# alias the extra draw count
+							"custom_key_names": { "draw_count": "decorator_value_extra_draw" },
+						},
+					},
+				],
+			},
+		},
+	]
 	Global.register_rod(card_decorator_extra_draw)
 #endregion
 
@@ -2375,52 +2484,57 @@ func add_cards() -> void:
 	add_cards_green()
 	add_cards_orange()
 
+
 func add_card_basics() -> void:
 	var colors: Array[String] = []
-	
+
 	for character_data: CharacterData in Global._id_to_character_data.values():
 		colors.append(character_data.character_color_id.replace("color_", ""))
-	
+
 	for i: int in len(colors):
 		# Basic attack card
 		var card_basic_attack: CardData = CardData.new("card_basic_attack_{0}".format([colors[i]]))
 		card_basic_attack.card_name = "基础攻击"
 		card_basic_attack.card_color_id = "color_{0}".format([colors[i]])
 		card_basic_attack.card_description = "造成 [damage] 点伤害。"
-		card_basic_attack.card_texture_path = "external/sprites/cards/{0}/card_basic_attack_{0}.png".format([colors[i]])
+		card_basic_attack.card_texture_path = "sprites/card/green/card_basic_attack_green.png" if colors[i] == "green" else "external/sprites/cards/{0}/card_basic_attack_{0}.png".format([colors[i]])
 		card_basic_attack.card_type = CardData.CARD_TYPES.ATTACK
 		card_basic_attack.card_rarity = CardData.CARD_RARITIES.BASIC
 		card_basic_attack.card_keyword_object_ids = []
-		card_basic_attack.card_values = {"damage": 7, "number_of_attacks": 1}
-		card_basic_attack.card_upgrade_value_improvements = {"damage": 3, "number_of_attacks": 1}
-		card_basic_attack.card_play_actions = [{
-		Scripts.ACTION_ATTACK_GENERATOR: {"time_delay": 0.0, "actions_on_lethal": []},
-		Scripts.ACTION_PLAY_SOUND: {"audio_path": "external/audio/sounds/slash.wav"},
-		}]
-		
+		card_basic_attack.card_values = { "damage": 7, "number_of_attacks": 1 }
+		card_basic_attack.card_upgrade_value_improvements = { "damage": 3, "number_of_attacks": 1 }
+		card_basic_attack.card_play_actions = [
+			{
+				Scripts.ACTION_ATTACK_GENERATOR: { "time_delay": 0.0, "actions_on_lethal": [] },
+				Scripts.ACTION_PLAY_SOUND: { "audio_path": "external/audio/sounds/slash.wav" },
+			},
+		]
+
 		Global.register_rod(card_basic_attack)
-		
+
 		# Basic block card
 		var card_basic_block: CardData = CardData.new("card_basic_block_{0}".format([colors[i]]))
 		card_basic_block.card_name = "基础防火墙"
 		card_basic_block.card_color_id = "color_{0}".format([colors[i]])
 		card_basic_block.card_description = "获得 [block] 点防火墙"
-		card_basic_block.card_texture_path = "external/sprites/cards/{0}/card_basic_block_{0}.png".format([colors[i]])
+		card_basic_block.card_texture_path = "sprites/card/green/card_basic_block_green.png" if colors[i] == "green" else "external/sprites/cards/{0}/card_basic_block_{0}.png".format([colors[i]])
 		card_basic_block.card_type = CardData.CARD_TYPES.SKILL
 		card_basic_block.card_rarity = CardData.CARD_RARITIES.BASIC
 		card_basic_block.card_requires_target = false
 		card_basic_block.card_keyword_object_ids = ["keyword_block"]
-		card_basic_block.card_values = {"block": 5}
-		card_basic_block.card_upgrade_value_improvements = {"block": 3}
-		card_basic_block.card_play_actions = [{
-		Scripts.ACTION_BLOCK: 
+		card_basic_block.card_values = { "block": 5 }
+		card_basic_block.card_upgrade_value_improvements = { "block": 3 }
+		card_basic_block.card_play_actions = [
 			{
-				"time_delay": 0.2,
-				"target_override": BaseAction.TARGET_OVERRIDES.PARENT
-			}
-		}]
-		
+				Scripts.ACTION_BLOCK: {
+					"time_delay": 0.2,
+					"target_override": BaseAction.TARGET_OVERRIDES.PARENT,
+				},
+			},
+		]
+
 		Global.register_rod(card_basic_block)
+
 
 ## Adds cards that have not yet been sorted into a color
 func add_cards_misc() -> void:
@@ -2429,562 +2543,569 @@ func add_cards_misc() -> void:
 	var card_energy_next_turn: CardData = CardData.new("card_energy_next_turn")
 	card_energy_next_turn.card_name = "下时钟周期算力"
 	card_energy_next_turn.card_color_id = "color_{0}".format([color])
-	card_energy_next_turn.card_texture_path = "external/sprites/cards/{0}/card_{0}.png".format([color])
-	card_energy_next_turn.card_description = "下时钟周期获得 [status_charge_amount] 点算力。"
+	card_energy_next_turn.card_texture_path = "sprites/card/white/card_energy_next_turn.png"
+	card_energy_next_turn.card_description = "下时钟周期获得 [status_charge_amount_energy_icons]。"
 	card_energy_next_turn.card_type = CardData.CARD_TYPES.SKILL
 	card_energy_next_turn.card_rarity = CardData.CARD_RARITIES.UNCOMMON
 	card_energy_next_turn.card_requires_target = false
-	card_energy_next_turn.card_values = {"status_charge_amount": 3}
+	card_energy_next_turn.card_values = { "status_charge_amount": 3 }
 	card_energy_next_turn.card_play_actions = [
 		{
-			Scripts.ACTION_APPLY_STATUS: 
-			{
-			"status_effect_object_id": "status_effect_energy_next_turn",
-			"target_override": BaseAction.TARGET_OVERRIDES.PLAYER
-			}
-		}
-		]
-		
+			Scripts.ACTION_APPLY_STATUS: {
+				"status_effect_object_id": "status_effect_energy_next_turn",
+				"target_override": BaseAction.TARGET_OVERRIDES.PLAYER,
+			},
+		},
+	]
+
 	Global.register_rod(card_energy_next_turn)
-	
+
 
 func add_cards_green() -> void:
 	var color: String = "green"
-	
+
 	#region Health and Self Damage
-	
+
 	# Blossom
 	var card_blossom: CardData = CardData.new("card_blossom")
-	card_blossom.card_name = "数字绽放 (Bloom.exe)"
+	card_blossom.card_name = "数字绽放"
 	card_blossom.card_color_id = "color_{0}".format([color])
-	card_blossom.card_texture_path = "external/sprites/cards/{0}/card_{0}.png".format([color])
+	card_blossom.card_texture_path = "sprites/card/green/card_blossom.png"
 	card_blossom.card_description = "恢复 [health_amount] 点完整度"
 	card_blossom.card_type = CardData.CARD_TYPES.SKILL
 	card_blossom.card_rarity = CardData.CARD_RARITIES.UNCOMMON
 	card_blossom.card_requires_target = false
 	card_blossom.card_play_destination = HandManager.EXHAUST_PILE
-	card_blossom.card_values = {"health_amount": 3}
-	card_blossom.card_upgrade_value_improvements = {"health_amount": 2}
-	card_blossom.card_play_actions = [{Scripts.ACTION_ADD_HEALTH: {"target_override": BaseAction.TARGET_OVERRIDES.PARENT}}]
-	
+	card_blossom.card_values = { "health_amount": 3 }
+	card_blossom.card_upgrade_value_improvements = { "health_amount": 2 }
+	card_blossom.card_play_actions = [{ Scripts.ACTION_ADD_HEALTH: { "target_override": BaseAction.TARGET_OVERRIDES.PARENT } }]
+
 	Global.register_rod(card_blossom)
-	
+
 	# Bud
 	var card_bud: CardData = CardData.new("card_bud")
-	card_bud.card_name = "仿生花蕾 (Bud.sys)"
+	card_bud.card_name = "仿生花蕾"
 	card_bud.card_color_id = "color_{0}".format([color])
-	card_bud.card_texture_path = "external/sprites/cards/{0}/card_{0}.png".format([color])
-	card_bud.card_description = "获得 [parent_status_charge_amount] 层反伤模块并对目标施加 [target_status_charge_amount] 层反伤模块。物理删除。"
+	card_bud.card_texture_path = "sprites/card/green/card_bud.png"
+	card_bud.card_description = "获得 [parent_status_charge_amount] 层反伤模块并对目标施加 [target_status_charge_amount] 层反伤模块。"
 	card_bud.card_type = CardData.CARD_TYPES.SKILL
 	card_bud.card_rarity = CardData.CARD_RARITIES.UNCOMMON
 	card_bud.card_requires_target = true
 	card_bud.card_play_destination = HandManager.EXHAUST_PILE
-	card_bud.card_values = {"parent_status_charge_amount": 5, "target_status_charge_amount": 2}
-	card_bud.card_upgrade_value_improvements = {"parent_status_charge_amount": 3}
+	card_bud.card_values = { "parent_status_charge_amount": 5, "target_status_charge_amount": 2 }
+	card_bud.card_upgrade_value_improvements = { "parent_status_charge_amount": 3 }
 	card_bud.card_play_actions = [
 		{
-			Scripts.ACTION_APPLY_STATUS: 
-			{
-			"status_effect_object_id": "status_effect_pointy",
-			"custom_key_names": {"status_charge_amount": "target_status_charge_amount"},
-			}
+			Scripts.ACTION_APPLY_STATUS: {
+				"status_effect_object_id": "status_effect_pointy",
+				"custom_key_names": { "status_charge_amount": "target_status_charge_amount" },
+			},
 		},
 		{
-			Scripts.ACTION_APPLY_STATUS: 
-			{
-			"status_effect_object_id": "status_effect_pointy",
-			"custom_key_names": {"status_charge_amount": "parent_status_charge_amount"},
-			"target_override": BaseAction.TARGET_OVERRIDES.PLAYER
-			}
-		}
-		]
-		
+			Scripts.ACTION_APPLY_STATUS: {
+				"status_effect_object_id": "status_effect_pointy",
+				"custom_key_names": { "status_charge_amount": "parent_status_charge_amount" },
+				"target_override": BaseAction.TARGET_OVERRIDES.PLAYER,
+			},
+		},
+	]
+
 	Global.register_rod(card_bud)
-	
+
 	# Cell Wall
 	var card_cell_wall: CardData = CardData.new("card_cell_wall")
-	card_cell_wall.card_name = "细胞防火墙 (CellWall)"
+	card_cell_wall.card_name = "细胞防火墙"
 	card_cell_wall.card_color_id = "color_{0}".format([color])
-	card_cell_wall.card_texture_path = "external/sprites/cards/{0}/card_{0}.png".format([color])
+	card_cell_wall.card_texture_path = "sprites/card/green/card_cell_wall.png"
 	card_cell_wall.card_description = "将防火墙转化为过载护盾"
 	card_cell_wall.card_type = CardData.CARD_TYPES.SKILL
 	card_cell_wall.card_rarity = CardData.CARD_RARITIES.BASIC
 	card_cell_wall.card_requires_target = false
-	card_cell_wall.card_values = {}
-	card_cell_wall.card_first_upgrade_property_changes = {"card_energy_cost": 0}
+	card_cell_wall.card_values = { }
+	card_cell_wall.card_first_upgrade_property_changes = { "card_energy_cost": 0 }
 	card_cell_wall.card_play_actions = [
 		{
-			Scripts.ACTION_BLOCK_TO_STATUS: 
-				{
+			Scripts.ACTION_BLOCK_TO_STATUS: {
 				"status_effect_object_id": "status_effect_overshield",
-				"target_override": BaseAction.TARGET_OVERRIDES.PARENT
-				}
-		}
-		]
-		
+				"target_override": BaseAction.TARGET_OVERRIDES.PARENT,
+			},
+		},
+	]
+
 	Global.register_rod(card_cell_wall)
-	
+
 	# Chloroplast
 	var card_chloroplast: CardData = CardData.new("card_chloroplast")
-	card_chloroplast.card_name = "光合引擎 (Chloroplast)"
+	card_chloroplast.card_name = "光合引擎"
 	card_chloroplast.card_color_id = "color_{0}".format([color])
-	card_chloroplast.card_texture_path = "external/sprites/cards/{0}/card_{0}.png".format([color])
+	card_chloroplast.card_texture_path = "sprites/card/green/card_chloroplast.png"
 	card_chloroplast.card_description = "对所有敌人造成 [damage] 点伤害。虚灵。物理删除时对全体造成 10 点伤害。"
 	card_chloroplast.card_type = CardData.CARD_TYPES.ATTACK
 	card_chloroplast.card_rarity = CardData.CARD_RARITIES.UNCOMMON
 	card_chloroplast.card_energy_cost = 3
 	card_chloroplast.card_requires_target = false
 	card_chloroplast.card_end_of_turn_destination = HandManager.EXHAUST_PILE
-	card_chloroplast.card_values = {"damage": 35}
-	card_chloroplast.card_upgrade_value_improvements = {"damage": 10}
+	card_chloroplast.card_values = { "damage": 35 }
+	card_chloroplast.card_upgrade_value_improvements = { "damage": 10 }
 	card_chloroplast.card_play_actions = [
 		{
 			Scripts.ACTION_ATTACK_GENERATOR: {
-					"number_of_attacks": 1,
-					"time_delay": 0.5,
-					"target_override": BaseAction.TARGET_OVERRIDES.ALL_ENEMIES
-					}
-			}
-		]
+				"number_of_attacks": 1,
+				"time_delay": 0.5,
+				"target_override": BaseAction.TARGET_OVERRIDES.ALL_ENEMIES,
+			},
+		},
+	]
 	card_chloroplast.card_exhaust_actions = [
 		{
 			Scripts.ACTION_ATTACK_GENERATOR: {
-					"damage": 10,
-					"number_of_attacks": 1,
-					"time_delay": 0.5,
-					"target_override": BaseAction.TARGET_OVERRIDES.ALL_COMBATANTS
-					}
-			}
-		]
-	
+				"damage": 10,
+				"number_of_attacks": 1,
+				"time_delay": 0.5,
+				"target_override": BaseAction.TARGET_OVERRIDES.ALL_COMBATANTS,
+			},
+		},
+	]
+
 	Global.register_rod(card_chloroplast)
-	
+
 	# Clippers
 	var card_clippers: CardData = CardData.new("card_clippers")
-	card_clippers.card_name = "基因剪刀 (CRISPR)"
+	card_clippers.card_name = "基因剪刀"
 	card_clippers.card_color_id = "color_{0}".format([color])
-	card_clippers.card_texture_path = "external/sprites/cards/{0}/card_{0}.png".format([color])
+	card_clippers.card_texture_path = "sprites/card/green/card_clippers.png"
 	card_clippers.card_description = "造成 [number_of_attacks] 次 [damage] 点伤害。获得 [status_charge_amount] 层力量。获得时失去 [health_amount] 点完整度。"
 	card_clippers.card_type = CardData.CARD_TYPES.ATTACK
 	card_clippers.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_clippers.card_keyword_object_ids = []
-	card_clippers.card_values = {"damage": 5, "number_of_attacks": 2, "health_amount": -5, "status_effect_object_id": "status_effect_damage_increase", "status_charge_amount": 2}
-	card_clippers.card_upgrade_value_improvements = {"damage": 2}
+	card_clippers.card_values = { "damage": 5, "number_of_attacks": 2, "health_amount": -5, "status_effect_object_id": "status_effect_damage_increase", "status_charge_amount": 2 }
+	card_clippers.card_upgrade_value_improvements = { "damage": 2 }
 	card_clippers.card_play_actions = [
-	{
-	Scripts.ACTION_APPLY_STATUS: {"time_delay": 0.5, "target_override": BaseAction.TARGET_OVERRIDES.PARENT}
-	},
-	{
-	Scripts.ACTION_ATTACK_GENERATOR: {"time_delay": 0.3}
-	}
+		{
+			Scripts.ACTION_APPLY_STATUS: { "time_delay": 0.5, "target_override": BaseAction.TARGET_OVERRIDES.PARENT },
+		},
+		{
+			Scripts.ACTION_ATTACK_GENERATOR: { "time_delay": 0.3 },
+		},
 	]
-	card_clippers.card_add_to_deck_actions = [{
-	Scripts.ACTION_ADD_HEALTH: {"target_override": BaseAction.TARGET_OVERRIDES.PARENT}
-	}]
-	
+	card_clippers.card_add_to_deck_actions = [
+		{
+			Scripts.ACTION_ADD_HEALTH: { "target_override": BaseAction.TARGET_OVERRIDES.PARENT },
+		},
+	]
+
 	Global.register_rod(card_clippers)
-	
+
 	# Differentiation
 	var card_differentiation: CardData = CardData.new("card_differentiation")
-	card_differentiation.card_name = "进程分化 (Fork)"
+	card_differentiation.card_name = "进程分化"
 	card_differentiation.card_color_id = "color_{0}".format([color])
-	card_differentiation.card_texture_path = "external/sprites/cards/{0}/card_{0}.png".format([color])
+	card_differentiation.card_texture_path = "sprites/card/green/card_differentiation.png"
 	card_differentiation.card_description = "造成 [attack_damage] 点伤害。失去 [self_damage] 点完整度。"
 	card_differentiation.card_type = CardData.CARD_TYPES.ATTACK
 	card_differentiation.card_rarity = CardData.CARD_RARITIES.UNCOMMON
 	card_differentiation.card_requires_target = true
-	card_differentiation.card_values = {"attack_damage": 12, "self_damage": 2}
-	card_differentiation.card_upgrade_value_improvements = {"attack_damage": 5}
+	card_differentiation.card_values = { "attack_damage": 12, "self_damage": 2 }
+	card_differentiation.card_upgrade_value_improvements = { "attack_damage": 5 }
 	card_differentiation.card_play_actions = [
 		{
 			Scripts.ACTION_DIRECT_DAMAGE: {
-				"custom_key_names": {"damage": "self_damage"},
+				"custom_key_names": { "damage": "self_damage" },
 				"target_override": BaseAction.TARGET_OVERRIDES.PARENT,
 				"bypass_block": true,
-			}
+			},
 		},
 		{
 			Scripts.ACTION_ATTACK_GENERATOR: {
-					"custom_key_names": {"damage": "attack_damage"},
-					"number_of_attacks": 1,
-					"time_delay": 0.5,
-					"target_override": BaseAction.TARGET_OVERRIDES.SELECTED_TARGETS
-					}
-			}
-		]
-	
+				"custom_key_names": { "damage": "attack_damage" },
+				"number_of_attacks": 1,
+				"time_delay": 0.5,
+				"target_override": BaseAction.TARGET_OVERRIDES.SELECTED_TARGETS,
+			},
+		},
+	]
+
 	Global.register_rod(card_differentiation)
-	
+
 	# Fertilize
 	var card_fertilize: CardData = CardData.new("card_fertilize")
-	card_fertilize.card_name = "过载注入 (Inject)"
+	card_fertilize.card_name = "过载注入"
 	card_fertilize.card_color_id = "color_{0}".format([color])
-	card_fertilize.card_texture_path = "external/sprites/cards/{0}/card_{0}.png".format([color])
-	card_fertilize.card_description = "获得 {0}{0}。失去 [self_damage] 点完整度。".format([Card.ENERGY_ICON_KEYWORD])
+	card_fertilize.card_texture_path = "sprites/card/green/card_fertilize.png"
+	card_fertilize.card_description = "获得 [energy_amount_energy_icons]。失去 [self_damage] 点完整度。"
 	card_fertilize.card_type = CardData.CARD_TYPES.SKILL
 	card_fertilize.card_rarity = CardData.CARD_RARITIES.RARE
 	card_fertilize.card_requires_target = false
-	card_fertilize.card_values = {"self_damage": 12, "energy_amount": 2}
-	card_fertilize.card_upgrade_value_improvements = {"self_damage": 3, "energy_amount": 1}
-	card_fertilize.card_first_upgrade_property_changes = {"card_description": "获得 {0}{0}。失去 [self_damage] 点完整度。".format([Card.ENERGY_ICON_KEYWORD])}
+	card_fertilize.card_values = { "self_damage": 12, "energy_amount": 2 }
+	card_fertilize.card_upgrade_value_improvements = { "self_damage": 3, "energy_amount": 1 }
+	card_fertilize.card_first_upgrade_property_changes = { "card_description": "获得 [energy_amount_energy_icons]。失去 [self_damage] 点完整度。" }
 	card_fertilize.card_play_actions = [
 		{
 			Scripts.ACTION_DIRECT_DAMAGE: {
-				"custom_key_names": {"damage": "self_damage"},
+				"custom_key_names": { "damage": "self_damage" },
 				"bypass_block": true,
 				"target_override": BaseAction.TARGET_OVERRIDES.PARENT,
-			}
+			},
 		},
-		{Scripts.ACTION_ADD_ENERGY: {}}
-		]
-	
+		{ Scripts.ACTION_ADD_ENERGY: { } },
+	]
+
 	Global.register_rod(card_fertilize)
-	
+
 	# Fruit
 	var card_fruit: CardData = CardData.new("card_fruit")
-	card_fruit.card_name = "数据果实 (Payload)"
+	card_fruit.card_name = "数据果实"
 	card_fruit.card_color_id = "color_{0}".format([color])
-	card_fruit.card_texture_path = "external/sprites/cards/{0}/card_{0}.png".format([color])
+	card_fruit.card_texture_path = "sprites/card/green/card_fruit.png"
 	card_fruit.card_description = "随机获得 [small_max_health_amount] 点最大完整度、[big_max_health_amount] 点最大完整度或 {0}".format([Card.ENERGY_ICON_KEYWORD])
 	card_fruit.card_type = CardData.CARD_TYPES.SKILL
 	card_fruit.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_fruit.card_requires_target = false
 	card_fruit.card_play_destination = HandManager.EXHAUST_PILE
-	card_fruit.card_values = {"small_max_health_amount": 1, "big_max_health_amount": 3}
-	card_fruit.card_upgrade_value_improvements = {"small_max_health_amount": 1, "big_max_health_amount": 1}
+	card_fruit.card_values = { "small_max_health_amount": 1, "big_max_health_amount": 3 }
+	card_fruit.card_upgrade_value_improvements = { "small_max_health_amount": 1, "big_max_health_amount": 1 }
 	card_fruit.card_play_actions = [
 		{
-			Scripts.ACTION_RANDOM_SELECTION: 
-				{
-				"weights": {"small_max_hp": 25, "big_max_hp": 25, "energy": 50},
+			Scripts.ACTION_RANDOM_SELECTION: {
+				"weights": { "small_max_hp": 25, "big_max_hp": 25, "energy": 50 },
 				"weighted_action_data": {
-					"small_max_hp": [{Scripts.ACTION_ADD_HEALTH: {"target_override": BaseAction.TARGET_OVERRIDES.PARENT, "health_amount": 0, "custom_key_names": {"health_max_amount": "small_max_health_amount"}}}],
-					"big_max_hp": [{Scripts.ACTION_ADD_HEALTH: {"target_override": BaseAction.TARGET_OVERRIDES.PARENT, "health_amount": 0, "custom_key_names": {"health_max_amount": "big_max_health_amount"}}}],
-					"energy": [{Scripts.ACTION_ADD_ENERGY: {"energy_amount": 1}}],
-					}
-				}
+					"small_max_hp": [{ Scripts.ACTION_ADD_HEALTH: { "target_override": BaseAction.TARGET_OVERRIDES.PARENT, "health_amount": 0, "custom_key_names": { "health_max_amount": "small_max_health_amount" } } }],
+					"big_max_hp": [{ Scripts.ACTION_ADD_HEALTH: { "target_override": BaseAction.TARGET_OVERRIDES.PARENT, "health_amount": 0, "custom_key_names": { "health_max_amount": "big_max_health_amount" } } }],
+					"energy": [{ Scripts.ACTION_ADD_ENERGY: { "energy_amount": 1 } }],
+				},
+			},
 		},
 	]
-	
+
 	Global.register_rod(card_fruit)
-	
+
 	# Growth
 	var card_growth: CardData = CardData.new("card_growth")
-	card_growth.card_name = "动态扩容 (Grow)"
+	card_growth.card_name = "动态扩容"
 	card_growth.card_color_id = "color_{0}".format([color])
-	card_growth.card_texture_path = "external/sprites/cards/{0}/card_{0}.png".format([color])
+	card_growth.card_texture_path = "sprites/card/green/card_growth.png"
 	card_growth.card_description = "获得 [status_charge_amount] 层过载护盾并读取 1 个脚本。"
 	card_growth.card_type = CardData.CARD_TYPES.SKILL
 	card_growth.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_growth.card_requires_target = false
 	card_growth.card_play_destination = HandManager.EXHAUST_PILE
-	card_growth.card_values = {"status_charge_amount": 5, "draw_count": 1}
-	card_growth.card_upgrade_value_improvements = {"status_charge_amount": 3,}
+	card_growth.card_values = { "status_charge_amount": 5, "draw_count": 1 }
+	card_growth.card_upgrade_value_improvements = { "status_charge_amount": 3 }
 	card_growth.card_play_actions = [
 		{
-			Scripts.ACTION_DRAW_GENERATOR: {}
+			Scripts.ACTION_DRAW_GENERATOR: { },
 		},
 		{
 			Scripts.ACTION_APPLY_STATUS: {
-			"status_effect_object_id": "status_effect_overshield",
-			
-			"target_override": BaseAction.TARGET_OVERRIDES.PLAYER}
-		}
-		]
-	
+				"status_effect_object_id": "status_effect_overshield",
+				"target_override": BaseAction.TARGET_OVERRIDES.PLAYER,
+			},
+		},
+	]
+
 	Global.register_rod(card_growth)
-	
+
 	# Lotus
 	var card_lotus: CardData = CardData.new("card_lotus")
-	card_lotus.card_name = "黑莲花协议 (Lotus)"
+	card_lotus.card_name = "黑莲花协议"
 	card_lotus.card_color_id = "color_{0}".format([color])
-	card_lotus.card_texture_path = "external/sprites/cards/{0}/card_{0}.png".format([color])
+	card_lotus.card_texture_path = "sprites/card/green/card_lotus.png"
 	card_lotus.card_description = "过载护盾层数翻倍。"
 	card_lotus.card_type = CardData.CARD_TYPES.SKILL
 	card_lotus.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_lotus.card_requires_target = false
 	card_lotus.card_play_destination = HandManager.EXHAUST_PILE
-	card_lotus.card_values = {"status_effect_multiplier_amount": 2}
-	card_lotus.card_upgrade_value_improvements = {"status_effect_multiplier_amount": 1,}
-	card_lotus.card_first_upgrade_property_changes = {"card_description": "过载护盾层数变为三倍。"}
+	card_lotus.card_values = { "status_effect_multiplier_amount": 2 }
+	card_lotus.card_upgrade_value_improvements = { "status_effect_multiplier_amount": 1 }
+	card_lotus.card_first_upgrade_property_changes = { "card_description": "过载护盾层数变为三倍。" }
 	card_lotus.card_play_actions = [
 		{
 			Scripts.ACTION_MULTIPLY_STATUS: {
-			"status_effect_object_id": "status_effect_overshield",
-			
-			"target_override": BaseAction.TARGET_OVERRIDES.PLAYER}
-		}
-		]
-	
+				"status_effect_object_id": "status_effect_overshield",
+				"target_override": BaseAction.TARGET_OVERRIDES.PLAYER,
+			},
+		},
+	]
+
 	Global.register_rod(card_lotus)
-	
+
 	# Moss
 	var card_moss: CardData = CardData.new("card_moss")
-	card_moss.card_name = "寄生脚本 (Moss)"
+	card_moss.card_name = "寄生脚本"
 	card_moss.card_color_id = "color_{0}".format([color])
-	card_moss.card_texture_path = "external/sprites/cards/{0}/card_{0}.png".format([color])
+	card_moss.card_texture_path = "sprites/card/green/card_moss.png"
 	card_moss.card_description = "获得 [status_charge_amount] 层过载护盾。造成等同于过载护盾层数的伤害。"
 	card_moss.card_type = CardData.CARD_TYPES.ATTACK
 	card_moss.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_moss.card_energy_cost = 2
 	card_moss.card_requires_target = true
-	card_moss.card_values = {"status_charge_amount": 8}
-	card_moss.card_upgrade_value_improvements = {"status_charge_amount": 4,}
+	card_moss.card_values = { "status_charge_amount": 8 }
+	card_moss.card_upgrade_value_improvements = { "status_charge_amount": 4 }
 	card_moss.card_play_actions = [
 		{
-		Scripts.ACTION_ATTACK_GENERATOR: 
-			{
-			"target_override": BaseAction.TARGET_OVERRIDES.SELECTED_TARGETS,
-			"forced_interceptor_ids": ["interceptor_damage_from_overshield"],
-			"time_delay": 0.3,
-			}
+			Scripts.ACTION_ATTACK_GENERATOR: {
+				"target_override": BaseAction.TARGET_OVERRIDES.SELECTED_TARGETS,
+				"forced_interceptor_ids": ["interceptor_damage_from_overshield"],
+				"time_delay": 0.3,
+			},
 		},
 		{
 			Scripts.ACTION_APPLY_STATUS: {
-			"status_effect_object_id": "status_effect_overshield",
-			"target_override": BaseAction.TARGET_OVERRIDES.PLAYER}
-		}
-		]
-	
+				"status_effect_object_id": "status_effect_overshield",
+				"target_override": BaseAction.TARGET_OVERRIDES.PLAYER,
+			},
+		},
+	]
+
 	Global.register_rod(card_moss)
-	
+
 	# Pollen
 	var card_pollen: CardData = CardData.new("card_pollen")
-	card_pollen.card_name = "数据花粉 (Pollen)"
+	card_pollen.card_name = "数据花粉"
 	card_pollen.card_color_id = "color_{0}".format([color])
-	card_pollen.card_texture_path = "external/sprites/cards/{0}/card_{0}.png".format([color])
+	card_pollen.card_texture_path = "sprites/card/green/card_pollen.png"
 	card_pollen.card_description = "每时钟周期开始时受到 [status_charge_amount] 点伤害并读取 [status_secondary_charge_amount] 个脚本"
 	card_pollen.card_type = CardData.CARD_TYPES.POWER
 	card_pollen.card_rarity = CardData.CARD_RARITIES.RARE
 	card_pollen.card_energy_cost = 3
 	card_pollen.card_requires_target = false
-	card_pollen.card_values = {"status_charge_amount": 5, "status_secondary_charge_amount": 2}
-	card_pollen.card_upgrade_value_improvements = {"status_secondary_charge_amount": 1}
+	card_pollen.card_values = { "status_charge_amount": 5, "status_secondary_charge_amount": 2 }
+	card_pollen.card_upgrade_value_improvements = { "status_secondary_charge_amount": 1 }
 	card_pollen.card_play_actions = [
-			{
+		{
 			Scripts.ACTION_APPLY_STATUS: {
-			"status_effect_object_id": "status_effect_pollen",
-			"target_override": BaseAction.TARGET_OVERRIDES.PLAYER}
-			}
-		]
-	
+				"status_effect_object_id": "status_effect_pollen",
+				"target_override": BaseAction.TARGET_OVERRIDES.PLAYER,
+			},
+		},
+	]
+
 	Global.register_rod(card_pollen)
-	
+
 	# Petals
 	var card_petals: CardData = CardData.new("card_petals")
-	card_petals.card_name = "碎片化 (Petal)"
+	card_petals.card_name = "碎片化"
 	card_petals.card_color_id = "color_{0}".format([color])
-	card_petals.card_texture_path = "external/sprites/cards/{0}/card_{0}.png".format([color])
-	card_petals.card_description = "获得 [block] 点防火墙。防火墙持续 [status_charge_amount] 时钟周期。物理删除。获得时失去 [health_amount] 点完整度。"
+	card_petals.card_texture_path = "sprites/card/green/card_petals.png"
+	card_petals.card_description = "获得 [block] 点防火墙。防火墙持续 [status_charge_amount] 时钟周期。获得时失去 [health_amount] 点完整度。"
 	card_petals.card_type = CardData.CARD_TYPES.SKILL
 	card_petals.card_rarity = CardData.CARD_RARITIES.RARE
 	card_petals.card_requires_target = false
 	card_petals.card_play_destination = HandManager.EXHAUST_PILE
 	card_petals.card_energy_cost = 3
 	card_petals.card_keyword_object_ids = []
-	card_petals.card_values = {"block": 20, "status_charge_amount": 2,  "health_amount": -10}
-	card_petals.card_upgrade_value_improvements = {"block": 5, "status_charge_amount": 1}
+	card_petals.card_values = { "block": 20, "status_charge_amount": 2, "health_amount": -10 }
+	card_petals.card_upgrade_value_improvements = { "block": 5, "status_charge_amount": 1 }
 	card_petals.card_play_actions = [
-	{
-	Scripts.ACTION_APPLY_STATUS: {
-		"time_delay": 0.5,
-		"status_effect_object_id": "status_effect_temp_preserve_block",
-		"target_override": BaseAction.TARGET_OVERRIDES.PARENT
-		}
-	},
-	{
-	Scripts.ACTION_BLOCK: {
-		"target_override": BaseAction.TARGET_OVERRIDES.PARENT
-	}
-	}
+		{
+			Scripts.ACTION_APPLY_STATUS: {
+				"time_delay": 0.5,
+				"status_effect_object_id": "status_effect_temp_preserve_block",
+				"target_override": BaseAction.TARGET_OVERRIDES.PARENT,
+			},
+		},
+		{
+			Scripts.ACTION_BLOCK: {
+				"target_override": BaseAction.TARGET_OVERRIDES.PARENT,
+			},
+		},
 	]
-	card_petals.card_add_to_deck_actions = [{
-	Scripts.ACTION_ADD_HEALTH: {"target_override": BaseAction.TARGET_OVERRIDES.PARENT}
-	}]
-	
+	card_petals.card_add_to_deck_actions = [
+		{
+			Scripts.ACTION_ADD_HEALTH: { "target_override": BaseAction.TARGET_OVERRIDES.PARENT },
+		},
+	]
+
 	Global.register_rod(card_petals)
-	
+
 	# Reap
 	var card_reap: CardData = CardData.new("card_reap")
-	card_reap.card_name = "内存收割 (Harvest)"
+	card_reap.card_name = "内存收割"
 	card_reap.card_color_id = "color_{0}".format([color])
-	card_reap.card_texture_path = "external/sprites/cards/{0}/card_{0}.png".format([color])
-	card_reap.card_description = "造成 [damage] 点伤害，获得等同于未防火墙伤害的过载护盾。\n物理删除"
+	card_reap.card_texture_path = "sprites/card/green/card_reap.png"
+	card_reap.card_description = "造成 [damage] 点伤害，获得等同于未防火墙伤害的过载护盾。"
 	card_reap.card_type = CardData.CARD_TYPES.ATTACK
 	card_reap.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_reap.card_energy_cost = 2
 	card_reap.card_requires_target = true
-	card_reap.card_values = {"damage": 10}
-	card_reap.card_upgrade_value_improvements = {"damage": 4,}
+	card_reap.card_values = { "damage": 10 }
+	card_reap.card_upgrade_value_improvements = { "damage": 4 }
 	card_reap.card_play_actions = [
 		{
 			Scripts.ACTION_APPLY_STATUS: {
-			"status_effect_object_id": "status_effect_overshield",
-			"custom_key_names":{"status_charge_amount": "unblocked_damage_capped"},
-			"target_override": BaseAction.TARGET_OVERRIDES.PLAYER}
+				"status_effect_object_id": "status_effect_overshield",
+				"custom_key_names": { "status_charge_amount": "unblocked_damage_capped" },
+				"target_override": BaseAction.TARGET_OVERRIDES.PLAYER,
+			},
 		},
 		{
-		Scripts.ACTION_ATTACK_GENERATOR: 
-			{
-			"target_override": BaseAction.TARGET_OVERRIDES.SELECTED_TARGETS,
-			"time_delay": 0.3,
-			}
-		}
-		]
-	
+			Scripts.ACTION_ATTACK_GENERATOR: {
+				"target_override": BaseAction.TARGET_OVERRIDES.SELECTED_TARGETS,
+				"time_delay": 0.3,
+			},
+		},
+	]
+
 	Global.register_rod(card_reap)
-	
+
 	# Wildflower
 	var card_wildflower: CardData = CardData.new("card_wildflower")
-	card_wildflower.card_name = "野生进程 (Wildflower)"
+	card_wildflower.card_name = "野生进程"
 	card_wildflower.card_color_id = "color_{0}".format([color])
-	card_wildflower.card_texture_path = "external/sprites/cards/{0}/card_{0}.png".format([color])
+	card_wildflower.card_texture_path = "sprites/card/green/card_wildflower.png"
 	card_wildflower.card_energy_cost = 2
 	card_wildflower.card_description = "造成 [damage] 点伤害。本时钟周期若受到过伤害则费用为 0。"
 	card_wildflower.card_type = CardData.CARD_TYPES.ATTACK
 	card_wildflower.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_wildflower.card_requires_target = true
-	card_wildflower.card_values = {"damage": 15, "number_of_attacks": 1}
-	card_wildflower.card_upgrade_value_improvements = {"damage": 5}
+	card_wildflower.card_values = { "damage": 15, "number_of_attacks": 1 }
+	card_wildflower.card_upgrade_value_improvements = { "damage": 5 }
 	card_wildflower.card_play_actions = [
 		{
-		Scripts.ACTION_ATTACK_GENERATOR: {}
-		}
+			Scripts.ACTION_ATTACK_GENERATOR: { },
+		},
 	]
-	card_wildflower.add_card_decorator("card_decorator_dynamic_cost_modifier", {
-		"modifiy_card_energy_cost_until_combat": false,
-		"modifiy_card_energy_cost_until_played": false,
-		"modifiy_card_energy_cost_until_turn": true,
-		"stat_enum": CombatStatsData.STATS.PLAYER_DAMAGED_COUNT,
-		"is_turn_stat": true,
-		"energy_per_stat": -10
-		})
+	card_wildflower.add_card_decorator(
+		"card_decorator_dynamic_cost_modifier",
+		{
+			"modifiy_card_energy_cost_until_combat": false,
+			"modifiy_card_energy_cost_until_played": false,
+			"modifiy_card_energy_cost_until_turn": true,
+			"stat_enum": CombatStatsData.STATS.PLAYER_DAMAGED_COUNT,
+			"is_turn_stat": true,
+			"energy_per_stat": -10,
+		},
+	)
 
 	Global.register_rod(card_wildflower)
-	
+
 	# Symbiosis
 	var card_symbiosis: CardData = CardData.new("card_symbiosis")
-	card_symbiosis.card_name = "共生协议 (Symbiosis)"
+	card_symbiosis.card_name = "共生协议"
 	card_symbiosis.card_color_id = "color_{0}".format([color])
-	card_symbiosis.card_texture_path = "external/sprites/cards/{0}/card_{0}.png".format([color])
+	card_symbiosis.card_texture_path = "sprites/card/green/card_symbiosis.png"
 	card_symbiosis.card_description = "过载护盾不再衰减"
 	card_symbiosis.card_type = CardData.CARD_TYPES.POWER
 	card_symbiosis.card_rarity = CardData.CARD_RARITIES.RARE
 	card_symbiosis.card_energy_cost = 3
 	card_symbiosis.card_requires_target = false
-	card_symbiosis.card_values = {"status_charge_amount": 0}
-	card_symbiosis.card_upgrade_value_improvements = {"status_charge_amount": 20}
+	card_symbiosis.card_values = { "status_charge_amount": 0 }
+	card_symbiosis.card_upgrade_value_improvements = { "status_charge_amount": 20 }
 	card_symbiosis.card_first_upgrade_property_changes = {
 		"card_description": "过载护盾不再衰减。获得 [status_charge_amount] 层过载护盾",
 		"card_play_actions": [
 			{
-			Scripts.ACTION_APPLY_STATUS: {
-			"status_effect_object_id": "status_effect_overshield",
-			"status_charge_amount": 20,
-			"target_override": BaseAction.TARGET_OVERRIDES.PLAYER}
+				Scripts.ACTION_APPLY_STATUS: {
+					"status_effect_object_id": "status_effect_overshield",
+					"status_charge_amount": 20,
+					"target_override": BaseAction.TARGET_OVERRIDES.PLAYER,
+				},
 			},
 			{
-			Scripts.ACTION_APPLY_STATUS: {
-			"status_effect_object_id": "status_effect_preserve_overshield",
-			"status_charge_amount": 1,
-			"target_override": BaseAction.TARGET_OVERRIDES.PLAYER}
-			}
-		]
-		}
+				Scripts.ACTION_APPLY_STATUS: {
+					"status_effect_object_id": "status_effect_preserve_overshield",
+					"status_charge_amount": 1,
+					"target_override": BaseAction.TARGET_OVERRIDES.PLAYER,
+				},
+			},
+		],
+	}
 	card_symbiosis.card_play_actions = [
 		{
 			Scripts.ACTION_APPLY_STATUS: {
-			"status_effect_object_id": "status_effect_preserve_overshield",
-			"status_charge_amount": 1,
-			"target_override": BaseAction.TARGET_OVERRIDES.PLAYER}
-		}
-		]
-	
+				"status_effect_object_id": "status_effect_preserve_overshield",
+				"status_charge_amount": 1,
+				"target_override": BaseAction.TARGET_OVERRIDES.PLAYER,
+			},
+		},
+	]
+
 	Global.register_rod(card_symbiosis)
-	
+
 	# Thorns
 	var card_thorns: CardData = CardData.new("card_thorns")
-	card_thorns.card_name = "反伤木马 (Thorn)"
+	card_thorns.card_name = "反伤木马"
 	card_thorns.card_color_id = "color_{0}".format([color])
-	card_thorns.card_texture_path = "external/sprites/cards/{0}/card_{0}.png".format([color])
+	card_thorns.card_texture_path = "sprites/card/green/card_thorns.png"
 	card_thorns.card_description = "获得 [block] 点防火墙和 [status_charge_amount] 层反伤模块"
 	card_thorns.card_type = CardData.CARD_TYPES.SKILL
 	card_thorns.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_thorns.card_energy_cost = 1
 	card_thorns.card_requires_target = false
-	card_thorns.card_values = {"block": 5, "status_charge_amount": 1}
-	card_thorns.card_upgrade_value_improvements = {"block": 3, "status_charge_amount": 1}
+	card_thorns.card_values = { "block": 5, "status_charge_amount": 1 }
+	card_thorns.card_upgrade_value_improvements = { "block": 3, "status_charge_amount": 1 }
 	card_thorns.card_play_actions = [
 		{
 			Scripts.ACTION_APPLY_STATUS: {
-			"status_effect_object_id": "status_effect_pointy",
-			"target_override": BaseAction.TARGET_OVERRIDES.PLAYER}
+				"status_effect_object_id": "status_effect_pointy",
+				"target_override": BaseAction.TARGET_OVERRIDES.PLAYER,
+			},
 		},
 		{
-		Scripts.ACTION_BLOCK: 
-			{
+			Scripts.ACTION_BLOCK: {
 				"time_delay": 0.2,
-				"target_override": BaseAction.TARGET_OVERRIDES.PARENT
-			}
-		}
-		]
-	
+				"target_override": BaseAction.TARGET_OVERRIDES.PARENT,
+			},
+		},
+	]
+
 	Global.register_rod(card_thorns)
-	
+
 	# Verdant
 	var card_verdant: CardData = CardData.new("card_verdant")
-	card_verdant.card_name = "翠绿指令 (Verdant)"
+	card_verdant.card_name = "翠绿指令"
 	card_verdant.card_color_id = "color_{0}".format([color])
-	card_verdant.card_texture_path = "external/sprites/cards/{0}/card_{0}.png".format([color])
-	card_verdant.card_description = "被加载时，在 [status_charge_amount] 时钟周期内将所受伤害上限设为 [status_secondary_charge_amount]。物理删除。"
+	card_verdant.card_texture_path = "sprites/card/green/card_verdant.png"
+	card_verdant.card_description = "被加载时，在 [status_charge_amount] 时钟周期内将所受伤害上限设为 [status_secondary_charge_amount]。"
 	card_verdant.card_type = CardData.CARD_TYPES.SKILL
 	card_verdant.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_verdant.card_requires_target = false
 	card_verdant.card_is_playable = false
 	card_verdant.card_play_destination = HandManager.EXHAUST_PILE
-	card_verdant.card_values = {"status_charge_amount": 1, "status_secondary_charge_amount": 7}
-	card_verdant.card_upgrade_value_improvements = {"status_secondary_charge_amount": -2,}
+	card_verdant.card_values = { "status_charge_amount": 1, "status_secondary_charge_amount": 7 }
+	card_verdant.card_upgrade_value_improvements = { "status_secondary_charge_amount": -2 }
 	card_verdant.card_draw_actions = [
 		{
 			Scripts.ACTION_PICK_CARDS: {
 				"card_pick_type": ActionBasePickCards.PICK_PARENT_CARD,
 				"action_data": [
 					{
-						Scripts.ACTION_EXHAUST_CARDS: {}
-					}
-				]
-			}
+						Scripts.ACTION_EXHAUST_CARDS: { },
+					},
+				],
+			},
 		},
 		{
 			Scripts.ACTION_APPLY_STATUS: {
-			"status_effect_object_id": "status_effect_cap_damage",
-			"target_override": BaseAction.TARGET_OVERRIDES.PLAYER}
-		}
-		]
-	
+				"status_effect_object_id": "status_effect_cap_damage",
+				"target_override": BaseAction.TARGET_OVERRIDES.PLAYER,
+			},
+		},
+	]
+
 	Global.register_rod(card_verdant)
-	
+
 	# Vines
 	var card_vines: CardData = CardData.new("card_vines")
-	card_vines.card_name = "网络藤蔓 (Vine)"
+	card_vines.card_name = "网络藤蔓"
 	card_vines.card_color_id = "color_{0}".format([color])
-	card_vines.card_texture_path = "external/sprites/cards/{0}/card_{0}.png".format([color])
+	card_vines.card_texture_path = "sprites/card/green/card_vines.png"
 	card_vines.card_description = "对所有敌人造成 [number_of_attacks] 次 [damage] 点伤害。不受反伤模块影响"
 	card_vines.card_type = CardData.CARD_TYPES.ATTACK
 	card_vines.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_vines.card_requires_target = false
-	card_vines.card_values = {"damage": 8, "number_of_attacks": 2, "self_damage": 2}
-	card_vines.card_upgrade_value_improvements = {"damage": 5}
+	card_vines.card_values = { "damage": 8, "number_of_attacks": 2, "self_damage": 2 }
+	card_vines.card_upgrade_value_improvements = { "damage": 5 }
 	card_vines.card_play_actions = [
 		{
 			Scripts.ACTION_ATTACK_GENERATOR: {
-					"time_delay": 0.4,
-					"target_override": BaseAction.TARGET_OVERRIDES.ALL_ENEMIES,
-					"ignored_interceptor_ids": ["interceptor_pointy"]
-					}
-			}
-		]
-	
+				"time_delay": 0.4,
+				"target_override": BaseAction.TARGET_OVERRIDES.ALL_ENEMIES,
+				"ignored_interceptor_ids": ["interceptor_pointy"],
+			},
+		},
+	]
+
 	Global.register_rod(card_vines)
 	#endregion
 	#region Research Archetype
@@ -2992,126 +3113,128 @@ func add_cards_green() -> void:
 	var card_conclusion: CardData = CardData.new("card_conclusion")
 	card_conclusion.card_name = "终局"
 	card_conclusion.card_color_id = "color_{0}".format([color])
-	card_conclusion.card_texture_path = "external/sprites/cards/{0}/card_{0}.png".format([color])
-	card_conclusion.card_description = "保留。造成 [damage] 点伤害。时钟周期结束时每点未使用算力增加 4 点伤害。物理删除"
+	card_conclusion.card_texture_path = "sprites/card/green/card_conclusion.png"
+	card_conclusion.card_description = "造成 [damage] 点伤害。时钟周期结束时每个未使用的 {0} 增加 4 点伤害。".format([Card.ENERGY_ICON_KEYWORD])
 	card_conclusion.card_type = CardData.CARD_TYPES.ATTACK
 	card_conclusion.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_conclusion.card_energy_cost = 3
 	card_conclusion.card_requires_target = true
 	card_conclusion.card_is_retained = true
 	card_conclusion.card_play_destination = HandManager.EXHAUST_PILE
-	card_conclusion.card_values = {"damage": 12, "number_of_attacks": 1, "card_value_improvements":{"damage": 4}}
+	card_conclusion.card_values = { "damage": 12, "number_of_attacks": 1, "card_value_improvements": { "damage": 4 } }
 	card_conclusion.card_first_upgrade_property_changes = {
-		"card_description": "保留。造成 [damage] 点伤害。时钟周期结束时每点未使用算力增加 6 点伤害。物理删除",
-		"card_value_improvements":{"damage": 6}
-		}
+		"card_description": "造成 [damage] 点伤害。时钟周期结束时每个未使用的 {0} 增加 6 点伤害。".format([Card.ENERGY_ICON_KEYWORD]),
+		"card_value_improvements": { "damage": 6 },
+	}
 	card_conclusion.card_play_actions = [
 		{
 			Scripts.ACTION_ATTACK_GENERATOR: {
-					"time_delay": 0.3,
-					"target_override": BaseAction.TARGET_OVERRIDES.SELECTED_TARGETS,
-					}
-			}
-		]
+				"time_delay": 0.3,
+				"target_override": BaseAction.TARGET_OVERRIDES.SELECTED_TARGETS,
+			},
+		},
+	]
 	card_conclusion.card_end_of_turn_actions = [
 		{
-		Scripts.ACTION_IMPROVE_CARD_VALUES_UNUSED_ENERGY: 
-			{
-			"time_delay": 0.1,
-			"pick_played_card": true,
-			"modify_parent_card": false,
-			}
-		}
+			Scripts.ACTION_IMPROVE_CARD_VALUES_UNUSED_ENERGY: {
+				"time_delay": 0.1,
+				"pick_played_card": true,
+				"modify_parent_card": false,
+			},
+		},
 	]
-	
+
 	Global.register_rod(card_conclusion)
-	
+
 	# Datum
 	var card_datum: CardData = CardData.new("card_datum")
 	card_datum.card_name = "数据点"
 	card_datum.card_color_id = "color_{0}".format([color])
-	card_datum.card_texture_path = "external/sprites/cards/{0}/card_{0}.png".format([color])
-	card_datum.card_description = "获得 [block] 点防火墙。被加载时复制。物理删除。"
+	card_datum.card_texture_path = "sprites/card/green/card_datum.png"
+	card_datum.card_description = "获得 [block] 点防火墙。被加载时复制。"
 	card_datum.card_type = CardData.CARD_TYPES.SKILL
 	card_datum.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_datum.card_energy_cost = 3
 	card_datum.card_requires_target = false
 	card_datum.card_is_retained = false
 	card_datum.card_play_destination = HandManager.EXHAUST_PILE
-	card_datum.card_values = {"block": 6, "modified_energy_cost": card_datum.card_energy_cost, "card_value_improvements":{"modified_energy_cost": -1}}
+	card_datum.card_values = { "block": 6, "modified_energy_cost": card_datum.card_energy_cost, "card_value_improvements": { "modified_energy_cost": -1 } }
 	card_datum.card_play_actions = [
 		{
 			Scripts.ACTION_BLOCK: {
-					"time_delay": 0.2,
-					"target_override": BaseAction.TARGET_OVERRIDES.PARENT,
-					}
-			}
-		]
+				"time_delay": 0.2,
+				"target_override": BaseAction.TARGET_OVERRIDES.PARENT,
+			},
+		},
+	]
 	card_datum.card_draw_actions = [
 		# pick this card and duplicate it then add the duplicate to hand
 		{
-			Scripts.ACTION_PICK_DUPLICATE_CARDS:{
+			Scripts.ACTION_PICK_DUPLICATE_CARDS: {
 				"card_pick_type": ActionBasePickCards.PICK_PARENT_CARD,
 				"min_card_amount": 1,
 				"max_card_amount": 1,
 				"min_cards_are_required_for_action": true,
 				"random_selection": true,
 				"card_pick_text": "选择 {0} 个脚本加入当前线程。已选 {1} 个",
-				"action_data": [{Scripts.ACTION_ADD_CARDS_TO_HAND: {
-					# must alias the generated cards from ActionPickDuplicateCards
-					"custom_key_names": {"picked_cards": "generated_cards"}
-				}
-				}]
-			}
-		}
+				"action_data": [
+					{
+						Scripts.ACTION_ADD_CARDS_TO_HAND: {
+							# must alias the generated cards from ActionPickDuplicateCards
+							"custom_key_names": { "picked_cards": "generated_cards" },
+						},
+					},
+				],
+			},
+		},
 	]
 	card_datum.card_end_of_turn_actions = [
 		# pick this card and then modify its energy_cost using an alias'ed  
 		{
-			Scripts.ACTION_PICK_CARDS:{
+			Scripts.ACTION_PICK_CARDS: {
 				"card_pick_type": ActionBasePickCards.PICK_PARENT_CARD,
 				"min_card_amount": 1,
 				"max_card_amount": 1,
 				"min_cards_are_required_for_action": true,
 				"random_selection": true,
-				"action_data": [{Scripts.ACTION_CHANGE_CARD_ENERGIES: {
-					# must alias the generated cards from ActionPickDuplicateCards
-					"custom_key_names": {"card_energy_cost_until_combat": "modified_energy_cost"}
-				}
-				}]
-			}
+				"action_data": [
+					{
+						Scripts.ACTION_CHANGE_CARD_ENERGIES: {
+							# must alias the generated cards from ActionPickDuplicateCards
+							"custom_key_names": { "card_energy_cost_until_combat": "modified_energy_cost" },
+						},
+					},
+				],
+			},
 		},
 		# clamp the modified_energy value to 0
 		{
-		Scripts.ACTION_CLAMP_CARD_VALUES: 
-			{
-			"time_delay": 0.1,
-			"pick_played_card": true,
-			"modify_parent_card": false,
-			"clamp_card_values": {"modified_energy_cost": [0, 99]}
-			}
+			Scripts.ACTION_CLAMP_CARD_VALUES: {
+				"time_delay": 0.1,
+				"pick_played_card": true,
+				"modify_parent_card": false,
+				"clamp_card_values": { "modified_energy_cost": [0, 99] },
+			},
 		},
-		
+
 		# convert unused energy into changing a "modified_energy_cost" property
 		{
-		Scripts.ACTION_IMPROVE_CARD_VALUES_UNUSED_ENERGY: 
-			{
-			"time_delay": 0.1,
-			"pick_played_card": true,
-			"modify_parent_card": false,
-			
-			}
-		}
+			Scripts.ACTION_IMPROVE_CARD_VALUES_UNUSED_ENERGY: {
+				"time_delay": 0.1,
+				"pick_played_card": true,
+				"modify_parent_card": false,
+			},
+		},
 	]
-	
+
 	Global.register_rod(card_datum)
-	
+
 	# Photoelectric Synthesis
 	var card_photoelectric_synthesis: CardData = CardData.new("card_photoelectric_synthesis")
-	card_photoelectric_synthesis.card_name = "光电合成 (Photosynthesis.exe)"
+	card_photoelectric_synthesis.card_name = "光电合成"
 	card_photoelectric_synthesis.card_color_id = "color_{0}".format([color])
-	card_photoelectric_synthesis.card_texture_path = "external/sprites/cards/{0}/card_{0}.png".format([color])
-	card_photoelectric_synthesis.card_description = "获得 10 层力量。需吸收 5 点算力后才能调用。已吸收 [card_absorbed_energy] 点。"
+	card_photoelectric_synthesis.card_texture_path = "sprites/card/green/card_photoelectric_synthesis.png"
+	card_photoelectric_synthesis.card_description = "获得 10 层力量。需吸收 {0}{0}{0}{0}{0} 后才能调用。已吸收 [card_absorbed_energy_energy_icons]。".format([Card.ENERGY_ICON_KEYWORD])
 	card_photoelectric_synthesis.card_type = CardData.CARD_TYPES.POWER
 	card_photoelectric_synthesis.card_rarity = CardData.CARD_RARITIES.RARE
 	card_photoelectric_synthesis.card_energy_cost = 0
@@ -3119,147 +3242,147 @@ func add_cards_green() -> void:
 	card_photoelectric_synthesis.card_is_retained = true
 	card_photoelectric_synthesis.card_values = {
 		"card_absorbed_energy": 0,
-		"card_value_improvements": {"card_absorbed_energy": 1},
+		"card_value_improvements": { "card_absorbed_energy": 1 },
 		"status_effect_object_id": "status_effect_damage_increase",
 		"status_charge_amount": 10,
-		}
+	}
 	card_photoelectric_synthesis.card_play_actions = [
 		{
 			Scripts.ACTION_APPLY_STATUS: {
 				"target_override": BaseAction.TARGET_OVERRIDES.PLAYER,
-				}
-		}
-		]
+			},
+		},
+	]
 	card_photoelectric_synthesis.card_end_of_turn_actions = [
 		{
-		Scripts.ACTION_IMPROVE_CARD_VALUES_UNUSED_ENERGY: 
-			{
-			"time_delay": 0.1,
-			"pick_played_card": true,
-			"modify_parent_card": false,
-			}
-		}
+			Scripts.ACTION_IMPROVE_CARD_VALUES_UNUSED_ENERGY: {
+				"time_delay": 0.1,
+				"pick_played_card": true,
+				"modify_parent_card": false,
+			},
+		},
 	]
 	card_photoelectric_synthesis.card_play_validators = [
 		{
 			Scripts.VALIDATOR_CARD_VALUES: {
-			"card_value_name": "card_absorbed_energy",
-			"operator": ">=",
-			"comparison_value": 5
-			}
-		}
+				"card_value_name": "card_absorbed_energy",
+				"operator": ">=",
+				"comparison_value": 5,
+			},
+		},
 	]
-	
+
 	Global.register_rod(card_photoelectric_synthesis)
-	
+
 	#endregion
 	#region Critical Archetype
-	
+
 	# Big Boom
 	var card_big_boom: CardData = CardData.new("card_big_boom")
 	card_big_boom.card_name = "大爆炸"
 	card_big_boom.card_color_id = "color_{0}".format([color])
-	card_big_boom.card_texture_path = "external/sprites/cards/{0}/card_{0}.png".format([color])
+	card_big_boom.card_texture_path = "sprites/card/green/card_big_boom.png"
 	card_big_boom.card_description = "对所有敌人造成 [damage] 点伤害。获得 [status_charge_amount] 层内核过热。"
 	card_big_boom.card_type = CardData.CARD_TYPES.ATTACK
 	card_big_boom.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_big_boom.card_requires_target = false
 	card_big_boom.card_energy_cost = 2
-	card_big_boom.card_values = {"damage": 12, "status_charge_amount": 5, "time_delay": 0.2,}
-	card_big_boom.card_upgrade_value_improvements = {"damage": 14,}
+	card_big_boom.card_values = { "damage": 12, "status_charge_amount": 5, "time_delay": 0.2 }
+	card_big_boom.card_upgrade_value_improvements = { "damage": 14 }
 	card_big_boom.card_play_actions = [
 		{
 			Scripts.ACTION_APPLY_STATUS: {
-			"status_effect_object_id": "status_effect_overheat",
-			"target_override": BaseAction.TARGET_OVERRIDES.PLAYER}
+				"status_effect_object_id": "status_effect_overheat",
+				"target_override": BaseAction.TARGET_OVERRIDES.PLAYER,
+			},
 		},
 		{
-			Scripts.ACTION_ATTACK_GENERATOR: 
-				{
+			Scripts.ACTION_ATTACK_GENERATOR: {
 				"target_override": BaseAction.TARGET_OVERRIDES.ALL_ENEMIES,
-				}
-		}
-		]
-	
+			},
+		},
+	]
+
 	Global.register_rod(card_big_boom)
-	
+
 	# Creates cards and adds them to hand
 	var card_containment: CardData = CardData.new("card_containment")
 	card_containment.card_name = "收容"
 	card_containment.card_color_id = "color_{0}".format([color])
-	card_containment.card_texture_path = "external/sprites/cards/{0}/card_{0}.png".format([color])
+	card_containment.card_texture_path = "sprites/card/green/card_containment.png"
 	card_containment.card_description = "获得 [block] 点防火墙。将 [number_of_cards] 个冗余数据加入当前线程"
 	card_containment.card_type = CardData.CARD_TYPES.SKILL
 	card_containment.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_containment.card_requires_target = false
 	card_containment.card_keyword_object_ids = []
-	card_containment.card_values = {"target_override": BaseAction.TARGET_OVERRIDES.PARENT, "block": 15, "created_card_object_id": "card_waste",  "number_of_cards": 2}
-	card_containment.card_upgrade_value_improvements = {"block": 5}
+	card_containment.card_values = { "target_override": BaseAction.TARGET_OVERRIDES.PARENT, "block": 15, "created_card_object_id": "card_waste", "number_of_cards": 2 }
+	card_containment.card_upgrade_value_improvements = { "block": 5 }
 	card_containment.card_play_actions = [
-	{
-	Scripts.ACTION_CREATE_CARDS: {
-		"action_data": [{Scripts.ACTION_ADD_CARDS_TO_HAND: {}}]
-		}
-	},
-	{
-		Scripts.ACTION_BLOCK: 
-			{
-			"time_delay": 0.3,
-			}
-		}
+		{
+			Scripts.ACTION_CREATE_CARDS: {
+				"action_data": [{ Scripts.ACTION_ADD_CARDS_TO_HAND: { } }],
+			},
+		},
+		{
+			Scripts.ACTION_BLOCK: {
+				"time_delay": 0.3,
+			},
+		},
 	]
-	
+
 	Global.register_rod(card_containment)
-	
+
 	# Critical
 	var card_critical: CardData = CardData.new("card_critical")
 	card_critical.card_name = "临界"
 	card_critical.card_color_id = "color_{0}".format([color])
-	card_critical.card_texture_path = "external/sprites/cards/{0}/card_{0}.png".format([color])
+	card_critical.card_texture_path = "sprites/card/green/card_critical.png"
 	card_critical.card_description = "每时钟周期获得 [status_charge_amount] 层内核过热。"
 	card_critical.card_type = CardData.CARD_TYPES.POWER
 	card_critical.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_critical.card_requires_target = false
 	card_critical.card_energy_cost = 1
-	card_critical.card_values = {"status_charge_amount": 5, "time_delay": 0.2,}
-	card_critical.card_upgrade_value_improvements = {}
+	card_critical.card_values = { "status_charge_amount": 5, "time_delay": 0.2 }
+	card_critical.card_upgrade_value_improvements = { }
 	card_critical.card_play_actions = [
 		{
 			Scripts.ACTION_APPLY_STATUS: {
-			"status_effect_object_id": "status_effect_critical",
-			"target_override": BaseAction.TARGET_OVERRIDES.PLAYER}
-		}
-		]
-	
+				"status_effect_object_id": "status_effect_critical",
+				"target_override": BaseAction.TARGET_OVERRIDES.PLAYER,
+			},
+		},
+	]
+
 	Global.register_rod(card_critical)
-	
+
 	# Feedback Loop
 	var card_feedback_loop: CardData = CardData.new("card_feedback_loop")
 	card_feedback_loop.card_name = "反馈循环"
 	card_feedback_loop.card_color_id = "color_{0}".format([color])
-	card_feedback_loop.card_texture_path = "external/sprites/cards/{0}/card_{0}.png".format([color])
+	card_feedback_loop.card_texture_path = "sprites/card/green/card_feedback_loop.png"
 	card_feedback_loop.card_description = "每当你获得内核过热情时获得 {0}。".format([Card.ENERGY_ICON_KEYWORD])
 	card_feedback_loop.card_type = CardData.CARD_TYPES.POWER
 	card_feedback_loop.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_feedback_loop.card_requires_target = false
 	card_feedback_loop.card_energy_cost = 2
-	card_feedback_loop.card_values = {"status_charge_amount": 1, "time_delay": 0.2,}
-	card_feedback_loop.card_upgrade_value_improvements = {}
+	card_feedback_loop.card_values = { "status_charge_amount": 1, "time_delay": 0.2 }
+	card_feedback_loop.card_upgrade_value_improvements = { }
 	card_feedback_loop.card_play_actions = [
 		{
 			Scripts.ACTION_APPLY_STATUS: {
-			"status_effect_object_id": "status_effect_feedback_loop",
-			"target_override": BaseAction.TARGET_OVERRIDES.PLAYER}
-		}
-		]
-	
+				"status_effect_object_id": "status_effect_feedback_loop",
+				"target_override": BaseAction.TARGET_OVERRIDES.PLAYER,
+			},
+		},
+	]
+
 	Global.register_rod(card_feedback_loop)
-	
+
 	# Fusion Cannon
 	var card_fusion_cannon: CardData = CardData.new("card_fusion_cannon")
 	card_fusion_cannon.card_name = "聚变炮"
 	card_fusion_cannon.card_color_id = "color_{0}".format([color])
-	card_fusion_cannon.card_texture_path = "external/sprites/cards/{0}/card_{0}.png".format([color])
+	card_fusion_cannon.card_texture_path = "sprites/card/green/card_fusion_cannon.png"
 	card_fusion_cannon.card_description = "坏道区中每个冗余数据造成 [damage] 点伤害。将 1 个冗余数据加入当前线程。"
 	card_fusion_cannon.card_type = CardData.CARD_TYPES.ATTACK
 	card_fusion_cannon.card_rarity = CardData.CARD_RARITIES.RARE
@@ -3268,68 +3391,76 @@ func add_cards_green() -> void:
 	card_fusion_cannon.card_values = {
 		"damage": 15,
 		"number_of_attacks": 1,
-		"created_card_object_id": "card_waste",  "number_of_cards": 1,
-		}
-	card_fusion_cannon.card_upgrade_value_improvements = {"damage": 5}
+		"created_card_object_id": "card_waste",
+		"number_of_cards": 1,
+	}
+	card_fusion_cannon.card_upgrade_value_improvements = { "damage": 5 }
 	card_fusion_cannon.card_play_actions = [
-	{
-	Scripts.ACTION_PICK_CARDS: {
-		"min_card_amount": 99,
-		"max_card_amount": 99,
-		"min_cards_are_required_for_action": false,
-		"random_selection": true,
-		"card_pick_type": HandManager.EXHAUST_PILE,
-		"card_pick_text": "选择至多 {0} 个脚本丢弃。已选 {1} 个",
-		"validator_data": [
-			{Scripts.VALIDATOR_CARD_ID: {"card_object_ids": ["card_waste"]}}
-		],
-		"action_data": [
-			{Scripts.ACTION_VARIABLE_CARDSET_MODIFIER: {
-				"multiplied_values": ["damage"],
-				"action_data": [{Scripts.ACTION_ATTACK_GENERATOR: {
-					"time_delay": 0.5
-					}}]
-			}},
-			]
-		}
-	},
+		{
+			Scripts.ACTION_PICK_CARDS: {
+				"min_card_amount": 99,
+				"max_card_amount": 99,
+				"min_cards_are_required_for_action": false,
+				"random_selection": true,
+				"card_pick_type": HandManager.EXHAUST_PILE,
+				"card_pick_text": "选择至多 {0} 个脚本丢弃。已选 {1} 个",
+				"validator_data": [
+					{ Scripts.VALIDATOR_CARD_ID: { "card_object_ids": ["card_waste"] } },
+				],
+				"action_data": [
+					{
+						Scripts.ACTION_VARIABLE_CARDSET_MODIFIER: {
+							"multiplied_values": ["damage"],
+							"action_data": [
+								{
+									Scripts.ACTION_ATTACK_GENERATOR: {
+										"time_delay": 0.5,
+									},
+								},
+							],
+						},
+					},
+				],
+			},
+		},
 	]
 
 	Global.register_rod(card_fusion_cannon)
-	
+
 	# Meltdown
 	var card_meltdown: CardData = CardData.new("card_meltdown")
 	card_meltdown.card_name = "熔毁"
 	card_meltdown.card_color_id = "color_{0}".format([color])
-	card_meltdown.card_texture_path = "external/sprites/cards/{0}/card_{0}.png".format([color])
+	card_meltdown.card_texture_path = "sprites/card/green/card_meltdown.png"
 	card_meltdown.card_description = "造成 [damage] 点伤害。获得 [status_charge_amount] 层内核过热。"
 	card_meltdown.card_type = CardData.CARD_TYPES.ATTACK
 	card_meltdown.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_meltdown.card_requires_target = true
-	card_meltdown.card_values = {"damage": 0, "status_charge_amount": 25}
-	card_meltdown.card_upgrade_value_improvements = {}
+	card_meltdown.card_values = { "damage": 0, "status_charge_amount": 25 }
+	card_meltdown.card_upgrade_value_improvements = { }
 	card_meltdown.card_play_actions = [
 		{
 			Scripts.ACTION_APPLY_STATUS: {
-			"status_effect_object_id": "status_effect_overheat",
-			"target_override": BaseAction.TARGET_OVERRIDES.PLAYER}
+				"status_effect_object_id": "status_effect_overheat",
+				"target_override": BaseAction.TARGET_OVERRIDES.PLAYER,
+			},
 		},
 		{
 			Scripts.ACTION_ATTACK_GENERATOR: {
-					"time_delay": 0.3,
-					"target_override": BaseAction.TARGET_OVERRIDES.SELECTED_TARGETS,
-					}
-		}
-		]
-	
+				"time_delay": 0.3,
+				"target_override": BaseAction.TARGET_OVERRIDES.SELECTED_TARGETS,
+			},
+		},
+	]
+
 	Global.register_rod(card_meltdown)
-	
+
 	# Particle Accelerator
 	var card_particle_accelerator: CardData = CardData.new("card_particle_accelerator")
 	card_particle_accelerator.card_name = "粒子加速器"
 	card_particle_accelerator.card_color_id = "color_{0}".format([color])
-	card_particle_accelerator.card_texture_path = "external/sprites/cards/{0}/card_{0}.png".format([color])
-	card_particle_accelerator.card_description = "获得 [energy_amount] 点算力。将 [number_of_cards] 个冗余数据加入回收站。"
+	card_particle_accelerator.card_texture_path = "sprites/card/green/card_particle_accelerator.png"
+	card_particle_accelerator.card_description = "获得 [energy_amount_energy_icons]。将 [number_of_cards] 个冗余数据加入回收站。"
 	card_particle_accelerator.card_type = CardData.CARD_TYPES.SKILL
 	card_particle_accelerator.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_particle_accelerator.card_requires_target = false
@@ -3339,91 +3470,97 @@ func add_cards_green() -> void:
 		"energy_amount": 3,
 		"time_delay": 0.0,
 		"is_manual_discard": false,
-		"created_card_object_id": "card_waste",  "number_of_cards": 3,
-		"target_override": BaseAction.TARGET_OVERRIDES.PARENT}
-	card_particle_accelerator.card_upgrade_value_improvements = {"energy_amount": 1}
-	card_particle_accelerator.card_play_actions = [
-	{
-	Scripts.ACTION_CREATE_CARDS: {
-		"action_data": [{Scripts.ACTION_DISCARD_CARDS: {}}]
-		}
-	},
-	{
-		Scripts.ACTION_ADD_ENERGY: 
-		{
-		"time_delay": 0.1,
-		}
+		"created_card_object_id": "card_waste",
+		"number_of_cards": 3,
+		"target_override": BaseAction.TARGET_OVERRIDES.PARENT,
 	}
+	card_particle_accelerator.card_upgrade_value_improvements = { "energy_amount": 1 }
+	card_particle_accelerator.card_first_upgrade_property_changes = { "card_description": "获得 [energy_amount_energy_icons]。将 [number_of_cards] 个冗余数据加入回收站。" }
+	card_particle_accelerator.card_play_actions = [
+		{
+			Scripts.ACTION_CREATE_CARDS: {
+				"action_data": [{ Scripts.ACTION_DISCARD_CARDS: { } }],
+			},
+		},
+		{
+			Scripts.ACTION_ADD_ENERGY: {
+				"time_delay": 0.1,
+			},
+		},
 	]
-	
+
 	Global.register_rod(card_particle_accelerator)
-	
+
 	# Unstable
 	var card_unstable: CardData = CardData.new("card_unstable")
 	card_unstable.card_name = "不稳定"
 	card_unstable.card_color_id = "color_{0}".format([color])
-	card_unstable.card_texture_path = "external/sprites/cards/{0}/card_{0}.png".format([color])
+	card_unstable.card_texture_path = "sprites/card/green/card_unstable.png"
 	card_unstable.card_description = "读取 [draw_count] 个脚本。获得 [status_charge_amount] 层内核过热"
 	card_unstable.card_type = CardData.CARD_TYPES.SKILL
 	card_unstable.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_unstable.card_requires_target = false
 	card_unstable.card_energy_cost = 0
-	card_unstable.card_values = {"status_charge_amount": 4, "draw_count": 3}
-	card_unstable.card_upgrade_value_improvements = {"draw_count": 1}
+	card_unstable.card_values = { "status_charge_amount": 4, "draw_count": 3 }
+	card_unstable.card_upgrade_value_improvements = { "draw_count": 1 }
 	card_unstable.card_play_actions = [
 		{
 			Scripts.ACTION_APPLY_STATUS: {
-			"status_effect_object_id": "status_effect_overheat",
-			"target_override": BaseAction.TARGET_OVERRIDES.PLAYER}
+				"status_effect_object_id": "status_effect_overheat",
+				"target_override": BaseAction.TARGET_OVERRIDES.PLAYER,
+			},
 		},
 		{
-		Scripts.ACTION_DRAW_GENERATOR: {},
-		}
+			Scripts.ACTION_DRAW_GENERATOR: { },
+		},
 	]
-	
+
 	Global.register_rod(card_unstable)
-	
+
 	# Waste
 	var card_waste: CardData = CardData.new("card_waste")
 	card_waste.card_name = "冗余数据"
 	card_waste.card_color_id = "color_{0}".format([color])
-	card_waste.card_texture_path = "external/sprites/cards/{0}/card_{0}.png".format([color])
-	card_waste.card_description = "时钟周期结束时获得 [status_charge_amount] 层内核过热并对随机敌人造成 [damage] 点伤害。物理删除"
+	card_waste.card_texture_path = "sprites/card/green/card_waste.png"
+	card_waste.card_description = "时钟周期结束时获得 [status_charge_amount] 层内核过热并对随机敌人造成 [damage] 点伤害。"
 	card_waste.card_type = CardData.CARD_TYPES.STATUS
 	card_waste.card_rarity = CardData.CARD_RARITIES.GENERATED
 	card_waste.card_requires_target = false
 	card_waste.card_play_destination = HandManager.EXHAUST_PILE
 	card_waste.card_energy_cost = 1
 	card_waste.card_upgrade_amount_max = 0 # cannot be upgraded
-	card_waste.card_values = {"damage": 3, "status_charge_amount": 2}
+	card_waste.card_values = { "damage": 3, "status_charge_amount": 2 }
 	card_waste.card_end_of_turn_actions = [
 		{
 			Scripts.ACTION_APPLY_STATUS: {
-			"status_effect_object_id": "status_effect_overheat",
-			"target_override": BaseAction.TARGET_OVERRIDES.PLAYER}
+				"status_effect_object_id": "status_effect_overheat",
+				"target_override": BaseAction.TARGET_OVERRIDES.PLAYER,
+			},
 		},
 		{
 			Scripts.ACTION_DIRECT_DAMAGE: {
 				"bypass_block": false,
 				"time_delay": 0.2,
 				"target_override": BaseAction.TARGET_OVERRIDES.RANDOM_ENEMY,
-			}
-		}
+			},
+		},
 	]
-	
+
 	Global.register_rod(card_waste)
-	
+
 	#endregion
-	
+
+
 func add_cards_orange() -> void:
 	var color: String = "orange"
+
 
 func add_cards_red() -> void:
 	var color: String = "red"
 
+
 func add_cards_blue() -> void:
 	var color: String = "blue"
-
 
 #region Card Packs
 
@@ -3433,37 +3570,35 @@ func add_card_packs() -> void:
 	card_pack_all.exclude_non_standard_rarities = false
 	card_pack_all.exclude_non_standard_types = false
 	Global.register_rod(card_pack_all)
-	
+
 	# all draftable cards, ignoring non-standard types and rarities
 	var card_pack_prismatic: CardPackData = CardPackData.new("card_pack_prismatic")
 	Global.register_rod(card_pack_prismatic)
-	
+
 	var card_pack_red: CardPackData = CardPackData.new("card_pack_red")
 	card_pack_red.card_pack_color_id = "color_red"
 	card_pack_red.card_pack_displays_in_codex = true
 	Global.register_rod(card_pack_red)
-	
+
 	var card_pack_blue: CardPackData = CardPackData.new("card_pack_blue")
 	card_pack_blue.card_pack_color_id = "color_blue"
 	card_pack_blue.card_pack_displays_in_codex = true
 	Global.register_rod(card_pack_blue)
-	
+
 	var card_pack_green: CardPackData = CardPackData.new("card_pack_green")
 	card_pack_green.card_pack_color_id = "color_green"
 	card_pack_green.card_pack_displays_in_codex = true
 	Global.register_rod(card_pack_green)
-	
+
 	var card_pack_orange: CardPackData = CardPackData.new("card_pack_orange")
 	card_pack_orange.card_pack_color_id = "color_orange"
 	card_pack_orange.card_pack_displays_in_codex = true
 	Global.register_rod(card_pack_orange)
-	
+
 	var card_pack_white: CardPackData = CardPackData.new("card_pack_white")
 	card_pack_white.card_pack_color_id = "color_white"
 	card_pack_white.card_pack_displays_in_codex = true
 	Global.register_rod(card_pack_white)
-	
-
 
 #endregion
 #region Artifact Packs
@@ -3473,25 +3608,25 @@ func add_artifact_packs() -> void:
 	var artifact_pack_all: ArtifactPackData = ArtifactPackData.new("artifact_pack_all")
 	artifact_pack_all.exclude_non_standard_rarities = false
 	Global.register_rod(artifact_pack_all)
-	
+
 	# common pool artifacts, ignoring non-standard types and rarities
 	# all characters should have this and their color by default
 	var artifact_pack_white: ArtifactPackData = ArtifactPackData.new("artifact_pack_white")
 	artifact_pack_white.artifact_pack_color_id = "color_white"
 	Global.register_rod(artifact_pack_white)
-	
+
 	var artifact_pack_red: ArtifactPackData = ArtifactPackData.new("artifact_pack_red")
 	artifact_pack_red.artifact_pack_color_id = "color_red"
 	Global.register_rod(artifact_pack_red)
-	
+
 	var artifact_pack_blue: ArtifactPackData = ArtifactPackData.new("artifact_pack_blue")
 	artifact_pack_blue.artifact_pack_color_id = "color_blue"
 	Global.register_rod(artifact_pack_blue)
-	
+
 	var artifact_pack_green: ArtifactPackData = ArtifactPackData.new("artifact_pack_green")
 	artifact_pack_green.artifact_pack_color_id = "color_green"
 	Global.register_rod(artifact_pack_green)
-	
+
 	var artifact_pack_orange: ArtifactPackData = ArtifactPackData.new("artifact_pack_orange")
 	artifact_pack_orange.artifact_pack_color_id = "color_orange"
 	Global.register_rod(artifact_pack_orange)
@@ -3503,25 +3638,25 @@ func add_consumable_packs() -> void:
 	# all consumables in game, with no filtering
 	var consumable_pack_all: ConsumablePackData = ConsumablePackData.new("consumable_pack_all")
 	Global.register_rod(consumable_pack_all)
-	
+
 	# common pool consumables, ignoring non-standard types and rarities
 	# all characters should have this and their color by default
 	var consumable_pack_white: ConsumablePackData = ConsumablePackData.new("consumable_pack_white")
 	consumable_pack_white.consumable_pack_color_id = "color_white"
 	Global.register_rod(consumable_pack_white)
-	
+
 	var consumable_pack_red: ConsumablePackData = ConsumablePackData.new("consumable_pack_red")
 	consumable_pack_red.consumable_pack_color_id = "color_red"
 	Global.register_rod(consumable_pack_red)
-	
+
 	var consumable_pack_blue: ConsumablePackData = ConsumablePackData.new("consumable_pack_blue")
 	consumable_pack_blue.consumable_pack_color_id = "color_blue"
 	Global.register_rod(consumable_pack_blue)
-	
+
 	var consumable_pack_green: ConsumablePackData = ConsumablePackData.new("consumable_pack_green")
 	consumable_pack_green.consumable_pack_color_id = "color_green"
 	Global.register_rod(consumable_pack_green)
-	
+
 	var consumable_pack_orange: ConsumablePackData = ConsumablePackData.new("consumable_pack_orange")
 	consumable_pack_orange.consumable_pack_color_id = "color_orange"
 	Global.register_rod(consumable_pack_orange)

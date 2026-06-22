@@ -21,21 +21,25 @@ const LOCATION_TYPE_DISPLAY_NAMES: Dictionary = {
 	LocationData.LOCATION_TYPES.REST_SITE: "维护终端",
 }
 
-const LOCATION_TYPE_TEXTURES: Dictionary = {
-	LocationData.LOCATION_TYPES.COMBAT: preload("res://sprites/map/map_icon_combat.png"),
-	LocationData.LOCATION_TYPES.MINIBOSS: preload("res://sprites/map/map_icon_miniboss.png"),
-	LocationData.LOCATION_TYPES.BOSS: preload("res://sprites/map/map_icon_boss.png"),
-	LocationData.LOCATION_TYPES.EVENT: preload("res://sprites/map/map_icon_event.png"),
-	LocationData.LOCATION_TYPES.TREASURE: preload("res://sprites/map/map_icon_treasure.png"),
-	LocationData.LOCATION_TYPES.SHOP: preload("res://sprites/map/map_icon_shop.png"),
-	LocationData.LOCATION_TYPES.REST_SITE: preload("res://sprites/map/map_icon_rest_site.png"),
-}
+var LOCATION_TYPE_TEXTURES: Dictionary = {}
 
-const UNKNOWN_TEXTURE: Texture2D = preload("res://sprites/map/map_icon_unknown.png")
+var UNKNOWN_TEXTURE: Texture2D
 
 func init(_location_data: LocationData):
 	location_data = _location_data
 	position = location_data.location_position
+	
+	if LOCATION_TYPE_TEXTURES.is_empty():
+		LOCATION_TYPE_TEXTURES = {
+			LocationData.LOCATION_TYPES.COMBAT: FileLoader.load_texture("sprites/map/map_icon_combat.png"),
+			LocationData.LOCATION_TYPES.MINIBOSS: FileLoader.load_texture("sprites/map/map_icon_miniboss.png"),
+			LocationData.LOCATION_TYPES.BOSS: FileLoader.load_texture("sprites/map/map_icon_boss.png"),
+			LocationData.LOCATION_TYPES.EVENT: FileLoader.load_texture("sprites/map/map_icon_event.png"),
+			LocationData.LOCATION_TYPES.TREASURE: FileLoader.load_texture("sprites/map/map_icon_treasure.png"),
+			LocationData.LOCATION_TYPES.SHOP: FileLoader.load_texture("sprites/map/map_icon_shop.png"),
+			LocationData.LOCATION_TYPES.REST_SITE: FileLoader.load_texture("sprites/map/map_icon_rest_site.png"),
+		}
+		UNKNOWN_TEXTURE = FileLoader.load_texture("sprites/map/map_icon_unknown.png")
 	
 	# display the type of location
 	if location_data.location_obfuscated and not location_data.location_visited:

@@ -138,11 +138,15 @@ func get_adjusted_action_targets() -> Array[BaseCombatant]:
 				if enemy.is_alive() or force_dead_targets:
 					returned_targets.append(enemy)
 		TARGET_OVERRIDES.LEFTMOST_ENEMY:
-			# TODO: This will fail if new enemies are spawned in.
-			var enemy: Enemy = Global.get_tree().get_first_node_in_group("enemies_alive_or_dead")
-			if enemy != null:
+			var enemies: Array[Node] = Global.get_tree().get_nodes_in_group("enemies_alive_or_dead")
+			var valid_enemies: Array[BaseCombatant] = []
+			for enemy: BaseCombatant in enemies:
 				if enemy.is_alive() or force_dead_targets:
-					returned_targets.append(enemy)
+					valid_enemies.append(enemy)
+			
+			if valid_enemies.size() > 0:
+				valid_enemies.sort_custom(func(a: BaseCombatant, b: BaseCombatant): return a.global_position.x < b.global_position.x)
+				returned_targets.append(valid_enemies[0])
 		TARGET_OVERRIDES.ENEMY_ID:
 			var enemies: Array[Node] = Global.get_tree().get_nodes_in_group("enemies_alive_or_dead")
 			var enemy_ids: Array[String] = []
@@ -152,15 +156,17 @@ func get_adjusted_action_targets() -> Array[BaseCombatant]:
 					if enemy.is_alive() or force_dead_targets:
 						returned_targets.append(enemy)
 		TARGET_OVERRIDES.RANDOM_ENEMY:
-			# TODO: This one does not factor in force_dead_targets
-			var enemies: Array[Node] = Global.get_tree().get_nodes_in_group("enemies")
-			
-			var rng_name: String = get_action_value("rng_name", "rng_targeting")
-			var rng_targeting: RandomNumberGenerator = Global.player_data.get_player_rng(rng_name)
-			
-			enemies = Random.shuffle_array(rng_targeting, enemies)
-			if len(enemies) > 0:
-				returned_targets.append(enemies[0])
+			var enemies: Array[Node] = Global.get_tree().get_nodes_in_group("enemies_alive_or_dead")
+			var valid_enemies: Array[BaseCombatant] = []
+			for enemy: BaseCombatant in enemies:
+				if enemy.is_alive() or force_dead_targets:
+					valid_enemies.append(enemy)
+					
+			if valid_enemies.size() > 0:
+				var rng_name: String = get_action_value("rng_name", "rng_targeting")
+				var rng_targeting: RandomNumberGenerator = Global.player_data.get_player_rng(rng_name)
+				valid_enemies = Random.shuffle_array(rng_targeting, valid_enemies)
+				returned_targets.append(valid_enemies[0])
 			
 	return returned_targets
 

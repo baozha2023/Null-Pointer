@@ -209,6 +209,27 @@ func _on_node_added_global(node: Node) -> void:
 	if node is BaseButton:
 		if node.mouse_default_cursor_shape == Control.CURSOR_ARROW:
 			node.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+			
+	# Dynamic Mod Support: Automatically convert all built-in resources to FileLoader
+	_apply_fileloader_to_node(node)
+
+func _apply_fileloader_to_node(node: Node) -> void:
+	if not Engine.is_editor_hint(): # Ensure we don't interfere with the Godot editor
+		var texture_properties = ["texture", "texture_normal", "texture_pressed", "texture_hover", "texture_disabled", "texture_focused"]
+		for prop in texture_properties:
+			if prop in node:
+				var tex = node.get(prop)
+				if tex != null and tex.resource_path.begins_with("res://sprites/"):
+					var partial_path = tex.resource_path.replace("res://", "")
+					node.set(prop, FileLoader.load_texture(partial_path))
+					
+		var audio_properties = ["stream"]
+		for prop in audio_properties:
+			if prop in node:
+				var stream = node.get(prop)
+				if stream != null and stream.resource_path.begins_with("res://sounds/"):
+					var partial_path = stream.resource_path.replace("res://", "")
+					node.set(prop, FileLoader.load_audio(partial_path))
 
 func _apply_cursor_to_tree(node: Node) -> void:
 	_on_node_added_global(node)
