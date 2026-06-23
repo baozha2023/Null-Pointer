@@ -1,13 +1,23 @@
 [gd_scene format=3 uid="uid://blmqt430ld3up"]
 
 [ext_resource type="Script" uid="uid://ct1kslhmqj11v" path="res://scripts/ui/card/CardDecorator.gd" id="2_86tk0"]
-[ext_resource type="Texture2D" uid="uid://c6e2c337msfw1" path="res://sprites/card-borders/decorator_bg.png" id="2_xjt58"]
+[ext_resource type="Texture2D" uid="uid://du5clod7rxj4b" path="res://sprites/card-borders/purple_decorator.png" id="2_xjt58"]
 
 [node name="CardDecorator" type="TextureRect" unique_id=1097643162]
 custom_minimum_size = Vector2(24, 24)
+size_flags_horizontal = 4
+size_flags_vertical = 4
 expand_mode = 1
 script = ExtResource("2_86tk0")
 metadata/_edit_group_ = true
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=987326186]
+layout_mode = 0
+offset_left = 3.0
+offset_top = 3.0
+offset_right = 21.0
+offset_bottom = 21.0
+color = Color(0, 0, 0, 1)
 
 [node name="Background" type="TextureRect" parent="." unique_id=1925319754]
 layout_mode = 1

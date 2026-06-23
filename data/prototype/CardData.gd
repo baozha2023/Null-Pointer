@@ -234,24 +234,7 @@ func set_card_energy_cost_until_combat(energy_cost: int) -> void:
 
 ## Gets the card description, including built in card related keywords
 func get_card_description() -> String:
-	var modified_card_description: String = card_description
-	
-	if card_first_shuffle_priority > 0:
-		modified_card_description = "[color=orange]置顶[/color]\n" + modified_card_description
-	if card_first_shuffle_priority < 0:
-		modified_card_description = "[color=orange]置底[/color]\n" + modified_card_description
-	if not card_is_playable:
-		modified_card_description = "[color=orange]不可打出[/color]\n" + modified_card_description
-	if card_is_retained:
-		modified_card_description = "[color=orange]保留[/color]\n" + modified_card_description
-	if is_card_ethereal():
-		modified_card_description = "[color=orange]虚无[/color]\n" + modified_card_description
-	if does_card_exhaust():
-		modified_card_description = modified_card_description + "\n[color=orange]物理删除[/color]"
-	if does_card_banish():
-		modified_card_description = modified_card_description + "\n[color=orange]放逐[/color]"
-	
-	return modified_card_description
+	return card_description
 
 ## Generates an ActionCardPlay, intercepts it, then returns the intercepted results in dictionary form.
 ## This cuts down on a lot of messy code used in getting intercepted values used for playing a card

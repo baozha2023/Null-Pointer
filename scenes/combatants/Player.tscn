@@ -57,7 +57,6 @@ offset_right = 40.0
 offset_bottom = 40.0
 
 [node name="CombatantCenter" type="Node2D" parent="Visible" unique_id=-1214215280]
-position = Vector2(0, 0)
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="Visible/CombatantCenter" unique_id=346677237]
 unique_name_in_owner = true
@@ -84,7 +83,6 @@ offset_bottom = 64.0
 unique_name_in_owner = true
 
 [node name="IncomingDamage" type="Control" parent="Visible" unique_id=485530369]
-visible = false
 anchors_preset = 0
 offset_left = -104.0
 offset_top = -128.0
@@ -102,10 +100,10 @@ expand_mode = 1
 
 [node name="IncomingDamageAmount" type="Label" parent="Visible/IncomingDamage" unique_id=366869573]
 layout_mode = 0
-offset_left = 104.0
-offset_top = 16.0
-offset_right = 144.0
-offset_bottom = 39.0
+offset_left = 117.0
+offset_top = 15.0
+offset_right = 142.0
+offset_bottom = 40.0
 text = "15"
 
 [node name="FadeContainer" type="Node2D" parent="Visible" unique_id=1501128475]

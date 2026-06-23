@@ -28,6 +28,10 @@ const BLOCK_TEXTURE: Texture = preload("res://icon.svg")
 func _ready():
 	Signals.combat_started.connect(_on_combat_started)
 	Signals.combat_ended.connect(_on_combat_ended)
+	
+	block_amount.mouse_filter = Control.MOUSE_FILTER_PASS
+	block_amount.mouse_entered.connect(_on_block_mouse_entered)
+	block_amount.mouse_exited.connect(_on_block_mouse_exited)
 	Signals.player_turn_started.connect(_on_player_turn_started)
 	Signals.player_turn_ended.connect(_on_player_turn_ended)
 	
@@ -111,6 +115,15 @@ func generate_reset_block_action() -> void:
 
 func reset_block() -> void:
 	set_block(0)
+
+func _on_block_mouse_entered() -> void:
+	if HandManager.tooltip != null:
+		var bbcode: String = "[color=orange]防火墙[/color]\n抵挡 " + str(get_block()) + " 点伤害"
+		HandManager.tooltip.display_tooltip(bbcode, true)
+
+func _on_block_mouse_exited() -> void:
+	if HandManager.tooltip != null:
+		HandManager.tooltip.hide_tooltip()
 #endregion
 
 #region Health

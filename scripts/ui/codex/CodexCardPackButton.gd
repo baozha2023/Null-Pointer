@@ -12,7 +12,7 @@ func _ready() -> void:
 func init(_card_pack_data: CardPackData) -> void:
 	card_pack_data = _card_pack_data
 	if card_pack_data.card_pack_color_id == "":
-		text = "All"
+		text = "全部"
 		self_modulate = Color.GRAY
 	else:
 		var color_data: ColorData = Global.get_color_data(card_pack_data.card_pack_color_id)

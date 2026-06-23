@@ -36,6 +36,17 @@ func init(_enemy_data: EnemyData):
 	selection_button.mouse_entered.connect(_on_mouse_entered)
 	selection_button.mouse_exited.connect(_on_mouse_exited)
 	
+	enemy_intent.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	enemy_intent_amount_label.mouse_filter = Control.MOUSE_FILTER_PASS
+	enemy_intent_amount_label.mouse_default_cursor_shape = Control.CURSOR_ARROW
+	
+	for display_type: int in INTENT_DISPLAY_TYPE_TO_INTENT:
+		var intent_icon: TextureRect = INTENT_DISPLAY_TYPE_TO_INTENT[display_type]
+		intent_icon.tooltip_text = ""
+		intent_icon.mouse_filter = Control.MOUSE_FILTER_PASS
+		intent_icon.mouse_entered.connect(_on_single_intent_mouse_entered.bind(display_type))
+		intent_icon.mouse_exited.connect(_on_intent_mouse_exited)
+	
 	animated_sprite_2d.sprite_frames = get_animation_sprite_frames()
 	play_animation(AnimationData.ANIMATION_IDLE)
 	
@@ -265,3 +276,37 @@ func _on_mouse_exited():
 func _on_death_animtation_finished():
 	# called from animation player
 	Signals.enemy_death_animation_finished.emit(self)
+
+func _on_single_intent_mouse_entered(display_type: int) -> void:
+	if HandManager.tooltip == null: return
+	
+	var current_enemy_intent: EnemyIntentData = enemy_data.get_current_intent()
+	if current_enemy_intent == null: return
+	
+	if not display_type in current_enemy_intent.enemy_intent_display_types:
+		return
+		
+	var bbcode: String = ""
+	
+	match display_type:
+		EnemyIntentData.INTENT_DISPLAY_TYPES.ATTACKING:
+			bbcode += "[color=red]意图攻击[/color]\n准备在时钟周期结束时造成 "
+			if enemy_intent_number_of_attacks > 1:
+				bbcode += str(enemy_intent_attack_damage) + " x " + str(enemy_intent_number_of_attacks) + " 点伤害"
+			else:
+				bbcode += str(enemy_intent_attack_damage) + " 点伤害"
+		EnemyIntentData.INTENT_DISPLAY_TYPES.BLOCKING:
+			bbcode += "[color=orange]意图防御[/color]\n准备在时钟周期结束时获得防火墙"
+		EnemyIntentData.INTENT_DISPLAY_TYPES.DEBUFFING:
+			bbcode += "[color=purple]意图减益[/color]\n准备在时钟周期结束时施加负面状态"
+		EnemyIntentData.INTENT_DISPLAY_TYPES.BUFFING:
+			bbcode += "[color=green]意图增益[/color]\n准备在时钟周期结束时强化自身或友军"
+		EnemyIntentData.INTENT_DISPLAY_TYPES.SUMMONING:
+			bbcode += "[color=white]意图召唤[/color]\n准备在时钟周期结束时呼叫增援"
+		
+	if bbcode != "":
+		HandManager.tooltip.display_tooltip(bbcode, true)
+
+func _on_intent_mouse_exited() -> void:
+	if HandManager.tooltip != null:
+		HandManager.tooltip.hide_tooltip()

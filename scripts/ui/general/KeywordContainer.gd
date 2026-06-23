@@ -14,6 +14,9 @@ func populate_card_keywords(card_data: CardData) -> void:
 	if card_data.card_first_shuffle_priority < 0:
 		if not card_keyword_object_ids.has("keyword_bottom_deck"):
 			card_keyword_object_ids.append("keyword_bottom_deck")
+	if not card_data.card_is_playable:
+		if not card_keyword_object_ids.has("keyword_unplayable"):
+			card_keyword_object_ids.append("keyword_unplayable")
 	
 	if card_data.card_is_retained:
 		if not card_keyword_object_ids.has("keyword_retain"):

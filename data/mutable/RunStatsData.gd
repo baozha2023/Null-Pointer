@@ -35,6 +35,8 @@ enum STATS {
 @export var run_character_id: String = ""
 ## Run difficulty run was finished at
 @export var run_difficulty_level: int = 0
+## The active run modifiers for the run
+@export var run_modifier_ids: Array[String] = []
 
 ## Health the player finished the run at
 @export var run_player_health: int = 0

@@ -4,6 +4,7 @@ class_name Player
 
 @onready var incoming_damage: Control = $Visible/IncomingDamage
 @onready var incoming_damage_amount_text: Label = $Visible/IncomingDamage/IncomingDamageAmount
+@onready var incoming_damage_texture: TextureRect = $Visible/IncomingDamage/TextureRect
 
 const INTENT_UPDATES_LAZILY: bool = true	# batches intent updates
 var _intent_is_updating: bool = false
@@ -16,6 +17,14 @@ func _ready():
 	Signals.artifact_proc.connect(_on_artifact_proc)
 	Signals.run_started.connect(_on_run_started)
 	Signals.run_ended.connect(_on_run_ended)
+	
+	incoming_damage_amount_text.mouse_filter = Control.MOUSE_FILTER_PASS
+	incoming_damage_amount_text.mouse_entered.connect(_on_incoming_damage_mouse_entered)
+	incoming_damage_amount_text.mouse_exited.connect(_on_incoming_damage_mouse_exited)
+	
+	incoming_damage_texture.mouse_filter = Control.MOUSE_FILTER_PASS
+	incoming_damage_texture.mouse_entered.connect(_on_incoming_damage_mouse_entered)
+	incoming_damage_texture.mouse_exited.connect(_on_incoming_damage_mouse_exited)
 	
 	Signals.player_artifact_added.connect(_on_artifact_added)
 	Signals.player_artifact_removed.connect(_on_artifact_removed)
@@ -158,6 +167,16 @@ func update_incoming_damage_amount(recalculate_enemy_intent: bool = true) -> voi
 
 	incoming_damage_amount_text.text = str(incoming_damage_amount)
 	incoming_damage.visible = incoming_damage_amount > 0
+
+func _on_incoming_damage_mouse_entered() -> void:
+	if HandManager.tooltip != null:
+		var total_dmg: String = incoming_damage_amount_text.text
+		var bbcode: String = "[color=red]总威胁[/color]\n本时钟周期即将受到 " + total_dmg + " 点总伤害"
+		HandManager.tooltip.display_tooltip(bbcode, true)
+
+func _on_incoming_damage_mouse_exited() -> void:
+	if HandManager.tooltip != null:
+		HandManager.tooltip.hide_tooltip()
 
 func is_alive() -> bool:
 	return Global.player_data.player_health > 0

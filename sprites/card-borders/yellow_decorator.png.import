@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c6e2c337msfw1"
-path="res://.godot/imported/decorator_bg.png-995cda9c943961ac3839be77a3193a84.ctex"
+uid="uid://cmhtdjgw0nvos"
+path="res://.godot/imported/yellow_decorator.png-85aaf0717c4420c57faa8217ca8d21aa.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://sprites/card-borders/decorator_bg.png"
-dest_files=["res://.godot/imported/decorator_bg.png-995cda9c943961ac3839be77a3193a84.ctex"]
+source_file="res://sprites/card-borders/yellow_decorator.png"
+dest_files=["res://.godot/imported/yellow_decorator.png-85aaf0717c4420c57faa8217ca8d21aa.ctex"]
 
 [params]
 

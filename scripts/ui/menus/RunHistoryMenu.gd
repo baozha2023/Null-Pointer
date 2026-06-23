@@ -75,7 +75,17 @@ func _populate_run_history(run_index: int = -1) -> void:
 		run_history_character_name_label.text = character_data.character_name
 		run_history_character_icon.texture = FileLoader.load_texture(character_data.character_icon_texture_path)
 	
-	run_history_difficulty_label.text = "难度: " + str(run_stats_data.run_difficulty_level)
+	var modifier_names: PackedStringArray = PackedStringArray()
+	for modifier_id in run_stats_data.run_modifier_ids:
+		var modifier_data: RunModifierData = Global.get_run_modifier_data(modifier_id)
+		if modifier_data != null and modifier_data.run_modifier_is_custom:
+			modifier_names.append(modifier_data.run_modifier_name)
+	
+	var difficulty_str: String = "难度: " + str(run_stats_data.run_difficulty_level)
+	if len(modifier_names) > 0:
+		difficulty_str += "  [" + ", ".join(modifier_names) + "]"
+	
+	run_history_difficulty_label.text = difficulty_str
 	run_history_seed_label.text = "种子: {0}".format([run_stats_data.run_seed])
 	run_history_health_label.text = "完整度: {0}/{1}".format([run_stats_data.run_player_health, run_stats_data.run_player_health_max])
 	run_history_money_label.text = "数据币: {0}".format([run_stats_data.run_player_money])

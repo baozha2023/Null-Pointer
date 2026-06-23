@@ -1,9 +1,9 @@
 # Overlay for a shop
 extends Control
 
-@onready var card_container: HBoxContainer = $CardContainer
-@onready var artifact_container: VBoxContainer = $ArtifactContainer
-@onready var consumable_container: VBoxContainer = $ConsumableContainer
+@onready var card_container: GridContainer = $ShopScroll/ShopContent/CardContainer
+@onready var artifact_container: GridContainer = $ShopScroll/ShopContent/ArtifactContainer
+@onready var consumable_container: GridContainer = $ShopScroll/ShopContent/ConsumableContainer
 
 @onready var continue_button: Button = $ContinueButton
 

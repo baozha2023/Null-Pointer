@@ -4,25 +4,30 @@ extends BaseMenu
 @onready var codex_card_rgsc: ResizingGridScrollContainer = %CodexCardRGSC
 @onready var codex_card_pack_container: VBoxContainer = %CodexCardPackContainer
 
-@onready var codex_card_alpha_sort_button: Button = %CodexCardAlphaSortButton
 @onready var codex_card_rarity_sort_button: Button = %CodexCardRaritySortButton
 @onready var codex_card_cost_sort_button: Button = %CodexCardCostSortButton
 @onready var codex_card_type_sort_button: Button = %CodexCardTypeSortButton
 
-var sort_by_card_rarity: bool = true # if cards should be sorted by rarity
-
-var subsort_by_card_name_ascending: bool = true
-var subsort_by_card_rarity_ascending: bool = true
-var subsort_by_card_cost_ascending: bool = true
-var subsort_by_card_type_ascending: bool = true
+enum SortMode { RARITY, COST, TYPE }
+var current_sort_mode: SortMode = SortMode.RARITY
 
 var selected_card_pack_data: CardPackData = null
 
 func _ready() -> void:
-	codex_card_rarity_sort_button.toggled.connect(_on_rarity_sort_toggled)
-	codex_card_cost_sort_button.toggled.connect(_on_cost_sort_toggled)
-	codex_card_type_sort_button.toggled.connect(_on_type_sort_toggled)
-	codex_card_alpha_sort_button.toggled.connect(_on_alpha_sort_toggled)
+	codex_card_rarity_sort_button.toggle_mode = true
+	codex_card_cost_sort_button.toggle_mode = true
+	codex_card_type_sort_button.toggle_mode = true
+	
+	var bg = ButtonGroup.new()
+	codex_card_rarity_sort_button.button_group = bg
+	codex_card_cost_sort_button.button_group = bg
+	codex_card_type_sort_button.button_group = bg
+	
+	codex_card_rarity_sort_button.button_pressed = true
+	
+	codex_card_rarity_sort_button.pressed.connect(func(): _set_sort_mode(SortMode.RARITY))
+	codex_card_cost_sort_button.pressed.connect(func(): _set_sort_mode(SortMode.COST))
+	codex_card_type_sort_button.pressed.connect(func(): _set_sort_mode(SortMode.TYPE))
 
 func populate_menu() -> void:
 	super()
@@ -72,7 +77,7 @@ func _clear_codex_card_packs() ->  void:
 func _populate_codex_cards(card_pack_data: CardPackData = null) -> void:
 	var card_args: Array[Array] = [] # used to instantiate cards in container
 	var card_object_ids: Array = Global._id_to_card_data.keys()
-	if card_pack_data == null:
+	if card_pack_data == null or card_pack_data.object_id == "card_pack_all":
 		# creates all cards in the game to display
 		card_object_ids = Global._id_to_card_data.keys()
 	else:
@@ -96,33 +101,26 @@ func _on_codex_card_card_pack_button_pressed(card_pack_data: CardPackData):
 	_populate_codex_cards(selected_card_pack_data)
 
 #region Sorting
-func _on_rarity_sort_toggled(toggle: bool):
-	subsort_by_card_rarity_ascending = toggle
-	_populate_codex_cards(selected_card_pack_data)
-	
-func _on_cost_sort_toggled(toggle: bool):
-	subsort_by_card_cost_ascending = toggle
-	_populate_codex_cards(selected_card_pack_data)
-	
-func _on_type_sort_toggled(toggle: bool):
-	subsort_by_card_type_ascending = toggle
-	_populate_codex_cards(selected_card_pack_data)
-
-func _on_alpha_sort_toggled(toggle: bool):
-	subsort_by_card_name_ascending = toggle
+func _set_sort_mode(mode: SortMode) -> void:
+	current_sort_mode = mode
 	_populate_codex_cards(selected_card_pack_data)
 
 func _codex_card_custom_sort(card_args_1: Array, card_args_2: Array) -> bool:
 	var card_data_1: CardData = card_args_1[0]
 	var card_data_2: CardData = card_args_2[0]
 	
-	if card_data_1.card_rarity != card_data_2.card_rarity:
-		return (card_data_1.card_rarity < card_data_2.card_rarity) == subsort_by_card_rarity_ascending
-	if card_data_1.card_energy_cost != card_data_2.card_energy_cost:
-		return (card_data_1.card_energy_cost < card_data_2.card_energy_cost) == subsort_by_card_cost_ascending
-	if card_data_1.card_type != card_data_2.card_type:
-		return (card_data_1.card_type < card_data_2.card_type) == subsort_by_card_type_ascending
+	if current_sort_mode == SortMode.RARITY:
+		if card_data_1.card_rarity != card_data_2.card_rarity:
+			return card_data_1.card_rarity < card_data_2.card_rarity
+	elif current_sort_mode == SortMode.COST:
+		var cost_1 = card_data_1.card_energy_cost if card_data_1.card_is_playable else -1
+		var cost_2 = card_data_2.card_energy_cost if card_data_2.card_is_playable else -1
+		if cost_1 != cost_2:
+			return cost_1 < cost_2
+	elif current_sort_mode == SortMode.TYPE:
+		if card_data_1.card_type != card_data_2.card_type:
+			return card_data_1.card_type < card_data_2.card_type
 	
-	return (card_data_1.card_name < card_data_2.card_name) == subsort_by_card_name_ascending
+	return card_data_1.card_name < card_data_2.card_name
 
 #endregion

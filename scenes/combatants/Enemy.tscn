@@ -1,8 +1,8 @@
-[gd_scene load_steps=15 format=3 uid="uid://528isoebkdpv"]
+[gd_scene format=3 uid="uid://528isoebkdpv"]
 
 [ext_resource type="Script" uid="uid://d4l5y1jvle1mq" path="res://scripts/combatants/Enemy.gd" id="1_10iyf"]
 [ext_resource type="AnimationLibrary" uid="uid://dvbwuh87t2tha" path="res://animations/Combatant.res" id="2_11ric"]
-[ext_resource type="Texture2D" uid="uid://nh32y87hcke5" path="res://icon.svg" id="2_x4bdi"]
+[ext_resource type="Texture2D" uid="uid://d33u8m744fh03" path="res://icon.svg" id="2_x4bdi"]
 [ext_resource type="PackedScene" uid="uid://b0qk0vn81d0kp" path="res://scenes/combatants/LayeredHealthBar.tscn" id="3_nimvv"]
 [ext_resource type="AnimationLibrary" uid="uid://8a2mcc4gqn5k" path="res://animations/Enemy.res" id="3_vx4nw"]
 [ext_resource type="Texture2D" uid="uid://dw4k1k81ap581" path="res://sprites/missing_texture.png" id="4_gu0s6"]
@@ -44,7 +44,7 @@ animations = [{
 "speed": 5.0
 }]
 
-[node name="Enemy" type="Control" groups=["enemies", "enemies_alive_or_dead"]]
+[node name="Enemy" type="Control" unique_id=1559445662 groups=["enemies", "enemies_alive_or_dead"]]
 custom_minimum_size = Vector2(200, 144)
 layout_mode = 3
 anchors_preset = 0
@@ -53,33 +53,27 @@ offset_bottom = 192.0
 mouse_filter = 2
 script = ExtResource("1_10iyf")
 
-[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
-libraries = {
-&"Combatant": ExtResource("2_11ric")
-}
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=1893323498]
+libraries/Combatant = ExtResource("2_11ric")
 
-[node name="DeathAnimationPlayer" type="AnimationPlayer" parent="."]
-libraries = {
-&"Enemy": ExtResource("3_vx4nw")
-}
+[node name="DeathAnimationPlayer" type="AnimationPlayer" parent="." unique_id=943972849]
+libraries/Enemy = ExtResource("3_vx4nw")
 
-[node name="Visible" type="Control" parent="."]
-layout_mode = 3
+[node name="Visible" type="Control" parent="." unique_id=286581808]
 anchors_preset = 0
 offset_right = 40.0
 offset_bottom = 40.0
 mouse_filter = 2
 
-[node name="CombatantCenter" type="Node2D" parent="Visible" unique_id=20260621201]
-position = Vector2(0, 0)
+[node name="CombatantCenter" type="Node2D" parent="Visible" unique_id=-1214215279]
 
-[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="Visible/CombatantCenter"]
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="Visible/CombatantCenter" unique_id=1339550553]
 unique_name_in_owner = true
 scale = Vector2(2, 2)
 sprite_frames = SubResource("SpriteFrames_e5l7p")
 animation = &"idle"
 
-[node name="NameLabel" type="Label" parent="Visible/CombatantCenter"]
+[node name="NameLabel" type="Label" parent="Visible/CombatantCenter" unique_id=731021501]
 unique_name_in_owner = true
 visible = false
 offset_left = -75.0
@@ -90,14 +84,14 @@ theme_override_font_sizes/font_size = 15
 text = "名称"
 horizontal_alignment = 1
 
-[node name="LayeredHealthBar" parent="Visible/CombatantCenter" instance=ExtResource("3_nimvv")]
+[node name="LayeredHealthBar" parent="Visible/CombatantCenter" unique_id=753964754 instance=ExtResource("3_nimvv")]
 unique_name_in_owner = true
 offset_left = -64.0
 offset_top = 70.0
 offset_right = 64.0
 offset_bottom = 86.0
 
-[node name="SelectionButton" type="Button" parent="Visible/CombatantCenter"]
+[node name="SelectionButton" type="Button" parent="Visible/CombatantCenter" unique_id=2112562926]
 unique_name_in_owner = true
 self_modulate = Color(1, 1, 1, 0)
 offset_left = -64.0
@@ -105,10 +99,10 @@ offset_top = -64.0
 offset_right = 64.0
 offset_bottom = 64.0
 
-[node name="ImageFadeContainer" type="Node2D" parent="Visible/CombatantCenter"]
+[node name="ImageFadeContainer" type="Node2D" parent="Visible/CombatantCenter" unique_id=825700959]
 unique_name_in_owner = true
 
-[node name="Intent" type="HBoxContainer" parent="Visible"]
+[node name="Intent" type="HBoxContainer" parent="Visible" unique_id=785213509]
 layout_mode = 0
 offset_left = -99.0
 offset_top = -128.0
@@ -117,7 +111,7 @@ offset_bottom = -80.0
 mouse_filter = 2
 alignment = 1
 
-[node name="AttackingIntent" type="TextureRect" parent="Visible/Intent"]
+[node name="AttackingIntent" type="TextureRect" parent="Visible/Intent" unique_id=207607739]
 visible = false
 custom_minimum_size = Vector2(32, 32)
 layout_mode = 2
@@ -126,7 +120,7 @@ texture = ExtResource("6_gmsgo")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="BlockingIntent" type="TextureRect" parent="Visible/Intent"]
+[node name="BlockingIntent" type="TextureRect" parent="Visible/Intent" unique_id=715747906]
 visible = false
 custom_minimum_size = Vector2(32, 32)
 layout_mode = 2
@@ -135,7 +129,7 @@ texture = ExtResource("7_mxi1b")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="DebuffingIntent" type="TextureRect" parent="Visible/Intent"]
+[node name="DebuffingIntent" type="TextureRect" parent="Visible/Intent" unique_id=1389660352]
 visible = false
 custom_minimum_size = Vector2(32, 32)
 layout_mode = 2
@@ -144,7 +138,7 @@ texture = ExtResource("8_gu0s6")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="BuffingIntent" type="TextureRect" parent="Visible/Intent"]
+[node name="BuffingIntent" type="TextureRect" parent="Visible/Intent" unique_id=686456663]
 visible = false
 custom_minimum_size = Vector2(32, 32)
 layout_mode = 2
@@ -153,7 +147,7 @@ texture = ExtResource("9_7in10")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="SummoningIntent" type="TextureRect" parent="Visible/Intent"]
+[node name="SummoningIntent" type="TextureRect" parent="Visible/Intent" unique_id=1393204665]
 visible = false
 custom_minimum_size = Vector2(32, 32)
 layout_mode = 2
@@ -162,15 +156,15 @@ texture = ExtResource("10_mxi1b")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="IntentAmount" type="Label" parent="Visible/Intent"]
+[node name="IntentAmount" type="Label" parent="Visible/Intent" unique_id=12370422]
 visible = false
 layout_mode = 2
 text = "15"
 
-[node name="FadeContainer" type="Node2D" parent="Visible"]
+[node name="FadeContainer" type="Node2D" parent="Visible" unique_id=704318186]
 position = Vector2(1, -136)
 
-[node name="Block" type="Sprite2D" parent="Visible"]
+[node name="Block" type="Sprite2D" parent="Visible" unique_id=1802455981]
 visible = false
 self_modulate = Color(0.188235, 0.188235, 0.188235, 1)
 position = Vector2(-67, 40)
@@ -178,7 +172,7 @@ scale = Vector2(0.25, 0.25)
 texture = ExtResource("2_x4bdi")
 metadata/_edit_group_ = true
 
-[node name="BlockAmount" type="Label" parent="Visible/Block"]
+[node name="BlockAmount" type="Label" parent="Visible/Block" unique_id=724369886]
 offset_left = -64.0
 offset_top = -64.0
 offset_right = 64.0
@@ -188,7 +182,7 @@ text = "999"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="StatusContainer" type="GridContainer" parent="Visible"]
+[node name="StatusContainer" type="GridContainer" parent="Visible" unique_id=622018222]
 layout_mode = 0
 offset_left = -83.0
 offset_top = 96.0
@@ -196,7 +190,7 @@ offset_right = 85.0
 offset_bottom = 136.0
 columns = 6
 
-[node name="SpeechBubble" parent="Visible" instance=ExtResource("6_vx4nw")]
+[node name="SpeechBubble" parent="Visible" unique_id=431196108 instance=ExtResource("6_vx4nw")]
 unique_name_in_owner = true
 layout_mode = 0
 offset_left = -211.0
@@ -204,8 +198,7 @@ offset_top = -64.0
 offset_right = -83.0
 offset_bottom = 0.0
 
-[node name="CustomUIContainer" type="Control" parent="Visible"]
-layout_mode = 3
+[node name="CustomUIContainer" type="Control" parent="Visible" unique_id=1187848827]
 anchors_preset = 0
 offset_right = 40.0
 offset_bottom = 40.0

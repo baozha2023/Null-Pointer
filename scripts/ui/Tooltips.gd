@@ -79,6 +79,7 @@ func display_tooltip(tooltip_bbcode: String,
 	hide_tooltip()
 	visible = true
 	
+	tooltip_bbcode = tooltip_bbcode.replace("[energy_icon]", "[img width=24]res://sprites/ui/icon_energy.png[/img]")
 	tooltip_label.parse_bbcode(tooltip_bbcode)
 	tooltip_label.visible = true
 	panel_container.visible = true
@@ -105,24 +106,15 @@ func display_card_keywords(card: Card) -> void:
 	visible = true
 	keyword_container.visible = true
 	
-	# use remaining screen size to determine which side of the card should display
-	var screen_size: Vector2 = DisplayServer.window_get_size()
-	var card_visual_global_pos: Vector2 = card.card_visual.global_position
-	var card_right_side_pos: Vector2 = card_visual_global_pos + Vector2(card.size.x + CARD_KEYWORD_PANEL_MARGIN_X, 0)
-	var card_left_side_pos: Vector2 = card_visual_global_pos - Vector2(keyword_container.size.x + CARD_KEYWORD_PANEL_MARGIN_X, 0)
-	
-	if card_right_side_pos.x + CARD_KEYWORD_RIGHT_SCREEN_SIZE_MARGIN < screen_size.x:
-		# right side of card
-		keyword_container.global_position = card_right_side_pos
-	else:
-		# left side of card
-		keyword_container.global_position = card_left_side_pos
+	follow_mouse = true
+	lock_x = false
+	lock_y = false
+	keyword_container.position = Vector2(10, 10) # offset from mouse
 	
 	keyword_container.populate_card_keywords(card.card_data)
 
 func display_artifact_tooltip(artifact: BaseArtifact) -> void:
-	var artifact_description: String = artifact.get_artifact_description()
-	display_tooltip(artifact_description, true, false, false, 0.0, 0.0, null)
+	display_codex_artifact_tooltip(artifact.artifact_data)
 
 const ARTIFACT_RARITY_DISPLAY: Dictionary = {
 	ArtifactData.ARTIFACT_RARITIES.BASIC: "内置",
@@ -185,4 +177,14 @@ func _process(_delta: float) -> void:
 			global_position.y = offset_y
 		else:
 			global_position.y = get_global_mouse_position().y
+		
+		# Clamp to screen bounds
+		var screen_size: Vector2 = DisplayServer.window_get_size()
+		var tooltip_size: Vector2 = Vector2.ZERO
+		if panel_container.visible:
+			tooltip_size = panel_container.size
+		elif keyword_container.visible:
+			tooltip_size = keyword_container.size
 			
+		global_position.x = clamp(global_position.x, 0, max(0, screen_size.x - tooltip_size.x - 10))
+		global_position.y = clamp(global_position.y, 0, max(0, screen_size.y - tooltip_size.y - 10))

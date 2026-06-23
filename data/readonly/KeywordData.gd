@@ -4,6 +4,8 @@ class_name KeywordData
 
 ## Displays at the top of the keyword
 @export var keyword_name: String = ""
+## Optional prefix displayed before the keyword name in the tooltip
+@export var keyword_prefix: String = ""
 ## Optional StatusEffectData object_id. Will automatically pull the status effect image for display in the rich text. 
 @export var keyword_status_effect_id: String = ""
 

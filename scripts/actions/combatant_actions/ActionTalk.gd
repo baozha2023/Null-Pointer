@@ -13,5 +13,5 @@ func perform_action():
 		if not target.is_alive():
 			return
 		
-		var message_bbcode: String = action_interceptor_processor.get_shadowed_action_values("message_bbcode", "Default Text")
+		var message_bbcode: String = action_interceptor_processor.get_shadowed_action_values("message_bbcode", "默认文本")
 		target.queue_speech_message(message_bbcode)

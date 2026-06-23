@@ -15,7 +15,10 @@ func init(keyword_object_id: String) -> void:
 		var keyword_bbcode: String = ""
 		
 		# keyword name
-		keyword_bbcode = keyword_data.keyword_name
+		var prefix_text: String = ""
+		if keyword_data.keyword_prefix != "":
+			prefix_text = keyword_data.keyword_prefix
+		keyword_bbcode = "[color=orange]" + prefix_text + keyword_data.keyword_name + "[/color]"
 		
 		# prepend status image if it exists
 		var keyword_status_effect_id: String = keyword_data.keyword_status_effect_id
@@ -29,6 +32,7 @@ func init(keyword_object_id: String) -> void:
 		
 		# append keyword text
 		keyword_bbcode = "{0}\n{1}".format([keyword_bbcode, keyword_data.keyword_text_bb_code])
+		keyword_bbcode = keyword_bbcode.replace("[energy_icon]", "[img width=24]res://sprites/ui/icon_energy.png[/img]")
 		
 		# force the font to a certain size
 		keyword_bbcode = "[font_size={0}]{1}[/font_size]".format([FONT_SIZE, keyword_bbcode])

@@ -189,6 +189,7 @@ func _complete_run(is_victory: bool) -> void:
 	current_run_stats.run_seed = Global.player_data.player_run_seed
 	current_run_stats.run_character_id = character_id
 	current_run_stats.run_difficulty_level = Global.player_data.player_run_difficulty_level
+	current_run_stats.run_modifier_ids = Global.player_data.player_run_modifier_object_ids.duplicate()
 	current_run_stats.run_player_health = Global.player_data.player_health
 	current_run_stats.run_player_health_max = Global.player_data.player_health_max
 	current_run_stats.run_player_money = Global.player_data.player_money

@@ -1,22 +1,32 @@
-[gd_scene load_steps=3 format=3 uid="uid://by6liy3faabuk"]
+[gd_scene format=3 uid="uid://by6liy3faabuk"]
 
 [ext_resource type="Script" uid="uid://c0pu5ciowd6mx" path="res://scripts/ui/shop/CardShopButton.gd" id="1_c2gpa"]
 [ext_resource type="PackedScene" uid="uid://btxmfagad05n5" path="res://scenes/ui/card/Card.tscn" id="2_1jbuy"]
 
-[node name="CardShopButton" type="Control"]
-custom_minimum_size = Vector2(144, 208)
+[node name="CardShopButton" type="Control" unique_id=1167934924]
+custom_minimum_size = Vector2(188, 245)
 layout_mode = 3
 anchors_preset = 0
 offset_right = 144.0
 offset_bottom = 208.0
 script = ExtResource("1_c2gpa")
 
-[node name="Card" parent="." instance=ExtResource("2_1jbuy")]
-
-[node name="PriceLabel" type="Label" parent="."]
+[node name="Card" parent="." unique_id=1351138902 instance=ExtResource("2_1jbuy")]
 layout_mode = 0
-offset_top = 184.0
-offset_right = 144.0
-offset_bottom = 207.0
+
+[node name="PriceLabel" type="Label" parent="." unique_id=1641720009]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -75.0
+offset_top = -2.0
+offset_right = 73.0
+offset_bottom = 30.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_font_sizes/font_size = 18
 text = "999"
 horizontal_alignment = 1

@@ -144,6 +144,12 @@ func load_texture(image_partial_path, is_absolute: bool = false) -> Texture2D:
 	if self._cached_textures.has(full_path):
 		return self._cached_textures[full_path]
 	else:
+		if full_path.begins_with("res://") and ResourceLoader.exists(full_path):
+			var texture = load(full_path)
+			if texture != null:
+				self._cached_textures[full_path] = texture
+				return texture
+		
 		if FileAccess.file_exists(full_path):
 			var image := Image.load_from_file(full_path)
 			var texture: ImageTexture

@@ -106,7 +106,7 @@ func update_card_display(selected_enemy: Enemy = null) -> void:
 		CardData.CARD_RARITIES.GENERATED: "动态生成",
 	}
 	const CARD_TYPE_DISPLAY: Dictionary = {
-		CardData.CARD_TYPES.ATTACK: "攻击指令",
+		CardData.CARD_TYPES.ATTACK: "攻击脚本",
 		CardData.CARD_TYPES.SKILL: "辅助脚本",
 		CardData.CARD_TYPES.POWER: "守护进程",
 		CardData.CARD_TYPES.STATUS: "状态码",
@@ -223,7 +223,7 @@ func get_card_description(selected_target: BaseCombatant = null) -> String:
 				var action_interceptor_processor: ActionInterceptorProcessor = generated_action._intercept_action([selected_target], true)[0]
 				
 				var card_value: int = card_data.card_values.get(key_name, 0)
-				var value_substring: String = str(card_value)
+				var value_substring: String = str(abs(card_value))
 				
 				var final_val: int = card_value
 				if action_interceptor_processor.shadowed_action_values.has(key_name):
@@ -232,9 +232,9 @@ func get_card_description(selected_target: BaseCombatant = null) -> String:
 					
 					# compare the intercepted valus to the card's values
 					if intercepted_value < card_value:
-						value_substring = "[color=red]" + str(intercepted_value) + "[/color]" # worse: red
+						value_substring = "[color=red]" + str(abs(intercepted_value)) + "[/color]" # worse: red
 					if intercepted_value > card_value:
-						value_substring = "[color=green]" + str(intercepted_value) + "[/color]" # better: green
+						value_substring = "[color=green]" + str(abs(intercepted_value)) + "[/color]" # better: green
 				
 				modified_description_bb_code = modified_description_bb_code.replace("["+key_name+"]", value_substring)
 				
@@ -252,7 +252,7 @@ func get_card_description(selected_target: BaseCombatant = null) -> String:
 		var val_int: int = 0
 		if typeof(non_intercepted_value) == TYPE_FLOAT or typeof(non_intercepted_value) == TYPE_INT:
 			val_int = int(non_intercepted_value)
-			non_intercepted_value = val_int
+			non_intercepted_value = abs(val_int)
 		modified_description_bb_code = modified_description_bb_code.replace("["+key_name+"]", str(non_intercepted_value))
 		
 		var icons_str: String = ""

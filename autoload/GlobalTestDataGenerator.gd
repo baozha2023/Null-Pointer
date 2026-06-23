@@ -56,7 +56,7 @@ func add_test_artifacts() -> void:
 	var artifact_add_money: ArtifactData = ArtifactData.new("artifact_add_money")
 	artifact_add_money.artifact_name = "外设插件：获得数据币"
 	artifact_add_money.artifact_texture_path = "sprites/artifacts/artifact_add_money.png"
-	artifact_add_money.artifact_description = "获得时增加数据币"
+	artifact_add_money.artifact_description = "获得时增加 200 数据币"
 	artifact_add_money.artifact_add_actions = [{Scripts.ACTION_ADD_MONEY: {"money_amount": 200}}]
 	
 	Global.register_rod(artifact_add_money)
@@ -126,7 +126,7 @@ func add_test_artifacts() -> void:
 	
 	
 	var artifact_easy_mode: ArtifactData = ArtifactData.new("artifact_easy_mode")
-	artifact_easy_mode.artifact_name = "外设插件：简单模式"
+	artifact_easy_mode.artifact_name = "外设插件：安全模式"
 	artifact_easy_mode.artifact_texture_path = "sprites/artifacts/artifact_easy_mode.png"
 	artifact_easy_mode.artifact_description = "将所有敌人的完整度设为1"
 	artifact_easy_mode.artifact_counter = 999
@@ -158,7 +158,7 @@ func add_test_artifacts() -> void:
 	var artifact_retain_hand: ArtifactData = ArtifactData.new("artifact_retain_hand")
 	artifact_retain_hand.artifact_name = "外设插件：当前线程保留"
 	artifact_retain_hand.artifact_texture_path = "sprites/artifacts/artifact_retain_hand.png"
-	artifact_retain_hand.artifact_description = "时钟周期结束时当前线程不会丢弃"
+	artifact_retain_hand.artifact_description = "时钟周期结束时，当前线程中的所有脚本不会被丢弃"
 	artifact_retain_hand.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.BOSS
 	artifact_retain_hand.artifact_script_path = "res://scripts/artifacts/ArtifactRetainHand.gd"
 	
@@ -167,7 +167,7 @@ func add_test_artifacts() -> void:
 	# Enables a rest action when obtained, which grants a damage increase at the start of combat
 	var artifact_increase_attack_on_rest: ArtifactData = ArtifactData.new("artifact_increase_attack_on_rest")
 	artifact_increase_attack_on_rest.artifact_name = "外设插件：碎片整理增伤"
-	artifact_increase_attack_on_rest.artifact_description = "在待机节点可以获得永久攻击力提升"
+	artifact_increase_attack_on_rest.artifact_description = "在维护终端可永久提升 1 点攻击力（最高提升 3 点）"
 	artifact_increase_attack_on_rest.artifact_counter = 0
 	artifact_increase_attack_on_rest.artifact_counter_max = 3
 	artifact_increase_attack_on_rest.artifact_color_id = "color_orange"
@@ -202,9 +202,9 @@ func add_test_artifacts() -> void:
 	
 	# Makes an attack card top deck when obtained
 	var artifact_top_deck_attack_card: ArtifactData = ArtifactData.new("artifact_top_deck_attack_card")
-	artifact_top_deck_attack_card.artifact_name = "外设插件：攻击指令置顶"
+	artifact_top_deck_attack_card.artifact_name = "外设插件：攻击脚本置顶"
 	artifact_top_deck_attack_card.artifact_texture_path = "sprites/artifacts/artifact_top_deck_attack_card.png"
-	artifact_top_deck_attack_card.artifact_description = "选择一个攻击指令，使其出现在脚本库顶部。"
+	artifact_top_deck_attack_card.artifact_description = "选择一个攻击脚本，使其出现在脚本库顶部。"
 	artifact_top_deck_attack_card.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.COMMON
 	artifact_top_deck_attack_card.artifact_add_actions = [
 	{
@@ -358,7 +358,7 @@ func add_test_consumables() -> void:
 	var consumable_heal: ConsumableData = ConsumableData.new("consumable_heal")
 	consumable_heal.consumable_name = "治疗试剂"
 	consumable_heal.consumable_color_id = "color_white"
-	consumable_heal.consumable_description = "回复20%完整度"
+	consumable_heal.consumable_description = "回复20%最大完整度"
 	consumable_heal.consumable_use_text = "饮用"
 	consumable_heal.consumable_requires_target = false
 	consumable_heal.consumable_energy_cost = 1
@@ -496,7 +496,7 @@ func add_test_rest_actions() -> void:
 	var rest_action_upgrade_card: RestActionData = RestActionData.new("rest_action_upgrade_card")
 	rest_action_upgrade_card.rest_action_name = "升级"
 	rest_action_upgrade_card.rest_action_stat_name = "REST_UPGRADE_CARDS_COUNT"
-	rest_action_upgrade_card.rest_action_cost_type = RestActionData.REST_ACTION_COST_TYPES.INCLUSIVE_REPEATABLE
+	rest_action_upgrade_card.rest_action_cost_type = RestActionData.REST_ACTION_COST_TYPES.INCLUSIVE
 	rest_action_upgrade_card.rest_action_auto_end = false # allows canceling
 	rest_action_upgrade_card.rest_actions = [
 	{
@@ -933,6 +933,7 @@ func add_test_status_effects() -> void:
 func add_test_acts() -> void:
 	var act_1: ActData = ActData.new("act_1")
 	act_1.act_name = "第1章"
+	act_1.act_codex_number = 1
 	act_1.act_codex_color = Color.AQUA
 	act_1.act_next_act_ids = ["act_2"]
 	act_1.act_easy_combat_event_pool_object_id = "event_pool_act_1_easy"
@@ -945,6 +946,7 @@ func add_test_acts() -> void:
 	
 	var act_2: ActData = ActData.new("act_2")
 	act_2.act_name = "第2章"
+	act_2.act_codex_number = 2
 	act_2.act_codex_color = Color.GREEN_YELLOW
 	act_2.act_next_act_ids = ["act_3"]
 	act_2.act_easy_combat_event_pool_object_id = "event_pool_act_1_easy"
@@ -956,6 +958,7 @@ func add_test_acts() -> void:
 	
 	var act_3: ActData = ActData.new("act_3")
 	act_3.act_name = "第3章"
+	act_3.act_codex_number = 3
 	act_3.act_codex_color = Color.MEDIUM_PURPLE
 	act_3.act_next_act_ids = ["act_1"] # only works in endless
 	act_3.act_easy_combat_event_pool_object_id = "event_pool_act_1_easy"
@@ -1623,36 +1626,48 @@ func add_test_keywords() -> void:
 	### These are automatically added to cards based on flags
 	var keyword_top_deck: KeywordData = KeywordData.new("keyword_top_deck")
 	keyword_top_deck.keyword_name = "置顶"
+	keyword_top_deck.keyword_prefix = "[前置] "
 	keyword_top_deck.keyword_text_bb_code = "战斗开始时置于脚本库顶部"
 	Global.register_rod(keyword_top_deck)
 	
 	var keyword_bottom_deck: KeywordData = KeywordData.new("keyword_bottom_deck")
 	keyword_bottom_deck.keyword_name = "置底"
+	keyword_bottom_deck.keyword_prefix = "[前置] "
 	keyword_bottom_deck.keyword_text_bb_code = "战斗开始时置于脚本库底部"
 	Global.register_rod(keyword_bottom_deck)
 		
 	var keyword_retain: KeywordData = KeywordData.new("keyword_retain")
 	keyword_retain.keyword_name = "保留"
+	keyword_retain.keyword_prefix = "[前置] "
 	keyword_retain.keyword_text_bb_code = "时钟周期结束时，该脚本不会被丢弃到回收站。"
 	Global.register_rod(keyword_retain)
 	
 	var keyword_exhaust: KeywordData = KeywordData.new("keyword_exhaust")
 	keyword_exhaust.keyword_name = "物理删除"
+	keyword_exhaust.keyword_prefix = "[后置] "
 	keyword_exhaust.keyword_text_bb_code = "用完一次直接消失。"
 	Global.register_rod(keyword_exhaust)
 	
 	var keyword_ethereal: KeywordData = KeywordData.new("keyword_ethereal")
 	keyword_ethereal.keyword_name = "虚无"
+	keyword_ethereal.keyword_prefix = "[前置] "
 	keyword_ethereal.keyword_text_bb_code = "时钟周期结束时，若仍在当前线程中，则会被物理删除。"
 	keyword_ethereal.keyword_child_keyword_object_ids = ["keyword_exhaust"]
 	Global.register_rod(keyword_ethereal)
 	
 	var keyword_banish: KeywordData = KeywordData.new("keyword_banish")
 	keyword_banish.keyword_name = "放逐"
+	keyword_banish.keyword_prefix = "[后置] "
 	keyword_banish.keyword_text_bb_code = "在本场战斗中完全移除一个脚本"
 	keyword_banish.keyword_child_keyword_object_ids = []
 	Global.register_rod(keyword_banish)
 	
+	var keyword_unplayable: KeywordData = KeywordData.new("keyword_unplayable")
+	keyword_unplayable.keyword_name = "不可打出"
+	keyword_unplayable.keyword_prefix = "[前置] "
+	keyword_unplayable.keyword_text_bb_code = "该脚本无法被主动打出。"
+	Global.register_rod(keyword_unplayable)
+
 #endregion
 
 #region VFX Animations
@@ -1888,8 +1903,8 @@ func add_test_run_modifiers() -> void:
 	
 	### Custom Run Modifiers
 	var run_modifier_custom_easy_mode: RunModifierData = RunModifierData.new("run_modifier_custom_easy_mode")
-	run_modifier_custom_easy_mode.run_modifier_name = "简单模式"
-	run_modifier_custom_easy_mode.run_modifier_description = "所有敌人完整度设为1"
+	run_modifier_custom_easy_mode.run_modifier_name = "安全模式"
+	run_modifier_custom_easy_mode.run_modifier_description = "[作弊] 将最大能量上限修改为99。并在首个时钟周期，强制将遭遇的所有敌方进程的最大完整度锁定为1。"
 	run_modifier_custom_easy_mode.run_modifier_is_custom =  true
 	run_modifier_custom_easy_mode.run_modifier_exclusive_to_modifier_ids = []
 	run_modifier_custom_easy_mode.run_modifier_modifier_script_path = Scripts.RUN_MODIFIER_CUSTOM_EASYMODE
@@ -1897,8 +1912,8 @@ func add_test_run_modifiers() -> void:
 	Global.register_rod(run_modifier_custom_easy_mode)
 	
 	var run_modifier_endless_mode: RunModifierData = RunModifierData.new("run_modifier_endless_mode")
-	run_modifier_endless_mode.run_modifier_name = "无尽模式"
-	run_modifier_endless_mode.run_modifier_description = "只有玩家死亡时游戏才会结束"
+	run_modifier_endless_mode.run_modifier_name = "死循环模式"
+	run_modifier_endless_mode.run_modifier_description = "突破系统防线，通关第3节点后游戏不会结束，您将带着现有配置继续深入，直至核心被摧毁。"
 	run_modifier_endless_mode.run_modifier_is_custom =  true
 	run_modifier_endless_mode.run_modifier_exclusive_to_modifier_ids = []
 	run_modifier_endless_mode.run_modifier_modifier_script_path = Scripts.RUN_MODIFIER_CUSTOM_ENDLESS_MODE
@@ -1906,8 +1921,8 @@ func add_test_run_modifiers() -> void:
 	Global.register_rod(run_modifier_endless_mode)
 	
 	var run_modifier_draft_all_colors: RunModifierData = RunModifierData.new("run_modifier_draft_all_colors")
-	run_modifier_draft_all_colors.run_modifier_name = "棱镜"
-	run_modifier_draft_all_colors.run_modifier_description = "可以选取所有颜色的脚本"
+	run_modifier_draft_all_colors.run_modifier_name = "跨域授权"
+	run_modifier_draft_all_colors.run_modifier_description = "解除隔离协议。在挑选脚本奖励时，系统将无视您的当前角色权限，提供来自所有角色的脚本。"
 	run_modifier_draft_all_colors.run_modifier_is_custom =  true
 	run_modifier_draft_all_colors.run_modifier_exclusive_to_modifier_ids = []
 	run_modifier_draft_all_colors.run_modifier_modifier_script_path = Scripts.RUN_MODIFIER_CUSTOM_DRAFT_ALL_COLORS
@@ -2383,7 +2398,7 @@ func add_test_card_decorators() -> void:
 	# decorator that applies block on card play
 	# applies a custom decorator value to the card and displays the number on the decorator
 	var card_decorator_block_on_play: CardDecoratorData = CardDecoratorData.new("card_decorator_block_on_play")
-	card_decorator_block_on_play.card_decorator_texture_path = "external/sprites/card_decorators/purple_decorator.png"
+	card_decorator_block_on_play.card_decorator_texture_path = "sprites/card-borders/purple_decorator.png"
 	card_decorator_block_on_play.card_decorator_value_improvements = {
 		"decorator_value_block": 5
 	}
@@ -2405,7 +2420,7 @@ func add_test_card_decorators() -> void:
 	# decorator that removes exhaust from a card
 	# should be combined with a validator to prevent it from being applied to a non exhausting card
 	var card_decorator_remove_exhaust: CardDecoratorData = CardDecoratorData.new("card_decorator_remove_exhaust")
-	card_decorator_remove_exhaust.card_decorator_texture_path = "external/sprites/card_decorators/yellow_decorator.png"
+	card_decorator_remove_exhaust.card_decorator_texture_path = "sprites/card-borders/yellow_decorator.png"
 	card_decorator_remove_exhaust.card_decorator_property_changes = {
 		"card_play_destination": HandManager.DISCARD_PILE
 	}
@@ -2414,7 +2429,7 @@ func add_test_card_decorators() -> void:
 	# decorator that draws extra cards when the card is drawn the first time
 	# applies a custom decorator value to the card and displays the number on the decorator
 	var card_decorator_extra_draw: CardDecoratorData = CardDecoratorData.new("card_decorator_extra_draw")
-	card_decorator_extra_draw.card_decorator_texture_path = "external/sprites/card_decorators/green_decorator.png"
+	card_decorator_extra_draw.card_decorator_texture_path = "sprites/card-borders/green_decorator.png"
 	card_decorator_extra_draw.card_decorator_value_changes = {
 		# add a flag to the card used to check for first time
 		"decorator_value_extra_draw": 2
@@ -2702,7 +2717,7 @@ func add_test_cards() -> void:
 	card_next_attack_free.card_name = "免费攻击"
 	card_next_attack_free.card_color_id = "color_red"
 	card_next_attack_free.card_texture_path = "external/sprites/cards/red/card_red.png"
-	card_next_attack_free.card_description = "接下来的 [status_charge_amount] 个攻击指令费用为 0"
+	card_next_attack_free.card_description = "接下来的 [status_charge_amount] 个攻击脚本耗能为 0"
 	card_next_attack_free.card_type = CardData.CARD_TYPES.SKILL
 	card_next_attack_free.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_next_attack_free.card_requires_target = false
@@ -3446,7 +3461,7 @@ func add_test_cards() -> void:
 	card_banish_attack.card_name = "放逐攻击"
 	card_banish_attack.card_color_id = "color_red"
 	card_banish_attack.card_texture_path = "external/sprites/cards/red/card_red.png"
-	card_banish_attack.card_description = "彻底删除最多 [max_card_amount] 个攻击指令，每个对所有敌人造成 [damage] 点伤害"
+	card_banish_attack.card_description = "彻底删除最多 [max_card_amount] 个攻击脚本，每个对所有敌人造成 [damage] 点伤害"
 	card_banish_attack.card_type = CardData.CARD_TYPES.ATTACK
 	card_banish_attack.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_banish_attack.card_requires_target = false
@@ -3576,7 +3591,7 @@ func add_test_cards() -> void:
 	card_set_hand_energy.card_name = "设置当前线程算力"
 	card_set_hand_energy.card_color_id = "color_red"
 	card_set_hand_energy.card_texture_path = "external/sprites/cards/red/card_red.png"
-	card_set_hand_energy.card_description = "当前线程中所有脚本费用变为 0，持续到时钟周期结束"
+	card_set_hand_energy.card_description = "当前线程中所有脚本耗能变为 0，持续到时钟周期结束"
 	card_set_hand_energy.card_type = CardData.CARD_TYPES.SKILL
 	card_set_hand_energy.card_rarity = CardData.CARD_RARITIES.RARE
 	card_set_hand_energy.card_requires_target = false
@@ -3684,7 +3699,7 @@ func add_test_cards() -> void:
 	card_randomize_hand_energy_costs.card_name = "随机脚本耗能"
 	card_randomize_hand_energy_costs.card_color_id = "color_blue"
 	card_randomize_hand_energy_costs.card_texture_path = "external/sprites/cards/blue/card_blue.png"
-	card_randomize_hand_energy_costs.card_description = "读取 [draw_count] 个脚本。本时钟周期随机化当前线程中所有脚本的费用"
+	card_randomize_hand_energy_costs.card_description = "读取 [draw_count] 个脚本。本时钟周期随机化当前线程中所有脚本的耗能"
 	card_randomize_hand_energy_costs.card_energy_cost = 0
 	card_randomize_hand_energy_costs.card_type = CardData.CARD_TYPES.SKILL
 	card_randomize_hand_energy_costs.card_rarity = CardData.CARD_RARITIES.UNCOMMON
@@ -3873,7 +3888,7 @@ func add_test_cards() -> void:
 	card_block_without_attacks.card_name = "无攻击防火墙"
 	card_block_without_attacks.card_color_id = "color_green"
 	card_block_without_attacks.card_texture_path = "external/sprites/cards/green/card_green.png"
-	card_block_without_attacks.card_description = "获得 [block] 点防火墙。当前线程中有攻击指令时无法调用。"
+	card_block_without_attacks.card_description = "获得 [block] 点防火墙。当前线程中有攻击脚本时无法调用。"
 	card_block_without_attacks.card_type = CardData.CARD_TYPES.SKILL
 	card_block_without_attacks.card_rarity = CardData.CARD_RARITIES.UNCOMMON
 	card_block_without_attacks.card_requires_target = false
@@ -4031,7 +4046,7 @@ func add_test_cards() -> void:
 	card_requires_adjacency.card_name = "相邻攻击"
 	card_requires_adjacency.card_color_id = "color_red"
 	card_requires_adjacency.card_texture_path = "external/sprites/cards/red/card_red.png"
-	card_requires_adjacency.card_description = "造成 [damage] 点伤害。只有在至少一个攻击指令相邻时才能调用。"
+	card_requires_adjacency.card_description = "造成 [damage] 点伤害。只有在至少一个攻击脚本相邻时才能调用。"
 	card_requires_adjacency.card_type = CardData.CARD_TYPES.ATTACK
 	card_requires_adjacency.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_requires_adjacency.card_requires_target = true
@@ -4188,10 +4203,10 @@ func add_test_cards() -> void:
 	
 	# Discard up to the top 3 attacks from draw pile
 	var card_discard_attacks_from_draw: CardData = CardData.new("card_discard_attacks_from_draw")
-	card_discard_attacks_from_draw.card_name = "丢弃脚本库攻击指令"
+	card_discard_attacks_from_draw.card_name = "丢弃脚本库攻击脚本"
 	card_discard_attacks_from_draw.card_color_id = "color_blue"
 	card_discard_attacks_from_draw.card_texture_path = "external/sprites/cards/blue/card_blue.png"
-	card_discard_attacks_from_draw.card_description = "弃置内存队列顶部最多 [pickable_cards_max_amount] 个攻击指令。"
+	card_discard_attacks_from_draw.card_description = "弃置内存队列顶部最多 [pickable_cards_max_amount] 个攻击脚本。"
 	card_discard_attacks_from_draw.card_type = CardData.CARD_TYPES.SKILL
 	card_discard_attacks_from_draw.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_discard_attacks_from_draw.card_first_shuffle_priority = 1
@@ -4207,7 +4222,7 @@ func add_test_cards() -> void:
 			"min_cards_are_required_for_action": true,
 			"random_selection": false,
 			"card_pick_type": HandManager.DRAW_PILE,
-			"card_pick_text": "选择 {3} 个攻击指令弃置。已选 {1} 个",
+			"card_pick_text": "选择 {3} 个攻击脚本弃置。已选 {1} 个",
 			"action_data": [{Scripts.ACTION_DISCARD_CARDS: {}}],
 			# only attack cards allowed
 			"validator_data": [
@@ -4349,10 +4364,10 @@ func add_test_cards() -> void:
 	
 	# Pick one of 3 random attacks and add to hand
 	var card_draft_random_attack: CardData = CardData.new("card_draft_random_attack")
-	card_draft_random_attack.card_name = "加载取攻击指令"
+	card_draft_random_attack.card_name = "加载取攻击脚本"
 	card_draft_random_attack.card_color_id = "color_green"
 	card_draft_random_attack.card_texture_path = "external/sprites/cards/green/card_green.png"
-	card_draft_random_attack.card_description = "从 3 个攻击指令中选择一个加入当前线程。\n本场战斗中其费用为 0"
+	card_draft_random_attack.card_description = "从 3 个攻击脚本中选择一个加入当前线程。\n本场战斗中其费用为 0"
 	card_draft_random_attack.card_type = CardData.CARD_TYPES.SKILL
 	card_draft_random_attack.card_rarity = CardData.CARD_RARITIES.UNCOMMON
 	card_draft_random_attack.card_requires_target = false
@@ -4429,7 +4444,7 @@ func add_test_cards() -> void:
 	card_draft_random_player_pool.card_name = "随机加载"
 	card_draft_random_player_pool.card_color_id = "color_white"
 	card_draft_random_player_pool.card_texture_path = "external/sprites/cards/white/card_white.png"
-	card_draft_random_player_pool.card_description = "从玩家的指令库中随机添加一个脚本到当前线程。其费用为 0"
+	card_draft_random_player_pool.card_description = "从玩家的脚本库中随机添加一个脚本到当前线程。其费用为 0"
 	card_draft_random_player_pool.card_type = CardData.CARD_TYPES.SKILL
 	card_draft_random_player_pool.card_rarity = CardData.CARD_RARITIES.RARE
 	card_draft_random_player_pool.card_requires_target = false
@@ -4596,7 +4611,7 @@ func add_test_cards() -> void:
 	card_talk.card_requires_target = false
 	card_talk.card_play_destination = HandManager.DISCARD_PILE
 	card_talk.card_appears_in_card_packs = false # debug cards aren't draftable
-	card_talk.card_values = {"message_bbcode": "Yes", "target_override": BaseAction.TARGET_OVERRIDES.PLAYER}
+	card_talk.card_values = {"message_bbcode": "收到", "target_override": BaseAction.TARGET_OVERRIDES.PLAYER}
 	card_talk.card_upgrade_value_improvements = {}
 	card_talk.card_first_upgrade_property_changes = {
 		"card_description": "让所有战斗参与者说出 [message_bbcode]"
