@@ -919,7 +919,7 @@ func add_test_status_effects() -> void:
 	
 	# uses an interceptor to duplicate attack card plays
 	var status_effect_block_on_special_discard: StatusEffectData = StatusEffectData.new("status_effect_block_on_special_discard")
-	status_effect_block_on_special_discard.status_effect_name = "特殊丢弃时防火墙"
+	status_effect_block_on_special_discard.status_effect_name = "缓存回收"
 	status_effect_block_on_special_discard.status_effect_texture_path = "external/sprites/status_effects/status_effect_yellow.png"
 	status_effect_block_on_special_discard.status_effect_decay_rate = 0
 	status_effect_block_on_special_discard.status_effect_type = StatusEffectData.STATUS_EFFECT_TYPES.BUFF

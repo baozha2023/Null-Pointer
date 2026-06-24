@@ -4,6 +4,9 @@
 	"settings_audio_master_volume": 1.0,
 	"settings_audio_music_volume": 0.0,
 	"settings_audio_mute_on_window_lose_focus": true,
+	"settings_enable_card_hints": false,
+	"settings_enable_card_keywords": true,
+	"settings_enable_card_status_effects": true,
 	"settings_language": "en",
 	"settings_window_size": [
 		1200.0,

@@ -98,21 +98,7 @@ func update_card_display(selected_enemy: Enemy = null) -> void:
 	# updates the card's display
 	card_name.set_bbcode("[center]" + card_data.get_card_name() + "[/center]")
 	card_description.set_bbcode(get_card_description(selected_enemy))
-	const CARD_RARITY_DISPLAY: Dictionary = {
-		CardData.CARD_RARITIES.BASIC: "内置",
-		CardData.CARD_RARITIES.COMMON: "开源",
-		CardData.CARD_RARITIES.UNCOMMON: "闭源",
-		CardData.CARD_RARITIES.RARE: "零日",
-		CardData.CARD_RARITIES.GENERATED: "动态生成",
-	}
-	const CARD_TYPE_DISPLAY: Dictionary = {
-		CardData.CARD_TYPES.ATTACK: "攻击脚本",
-		CardData.CARD_TYPES.SKILL: "辅助脚本",
-		CardData.CARD_TYPES.POWER: "守护进程",
-		CardData.CARD_TYPES.STATUS: "状态码",
-		CardData.CARD_TYPES.CURSE: "病毒",
-	}
-	card_type.text = CARD_RARITY_DISPLAY.get(card_data.card_rarity, "???") + " " + CARD_TYPE_DISPLAY.get(card_data.card_type, "???")
+	card_type.text = CardData.CARD_RARITY_DISPLAY.get(card_data.card_rarity, "???") + " " + CardData.CARD_TYPE_DISPLAY.get(card_data.card_type, "???")
 	
 	# update energy
 	_update_energy_display(selected_enemy)

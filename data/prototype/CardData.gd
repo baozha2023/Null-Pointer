@@ -7,6 +7,8 @@ var parent_card: CardData = null	# the parent card in the player's true deck tha
 @export var card_description: String = ""
 @export var card_texture_path: String = ""
 @export var card_keyword_object_ids: Array[String] = [] # keywords (mechanics with tooltips) displayed when this card is hovered over
+@export var card_status_effect_object_ids: Array[String] = [] # status effects explicitly assigned to display in tooltips
+@export var card_hint: String = "" # a hint for new players
 @export var card_color_id: String = "color_green"
 
 # Card Energy
@@ -38,11 +40,25 @@ var parent_card: CardData = null	# the parent card in the player's true deck tha
 # Card Type
 enum CARD_TYPES {ATTACK, SKILL, POWER, STATUS, CURSE}
 const STANDARD_CARD_TYPES: Array[int] = [CARD_TYPES.ATTACK, CARD_TYPES.SKILL, CARD_TYPES.POWER]
+const CARD_TYPE_DISPLAY: Dictionary = {
+	CARD_TYPES.ATTACK: "攻击脚本",
+	CARD_TYPES.SKILL: "辅助脚本",
+	CARD_TYPES.POWER: "守护进程",
+	CARD_TYPES.STATUS: "状态码",
+	CARD_TYPES.CURSE: "病毒",
+}
 @export var card_type: int = CARD_TYPES.ATTACK
 
 # Card Rarity
 enum CARD_RARITIES {BASIC, COMMON, UNCOMMON, RARE, GENERATED}
 const STANDARD_CARD_RARITIES: Array[int] = [CARD_RARITIES.COMMON, CARD_RARITIES.UNCOMMON, CARD_RARITIES.RARE]
+const CARD_RARITY_DISPLAY: Dictionary = {
+	CARD_RARITIES.BASIC: "内置",
+	CARD_RARITIES.COMMON: "开源",
+	CARD_RARITIES.UNCOMMON: "闭源",
+	CARD_RARITIES.RARE: "零日",
+	CARD_RARITIES.GENERATED: "动态生成",
+}
 @export var card_rarity: int = CARD_RARITIES.COMMON
 
 ## Make false to prevent cards with this object_id from appearing in card packs. This only takes effect
@@ -379,8 +395,9 @@ func add_card_decorator(card_decorator_id: String, decorator_script_values: Dict
 		improve_card_values(card_decorator_data.card_decorator_value_improvements)
 		update_card_values(card_decorator_data.card_decorator_value_changes)
 		
-		# mutate card description
-		card_description = card_decorator_data.card_decorator_pre_description + card_description +  card_decorator_data.card_decorator_post_description
+		# Note: card description is intentionally not mutated by decorators.
+		# Decorator descriptions are now shown via standalone tooltips (see CardDecorator.gd / Tooltips.gd).
+		# card_description = card_decorator_data.card_decorator_pre_description + card_description +  card_decorator_data.card_decorator_post_description
 		
 		# mutate card actions, wrapping them before and after
 		card_play_actions = card_decorator_data.card_decorator_post_play_actions + card_play_actions + card_decorator_data.card_decorator_pre_play_actions

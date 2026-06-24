@@ -7,6 +7,7 @@ extends BaseMenu
 @onready var codex_card_rarity_sort_button: Button = %CodexCardRaritySortButton
 @onready var codex_card_cost_sort_button: Button = %CodexCardCostSortButton
 @onready var codex_card_type_sort_button: Button = %CodexCardTypeSortButton
+@onready var codex_card_detail_panel: Control = %CodexCardDetailPanel
 
 enum SortMode { RARITY, COST, TYPE }
 var current_sort_mode: SortMode = SortMode.RARITY
@@ -17,6 +18,9 @@ func _ready() -> void:
 	codex_card_rarity_sort_button.toggle_mode = true
 	codex_card_cost_sort_button.toggle_mode = true
 	codex_card_type_sort_button.toggle_mode = true
+	
+	# 关闭自动跟随焦点，防止双击卡牌时列表自动滚动导致鼠标偏移而判定失败
+	codex_card_rgsc.follow_focus = false
 	
 	var bg = ButtonGroup.new()
 	codex_card_rarity_sort_button.button_group = bg
@@ -51,6 +55,8 @@ func clear_menu() -> void:
 func _populate_codex_card_packs() -> void:
 	_clear_codex_card_packs()
 	
+	var card_pack_bg = ButtonGroup.new()
+	var is_first = true
 	
 	var card_pack_ids: Array = Global._id_to_card_pack_data.keys()
 	card_pack_ids.erase("card_pack_all") # ensure that the all card pack is displayed first
@@ -64,6 +70,12 @@ func _populate_codex_card_packs() -> void:
 		if card_pack_data.card_pack_displays_in_codex:
 			var card_pack_button: CodexCardPackButton = Scenes.CODEX_CARD_PACK_BUTTON.instantiate()
 			codex_card_pack_container.add_child(card_pack_button)
+			
+			card_pack_button.toggle_mode = true
+			card_pack_button.button_group = card_pack_bg
+			if is_first:
+				card_pack_button.button_pressed = true
+				is_first = false
 			
 			card_pack_button.init(card_pack_data)
 			
@@ -81,8 +93,12 @@ func _populate_codex_cards(card_pack_data: CardPackData = null) -> void:
 		# creates all cards in the game to display
 		card_object_ids = Global._id_to_card_data.keys()
 	else:
-		# create cards from pack
-		var card_filter: CardFilter = Global.get_cached_card_filter(card_pack_data.object_id)
+		# create cards from pack but include all rarities and types for the codex display
+		var card_filter: CardFilter = CardFilter.new().filter_appears_in_card_packs(true)
+		if card_pack_data.card_pack_color_id != "":
+			card_filter = card_filter.filter_colors([card_pack_data.card_pack_color_id])
+		card_filter = card_filter.filter_card_validators(card_pack_data.card_pack_validators)
+		card_filter = card_filter.include_card_object_ids(card_pack_data.card_pack_card_ids)
 		card_object_ids = card_filter.filtered_card_unique_object_ids.keys()
 	
 	# generate data to make cards
@@ -95,6 +111,9 @@ func _populate_codex_cards(card_pack_data: CardPackData = null) -> void:
 	
 	# populate cards
 	codex_card_rgsc.populate_children(Scenes.CARD, card_args)
+	
+	# 为每张卡牌连接双击检测信号（deferred 确保新节点已就绪）
+	call_deferred("_connect_card_signals")
 
 func _on_codex_card_card_pack_button_pressed(card_pack_data: CardPackData):
 	selected_card_pack_data = card_pack_data
@@ -117,10 +136,34 @@ func _codex_card_custom_sort(card_args_1: Array, card_args_2: Array) -> bool:
 		var cost_2 = card_data_2.card_energy_cost if card_data_2.card_is_playable else -1
 		if cost_1 != cost_2:
 			return cost_1 < cost_2
+		if card_data_1.card_rarity != card_data_2.card_rarity:
+			return card_data_1.card_rarity < card_data_2.card_rarity
 	elif current_sort_mode == SortMode.TYPE:
 		if card_data_1.card_type != card_data_2.card_type:
 			return card_data_1.card_type < card_data_2.card_type
+		if card_data_1.card_rarity != card_data_2.card_rarity:
+			return card_data_1.card_rarity < card_data_2.card_rarity
 	
 	return card_data_1.card_name < card_data_2.card_name
 
+#endregion
+
+#region Card Detail (Double Click)
+var _last_click_time: int = 0
+var _last_clicked_card: Card = null
+const DOUBLE_CLICK_THRESHOLD_MS: int = 400
+
+func _connect_card_signals() -> void:
+	for card_node: Node in codex_card_rgsc.grid_container.get_children():
+		if card_node is Card and not card_node.card_selected.is_connected(_on_codex_card_clicked):
+			card_node.card_selected.connect(_on_codex_card_clicked)
+
+func _on_codex_card_clicked(card: Card) -> void:
+	var now: int = Time.get_ticks_msec()
+	if card == _last_clicked_card and (now - _last_click_time) < DOUBLE_CLICK_THRESHOLD_MS:
+		codex_card_detail_panel.show_card_detail(card.card_data)
+		_last_clicked_card = null
+	else:
+		_last_clicked_card = card
+		_last_click_time = now
 #endregion

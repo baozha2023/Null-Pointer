@@ -113,6 +113,26 @@ func display_card_keywords(card: Card) -> void:
 	
 	keyword_container.populate_card_keywords(card.card_data)
 
+## Displays a standalone tooltip for a specific card decorator
+func display_decorator_tooltip(decorator_name: String, decorator_description: String) -> void:
+	if decorator_name == "" or decorator_description == "":
+		return
+	hide_tooltip()
+	
+	visible = true
+	keyword_container.visible = true
+	
+	follow_mouse = true
+	lock_x = false
+	lock_y = false
+	keyword_container.position = Vector2(10, 10) # offset from mouse
+	
+	keyword_container.clear_tooltips()
+	
+	var keyword_tooltip = Scenes.KEYWORD_TOOLTIP.instantiate()
+	keyword_container.add_child(keyword_tooltip)
+	keyword_tooltip.init_custom(decorator_name, decorator_description)
+
 func display_artifact_tooltip(artifact: BaseArtifact) -> void:
 	display_codex_artifact_tooltip(artifact.artifact_data)
 
@@ -160,7 +180,7 @@ func hide_tooltip() -> void:
 	offset_x = 0.0
 	offset_y = 0.0
 	
-	keyword_container.clear_keywords()
+	keyword_container.clear_tooltips()
 	visible = false
 	tooltip_label.visible = false
 	panel_container.visible = false

@@ -6,7 +6,8 @@ class_name KeywordContainer
 func populate_card_keywords(card_data: CardData) -> void:
 	# wrapper function to call keywords on a card
 	# automatically adds keywords to the list based on card flags
-	var card_keyword_object_ids: Array[String] = card_data.card_keyword_object_ids
+	var card_keyword_object_ids: Array[String] = card_data.card_keyword_object_ids.duplicate()
+	var card_status_effect_object_ids: Array[String] = card_data.card_status_effect_object_ids.duplicate()
 	
 	if card_data.card_first_shuffle_priority > 0:
 		if not card_keyword_object_ids.has("keyword_top_deck"):
@@ -33,12 +34,36 @@ func populate_card_keywords(card_data: CardData) -> void:
 	if card_data.card_play_destination == HandManager.DRAW_PILE:
 		if not card_keyword_object_ids.has("keyword_rebound"):
 			card_keyword_object_ids.append("keyword_rebound")
+			
+	# parse actions for status effects
+	for action in card_data.card_play_actions:
+		if action.has(Scripts.ACTION_APPLY_STATUS):
+			var status_id = action[Scripts.ACTION_APPLY_STATUS].get("status_effect_object_id", "")
+			if status_id != "" and not card_status_effect_object_ids.has(status_id):
+				card_status_effect_object_ids.append(status_id)
 	
+	clear_tooltips()
 	
-	populate_keywords(card_keyword_object_ids)
+	if Global.user_settings_data.settings_enable_card_keywords:
+		var all_child_keywords: Array[String] = _get_all_recursive_child_keywords(card_keyword_object_ids)
+		for keyword_object_id in all_child_keywords:
+			var keyword_tooltip = Scenes.KEYWORD_TOOLTIP.instantiate()
+			add_child(keyword_tooltip)
+			keyword_tooltip.init(keyword_object_id)
+	
+	if Global.user_settings_data.settings_enable_card_status_effects:
+		for status_id in card_status_effect_object_ids:
+			var keyword_tooltip = Scenes.KEYWORD_TOOLTIP.instantiate()
+			add_child(keyword_tooltip)
+			keyword_tooltip.init_status_effect(status_id)
+	
+	if Global.user_settings_data.settings_enable_card_hints and card_data.card_hint != "":
+		var keyword_tooltip = Scenes.KEYWORD_TOOLTIP.instantiate()
+		add_child(keyword_tooltip)
+		keyword_tooltip.init_custom("小tips", card_data.card_hint)
 
 func populate_keywords(keyword_object_ids: Array[String]) -> void:
-	clear_keywords()
+	clear_tooltips()
 	var all_child_keywords: Array[String] = _get_all_recursive_child_keywords(keyword_object_ids)
 	for keyword_object_id in all_child_keywords:
 		var keyword_tooltip = Scenes.KEYWORD_TOOLTIP.instantiate()
@@ -62,6 +87,6 @@ func _get_all_recursive_child_keywords(keyword_object_ids: Array[String]) -> Arr
 		i += 1
 	return all_child_keywords
 
-func clear_keywords() -> void:
+func clear_tooltips() -> void:
 	for child in get_children():
 		child.queue_free()

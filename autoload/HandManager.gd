@@ -44,6 +44,14 @@ const DISCARD_PILE: String = "DISCARD" # this does not trigger discard effects. 
 const MANUAL_DISCARD_PILE: String = "MANUAL_DISCARD" # triggers discard effects. Still goes to same place as discard via STANDARD_PILE_NAME_TO_PILE_PROPERTY_NAME
 const EXHAUST_PILE: String = "EXHAUST"
 const BANISH_PILE: String = "" # cards are completely removed from play when assigned here
+
+const PILE_DISPLAY_NAMES: Dictionary = {
+	DISCARD_PILE: "回收站",
+	EXHAUST_PILE: "坏道区（物理删除）",
+	BANISH_PILE: "虚空（完全移除）",
+	HAND_PILE: "当前线程（手牌）",
+	DRAW_PILE: "待加载区（抽牌堆）",
+}
 # magic strings for other "pile" selections in HandManager.get_pile()
 const DECK: String = "DECK"
 const COMBAT_DECK: String = "COMBAT_DECK"

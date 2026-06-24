@@ -62,9 +62,14 @@
 [ext_resource type="Script" uid="uid://d2fxhtmdfmtdf" path="res://scripts/ui/general/KeywordContainer.gd" id="42_wtekq"]
 [ext_resource type="Script" uid="uid://c5i0sjwlko88l" path="res://addons/label_font_auto_sizer/rich_label_auto_sizer.gd" id="43_gs3rm"]
 [ext_resource type="Script" uid="uid://b2jf7xdselhk" path="res://scripts/ui/codex/CodexGlossaryMenu.gd" id="99_glossary"]
+[ext_resource type="Texture2D" uid="uid://cemmbep2gb6u6" path="res://sprites/btn_common_hober.png" id="btn_common_hover"]
+[ext_resource type="Texture2D" uid="uid://dab6flcgmdgpn" path="res://sprites/btn_common_normal.png" id="btn_common_normal"]
+[ext_resource type="Texture2D" uid="uid://bkrlkjojwbv77" path="res://sprites/btn_common_pressed.png" id="btn_common_pressed"]
 [ext_resource type="Texture2D" uid="uid://bi6lu6igtqj20" path="res://sprites/ui/btn_deck_icon.png" id="deck_icon"]
 [ext_resource type="Texture2D" uid="uid://cr6a63jqnlrsl" path="res://sprites/ui/btn_map_icon.png" id="map_icon"]
 [ext_resource type="Texture2D" uid="uid://qf8rdrmsdx7m" path="res://sprites/ui/btn_pause_icon.png" id="pause_icon"]
+[ext_resource type="Script" uid="uid://cauto_resize_grid_uid" path="res://scripts/ui/components/AutoResizingGridContainer.gd" id="auto_resize_grid"]
+[ext_resource type="Script" path="res://scripts/ui/codex/CodexCardDetailPanel.gd" id="codex_card_detail_panel"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_ug4o1"]
 texture = ExtResource("7_v75fn")
@@ -74,6 +79,17 @@ texture = ExtResource("8_nddw4")
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_gdi3b"]
 texture = ExtResource("9_jiqw6")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_btn_common_normal"]
+texture = ExtResource("btn_common_normal")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_btn_common_pressed"]
+texture = ExtResource("btn_common_pressed")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_btn_common_hover"]
+texture = ExtResource("btn_common_hover")
+
+[sub_resource type="ButtonGroup" id="ButtonGroup_codex_tabs"]
 
 [sub_resource type="Animation" id="Animation_m5prp"]
 resource_name = "end_turn"
@@ -774,34 +790,61 @@ unique_name_in_owner = true
 layout_mode = 0
 offset_left = 216.0
 offset_top = 104.0
-offset_right = 696.0
+offset_right = 416.0
 offset_bottom = 152.0
 text = "后台静音"
+
+[node name="EnableCardHintsCheckButton" type="CheckButton" parent="TitleScreen/SettingsMenu" unique_id=2026062301]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 216.0
+offset_top = 152.0
+offset_right = 380.0
+offset_bottom = 200.0
+text = "卡牌提示"
+
+[node name="EnableCardKeywordsCheckButton" type="CheckButton" parent="TitleScreen/SettingsMenu" unique_id=2026062302]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 396.0
+offset_top = 152.0
+offset_right = 560.0
+offset_bottom = 200.0
+text = "显示关键词"
+
+[node name="EnableCardStatusEffectsCheckButton" type="CheckButton" parent="TitleScreen/SettingsMenu" unique_id=2026062303]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 576.0
+offset_top = 152.0
+offset_right = 750.0
+offset_bottom = 200.0
+text = "显示状态效果"
 
 [node name="Label" type="Label" parent="TitleScreen/SettingsMenu" unique_id=1362980258]
 layout_mode = 0
 offset_left = 224.0
-offset_top = 168.0
+offset_top = 264.0
 offset_right = 328.0
-offset_bottom = 240.0
+offset_bottom = 336.0
 text = "主音量"
 vertical_alignment = 1
 
 [node name="Label2" type="Label" parent="TitleScreen/SettingsMenu" unique_id=1342160033]
 layout_mode = 0
 offset_left = 224.0
-offset_top = 256.0
+offset_top = 352.0
 offset_right = 328.0
-offset_bottom = 328.0
+offset_bottom = 424.0
 text = "音乐"
 vertical_alignment = 1
 
 [node name="Label3" type="Label" parent="TitleScreen/SettingsMenu" unique_id=2128500764]
 layout_mode = 0
 offset_left = 224.0
-offset_top = 344.0
+offset_top = 440.0
 offset_right = 328.0
-offset_bottom = 416.0
+offset_bottom = 512.0
 text = "音效"
 vertical_alignment = 1
 
@@ -809,9 +852,9 @@ vertical_alignment = 1
 unique_name_in_owner = true
 layout_mode = 0
 offset_left = 344.0
-offset_top = 168.0
+offset_top = 264.0
 offset_right = 696.0
-offset_bottom = 240.0
+offset_bottom = 336.0
 max_value = 1.0
 step = 0.1
 rounded = false
@@ -820,9 +863,9 @@ rounded = false
 unique_name_in_owner = true
 layout_mode = 0
 offset_left = 344.0
-offset_top = 256.0
+offset_top = 352.0
 offset_right = 696.0
-offset_bottom = 328.0
+offset_bottom = 424.0
 max_value = 1.0
 step = 0.1
 rounded = false
@@ -831,9 +874,9 @@ rounded = false
 unique_name_in_owner = true
 layout_mode = 0
 offset_left = 344.0
-offset_top = 344.0
+offset_top = 440.0
 offset_right = 696.0
-offset_bottom = 416.0
+offset_bottom = 512.0
 max_value = 1.0
 step = 0.1
 rounded = false
@@ -882,6 +925,9 @@ theme_override_constants/margin_right = 8
 custom_minimum_size = Vector2(0, 64)
 layout_mode = 2
 theme = ExtResource("2_bi5lp")
+theme_override_styles/normal = SubResource("StyleBoxTexture_btn_common_normal")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_btn_common_pressed")
+theme_override_styles/hover = SubResource("StyleBoxTexture_btn_common_hover")
 shortcut = ExtResource("8_xur7f")
 shortcut_feedback = false
 shortcut_in_tooltip = false
@@ -912,6 +958,12 @@ theme_override_constants/margin_bottom = 8
 [node name="CodexShowCardsButton" type="Button" parent="TitleScreen/CodexMenu/VSplitContainer/VBoxContainer/MarginContainer2/VBoxContainer/MarginContainer" unique_id=734554613]
 unique_name_in_owner = true
 layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxTexture_btn_common_normal")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_btn_common_pressed")
+theme_override_styles/hover = SubResource("StyleBoxTexture_btn_common_hover")
+toggle_mode = true
+button_pressed = true
+button_group = SubResource("ButtonGroup_codex_tabs")
 text = "脚本"
 
 [node name="MarginContainer2" type="MarginContainer" parent="TitleScreen/CodexMenu/VSplitContainer/VBoxContainer/MarginContainer2/VBoxContainer" unique_id=1292057516]
@@ -930,6 +982,11 @@ theme_override_constants/margin_bottom = 8
 [node name="CodexShowArtifactsButton" type="Button" parent="TitleScreen/CodexMenu/VSplitContainer/VBoxContainer/MarginContainer2/VBoxContainer/MarginContainer2" unique_id=1402277876]
 unique_name_in_owner = true
 layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxTexture_btn_common_normal")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_btn_common_pressed")
+theme_override_styles/hover = SubResource("StyleBoxTexture_btn_common_hover")
+toggle_mode = true
+button_group = SubResource("ButtonGroup_codex_tabs")
 text = "外设插件"
 
 [node name="MarginContainer3" type="MarginContainer" parent="TitleScreen/CodexMenu/VSplitContainer/VBoxContainer/MarginContainer2/VBoxContainer" unique_id=1789177042]
@@ -948,6 +1005,11 @@ theme_override_constants/margin_bottom = 8
 [node name="CodexShowConsumablesButton" type="Button" parent="TitleScreen/CodexMenu/VSplitContainer/VBoxContainer/MarginContainer2/VBoxContainer/MarginContainer3" unique_id=711189038]
 unique_name_in_owner = true
 layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxTexture_btn_common_normal")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_btn_common_pressed")
+theme_override_styles/hover = SubResource("StyleBoxTexture_btn_common_hover")
+toggle_mode = true
+button_group = SubResource("ButtonGroup_codex_tabs")
 text = "物理删除品"
 
 [node name="MarginContainer4" type="MarginContainer" parent="TitleScreen/CodexMenu/VSplitContainer/VBoxContainer/MarginContainer2/VBoxContainer" unique_id=1151655601]
@@ -966,6 +1028,11 @@ theme_override_constants/margin_bottom = 8
 [node name="CodexShowEnemiesButton" type="Button" parent="TitleScreen/CodexMenu/VSplitContainer/VBoxContainer/MarginContainer2/VBoxContainer/MarginContainer4" unique_id=202692058]
 unique_name_in_owner = true
 layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxTexture_btn_common_normal")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_btn_common_pressed")
+theme_override_styles/hover = SubResource("StyleBoxTexture_btn_common_hover")
+toggle_mode = true
+button_group = SubResource("ButtonGroup_codex_tabs")
 text = "敌人"
 
 [node name="MarginContainer5" type="MarginContainer" parent="TitleScreen/CodexMenu/VSplitContainer/VBoxContainer/MarginContainer2/VBoxContainer" unique_id=203692060]
@@ -984,6 +1051,11 @@ theme_override_constants/margin_bottom = 8
 [node name="CodexShowGlossaryButton" type="Button" parent="TitleScreen/CodexMenu/VSplitContainer/VBoxContainer/MarginContainer2/VBoxContainer/MarginContainer5" unique_id=203692061]
 unique_name_in_owner = true
 layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxTexture_btn_common_normal")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_btn_common_pressed")
+theme_override_styles/hover = SubResource("StyleBoxTexture_btn_common_hover")
+toggle_mode = true
+button_group = SubResource("ButtonGroup_codex_tabs")
 text = "词语讲解"
 
 [node name="CodexContentDisplay" type="Control" parent="TitleScreen/CodexMenu/VSplitContainer" unique_id=1879933480]
@@ -1068,6 +1140,9 @@ layout_mode = 0
 offset_left = 216.0
 offset_right = 360.0
 offset_bottom = 31.0
+theme_override_styles/normal = SubResource("StyleBoxTexture_btn_common_normal")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_btn_common_pressed")
+theme_override_styles/hover = SubResource("StyleBoxTexture_btn_common_hover")
 text = "稀有度"
 
 [node name="CodexCardCostSortButton" type="Button" parent="TitleScreen/CodexMenu/VSplitContainer/CodexContentDisplay/CodexCardsMenu" unique_id=651014274]
@@ -1076,6 +1151,9 @@ layout_mode = 0
 offset_left = 536.0
 offset_right = 680.0
 offset_bottom = 31.0
+theme_override_styles/normal = SubResource("StyleBoxTexture_btn_common_normal")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_btn_common_pressed")
+theme_override_styles/hover = SubResource("StyleBoxTexture_btn_common_hover")
 text = "费用"
 
 [node name="CodexCardTypeSortButton" type="Button" parent="TitleScreen/CodexMenu/VSplitContainer/CodexContentDisplay/CodexCardsMenu" unique_id=1897095373]
@@ -1084,8 +1162,22 @@ layout_mode = 0
 offset_left = 376.0
 offset_right = 520.0
 offset_bottom = 31.0
+theme_override_styles/normal = SubResource("StyleBoxTexture_btn_common_normal")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_btn_common_pressed")
+theme_override_styles/hover = SubResource("StyleBoxTexture_btn_common_hover")
 text = "类型"
 
+[node name="CodexCardDetailPanel" type="Control" parent="TitleScreen/CodexMenu/VSplitContainer/CodexContentDisplay/CodexCardsMenu" unique_id=2000000001]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("codex_card_detail_panel")
 
 [node name="CodexArtifactMenu" type="Control" parent="TitleScreen/CodexMenu/VSplitContainer/CodexContentDisplay" unique_id=1533613949]
 unique_name_in_owner = true
@@ -1637,11 +1729,12 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 24
 text = "物理删除品"
 
-[node name="RunHistoryConsumableContainer" type="HFlowContainer" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/MainScroll/MainVBox" unique_id=1124760162]
+[node name="RunHistoryConsumableContainer" type="GridContainer" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/MainScroll/MainVBox" unique_id=1124760162]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/h_separation = 8
 theme_override_constants/v_separation = 8
+script = ExtResource("auto_resize_grid")
 
 [node name="HSeparator2" type="HSeparator" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/MainScroll/MainVBox" unique_id=1369326621]
 layout_mode = 2
@@ -1651,11 +1744,12 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 24
 text = "外设插件"
 
-[node name="RunHistoryArtifactContainer" type="HFlowContainer" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/MainScroll/MainVBox" unique_id=227126276]
+[node name="RunHistoryArtifactContainer" type="GridContainer" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/MainScroll/MainVBox" unique_id=227126276]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/h_separation = 8
 theme_override_constants/v_separation = 8
+script = ExtResource("auto_resize_grid")
 
 [node name="HSeparator3" type="HSeparator" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/MainScroll/MainVBox" unique_id=1850158059]
 layout_mode = 2
@@ -1665,11 +1759,12 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 24
 text = "脚本"
 
-[node name="RunHistoryCardContainer" type="HFlowContainer" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/MainScroll/MainVBox" unique_id=867812220]
+[node name="RunHistoryCardContainer" type="GridContainer" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/MainScroll/MainVBox" unique_id=867812220]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/h_separation = 8
 theme_override_constants/v_separation = 8
+script = ExtResource("auto_resize_grid")
 
 [node name="RunScreen" type="Control" parent="." unique_id=2146255345]
 visible = false
@@ -2267,46 +2362,49 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0.0941176, 0.0862745, 0.101961, 0.67451)
 
-[node name="ShopScroll" type="ScrollContainer" parent="RunScreen/ShopOverlay"]
+[node name="ShopScroll" type="ScrollContainer" parent="RunScreen/ShopOverlay" unique_id=1409721104]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -568.0
-offset_top = -286.0
-offset_right = 568.0
-offset_bottom = 290.0
+offset_left = -536.0
+offset_top = -254.0
+offset_right = 536.0
+offset_bottom = 258.0
 grow_horizontal = 2
 grow_vertical = 2
 horizontal_scroll_mode = 0
 
-[node name="ShopContent" type="VBoxContainer" parent="RunScreen/ShopOverlay/ShopScroll"]
+[node name="ShopContent" type="VBoxContainer" parent="RunScreen/ShopOverlay/ShopScroll" unique_id=1509863118]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 40
 
 [node name="CardContainer" type="GridContainer" parent="RunScreen/ShopOverlay/ShopScroll/ShopContent" unique_id=2063475107]
 layout_mode = 2
-size_flags_horizontal = 4
+size_flags_horizontal = 3
 theme_override_constants/h_separation = 20
 theme_override_constants/v_separation = 20
 columns = 5
+script = ExtResource("auto_resize_grid")
 
 [node name="ArtifactContainer" type="GridContainer" parent="RunScreen/ShopOverlay/ShopScroll/ShopContent" unique_id=899795513]
 layout_mode = 2
-size_flags_horizontal = 4
+size_flags_horizontal = 3
 theme_override_constants/h_separation = 20
 theme_override_constants/v_separation = 20
 columns = 10
+script = ExtResource("auto_resize_grid")
 
 [node name="ConsumableContainer" type="GridContainer" parent="RunScreen/ShopOverlay/ShopScroll/ShopContent" unique_id=1859136117]
 layout_mode = 2
-size_flags_horizontal = 4
+size_flags_horizontal = 3
 theme_override_constants/h_separation = 20
 theme_override_constants/v_separation = 20
 columns = 10
+script = ExtResource("auto_resize_grid")
 
 [node name="ContinueButton" type="Button" parent="RunScreen/ShopOverlay" unique_id=1269696807]
 layout_mode = 0

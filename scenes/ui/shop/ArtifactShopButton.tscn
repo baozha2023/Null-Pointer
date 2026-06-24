@@ -2,6 +2,7 @@
 
 [ext_resource type="Texture2D" uid="uid://nh32y87hcke5" path="res://icon.svg" id="1_3r3br"]
 [ext_resource type="Script" uid="uid://dastyj0nm12fr" path="res://scripts/ui/shop/ArtifactShopButton.gd" id="2_nmaik"]
+[ext_resource type="Texture2D" uid="uid://b1vse1lwno4y5" path="res://sprites/bg_label_price.png" id="bg_label_price"]
 
 [node name="ArtifactShopButton" type="Control"]
 custom_minimum_size = Vector2(64, 96)
@@ -18,6 +19,14 @@ offset_bottom = 64.0
 icon = ExtResource("1_3r3br")
 icon_alignment = 1
 expand_icon = true
+
+[node name="PriceBackground" type="TextureRect" parent="."]
+layout_mode = 0
+offset_top = 68.0
+offset_right = 64.0
+offset_bottom = 91.0
+texture = ExtResource("bg_label_price")
+expand_mode = 1
 
 [node name="PriceLabel" type="Label" parent="."]
 layout_mode = 0

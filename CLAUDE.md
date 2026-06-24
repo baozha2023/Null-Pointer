@@ -53,7 +53,7 @@ Slay The Robot is a **roguelike deckbuilder framework** for **Godot 4.6** (GDScr
 | `scripts/run_modifiers/` | Difficulty (ascension) levels and custom run mutators |
 | `scenes/` | `.tscn` scene files mirroring the scripts/ structure |
 | `external/` | **External assets** — sprites, audio, mods, data files. Uses `.gdignore` to prevent Godot import scanning. Paths switch from `res://` to the executable's sibling directory in exported builds |
-| `ui/components/` | Reusable UI components — `Tooltip`, `VolumeSlider`, `ResizingGridScrollContainer` |
+| `ui/components/` | Reusable UI components — `Tooltip`, `VolumeSlider`, `ResizingGridScrollContainer`, `AutoResizingGridContainer` |
 | `addons/` | Editor plugins — `sound_manager` (Nathan Hoad's audio plugin), `label_font_auto_sizer` |
 | `animations/` | Godot `AnimationLibrary` resources for combatants (`.res` files) |
 | `sprites/` | Editor-imported sprite assets (buttons, frames, icons) — distinct from `external/sprites/` for runtime-loaded content |
@@ -103,7 +103,7 @@ Order is critical because later autoloads depend on earlier ones. `Global._ready
 **Schema System** (`Global.SCHEMA`): A central `Array[Array]` mapping each data type's class name, script, lookup table property name, and external folder path. `Global._generate_schema()` builds fast lookup tables from this schema. **Any new data type must be added to SCHEMA.**
 
 - **`data/CardPlayRequest.gd`** — Extends `RefCounted` (not `Resource`/`SerializableData`). A request payload carrying `card_data`, `selected_target`, `card_values`, refund/input energy, and pile routing info. Created by `HandManager` when a player clicks a hand card; flows through the action system as a value/targeting reference. Also used for card-less action payloads via `card_values` alone.
-- **`data/prototype/`** — Read-only template data. Call `Global.get_card_data_from_prototype(id)` (which internally calls `.get_prototype(true)`) to get a mutable copy.
+- **`data/prototype/`** — Read-only template data. Call `Global.get_card_data_from_prototype(id)` (which internally calls `.get_prototype(true)`) to get a mutable copy. `CardData` now includes `card_hint` (new-player hint text), `card_status_effect_object_ids` (explicit status effect tooltip bindings), and `CARD_TYPE_DISPLAY` / `CARD_RARITY_DISPLAY` constants (moved from `Card.gd` to the data layer for reuse across all UI).
 - **`data/readonly/`** — Immutable lookup data (ActData, EventData, DialogueData, KeywordData, ColorData, StatusEffectData, RunModifierData, CustomSignalData, CharacterData, mod configs, etc.).
 - **`data/readonly/embedded/`** — Nested readonly data types embedded inside parent data objects: `DialogueOptionData`, `DialogueStateData` (used by `DialogueData`), `EnemyIntentData` (used by `EnemyData`).
 - **`data/readonly/modding/`** — Mod support data types. Notably `CustomSignal.gd` extends `RefCounted` (not `SerializableData`) — it's the only data type that doesn't participate in serialization; it's a runtime observer-pattern signal carrier.
@@ -135,6 +135,12 @@ All game behavior flows through Actions. Inheritance chain: `BaseAction` → `Ba
 - `[variable_energy_icons]` — replaced with energy icons matching the player's currently-consumable energy (respects `card_energy_cost_variable_upper_bound` and `multiplier_offset` for X-cost cards)
 
 The `ENERGY_ICON_KEYWORD` constant (`[energy_icon]`) is used for single inline energy icons in non-templated text, replaced via bbcode `[img]` tags with the card's color tint.
+
+**Card Keywords** (`KeywordData`, `KeywordContainer`, `KeywordTooltip`): Card keyword metadata (e.g., "保留", "物理删除", "虚无") is displayed as keyword chips when hovering over a card — no longer embedded in `CardData.get_card_description()`. `KeywordData.keyword_prefix` (e.g., `[前置] `, `[后置] `) indicates when a keyword triggers (before or after an action), displayed as a prefix on the keyword tooltip. The `keyword_unplayable` keyword auto-appends to cards where `card_is_playable = false`. `[energy_icon]` placeholders in keyword text are replaced at display time.
+
+Keywords, status effects, and card hints can each be independently toggled on/off via user settings (`settings_enable_card_keywords`, `settings_enable_card_status_effects`, `settings_enable_card_hints`), accessible from the Settings menu. When enabled, `KeywordContainer.populate_card_keywords()` auto-parses `ACTION_APPLY_STATUS` from `card_play_actions` to discover implicit status effects and displays them alongside explicit keywords. Card hints (`card_hint`) are shown as `init_custom()` tooltips, and status effects use `init_status_effect()` with their name, icon, and description.
+
+**Card Decorator Tooltips** (`CardDecorator.gd`): Decorator descriptions are now shown as standalone tooltips when hovering over the decorator icon on a card, rather than being injected into the card's description text. `CardDecoratorData.card_decorator_description` drives the tooltip text, supporting `[key_name]` dynamic value substitution from `card_values`. The `card_decorator_pre_description` / `card_decorator_post_description` fields on `CardDecoratorData` are retained for future use but no longer automatically mutate card text.
 
 ### Action Interceptors (`scripts/action_interceptors/`)
 
@@ -201,7 +207,7 @@ Combat is a **signal-driven state machine** in `scripts/ui/Combat.gd` (no dedica
 - **Custom** (`run_modifier_is_custom = true`): Player-chosen toggles (Easy Mode, Endless Mode, Draft All Colors). Can be mutually exclusive via `run_modifier_exclusive_to_modifier_ids`.
 - **Automatic** (`run_modifier_is_automatic = true`): Always active (e.g., Consumable Auto-Revive). No player choice.
 
-Modifiers work by registering action interceptors (`run_modifier_interceptor_ids`), or by running modifier scripts (`run_modifier_modifier_script_path`) that call `run_start_modification()` once at run start.
+Modifiers work by registering action interceptors (`run_modifier_interceptor_ids`), or by running modifier scripts (`run_modifier_modifier_script_path`) that call `run_start_modification()` once at run start. Active modifier IDs are persisted in `RunStatsData.run_modifier_ids` and displayed in the Run History menu.
 
 ### Custom Signals & Stat Hooks
 
@@ -238,6 +244,8 @@ This means any sprite or audio asset can be overridden by a mod without changing
 
 Some nodes also call `FileLoader.load_texture()` directly in `_ready()`: `LayeredHealthBar`, `CardDecorator`, `Enemy.init()`, and `MapLocation.init()`. This ensures their textures participate in the mod-override system even before the global node-added hook fires.
 
+Since v1.4, `FileLoader.load_texture()` also handles `res://` internal paths directly (using `ResourceLoader.exists()` as a fast path), not just `external/` paths. This means any node loading textures through `FileLoader` gets unified caching regardless of whether the asset is internal or external.
+
 ### Editor Plugins (`addons/`)
 
 - **`sound_manager/`** — Nathan Hoad's audio manager plugin. Registered as editor plugin + autoload. Provides audio player pools, music/SFX/ambient channels.
@@ -252,11 +260,11 @@ Single shader: `scripts/ui/outline.gdshader` — a `canvas_item` shader drawing 
 
 All UI scenes are preloaded in the `Scenes` singleton. UI scripts are in `scripts/ui/`. The root scene (`Root.tscn`) has three top-level children: **TitleScreen** (menus), **RunScreen** (in-game HUD), and **Tooltips** (global tooltip layer, Z-index 1000). Key subsystems:
 - **Card display**: `Card.tscn` + `CardDecorator.tscn` (for enchantment-like card visual modifications)
-- **Codex**: Browseable content encyclopedia with five tabs: Cards, Artifacts, Consumables, Enemies, and Glossary (keywords + status effects with descriptions)
+- **Codex**: Browseable content encyclopedia with five tabs: Cards, Artifacts, Consumables, Enemies, and Glossary (keywords + status effects with descriptions). Card tab supports sorting by rarity/cost/type and **double-click** on any card opens `CodexCardDetailPanel` — a full overlay showing all card data: basic info, flags, pile routing, numeric values, upgrade paths, decorators, action hooks, keywords, and tags.
 - **Map**: `MapLocation.tscn` with `Line2D` connections for Act navigation
 - **Rewards**: Card draft, artifact, and money reward screens
 - **Shop**: Purchase cards, artifacts, and consumables
-- **Tooltips**: `KeywordTooltip.tscn` (single keyword with optional status icon) and `Tooltip.tscn` (positioned rich text); keywords support nested sub-keywords via BFS
+- **Tooltips**: `KeywordTooltip.tscn` (single keyword with optional status icon) and `Tooltip.tscn` (positioned rich text); keywords support nested sub-keywords via BFS. `KeywordTooltip` also supports `init_custom(title, text)` for arbitrary tooltips (hints, decorators) and `init_status_effect(id)` for status effect tooltips with name + icon + description. Decorator tooltips are triggered from `CardDecorator._on_mouse_entered()` via `Tooltips.display_decorator_tooltip()`.
 - **Combat**: Hand area, enemy container, energy display, piles, end turn button, target selection
 
 ### Combatants (`scenes/combatants/`, `scripts/combatants/`)

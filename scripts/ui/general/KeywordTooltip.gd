@@ -40,3 +40,26 @@ func init(keyword_object_id: String) -> void:
 	
 		# this must be called deferred to force the rich text to not get clipped
 		keyword_rich_text_label.set_deferred("fit_content", true)
+
+func init_custom(title: String, text: String) -> void:
+	var keyword_bbcode: String = "[color=orange]" + title + "[/color]"
+	keyword_bbcode = "{0}\n{1}".format([keyword_bbcode, text])
+	keyword_bbcode = keyword_bbcode.replace("[energy_icon]", "[img width=24]res://sprites/ui/icon_energy.png[/img]")
+	keyword_bbcode = "[font_size={0}]{1}[/font_size]".format([FONT_SIZE, keyword_bbcode])
+	keyword_rich_text_label.set_bbcode(keyword_bbcode)
+	keyword_rich_text_label.set_deferred("fit_content", true)
+
+func init_status_effect(status_effect_object_id: String) -> void:
+	var status_effect_data: StatusEffectData = Global.get_status_effect_data(status_effect_object_id)
+	if status_effect_data == null:
+		DebugLogger.log_error("KeywordTooltip.init_status_effect(): No status effect of id \"{0}\" found".format([status_effect_object_id]))
+	else:
+		var keyword_bbcode: String = "[color=orange]" + status_effect_data.status_effect_name + "[/color]"
+		if status_effect_data.status_effect_texture_path != "":
+			keyword_bbcode = "[img width={0}]{1}[/img] {2}".format([EMBEDDED_IMAGE_SIZE, status_effect_data.status_effect_texture_path, keyword_bbcode])
+		
+		keyword_bbcode = "{0}\n{1}".format([keyword_bbcode, status_effect_data.status_effect_description])
+		keyword_bbcode = keyword_bbcode.replace("[energy_icon]", "[img width=24]res://sprites/ui/icon_energy.png[/img]")
+		keyword_bbcode = "[font_size={0}]{1}[/font_size]".format([FONT_SIZE, keyword_bbcode])
+		keyword_rich_text_label.set_bbcode(keyword_bbcode)
+		keyword_rich_text_label.set_deferred("fit_content", true)

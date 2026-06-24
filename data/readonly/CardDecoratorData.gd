@@ -23,6 +23,8 @@ class_name CardDecoratorData
 @export var card_decorator_pre_description: String = ""
 ## When the card is decorated this text will be added to the end of the card. bbcode supported.
 @export var card_decorator_post_description: String = ""
+## Description of the decorator to be displayed in a standalone tooltip when hovering over the decorator icon.
+@export var card_decorator_description: String = ""
 #endregion
 
 #region Card Action Mutators

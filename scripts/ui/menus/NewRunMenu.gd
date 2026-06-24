@@ -121,13 +121,19 @@ func _on_seed_input_text_changed(new_text: String):
 
 #region Difficulty
 func set_selected_difficulty_level(value: int) -> void:
-	# set difficulty label
 	if selected_character_object_id != "":
-		var character_highest_difficulty_win: int = Global.profile_data.profile_character_id_to_highest_difficulty.get(selected_character_object_id, 0)
+		# Get highest won difficulty, default to -1 if never won
+		var character_highest_difficulty_win: int = Global.profile_data.profile_character_id_to_highest_difficulty.get(selected_character_object_id, -1)
 		if ProfileData.ENABLE_ALL_DIFFICULTIES:
 			selected_difficulty_level = value
 		else:
-			selected_difficulty_level = min(selected_difficulty_level, character_highest_difficulty_win)
+			# Player can select up to (highest win + 1)
+			selected_difficulty_level = min(value, character_highest_difficulty_win + 1)
+	else:
+		selected_difficulty_level = value
+		
+	# Ensure the difficulty level does not exceed the valid run modifier IDs array
+	selected_difficulty_level = clamp(selected_difficulty_level, 0, len(Global.STANDARD_DIFFICULTY_RUN_MODIFIER_IDS) - 1)
 	
 	# update text label
 	var run_modifier_id: String = Global.STANDARD_DIFFICULTY_RUN_MODIFIER_IDS[selected_difficulty_level]

@@ -19,9 +19,9 @@ extends BaseMenu
 @onready var run_history_run_time_label: Label = %RunHistoryRunTimeLabel
 @onready var run_history_floor_label: Label = %RunHistoryFloorLabel
 
-@onready var run_history_consumable_container: FlowContainer = %RunHistoryConsumableContainer
-@onready var run_history_card_container: FlowContainer = %RunHistoryCardContainer
-@onready var run_history_artifact_container: FlowContainer = %RunHistoryArtifactContainer
+@onready var run_history_consumable_container: GridContainer = %RunHistoryConsumableContainer
+@onready var run_history_card_container: GridContainer = %RunHistoryCardContainer
+@onready var run_history_artifact_container: GridContainer = %RunHistoryArtifactContainer
 
 ## Selected index of all player runs
 ## If negative (default) it will select the most current run if it exists. 
