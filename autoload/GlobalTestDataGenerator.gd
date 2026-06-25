@@ -194,9 +194,6 @@ func add_test_artifacts() -> void:
 	artifact_see_top_of_draw_pile.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.COMMON
 	artifact_see_top_of_draw_pile.artifact_color_id = "color_blue"
 	artifact_see_top_of_draw_pile.artifact_texture_path = "sprites/artifacts/artifact_see_top_of_draw_pile.png"
-	artifact_see_top_of_draw_pile.artifact_first_turn_actions = [{
-		Scripts.ACTION_CUSTOM_UI: {"enable_custom_ui": true, "custom_ui_object_id": "custom_ui_see_top_of_draw_pile", "target_override": BaseAction.TARGET_OVERRIDES.PLAYER}
-		}]
 	
 	Global.register_rod(artifact_see_top_of_draw_pile)
 	
@@ -585,7 +582,7 @@ func add_test_rest_actions() -> void:
 		Scripts.ACTION_PICK_CARDS: {
 			"use_parent_card": false,
 			"min_card_amount": 1,
-			"max_card_amount": 2,
+			"max_card_amount": 1,
 			"min_cards_are_required_for_action": true,
 			"quick_pick": false,
 			"can_back_out": true, # allows rest action to be canceled
@@ -2740,8 +2737,7 @@ func add_test_cards() -> void:
 	card_attack_block_end_of_turn.card_description = "造成 [damage] 点伤害。时钟周期结束时如果在当前线程中则获得 [block] 点防火墙"
 	card_attack_block_end_of_turn.card_type = CardData.CARD_TYPES.ATTACK
 	card_attack_block_end_of_turn.card_rarity = CardData.CARD_RARITIES.UNCOMMON
-	card_attack_block_end_of_turn.card_is_retained = true
-	card_attack_block_end_of_turn.card_is_ethereal = true
+	card_attack_block_end_of_turn.card_end_of_turn_destination = HandManager.EXHAUST_PILE
 	card_attack_block_end_of_turn.card_keyword_object_ids = ["keyword_block"]
 	card_attack_block_end_of_turn.card_values = {"damage": 7, "number_of_attacks": 1, "impact_vfx_animation_id": "animation_vfx_impact_default", "block": 7}
 	card_attack_block_end_of_turn.card_upgrade_value_improvements = {"damage": 3, "block": 3}
@@ -3798,7 +3794,7 @@ func add_test_cards() -> void:
 	card_ethereal_status.card_description = "时钟周期结束时读取 [draw_count] 个脚本"
 	card_ethereal_status.card_type = CardData.CARD_TYPES.STATUS
 	card_ethereal_status.card_rarity = CardData.CARD_RARITIES.GENERATED
-	card_ethereal_status.card_is_ethereal = true
+	card_ethereal_status.card_end_of_turn_destination = HandManager.EXHAUST_PILE
 	card_ethereal_status.card_is_playable = false
 	card_ethereal_status.card_values = {"draw_count": 1}
 	card_ethereal_status.card_end_of_turn_actions = [

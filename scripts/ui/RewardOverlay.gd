@@ -218,15 +218,17 @@ func _on_chest_opened():
 	populate_reward_display()
 
 func _on_continue_button_up():
+	visible = false
+	
 	# increment the act and potentially generate a new one
 	if Global.is_end_of_act():
 		if not Global.is_end_of_run():
 			ActionGenerator.generate_next_act()
 	
 	if not Global.is_end_of_run():
+		map.can_travel = true
 		map.show_map()
 	else:
-		visible = false
 		Signals.run_victory.emit()
 
 func _on_map_location_selected(_location_data: LocationData):

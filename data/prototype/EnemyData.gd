@@ -99,6 +99,8 @@ func apply_enemy_difficulty_modifiers():
 			set(property_name, enemy_difficulty_modifiers[property_name])
 	
 	for enemy_intent_data: EnemyIntentData in enemy_intents.values():
+		if enemy_intent_data.enemy_intent_difficulty_level > player_run_difficulty_level:
+			continue
 		# override intents at higher difficulty levels
 		if not _intent_override_cache.has(enemy_intent_data.enemy_intent_overrides_id):
 			_intent_override_cache[enemy_intent_data.enemy_intent_overrides_id] = enemy_intent_data.object_id

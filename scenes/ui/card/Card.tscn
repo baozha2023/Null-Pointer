@@ -135,6 +135,13 @@ texture = ExtResource("2_nrldd")
 expand_mode = 1
 stretch_mode = 5
 
+[node name="ColorRect" type="ColorRect" parent="Pivot/CardVisual" unique_id=898164059]
+layout_mode = 0
+offset_left = 27.0
+offset_top = 160.0
+offset_right = 164.0
+offset_bottom = 162.0
+
 [node name="CardDescription" type="RichTextLabel" parent="Pivot/CardVisual" unique_id=1283790728]
 unique_name_in_owner = true
 layout_mode = 0
@@ -205,7 +212,6 @@ metadata/_edit_lock_ = true
 
 [node name="CardDecoratorContainer" type="VBoxContainer" parent="Pivot" unique_id=915535294]
 unique_name_in_owner = true
-layout_mode = 0
 offset_left = -78.0
 offset_top = -40.0
 offset_right = -37.0

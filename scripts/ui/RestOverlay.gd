@@ -87,9 +87,10 @@ func _on_combat_started(_event_id: String):
 	clear_rest_actions()
 
 func _on_continue_button_up():
+	visible = false
+	
 	if not Global.is_end_of_run():
 		map.can_travel = true
 		map.show_map()
 	else:
-		visible = false
 		Signals.run_victory.emit()

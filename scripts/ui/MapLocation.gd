@@ -54,5 +54,4 @@ func flash_location() -> void:
 	animation_player.play("flash_map_location")
 
 func _on_button_up():
-	location_data.location_visited = true
 	map_location_button_up.emit(self)

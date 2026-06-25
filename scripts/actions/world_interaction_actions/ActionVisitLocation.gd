@@ -7,9 +7,13 @@ func perform_action() -> void:
 	for action_interceptor_processor: ActionInterceptorProcessor in action_interceptor_processors:
 		var location_id: String = action_interceptor_processor.get_shadowed_action_values("location_id", "")
 		var location_data: LocationData = Global.get_location_data(location_id)
+		if location_data == null:
+			DebugLogger.log_error("ActionVisitLocation.perform_action(): No location with id of \"{0}\"".format([location_id]))
+			return
 		
 		# set player location to new location
 		Global.player_data.player_location_id = location_id
+		location_data.location_visited = true
 		# null out shop data
 		Global.player_data.player_shop_data = null
 		

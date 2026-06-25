@@ -95,7 +95,7 @@ func _build_ui() -> void:
 
 	# 返回按钮（左上角）
 	_back_button = Button.new()
-	_back_button.text = "← 返回卡牌列表"
+	_back_button.text = "← 返回脚本列表"
 	_back_button.set_anchors_and_offsets_preset(PRESET_TOP_LEFT)
 	_back_button.offset_left = 16
 	_back_button.offset_top = 16
@@ -103,6 +103,18 @@ func _build_ui() -> void:
 	_back_button.offset_bottom = 56
 	_back_button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 	_back_button.pressed.connect(_on_back_button_pressed)
+	
+	# 应用与其他 codex 按钮相同的样式
+	var normal_style := StyleBoxTexture.new()
+	normal_style.texture = load("res://sprites/btn_common_normal.png")
+	_back_button.add_theme_stylebox_override("normal", normal_style)
+	var pressed_style := StyleBoxTexture.new()
+	pressed_style.texture = load("res://sprites/btn_common_pressed.png")
+	_back_button.add_theme_stylebox_override("pressed", pressed_style)
+	var hover_style := StyleBoxTexture.new()
+	hover_style.texture = load("res://sprites/btn_common_hover.png")
+	_back_button.add_theme_stylebox_override("hover", hover_style)
+	
 	add_child(_back_button)
 #endregion
 
@@ -134,8 +146,8 @@ func _populate_detail(card_data: CardData) -> void:
 	_add_section_title("机制标记")
 	_add_flag("需要选择目标", card_data.card_requires_target)
 	_add_flag("可打出", card_data.card_is_playable)
-	_add_flag("虚灵（回合结束消耗）", card_data.card_is_ethereal or card_data.card_end_of_turn_destination == HandManager.EXHAUST_PILE)
-	_add_flag("保留（回合结束不弃置）", card_data.card_is_retained)
+	_add_flag("虚无（回合结束消耗）", card_data.card_end_of_turn_destination == HandManager.EXHAUST_PILE)
+	_add_flag("保留（回合结束不弃置）", card_data.does_card_retain())
 	_add_flag("不可从牌组移除", card_data.card_unremovable_from_deck)
 	_add_flag("不可变形", card_data.card_untransformable_from_deck)
 
@@ -254,10 +266,8 @@ func _get_available_decorator_names(card_data: CardData) -> Array[String]:
 	return names
 
 func _variant_to_display(val: Variant) -> String:
-	if val is Array:
-		return "[数组，共 " + str(val.size()) + " 项]"
-	elif val is Dictionary:
-		return str(val)
+	if val is Array or val is Dictionary:
+		return JSON.stringify(val, "  ")
 	else:
 		return str(val)
 

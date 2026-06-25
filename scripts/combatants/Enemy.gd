@@ -40,12 +40,17 @@ func init(_enemy_data: EnemyData):
 	enemy_intent_amount_label.mouse_filter = Control.MOUSE_FILTER_PASS
 	enemy_intent_amount_label.mouse_default_cursor_shape = Control.CURSOR_ARROW
 	
+	# keep attack damage number adjacent to attacking icon
+	enemy_intent.move_child(enemy_intent_amount_label, 1)
+	enemy_intent_amount_label.mouse_entered.connect(_on_single_intent_mouse_entered.bind(EnemyIntentData.INTENT_DISPLAY_TYPES.ATTACKING, enemy_intent_amount_label))
+	enemy_intent_amount_label.mouse_exited.connect(_on_intent_mouse_exited.bind(enemy_intent_amount_label))
+	
 	for display_type: int in INTENT_DISPLAY_TYPE_TO_INTENT:
 		var intent_icon: TextureRect = INTENT_DISPLAY_TYPE_TO_INTENT[display_type]
 		intent_icon.tooltip_text = ""
 		intent_icon.mouse_filter = Control.MOUSE_FILTER_PASS
-		intent_icon.mouse_entered.connect(_on_single_intent_mouse_entered.bind(display_type))
-		intent_icon.mouse_exited.connect(_on_intent_mouse_exited)
+		intent_icon.mouse_entered.connect(_on_single_intent_mouse_entered.bind(display_type, intent_icon))
+		intent_icon.mouse_exited.connect(_on_intent_mouse_exited.bind(intent_icon))
 	
 	animated_sprite_2d.sprite_frames = get_animation_sprite_frames()
 	play_animation(AnimationData.ANIMATION_IDLE)
@@ -277,7 +282,8 @@ func _on_death_animtation_finished():
 	# called from animation player
 	Signals.enemy_death_animation_finished.emit(self)
 
-func _on_single_intent_mouse_entered(display_type: int) -> void:
+func _on_single_intent_mouse_entered(display_type: int, intent_icon: Control) -> void:
+	UIHover.scale_up(intent_icon)
 	if HandManager.tooltip == null: return
 	
 	var current_enemy_intent: EnemyIntentData = enemy_data.get_current_intent()
@@ -307,6 +313,7 @@ func _on_single_intent_mouse_entered(display_type: int) -> void:
 	if bbcode != "":
 		HandManager.tooltip.display_tooltip(bbcode, true)
 
-func _on_intent_mouse_exited() -> void:
+func _on_intent_mouse_exited(intent_icon: Control) -> void:
+	UIHover.scale_down(intent_icon)
 	if HandManager.tooltip != null:
 		HandManager.tooltip.hide_tooltip()

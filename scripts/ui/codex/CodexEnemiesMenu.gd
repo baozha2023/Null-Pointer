@@ -15,6 +15,11 @@ extends BaseMenu
 @onready var codex_enemy_texture: TextureRect = %CodexEnemyTexture
 @onready var codex_enemy_health_label: Label = %CodexEnemyHealthLabel
 
+## 每章对应的当前查看难度 (act_data.object_id → difficulty_level)
+var act_difficulties: Dictionary = {}
+var current_enemy_data: EnemyData = null
+var current_act_id: String = ""
+
 func _ready() -> void:
 	codex_enemy_intents_toggle_button.toggled.connect(_on_enemy_intent_toggle)
 
@@ -26,6 +31,9 @@ func clear_menu() -> void:
 	super()
 	clear_codex_enemies()
 	clear_codex_enemy_intents()
+	act_difficulties.clear()
+	current_enemy_data = null
+	current_act_id = ""
 
 func clear_codex_enemies() -> void:
 	for child: Node in codex_act_enemy_button_container.get_children():
@@ -49,6 +57,15 @@ func _populate_codex_enemies() -> void:
 		codex_act_enemy_button_container.add_child(codex_act_name_label)
 		codex_act_name_label.init(act_data)
 		
+		# create difficulty toggle button for this act
+		var act_id: String = act_data.object_id
+		if not act_difficulties.has(act_id):
+			act_difficulties[act_id] = 0
+		var difficulty_button: CodexDifficultyButton = Scenes.CODEX_DIFFICULTY_BUTTON.instantiate()
+		codex_act_enemy_button_container.add_child(difficulty_button)
+		difficulty_button.init(act_difficulties[act_id])
+		difficulty_button.difficulty_changed.connect(_on_act_difficulty_changed.bind(act_id))
+		
 		# get the enemies of the acts and sort by type/name
 		var act_enemy_ids: Array[String] = act_data.get_act_all_enemy_ids()
 		act_enemy_ids.sort_custom(_codex_enemy_sort)
@@ -70,36 +87,70 @@ func _populate_codex_enemies() -> void:
 				
 				# simulate pressing the first enemy so it displays
 				if not first_enemy_button:
-					populate_codex_enemy(enemy_data)
+					_on_codex_enemy_button_up(enemy_data)
 					first_enemy_button = true
+
+## 点击难度按钮：更新本章难度并刷新当前敌人信息
+func _on_act_difficulty_changed(difficulty: int, act_id: String) -> void:
+	act_difficulties[act_id] = difficulty
+	if current_enemy_data != null and current_act_id == act_id:
+		populate_codex_enemy(current_enemy_data)
+
+## 获取某个难度下敌人的血量区间（不修改原 EnemyData）
+func _get_difficulty_health(enemy_data: EnemyData, difficulty: int) -> Dictionary:
+	var lower: int = enemy_data.enemy_health_max_random_lower
+	var upper: int = enemy_data.enemy_health_max_random_upper
+	for level: int in range(1, difficulty + 1):
+		var modifiers: Dictionary = enemy_data.enemy_difficulty_to_enemy_modfiers.get(str(level), {})
+		if modifiers.has("enemy_health_max_random_lower"):
+			lower = modifiers["enemy_health_max_random_lower"]
+		if modifiers.has("enemy_health_max_random_upper"):
+			upper = modifiers["enemy_health_max_random_upper"]
+	return {"lower": lower, "upper": upper}
 
 ## Populates info for a given enemy, and a list of intents
 func populate_codex_enemy(enemy_data: EnemyData) -> void:
+	var difficulty: int = act_difficulties.get(current_act_id, 0)
 	codex_enemy_name_label.text = enemy_data.enemy_name
 	codex_enemy_texture.texture = FileLoader.load_texture(enemy_data.enemy_texture_path)
-	codex_enemy_health_label.text = "完整度: {0}-{1}".format([enemy_data.enemy_health_max_random_lower, enemy_data.enemy_health_max_random_upper])
-	populate_codex_enemy_intents(enemy_data)
+	
+	var hp: Dictionary = _get_difficulty_health(enemy_data, difficulty)
+	codex_enemy_health_label.text = "完整度: {0}-{1}".format([hp["lower"], hp["upper"]])
+	populate_codex_enemy_intents(enemy_data, difficulty)
 
-## Populates a list of intents for a given enemy
-func populate_codex_enemy_intents(enemy_data: EnemyData) -> void:
+## Populates a list of intents for a given enemy at a given difficulty.
+## Shows the highest-difficulty version of each intent ≤ the requested difficulty.
+func populate_codex_enemy_intents(enemy_data: EnemyData, difficulty: int = 0) -> void:
 	clear_codex_enemy_intents()
 	
-	for intent_id: String in enemy_data.enemy_intents:
-		if intent_id == EnemyIntentData.INTENT_INITIAL:
-			continue # ignore the initial intent
-		var enemy_intent_data: EnemyIntentData = enemy_data.enemy_intents[intent_id]
-		
-		# skip non zero difficulty intents
-		if enemy_intent_data.enemy_intent_difficulty_level > 0:
-			continue # NOTE: You may wish to change this behavior
-		
-		# create intent
+	# collect the best (highest difficulty ≤ requested) intent for each override_id
+	var best_intents: Dictionary = {}  # override_id → EnemyIntentData
+	for intent_data: EnemyIntentData in enemy_data.enemy_intents.values():
+		if intent_data.object_id == EnemyIntentData.INTENT_INITIAL:
+			continue
+		if intent_data.enemy_intent_difficulty_level > difficulty:
+			continue
+		var overrides_id: String = intent_data.enemy_intent_overrides_id
+		var existing: EnemyIntentData = best_intents.get(overrides_id)
+		if existing == null or existing.enemy_intent_difficulty_level < intent_data.enemy_intent_difficulty_level:
+			best_intents[overrides_id] = intent_data
+	
+	for intent_data: EnemyIntentData in best_intents.values():
 		var codex_enemy_intent: CodexEnemyIntent = Scenes.CODEX_ENEMY_INTENT.instantiate()
 		codex_enemy_intents_container.add_child(codex_enemy_intent)
-		codex_enemy_intent.init(enemy_data, enemy_intent_data)
+		codex_enemy_intent.init(enemy_data, intent_data)
 
 func _on_codex_enemy_button_up(enemy_data: EnemyData) -> void:
+	current_enemy_data = enemy_data
+	current_act_id = _get_act_id_for_enemy(enemy_data.object_id)
 	populate_codex_enemy(enemy_data)
+
+## 查找某个敌人属于哪个章节
+func _get_act_id_for_enemy(enemy_id: String) -> String:
+	for act_data: ActData in Global._id_to_act_data.values():
+		if enemy_id in act_data.get_act_all_enemy_ids():
+			return act_data.object_id
+	return ""
 
 func _on_enemy_intent_toggle(toggle: bool) -> void:
 	codex_enemy_intents.visible = toggle

@@ -45,7 +45,9 @@ func _on_right_button_up() -> void:
 
 
 func _on_mouse_entered() -> void:
+	UIHover.scale_up(self)
 	if artifact_data.artifact_description != "":
 		HandManager.tooltip.display_artifact_tooltip(artifact_script)
 func _on_mouse_exited() -> void:
+	UIHover.scale_down(self)
 	HandManager.tooltip.hide_tooltip()

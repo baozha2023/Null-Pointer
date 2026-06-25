@@ -2,6 +2,7 @@
 extends Control
 
 @onready var card_container: GridContainer = $ScrollContainer/MarginContainer/CardContainer
+@onready var scroll_container: ScrollContainer = $ScrollContainer
 @onready var card_picking_label: Label = $CardPickLabel
 @onready var confirm_button: Button = $ConfirmButton
 @onready var back_button: Button = $BackButton
@@ -13,6 +14,9 @@ var card_mode: int = CARD_MODES.VIEW	# determines to view or select the card whe
 
 
 func _ready():
+	# 关闭自动跟随焦点，防止双击卡牌时列表自动滚动导致鼠标偏移而判定失败
+	scroll_container.follow_focus = false
+	
 	Signals.card_pick_requested.connect(_on_card_pick_requested)
 	Signals.card_pick_confirmed.connect(_on_card_pick_confirmed)
 	
@@ -122,6 +126,16 @@ func view_draw_pile() -> void:
 	var randomized_draw: Array[CardData] = HandManager.player_draw.duplicate(false)
 	randomized_draw.shuffle() #NOTE: this doesn't need to be deterministic
 	populate_cards(randomized_draw)
+
+func view_draw_top() -> void:
+	set_card_mode(CARD_MODES.VIEW)
+	# show top 5 cards from draw pile in order (actual draw order)
+	var player_draw: Array[CardData] = HandManager.player_draw
+	var top_count: int = min(5, len(player_draw))
+	var top_cards: Array[CardData] = []
+	for i: int in top_count:
+		top_cards.append(player_draw[-(i + 1)])
+	populate_cards(top_cards)
 
 func view_discard() -> void:
 	set_card_mode(CARD_MODES.VIEW)

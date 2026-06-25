@@ -307,6 +307,9 @@ func update_card_pick_ui():
 	confirm_pick_button.disabled = true
 	if current_card_pick_action != null:
 		var not_enough_cards_picked: bool = not current_card_pick_action.are_enough_cards_picked()
+		# 如果最低数量不是必须的，即使没选够也允许确认跳过
+		if not current_card_pick_action.get_min_cards_are_required_for_action():
+			not_enough_cards_picked = false
 		confirm_pick_button.disabled = not_enough_cards_picked
 		card_picking_label.text = current_card_pick_action.get_card_pick_text()
 

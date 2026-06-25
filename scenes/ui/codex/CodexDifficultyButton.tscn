@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://fmv5qy2xvck"]
+
+[ext_resource type="Script" uid="uid://bdtg4x2n9k7fl" path="res://scripts/ui/codex/CodexDifficultyButton.gd" id="1_abcde"]
+
+[node name="CodexDifficultyButton" type="Button"]
+text = "正常执行"
+alignment = 1
+script = ExtResource("1_abcde")

@@ -2,11 +2,17 @@ extends Control
 
 @onready var scroll_container = $ScrollContainer
 @onready var location_container = $ScrollContainer/LocationContainer
+@onready var drawing_layer: Control = $ScrollContainer/LocationContainer/DrawingLayer
 @onready var back_button: Button = $BackButton
+@onready var title_label: Label = $TitleLabel
+@onready var draw_button: Button = $DrawButton
+@onready var clear_drawing_button: Button = $ClearDrawingButton
 
 @onready var map_button = %MapButton
 
 var can_travel: bool = false	# if clicking on a location brings you to the next location
+var draw_mode_enabled: bool = false
+var current_drawing_line: Line2D = null
 
 ## Adds a margin to the bottom of the map display
 const MAP_Y_MARGIN: float = 150
@@ -14,6 +20,8 @@ const MAP_Y_MARGIN: float = 150
 func _ready():
 	map_button.button_up.connect(_on_map_button_up)
 	back_button.button_up.connect(_on_back_button_up)
+	draw_button.button_up.connect(_on_draw_button_up)
+	clear_drawing_button.button_up.connect(_on_clear_drawing_button_up)
 	
 	Signals.combat_started.connect(_on_combat_started)
 	Signals.combat_ended.connect(_on_combat_ended)
@@ -28,6 +36,7 @@ func _ready():
 	
 func populate_locations(locations: Array[LocationData] = Global.get_all_act_locations()):
 	clear_locations()
+	_update_title()
 	
 	var next_locations: Array[LocationData] = Global.get_next_locations()
 	var max_y: float = 0.0 # the highest location position, used to determine container size
@@ -59,12 +68,8 @@ func populate_locations(locations: Array[LocationData] = Global.get_all_act_loca
 				line.width = 4.0
 				
 				# Style line based on cyber theme
-				if loc.location_visited and next_loc.location_visited:
-					# Historical Path
-					line.default_color = Color(0.2, 1.0, 0.5, 1.0)
-					line.width = 8.0
-				elif loc.location_visited and next_locations.has(next_loc) and can_travel:
-					# Available Next Path
+				if loc.location_visited and (next_loc.location_visited or (next_locations.has(next_loc) and can_travel)):
+					# Historical / Available Next Path
 					line.default_color = Color(0.2, 1.0, 0.5, 1.0)
 					line.width = 8.0
 				else:
@@ -89,13 +94,13 @@ func populate_locations(locations: Array[LocationData] = Global.get_all_act_loca
 			if next_locations.has(location_data):
 				map_location.flash_location()
 				current_map_location = map_location
-		
-		#if location_data == Global.get_player_location_data():
-			#current_map_location = map_location
 	
 	# set the size of the container to make scrolling posible
 	location_container.custom_minimum_size.y = max_y + MAP_Y_MARGIN
 	location_container.size.y = max_y + MAP_Y_MARGIN
+	drawing_layer.custom_minimum_size = location_container.custom_minimum_size
+	drawing_layer.size = location_container.size
+	location_container.move_child(drawing_layer, location_container.get_child_count() - 1)
 	
 	# wait a frame to ensure container is properly resized
 	await Global.get_tree().process_frame
@@ -109,7 +114,8 @@ func populate_locations(locations: Array[LocationData] = Global.get_all_act_loca
 
 func clear_locations() -> void:
 	for child in location_container.get_children():
-		child.queue_free()
+		if child != drawing_layer:
+			child.queue_free()
 
 func show_map():
 	populate_locations()
@@ -117,6 +123,7 @@ func show_map():
 
 func hide_map():
 	visible = false
+	_stop_current_drawing_line()
 
 func _on_map_button_up():
 	show_map()
@@ -160,4 +167,61 @@ func _on_dialogue_ended():
 
 func _on_back_button_up():
 	hide_map()
-	get_combined_minimum_size()
+
+func _input(event: InputEvent) -> void:
+	if not visible or not draw_mode_enabled:
+		return
+	if event is InputEventMouseButton and event.button_index != MOUSE_BUTTON_LEFT:
+		return
+	if not _is_pointer_in_drawing_area():
+		if event is InputEventMouseButton and not event.pressed:
+			_stop_current_drawing_line()
+		return
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		if event.pressed:
+			_start_drawing_line()
+		else:
+			_stop_current_drawing_line()
+		get_viewport().set_input_as_handled()
+	elif event is InputEventMouseMotion and current_drawing_line != null:
+		current_drawing_line.add_point(drawing_layer.get_local_mouse_position())
+		get_viewport().set_input_as_handled()
+
+func _update_title() -> void:
+	var act_data: ActData = Global.get_act_data(Global.player_data.player_act_id)
+	if act_data == null:
+		title_label.text = ""
+		return
+	title_label.text = act_data.act_name
+
+func _on_draw_button_up() -> void:
+	draw_mode_enabled = not draw_mode_enabled
+	draw_button.text = "画笔 开" if draw_mode_enabled else "画笔"
+	if not draw_mode_enabled:
+		_stop_current_drawing_line()
+
+func _on_clear_drawing_button_up() -> void:
+	_stop_current_drawing_line()
+	for child in drawing_layer.get_children():
+		child.queue_free()
+
+func _start_drawing_line() -> void:
+	_stop_current_drawing_line()
+	current_drawing_line = Line2D.new()
+	current_drawing_line.width = 6.0
+	current_drawing_line.default_color = Color(0.1, 1.0, 0.45, 0.9)
+	current_drawing_line.z_index = 200
+	drawing_layer.add_child(current_drawing_line)
+	current_drawing_line.add_point(drawing_layer.get_local_mouse_position())
+
+func _stop_current_drawing_line() -> void:
+	current_drawing_line = null
+
+func _is_pointer_in_drawing_area() -> bool:
+	var mouse_position: Vector2 = get_global_mouse_position()
+	if not Rect2(scroll_container.global_position, scroll_container.size).has_point(mouse_position):
+		return false
+	for ctrl in [back_button, draw_button, clear_drawing_button]:
+		if Rect2(ctrl.global_position, ctrl.size).has_point(mouse_position):
+			return false
+	return true

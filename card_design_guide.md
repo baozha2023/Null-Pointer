@@ -85,13 +85,62 @@
 - **打出插入策略 (card_play_destination_strategy)**: 指定进入上述去向时的排列策略，如 `TOP` (顶端)、`BOTTOM` (底端)、`RANDOM` (随机) 或 `SHUFFLE` (洗入)。
 - **回合结束去向 (card_end_of_turn_destination)**:
   - `DISCARD_PILE`: 常规弃牌。
-  - `EXHAUST_PILE` (配合 `card_is_ethereal = true`): 虚无属性，回合结束没打出就销毁。
+  - `EXHAUST_PILE`: 虚无属性，回合结束没打出就销毁。
   - `HAND_PILE` (配合 `card_is_retained = true`): 保留属性，回合结束不弃牌。
 - **回合结束插入策略 (card_end_of_turn_destination_strategy)**: 类似打出插入策略，决定回合结束丢弃时在弃牌堆中的位置。
 
 ### 2.4 验证器 (Validators)
 - **打出条件 (card_play_validators)**: 必须满足特定条件才能打出（例如：仅当敌人没有护盾时可用）。
 - **发光条件 (card_glow_validators)**: 满足条件时手牌会发光提示（例如：打出此牌会触发额外伤害时的连击提示）。
+- **动作级条件 (ACTION_VALIDATOR)**: 在 `card_play_actions` 中使用 `Scripts.ACTION_VALIDATOR`，对**运行时动作**做条件判断，通过 `validator_data` 定义条件、`passed_action_data` 定义通过后执行的追加动作。
+
+#### 2.4.1 内置验证器速查表
+
+| 验证器常量 | 用途 | 关键参数 |
+|:---|:---|:---|
+| `VALIDATOR_CARD_TYPE_IN_HAND` | 手牌中是否存在指定类型 | `card_type_minimum`, `card_types` |
+| `VALIDATOR_ENEMY_ATTACKING` | 目标敌人是否正在攻击 | `invert_validation`（取反） |
+| `VALIDATOR_COMBAT_STATS` | 战斗统计值比较 | `stat_enum`, `operator`, `comparison_value` |
+| `VALIDATOR_ENEMY_TYPE` | 目标敌人类型 | `enemy_type` |
+| `VALIDATOR_CARD_ID` | 卡牌 ID 匹配 | `card_object_ids` |
+| `VALIDATOR_CARD_VALUES` | 卡牌数值比较 | `card_value_name`, `operator`, `comparison_value` |
+| `VALIDATOR_CARD_PROPERTIES` | 卡牌属性检查 | `card_property_name`, `operator`, `comparison_value` |
+| `VALIDATOR_TARGET_STATUS_EFFECT_CHARGES` | 目标状态效果层数检查 | `status_effect_object_id`, `operator`, `status_effect_charge_comparison_value` |
+| `VALIDATOR_PLAYER_HEALTH` | 玩家生命值比较 | `operator`, `comparison_value` |
+| `VALIDATOR_MONEY` | 金币数量比较 | `operator`, `comparison_value` |
+| `VALIDATOR_HAS_ARTIFACT` | 是否拥有遗物 | `artifact_object_id` |
+| `VALIDATOR_RNG` | 随机概率判断 | `rng_name`, `chance` |
+| `VALIDATOR_TURN_COUNT` | 回合数比较 | `operator`, `comparison_value` |
+| `VALIDATOR_IN_COMBAT` | 是否在战斗中 | 无 |
+
+#### 2.4.2 target 级验证器使用示例
+
+```gdscript
+# 示例：若目标有漏洞暴露，伤害翻倍
+card_play_actions = [
+    {
+        Scripts.ACTION_VALIDATOR: {
+            "validator_data": [
+                {Scripts.VALIDATOR_TARGET_STATUS_EFFECT_CHARGES: {
+                    "status_effect_object_id": "status_effect_vulnerable",
+                    "operator": ">=",
+                    "status_effect_charge_comparison_value": 1,
+                }},
+            ],
+            "passed_action_data": [
+                {Scripts.ACTION_IMPROVE_CARD_VALUES: {
+                    "pick_played_card": true,
+                    "modify_parent_card": false,
+                    "card_value_improvements": {"damage": 20},
+                }},
+            ],
+        },
+    },
+    {Scripts.ACTION_ATTACK_GENERATOR: {}},
+]
+```
+
+> **注意**: `VALIDATOR_TARGET_STATUS_EFFECT_CHARGES` 作用于 `action.targets[0]`（首个目标），调用 `BaseCombatant.get_status_charges()` 获取层数。所有验证器均继承 `BaseValidator.gd`，统一使用 `_compare()` 做数值比较。
 
 ### 2.5 通用行为参数 (Common Action Parameters)
 在向生命周期钩子挂载任何动作（如攻击、叠甲）时，都有一些由 `BaseAction.gd` 底层提供的通用参数，你可以直接写入动作的 Dictionary 中：
@@ -143,7 +192,7 @@
    - **减费**: `{"card_energy_cost": 0}` (1费变0费)
    - **改变去向 (去掉消耗)**: `{"card_play_destination": "discard_pile"}` (打出后不再物理删除)
    - **获得保留**: `{"card_is_retained": true}` (回合结束不弃牌)
-   - **失去虚无**: `{"card_is_ethereal": false}` (回合结束没打出也不销毁)
+   - **失去虚无**: `{"card_end_of_turn_destination": HandManager.DISCARD_PILE}` (回合结束没打出也不销毁)
    - **改变目标**: `{"card_requires_target": false}` (原本打单体，升级后变成群体AE)
    - **甚至可以改变图片/文字**: `{"card_texture_path": "new_art.png", "card_description": "升级后的船新描述"}`
 
@@ -249,4 +298,30 @@
 1. **纯数值修改**：使用 `card_values` 和 `card_upgrade_value_improvements`。
 2. **特殊条件限制**：使用极其强大的 `validators` 验证器矩阵。
 3. **时机触发**：利用丰富的 `_actions` 生命钩子。
-4. **机制叠加**：熟练利用 Decorators（附魔）系统及其 Card Pack “双向池化过滤器”进行安全合法的词缀叠加。
+4. **机制叠加**：熟练利用 Decorators（附魔）系统及其 Card Pack "双向池化过滤器"进行安全合法的词缀叠加。
+
+---
+
+## 6. 角色设计参考
+
+### 6.1 渗透专家（蓝色 / 深蓝）
+
+**角色定位**：情报渗透型白帽黑客，以信息优势和 debuff 联动取胜
+
+**主题**：
+- **流派A：情报渗透** — 抽牌/手牌操控/牌库回收，以信息优势碾压对手
+- **流派B：漏洞利用** — "漏洞暴露" debuff 联动，叠加 → 爆发
+
+**基础属性**：75 HP，起始遗物为"查看脚本库顶部"
+
+**核心状态效果联动**：
+| 状态效果 | ID | 作用 |
+|:---|:---|:---|
+| 漏洞暴露 | `status_effect_vulnerable` | 受到的攻击伤害 +50%，蓝色流派B的核心 debuff |
+| 输出降级 | `status_effect_weaken` | 造成的攻击伤害 -25%，配合漏洞暴露的控场 debuff |
+| 逻辑炸弹 | `status_effect_bomb` | X 回合后爆炸造成伤害 |
+| 扩容内存队列 | `status_effect_increase_turn_draw` | 每回合额外抽牌，流派A的能力体系 |
+
+**卡牌代码**：见 `autoload/card_generators/blue_cards.gd`
+
+**新增验证器**：`VALIDATOR_TARGET_STATUS_EFFECT_CHARGES` 可用于 `ACTION_VALIDATOR` 中检查目标上的状态效果层数，实现"若目标有漏洞暴露则额外造成伤害"等条件机制。实现文件：`scripts/validators/ValidatorTargetStatusEffectCharges.gd`

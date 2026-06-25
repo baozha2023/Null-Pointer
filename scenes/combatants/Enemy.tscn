@@ -105,9 +105,9 @@ unique_name_in_owner = true
 [node name="Intent" type="HBoxContainer" parent="Visible" unique_id=785213509]
 layout_mode = 0
 offset_left = -99.0
-offset_top = -128.0
+offset_top = -113.0
 offset_right = 101.0
-offset_bottom = -80.0
+offset_bottom = -65.0
 mouse_filter = 2
 alignment = 1
 
@@ -159,6 +159,7 @@ stretch_mode = 5
 [node name="IntentAmount" type="Label" parent="Visible/Intent" unique_id=12370422]
 visible = false
 layout_mode = 2
+theme_override_font_sizes/font_size = 18
 text = "15"
 
 [node name="FadeContainer" type="Node2D" parent="Visible" unique_id=704318186]

@@ -62,14 +62,14 @@
 [ext_resource type="Script" uid="uid://d2fxhtmdfmtdf" path="res://scripts/ui/general/KeywordContainer.gd" id="42_wtekq"]
 [ext_resource type="Script" uid="uid://c5i0sjwlko88l" path="res://addons/label_font_auto_sizer/rich_label_auto_sizer.gd" id="43_gs3rm"]
 [ext_resource type="Script" uid="uid://b2jf7xdselhk" path="res://scripts/ui/codex/CodexGlossaryMenu.gd" id="99_glossary"]
-[ext_resource type="Texture2D" uid="uid://cemmbep2gb6u6" path="res://sprites/btn_common_hober.png" id="btn_common_hover"]
+[ext_resource type="Script" uid="uid://vh16q48jrisi" path="res://scripts/ui/components/AutoResizingGridContainer.gd" id="auto_resize_grid"]
+[ext_resource type="Texture2D" uid="uid://djt1sc74fp60x" path="res://sprites/btn_common_hover.png" id="btn_common_hover"]
 [ext_resource type="Texture2D" uid="uid://dab6flcgmdgpn" path="res://sprites/btn_common_normal.png" id="btn_common_normal"]
 [ext_resource type="Texture2D" uid="uid://bkrlkjojwbv77" path="res://sprites/btn_common_pressed.png" id="btn_common_pressed"]
+[ext_resource type="Script" uid="uid://rt6p3v5dh3cs" path="res://scripts/ui/codex/CodexCardDetailPanel.gd" id="codex_card_detail_panel"]
 [ext_resource type="Texture2D" uid="uid://bi6lu6igtqj20" path="res://sprites/ui/btn_deck_icon.png" id="deck_icon"]
 [ext_resource type="Texture2D" uid="uid://cr6a63jqnlrsl" path="res://sprites/ui/btn_map_icon.png" id="map_icon"]
 [ext_resource type="Texture2D" uid="uid://qf8rdrmsdx7m" path="res://sprites/ui/btn_pause_icon.png" id="pause_icon"]
-[ext_resource type="Script" uid="uid://cauto_resize_grid_uid" path="res://scripts/ui/components/AutoResizingGridContainer.gd" id="auto_resize_grid"]
-[ext_resource type="Script" path="res://scripts/ui/codex/CodexCardDetailPanel.gd" id="codex_card_detail_panel"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_ug4o1"]
 texture = ExtResource("7_v75fn")
@@ -444,7 +444,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("5_878fa")
 navigation_button_to_menu = {
-NodePath("StartRun/VBoxContainer/MainMenuButton"): NodePath("../MainMenu")
+NodePath("MainMenuButton"): NodePath("../MainMenu")
 }
 
 [node name="Label" type="Label" parent="TitleScreen/NewRunMenu" unique_id=2061026023]
@@ -458,6 +458,20 @@ grow_horizontal = 2
 theme = ExtResource("2_bi5lp")
 text = "新建进程"
 horizontal_alignment = 1
+
+[node name="MainMenuButton" type="Button" parent="TitleScreen/NewRunMenu" unique_id=1859148937]
+layout_mode = 0
+offset_left = 16.0
+offset_top = 16.0
+offset_right = 160.0
+offset_bottom = 72.0
+theme_override_styles/normal = SubResource("StyleBoxTexture_btn_common_normal")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_btn_common_pressed")
+theme_override_styles/hover = SubResource("StyleBoxTexture_btn_common_hover")
+shortcut = ExtResource("8_xur7f")
+shortcut_feedback = false
+shortcut_in_tooltip = false
+text = "返回上一级"
 
 [node name="CharacterPosterTextureRect" type="TextureRect" parent="TitleScreen/NewRunMenu" unique_id=-1214215298]
 unique_name_in_owner = true
@@ -710,17 +724,12 @@ text = "+"
 
 [node name="StartRunButton" type="Button" parent="TitleScreen/NewRunMenu/StartRun/VBoxContainer" unique_id=505398453]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 56)
 layout_mode = 2
-theme = ExtResource("2_bi5lp")
+theme_override_styles/normal = SubResource("StyleBoxTexture_btn_common_normal")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_btn_common_pressed")
+theme_override_styles/hover = SubResource("StyleBoxTexture_btn_common_hover")
 text = "启动进程"
-
-[node name="MainMenuButton" type="Button" parent="TitleScreen/NewRunMenu/StartRun/VBoxContainer" unique_id=1859148937]
-layout_mode = 2
-theme = ExtResource("2_bi5lp")
-shortcut = ExtResource("8_xur7f")
-shortcut_feedback = false
-shortcut_in_tooltip = false
-text = "返回上一级"
 
 [node name="CustomModifiers" type="Control" parent="TitleScreen/NewRunMenu" unique_id=1333666331]
 layout_mode = 1
@@ -783,6 +792,9 @@ offset_left = 56.0
 offset_top = 96.0
 offset_right = 160.0
 offset_bottom = 152.0
+theme_override_styles/normal = SubResource("StyleBoxTexture_btn_common_normal")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_btn_common_pressed")
+theme_override_styles/hover = SubResource("StyleBoxTexture_btn_common_hover")
 text = "返回上一级"
 
 [node name="MuteBackgroundCheckButton" type="CheckButton" parent="TitleScreen/SettingsMenu" unique_id=1586824831]
@@ -1464,6 +1476,9 @@ offset_left = 24.0
 offset_top = 88.0
 offset_right = 168.0
 offset_bottom = 136.0
+theme_override_styles/normal = SubResource("StyleBoxTexture_btn_common_normal")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_btn_common_pressed")
+theme_override_styles/hover = SubResource("StyleBoxTexture_btn_common_hover")
 text = "返回上一级"
 
 [node name="SmoothScrollContainer" type="ScrollContainer" parent="TitleScreen/ProfileStatsMenu" unique_id=2102862504]
@@ -1602,6 +1617,9 @@ NodePath("MainMenuButton"): NodePath("../MainMenu")
 layout_mode = 1
 offset_right = 184.0
 offset_bottom = 64.0
+theme_override_styles/normal = SubResource("StyleBoxTexture_btn_common_normal")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_btn_common_pressed")
+theme_override_styles/hover = SubResource("StyleBoxTexture_btn_common_hover")
 text = "返回上一级"
 
 [node name="NoRunsLabel" type="Label" parent="TitleScreen/RunHistoryMenu" unique_id=175013954]
@@ -1651,11 +1669,17 @@ alignment = 1
 [node name="PreviousRunButton" type="Button" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/MainScroll/MainVBox/HeaderHBox/NavVBox" unique_id=369908327]
 unique_name_in_owner = true
 layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxTexture_btn_common_normal")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_btn_common_pressed")
+theme_override_styles/hover = SubResource("StyleBoxTexture_btn_common_hover")
 text = "上一局"
 
 [node name="NextRunButton" type="Button" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/MainScroll/MainVBox/HeaderHBox/NavVBox" unique_id=1105965722]
 unique_name_in_owner = true
 layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxTexture_btn_common_normal")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_btn_common_pressed")
+theme_override_styles/hover = SubResource("StyleBoxTexture_btn_common_hover")
 text = "下一局"
 
 [node name="RunHistoryCharacterIcon" type="TextureRect" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/MainScroll/MainVBox/HeaderHBox" unique_id=1427997373]
@@ -1776,7 +1800,6 @@ script = ExtResource("12_elxq6")
 [node name="Combat" type="Control" parent="RunScreen" unique_id=797179111]
 unique_name_in_owner = true
 process_mode = 1
-visible = false
 anchors_preset = 0
 offset_right = 1200.0
 offset_bottom = 700.0
@@ -1800,6 +1823,7 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_top = 64.0
 grow_horizontal = 2
 grow_vertical = 2
 button_mask = 3
@@ -1885,17 +1909,17 @@ script = ExtResource("5_a7j3r")
 [node name="Player" parent="RunScreen/Combat" unique_id=524412048 instance=ExtResource("5_7crh0")]
 unique_name_in_owner = true
 layout_mode = 0
-offset_left = 264.0
-offset_top = 340.0
-offset_right = 464.0
-offset_bottom = 484.0
+offset_left = 221.0
+offset_top = 256.0
+offset_right = 421.0
+offset_bottom = 400.0
 
 [node name="EnemyContainer" type="Control" parent="RunScreen/Combat" unique_id=754159237]
 anchors_preset = 0
-offset_left = 667.0
-offset_top = 324.0
-offset_right = 1275.0
-offset_bottom = 516.0
+offset_left = 655.0
+offset_top = 256.0
+offset_right = 1273.0
+offset_bottom = 448.0
 mouse_filter = 2
 script = ExtResource("4_kvn7e")
 metadata/_edit_group_ = true
@@ -1905,6 +1929,7 @@ layout_mode = 0
 offset_right = 608.0
 offset_bottom = 192.0
 mouse_filter = 2
+alignment = 1
 
 [node name="PositionalEnemyContainer" type="Control" parent="RunScreen/Combat/EnemyContainer" unique_id=801103158]
 anchors_preset = 0
@@ -2078,6 +2103,28 @@ theme_override_font_sizes/font_size = 18
 text = "30"
 horizontal_alignment = 1
 
+[node name="DrawTopPile" type="TextureButton" parent="RunScreen/Combat" unique_id=445566778]
+unique_name_in_owner = true
+visible = false
+layout_mode = 0
+offset_left = 24.0
+offset_top = 504.0
+offset_right = 74.0
+offset_bottom = 554.0
+texture_normal = ExtResource("3_8ax2e")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="DrawTopCount" type="Label" parent="RunScreen/Combat/DrawTopPile" unique_id=445566779]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 32.0
+offset_right = 66.0
+offset_bottom = 58.0
+theme_override_font_sizes/font_size = 18
+text = "5"
+horizontal_alignment = 1
+
 [node name="DrawPile" type="TextureButton" parent="RunScreen/Combat" unique_id=320277565]
 unique_name_in_owner = true
 visible = false
@@ -2148,10 +2195,10 @@ horizontal_alignment = 1
 unique_name_in_owner = true
 visible = false
 anchors_preset = 0
-offset_left = 160.0
+offset_left = 126.0
 offset_top = 208.0
-offset_right = 968.0
-offset_bottom = 568.0
+offset_right = 1094.0
+offset_bottom = 641.0
 
 [node name="CardPickLabel" type="Label" parent="RunScreen/Combat/CardPicking" unique_id=663104816]
 unique_name_in_owner = true
@@ -2170,10 +2217,10 @@ horizontal_alignment = 1
 [node name="ConfirmPickButton" type="Button" parent="RunScreen/Combat/CardPicking" unique_id=1476605964]
 unique_name_in_owner = true
 layout_mode = 0
-offset_left = 200.0
-offset_top = 240.0
-offset_right = 584.0
-offset_bottom = 271.0
+offset_left = 286.0
+offset_top = 189.0
+offset_right = 670.0
+offset_bottom = 220.0
 text = "确认"
 
 [node name="Hand" type="Control" parent="RunScreen/Combat" unique_id=1468352038]
@@ -2801,11 +2848,41 @@ color = Color(0.701961, 0.67451, 0.721569, 1)
 
 [node name="BackButton" type="Button" parent="RunScreen/Map" unique_id=478791985]
 layout_mode = 0
-offset_left = 504.0
-offset_top = 32.0
-offset_right = 648.0
-offset_bottom = 63.0
+offset_left = 155.0
+offset_top = 33.0
+offset_right = 311.0
+offset_bottom = 71.0
 text = "<-"
+
+[node name="TitleLabel" type="Label" parent="RunScreen/Map" unique_id=907368213]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -154.0
+offset_top = 30.0
+offset_right = 162.0
+offset_bottom = 70.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 28
+text = "章节"
+horizontal_alignment = 1
+
+[node name="DrawButton" type="Button" parent="RunScreen/Map" unique_id=2010392651]
+layout_mode = 0
+offset_left = 872.0
+offset_top = 32.0
+offset_right = 944.0
+offset_bottom = 63.0
+text = "画笔"
+
+[node name="ClearDrawingButton" type="Button" parent="RunScreen/Map" unique_id=452230766]
+layout_mode = 0
+offset_left = 952.0
+offset_top = 32.0
+offset_right = 1040.0
+offset_bottom = 63.0
+text = "清屏"
 
 [node name="ScrollContainer" type="ScrollContainer" parent="RunScreen/Map" unique_id=1572105427]
 layout_mode = 0
@@ -2824,6 +2901,10 @@ allow_horizontal_scroll = false
 
 [node name="LocationContainer" type="Control" parent="RunScreen/Map/ScrollContainer" unique_id=629671273]
 layout_mode = 2
+
+[node name="DrawingLayer" type="Control" parent="RunScreen/Map/ScrollContainer/LocationContainer" unique_id=2091524822]
+anchors_preset = 0
+mouse_filter = 2
 
 [node name="PauseOverlay" type="Control" parent="RunScreen" unique_id=2135841897]
 unique_name_in_owner = true
@@ -2872,6 +2953,9 @@ grow_vertical = 2
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 64)
 layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxTexture_btn_common_normal")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_btn_common_pressed")
+theme_override_styles/hover = SubResource("StyleBoxTexture_btn_common_hover")
 shortcut = SubResource("Shortcut_elxq6")
 shortcut_feedback = false
 shortcut_in_tooltip = false
@@ -2881,12 +2965,18 @@ text = "恢复进程"
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 64)
 layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxTexture_btn_common_normal")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_btn_common_pressed")
+theme_override_styles/hover = SubResource("StyleBoxTexture_btn_common_hover")
 text = "返回标题"
 
 [node name="ForfeitRunButton" type="Button" parent="RunScreen/PauseOverlay/Background2/VBoxContainer" unique_id=408019789]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 64)
 layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxTexture_btn_common_normal")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_btn_common_pressed")
+theme_override_styles/hover = SubResource("StyleBoxTexture_btn_common_hover")
 text = "放弃本轮"
 
 [node name="Tooptips" type="Control" parent="." unique_id=1044105944]

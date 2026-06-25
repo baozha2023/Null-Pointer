@@ -309,7 +309,7 @@ func start_run(character_object_id: String, run_seed: int, difficulty_level: int
 	perform_start_of_run_modifiers()
 	
 	# 生成第一章的大地图世界
-	ActionGenerator.generate_act("act_1", true)
+	ActionGenerator.generate_act("act_1", 1)
 	
 	# 游戏开始时立刻进行自动存档
 	FileLoader.autosave()
@@ -575,7 +575,8 @@ func get_next_locations(location_id: String = player_data.player_location_id) ->
 		
 	for next_location_id in current_location_data.location_next_location_ids:
 		var next_location_data: LocationData = get_location_data(next_location_id)
-		next_locations.append(next_location_data)
+		if next_location_data != null:
+			next_locations.append(next_location_data)
 	
 	return next_locations
 

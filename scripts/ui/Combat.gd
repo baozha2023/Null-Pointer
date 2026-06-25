@@ -6,12 +6,16 @@ extends Control
 
 @onready var energy_count: Label = $Energy/EnergyCount
 @onready var energy: TextureButton = $Energy
+@onready var pause_button: TextureButton = $%PauseButton
+@onready var map_button: TextureButton = $%MapButton
 @onready var draw_count: Label = $DrawPile/DrawCount
+@onready var draw_top_count: Label = $DrawTopPile/DrawTopCount
 @onready var discard_count: Label = $DiscardPile/DiscardCount
 @onready var exhaust_count: Label = $ExhaustPile/ExhaustCount
 
 @onready var deck_button: TextureButton = %DeckButton
 @onready var draw_pile_button: TextureButton = %DrawPile
+@onready var draw_top_pile_button: TextureButton = %DrawTopPile
 @onready var discard_pile_button: TextureButton = %DiscardPile
 @onready var exhaust_pile_button: TextureButton = %ExhaustPile
 
@@ -52,9 +56,19 @@ func _ready():
 	update_combat_display()
 	player.update_player_display(Global.player_data)
 	
+	# set pile button icons
+	_set_pile_icons()
+	
+	# hover scale effects
+	for btn in _get_pile_buttons():
+		UIHover.add_hover_scale(btn)
+	for btn in [pause_button, map_button, deck_button]:
+		UIHover.add_hover_scale(btn)
+	
 	# pile buttons
 	deck_button.button_up.connect(_on_deck_button_up)
 	draw_pile_button.button_up.connect(_on_draw_pile_button_up)
+	draw_top_pile_button.button_up.connect(_on_draw_top_pile_button_up)
 	discard_pile_button.button_up.connect(_on_discard_pile_button_up)
 	exhaust_pile_button.button_up.connect(_on_exhaust_pile_button_up)
 	
@@ -103,6 +117,7 @@ func _on_map_location_selected(location_data: LocationData):
 func update_combat_display():
 	energy_count.text = str(Global.player_data.player_energy) + "/" + str(Global.player_data.player_energy_max)
 	draw_count.text = str(len(HandManager.player_draw))
+	draw_top_count.text = str(min(len(HandManager.player_draw), 5))
 	discard_count.text = str(len(HandManager.player_discard))
 	exhaust_count.text = str(len(HandManager.player_exhaust))
 	_on_player_health_changed()
@@ -136,6 +151,7 @@ func _update_background() -> void:
 func set_combat_display_visibility(display_visibility: bool) -> void:
 	energy.visible = display_visibility
 	draw_pile_button.visible = display_visibility
+	draw_top_pile_button.visible = display_visibility and _has_see_top_artifact()
 	discard_pile_button.visible = display_visibility
 	exhaust_pile_button.visible = display_visibility
 	end_turn_button.visible = display_visibility
@@ -173,6 +189,8 @@ func _on_deck_button_up():
 	card_selection_overlay.view_deck()
 func _on_draw_pile_button_up():
 	card_selection_overlay.view_draw_pile()
+func _on_draw_top_pile_button_up():
+	card_selection_overlay.view_draw_top()
 func _on_discard_pile_button_up():
 	card_selection_overlay.view_discard()
 func _on_exhaust_pile_button_up():
@@ -572,3 +590,15 @@ func end_turn_animation() -> void:
 	
 func start_turn_animation() -> void:
 	combat_animation_player.play("start_turn")
+
+func _has_see_top_artifact() -> bool:
+	return Global.player_data.get_player_artifacts_with_artifact_id("artifact_see_top_of_draw_pile").size() > 0
+
+func _get_pile_buttons() -> Array[TextureButton]:
+	return [draw_top_pile_button, energy, draw_pile_button, discard_pile_button, exhaust_pile_button]
+
+func _set_pile_icons() -> void:
+	draw_top_pile_button.texture_normal = FileLoader.load_texture("sprites/ui/icon_draw_top.png")
+	draw_pile_button.texture_normal = FileLoader.load_texture("sprites/ui/icon_draw_pile.png")
+	discard_pile_button.texture_normal = FileLoader.load_texture("sprites/ui/icon_discard_pile.png")
+	exhaust_pile_button.texture_normal = FileLoader.load_texture("sprites/ui/icon_exhaust_pile.png")

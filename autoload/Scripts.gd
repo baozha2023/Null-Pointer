@@ -4,7 +4,7 @@ extends Node
 #region Action scripts
 
 # map generation actions
-const ACTION_GENERATE_ACT: String = "res://scripts/actions/world_generation_actions/ActionGenerateAct.gd"
+const ACTION_GENERATE_ACT: String = "res://scripts/actions/world_generation_actions/ActionGenerateActSpire.gd"
 
 # map interaction actions
 const ACTION_VISIT_LOCATION: String = "res://scripts/actions/world_interaction_actions/ActionVisitLocation.gd"
@@ -171,6 +171,9 @@ const VALIDATOR_TURN_COUNT: String = "res://scripts/validators/ValidatorTurnCoun
 # enemy validators
 const VALIDATOR_ENEMY_TYPE: String = "res://scripts/validators/ValidatorEnemyType.gd"
 const VALIDATOR_ENEMY_ATTACKING: String = "res://scripts/validators/ValidatorEnemyAttacking.gd"
+
+# target validators
+const VALIDATOR_TARGET_STATUS_EFFECT_CHARGES: String = "res://scripts/validators/ValidatorTargetStatusEffectCharges.gd"
 
 # player validators
 const VALIDATOR_HAS_ARTIFACT: String = "res://scripts/validators/ValidatorHasArtifact.gd"

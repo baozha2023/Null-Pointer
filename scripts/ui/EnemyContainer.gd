@@ -19,16 +19,12 @@ func populate_enemies_from_event(event_data: EventData = Global.get_player_event
 	
 	if not event_data.event_enemy_placement_is_automatic:
 		enemy_container = positional_enemy_container
-		
-		# check if spawns will be out of bounds
-		# spawns will still happen but not go beyond that
-		if not event_data.event_enemy_placement_is_automatic:
-			if len(event_data.event_enemy_placement_positions) < len(event_data.event_weighted_enemy_object_ids):
-				DebugLogger.log_error("EnemyContainer: Enemy spawns \"{0}\" exceed number of positions \"{1}\" in event \"{2}\"".format([
-					len(event_data.event_weighted_enemy_object_ids),
-					len(event_data.event_enemy_placement_positions),
-					event_data.object_id,
-				]))
+		if len(event_data.event_enemy_placement_positions) < len(event_data.event_weighted_enemy_object_ids):
+			DebugLogger.log_error("EnemyContainer: Enemy spawns \"{0}\" exceed number of positions \"{1}\" in event \"{2}\"".format([
+				len(event_data.event_weighted_enemy_object_ids),
+				len(event_data.event_enemy_placement_positions),
+				event_data.object_id,
+			]))
 	
 	# spawn enemies using random weights
 	var enemy_counter: int = 0

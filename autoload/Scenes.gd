@@ -44,6 +44,7 @@ var CODEX_CARD_PACK_BUTTON: PackedScene = load("res://scenes/ui/codex/CodexCardP
 var CODEX_ARTIFACT: PackedScene = load("res://scenes/ui/codex/CodexArtifact.tscn")
 var CODEX_CONSUMABLE: PackedScene = load("res://scenes/ui/codex/CodexConsumable.tscn")
 var CODEX_ACT_NAME_LABEL: PackedScene = load("res://scenes/ui/codex/CodexActNameLabel.tscn")
+var CODEX_DIFFICULTY_BUTTON: PackedScene = load("res://scenes/ui/codex/CodexDifficultyButton.tscn")
 var CODEX_ENEMY_BUTTON: PackedScene = load("res://scenes/ui/codex/CodexEnemyButton.tscn")
 var CODEX_ENEMY_INTENT: PackedScene = load("res://scenes/ui/codex/CodexEnemyIntent.tscn")
 # profile stats

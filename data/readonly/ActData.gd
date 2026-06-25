@@ -1,4 +1,4 @@
-## Read only data providing the topology of an act. See: ActionGenerateAct.
+## Read only data providing the topology of an act. See: ActionGenerateActSpire.
 extends SerializableData
 class_name ActData
 
@@ -15,6 +15,17 @@ class_name ActData
 ## The path to the script used to generate this act. You can change this to enable
 ## custom act generation
 @export var act_action_script_path: String = Scripts.ACTION_GENERATE_ACT
+
+#region Map Generation (used by ActionGenerateActSpire)
+## Connection density: 0.0 = each node connects to 1 target (clean parallel lanes, spire-like).
+## Higher values add extra cross-connections: 0.3 = moderate branching, 0.5 = more forks.
+@export var act_map_connection_density: float = 0.0
+## Floor layout templates. Each dict: {"min": int, "max": int, "pool": String, "fixed": Array[String]}
+## Fixed types are guaranteed (e.g. ["SHOP"]), remainder filled by pool.
+## Total floors = len(templates) + 2 (start + boss).
+## NOT @export — set programmatically in act gd files.
+var act_map_floor_templates: Array[Dictionary] = []
+#endregion
 
 ## The event pool for this act's easy combats. Used for generation of locations in this act.
 @export var act_easy_combat_event_pool_object_id: String = ""
@@ -84,3 +95,21 @@ func _get_native_properties() -> Dictionary:
 	return {
 		"act_codex_color": Color(),
 	}
+
+## Default floor templates used by ActionGenerateActSpire.
+## Each chapter's add_act() can call this or supply its own custom array.
+static func default_floor_templates() -> Array[Dictionary]:
+	return [
+		{"min": 4, "max": 6, "pool": "easy", "fixed": []},                        # 1
+		{"min": 4, "max": 6, "pool": "easy", "fixed": []},                        # 2
+		{"min": 3, "max": 4, "pool": "easy", "fixed": ["SHOP"]},                  # 3  shop
+		{"min": 4, "max": 6, "pool": "easy", "fixed": ["SHOP"]},                  # 4  shop
+		{"min": 4, "max": 6, "pool": "easy", "fixed": []},                        # 5
+		{"min": 3, "max": 4, "pool": "easy", "fixed": ["MINIBOSS"]},              # 6  miniboss
+		{"min": 2, "max": 3, "pool": "easy", "fixed": ["REST_SITE"]},             # 7  rest
+		{"min": 4, "max": 6, "pool": "hard", "fixed": ["MINIBOSS"]},              # 8  miniboss
+		{"min": 4, "max": 6, "pool": "hard", "fixed": []},                        # 9
+		{"min": 3, "max": 4, "pool": "easy", "fixed": ["TREASURE", "SHOP"]},      # 10 treasure+shop
+		{"min": 3, "max": 5, "pool": "hard", "fixed": ["REST_SITE"]},             # 11 rest
+		{"min": 3, "max": 5, "pool": "hard", "fixed": []},                        # 12
+	]

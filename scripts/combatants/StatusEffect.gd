@@ -32,6 +32,7 @@ func update_status_charge_display() -> void:
 	texture = FileLoader.load_texture(status_effect_texture_path)
 
 func _on_mouse_entered() -> void:
+	UIHover.scale_up(self)
 	var status_effect_data: StatusEffectData = status_effect_script.status_effect_data
 	var bbcode: String = "[color=orange]" + status_effect_data.status_effect_name + "[/color]"
 	
@@ -45,5 +46,6 @@ func _on_mouse_entered() -> void:
 		HandManager.tooltip.display_tooltip(bbcode, true)
 
 func _on_mouse_exited() -> void:
+	UIHover.scale_down(self)
 	if HandManager.tooltip != null:
 		HandManager.tooltip.hide_tooltip()

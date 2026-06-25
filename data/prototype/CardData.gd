@@ -85,12 +85,6 @@ const CARD_RARITY_DISPLAY: Dictionary = {
 @export var card_end_of_turn_destination_strategy: int = HandManager.PILE_INSERTION_STRATEGIES.TOP
 ## Make false to make the card unplayable regardless of passing card_play_validators.
 @export var card_is_playable: bool = true
-
-## Flag that determines whether the card exhausts if in hand at the end of the turn.
-## NOTE: This will override card_end_of_turn_destination_strategy.
-## NOTE: A card can also be considered ethereal without this flag if card_end_of_turn_destination_strategy
-## is EXHAUST_PILE. See: is_card_ethereal().
-@export var card_is_ethereal = false
 ## If the card innately stays in hand end of turn and does not discard. Will also trigger
 ## card_retain_actions as a result.
 ## NOTE: If ethereal, a retained card will still execute retain actions before exhausting.
@@ -165,7 +159,7 @@ const CARD_MAX_DECORATOR_SLOTS: int = 1
 ## Max number of times the card can be upgraded.
 @export var card_upgrade_amount_max: int = 1
 ## Applies .set() to the CardData's properties on first upgrade.
-## NOTE: This is not the card_values, but the properties of CardData itself such as card_is_ethereal
+## NOTE: This is not the card_values, but the properties of CardData itself such as card_end_of_turn_destination
 ## or card_play_actions.
 @export var card_first_upgrade_property_changes: Dictionary[String, Variant] = {
 	
@@ -477,7 +471,7 @@ func does_card_exhaust() -> bool:
 	return card_play_destination == HandManager.EXHAUST_PILE
 ## Returns if card exhausts end of turn if in hand.
 func is_card_ethereal() -> bool:
-	return card_is_ethereal or card_end_of_turn_destination == HandManager.EXHAUST_PILE 
+	return card_end_of_turn_destination == HandManager.EXHAUST_PILE 
 ## Returns if card stays in hand end of turn. Does not factor temporary retain.
 func does_card_retain() -> bool:
 	return card_is_retained or card_end_of_turn_destination == HandManager.HAND_PILE
