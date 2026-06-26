@@ -58,8 +58,8 @@ static func add_cards_blue() -> void:
 	card_cache_warmup.card_energy_cost = 1
 	card_cache_warmup.card_play_destination = HandManager.DISCARD_PILE
 	card_cache_warmup.card_play_destination_strategy = HandManager.PILE_INSERTION_STRATEGIES.TOP
-	card_cache_warmup.card_values = {"block": 5}
-	card_cache_warmup.card_upgrade_value_improvements = {"block": 3}
+	card_cache_warmup.card_values = {"block": 7}
+	card_cache_warmup.card_upgrade_value_improvements = {"block": 4}
 	card_cache_warmup.card_play_actions = [
 		{Scripts.ACTION_BLOCK: {"target_override": BaseAction.TARGET_OVERRIDES.PARENT}},
 	]
@@ -412,8 +412,8 @@ static func add_cards_blue() -> void:
 	card_zero_day.card_type = CardData.CARD_TYPES.ATTACK
 	card_zero_day.card_rarity = CardData.CARD_RARITIES.RARE
 	card_zero_day.card_requires_target = true
-	card_zero_day.card_energy_cost = 3
-	card_zero_day.card_values = {"damage": 20, "number_of_attacks": 1, "impact_vfx_animation_id": "animation_vfx_impact_default"}
+	card_zero_day.card_energy_cost = 2
+	card_zero_day.card_values = {"damage": 18, "number_of_attacks": 1, "impact_vfx_animation_id": "animation_vfx_impact_default"}
 	card_zero_day.card_upgrade_value_improvements = {"damage": 5}
 	card_zero_day.card_play_actions = [
 		{
@@ -453,7 +453,7 @@ static func add_cards_blue() -> void:
 	card_proxy_forward.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_proxy_forward.card_requires_target = false
 	card_proxy_forward.card_energy_cost = 1
-	card_proxy_forward.card_values = {"block": 5, "block_per_attack": 2}
+	card_proxy_forward.card_values = {"block": 6, "block_per_attack": 2}
 	card_proxy_forward.card_upgrade_value_improvements = {"block": 3}
 	card_proxy_forward.card_play_actions = [
 		{
@@ -582,5 +582,137 @@ static func add_cards_blue() -> void:
 	]
 
 	Global.register_rod(card_security_audit)
+
+	#endregion
+
+	#region 生存与AOE
+
+	# 20. 广播风暴 — AOE 攻击
+	var card_broadcast_storm: CardData = CardData.new("card_broadcast_storm")
+	card_broadcast_storm.card_name = "广播风暴"
+	card_broadcast_storm.card_color_id = "color_{0}".format([color])
+	card_broadcast_storm.card_texture_path = "external/sprites/cards/{0}/card_{0}.png".format([color])
+	card_broadcast_storm.card_description = "对所有敌人造成 [damage] 点伤害。施加 [status_charge_amount] 层漏洞暴露。"
+	card_broadcast_storm.card_type = CardData.CARD_TYPES.ATTACK
+	card_broadcast_storm.card_rarity = CardData.CARD_RARITIES.UNCOMMON
+	card_broadcast_storm.card_requires_target = false
+	card_broadcast_storm.card_energy_cost = 2
+	card_broadcast_storm.card_values = {"damage": 8, "number_of_attacks": 1, "status_charge_amount": 1, "impact_vfx_animation_id": "animation_vfx_impact_default"}
+	card_broadcast_storm.card_upgrade_value_improvements = {"damage": 3, "status_charge_amount": 1}
+	card_broadcast_storm.card_play_actions = [
+		{
+			Scripts.ACTION_APPLY_STATUS: {
+				"status_effect_object_id": "status_effect_vulnerable",
+				"target_override": BaseAction.TARGET_OVERRIDES.ALL_ENEMIES,
+			},
+		},
+		{
+			Scripts.ACTION_ATTACK_GENERATOR: {
+				"target_override": BaseAction.TARGET_OVERRIDES.ALL_ENEMIES,
+			},
+		},
+	]
+
+	Global.register_rod(card_broadcast_storm)
+
+	# 21. 数据备份 — 回血
+	var card_data_backup: CardData = CardData.new("card_data_backup")
+	card_data_backup.card_name = "数据备份"
+	card_data_backup.card_color_id = "color_{0}".format([color])
+	card_data_backup.card_texture_path = "external/sprites/cards/{0}/card_{0}.png".format([color])
+	card_data_backup.card_description = "恢复 [health_amount] 点完整度。消耗。"
+	card_data_backup.card_type = CardData.CARD_TYPES.SKILL
+	card_data_backup.card_rarity = CardData.CARD_RARITIES.COMMON
+	card_data_backup.card_requires_target = false
+	card_data_backup.card_energy_cost = 1
+	card_data_backup.card_play_destination = HandManager.EXHAUST_PILE
+	card_data_backup.card_values = {"health_amount": 6}
+	card_data_backup.card_upgrade_value_improvements = {"health_amount": 3}
+	card_data_backup.card_play_actions = [
+		{
+			Scripts.ACTION_ADD_HEALTH: {
+				"target_override": BaseAction.TARGET_OVERRIDES.PARENT,
+			},
+		},
+	]
+
+	Global.register_rod(card_data_backup)
+
+	# 22. 蜜罐陷阱 — 全体输出降级
+	var card_honeypot: CardData = CardData.new("card_honeypot")
+	card_honeypot.card_name = "蜜罐陷阱"
+	card_honeypot.card_color_id = "color_{0}".format([color])
+	card_honeypot.card_texture_path = "external/sprites/cards/{0}/card_{0}.png".format([color])
+	card_honeypot.card_description = "获得 [block] 点防火墙。对所有敌人施加 [status_charge_amount] 层输出降级。"
+	card_honeypot.card_type = CardData.CARD_TYPES.SKILL
+	card_honeypot.card_rarity = CardData.CARD_RARITIES.UNCOMMON
+	card_honeypot.card_requires_target = false
+	card_honeypot.card_energy_cost = 2
+	card_honeypot.card_values = {"block": 7, "status_charge_amount": 1}
+	card_honeypot.card_upgrade_value_improvements = {"block": 3, "status_charge_amount": 1}
+	card_honeypot.card_play_actions = [
+		{
+			Scripts.ACTION_BLOCK: {
+				"target_override": BaseAction.TARGET_OVERRIDES.PARENT,
+			},
+		},
+		{
+			Scripts.ACTION_APPLY_STATUS: {
+				"status_effect_object_id": "status_effect_weaken",
+				"target_override": BaseAction.TARGET_OVERRIDES.ALL_ENEMIES,
+			},
+		},
+	]
+
+	Global.register_rod(card_honeypot)
+
+	# 23. 载荷投递 — 攻击+漏洞+过牌
+	var card_payload_delivery: CardData = CardData.new("card_payload_delivery")
+	card_payload_delivery.card_name = "载荷投递"
+	card_payload_delivery.card_color_id = "color_{0}".format([color])
+	card_payload_delivery.card_texture_path = "external/sprites/cards/{0}/card_{0}.png".format([color])
+	card_payload_delivery.card_description = "造成 [damage] 点伤害。施加 [status_charge_amount] 层漏洞暴露。读取 [draw_count] 个脚本。"
+	card_payload_delivery.card_type = CardData.CARD_TYPES.ATTACK
+	card_payload_delivery.card_rarity = CardData.CARD_RARITIES.UNCOMMON
+	card_payload_delivery.card_requires_target = true
+	card_payload_delivery.card_energy_cost = 2
+	card_payload_delivery.card_values = {"damage": 8, "number_of_attacks": 1, "status_charge_amount": 2, "draw_count": 1, "impact_vfx_animation_id": "animation_vfx_impact_default"}
+	card_payload_delivery.card_upgrade_value_improvements = {"damage": 3, "status_charge_amount": 1}
+	card_payload_delivery.card_play_actions = [
+		{
+			Scripts.ACTION_APPLY_STATUS: {
+				"status_effect_object_id": "status_effect_vulnerable",
+			},
+		},
+		{Scripts.ACTION_ATTACK_GENERATOR: {}},
+		{Scripts.ACTION_DRAW_GENERATOR: {}},
+	]
+
+	Global.register_rod(card_payload_delivery)
+
+	# 24. 权限提升 — 永久最大算力成长
+	var card_privilege_escalation: CardData = CardData.new("card_privilege_escalation")
+	card_privilege_escalation.card_name = "权限提升"
+	card_privilege_escalation.card_color_id = "color_{0}".format([color])
+	card_privilege_escalation.card_texture_path = "external/sprites/cards/{0}/card_{0}.png".format([color])
+	card_privilege_escalation.card_description = "永久获得 [energy_amount_max] 点最大算力。消耗。"
+	card_privilege_escalation.card_type = CardData.CARD_TYPES.POWER
+	card_privilege_escalation.card_rarity = CardData.CARD_RARITIES.RARE
+	card_privilege_escalation.card_requires_target = false
+	card_privilege_escalation.card_energy_cost = 2
+	card_privilege_escalation.card_play_destination = HandManager.EXHAUST_PILE
+	card_privilege_escalation.card_values = {"energy_amount_max": 1}
+	card_privilege_escalation.card_upgrade_value_improvements = {"energy_amount_max": 1}
+	card_privilege_escalation.card_first_upgrade_property_changes = {"card_energy_cost": 1}
+	card_privilege_escalation.card_play_actions = [
+		{
+			Scripts.ACTION_ADD_ENERGY: {
+				"target_override": BaseAction.TARGET_OVERRIDES.PLAYER,
+				"energy_amount": 0,
+			},
+		},
+	]
+
+	Global.register_rod(card_privilege_escalation)
 
 	#endregion

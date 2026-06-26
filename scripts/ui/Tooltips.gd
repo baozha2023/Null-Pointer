@@ -141,7 +141,7 @@ const ARTIFACT_RARITY_DISPLAY: Dictionary = {
 	ArtifactData.ARTIFACT_RARITIES.COMMON: "开源",
 	ArtifactData.ARTIFACT_RARITIES.UNCOMMON: "闭源",
 	ArtifactData.ARTIFACT_RARITIES.RARE: "零日",
-	ArtifactData.ARTIFACT_RARITIES.BOSS: "Boss",
+	ArtifactData.ARTIFACT_RARITIES.BOSS: "动态生成",
 	ArtifactData.ARTIFACT_RARITIES.SHOP: "暗网",
 	ArtifactData.ARTIFACT_RARITIES.EVENT: "异常",
 }

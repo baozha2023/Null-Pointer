@@ -2642,12 +2642,54 @@ offset_right = 1200.0
 offset_bottom = 700.0
 script = ExtResource("25_ll3o0")
 
-[node name="StartingOptionContainer" type="VBoxContainer" parent="RunScreen/RunStartOptions" unique_id=21744175]
+[node name="BackgroundTexture" type="TextureRect" parent="RunScreen/RunStartOptions" unique_id=-529475471]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="BackgroundOverlay" type="ColorRect" parent="RunScreen/RunStartOptions" unique_id=-529475466]
 layout_mode = 0
-offset_left = 24.0
-offset_top = 528.0
-offset_right = 520.0
-offset_bottom = 640.0
+offset_right = 1200.0
+offset_bottom = 700.0
+color = Color(0.08, 0.06, 0.12, 0.2)
+
+[node name="NarrativeLabel" type="RichTextLabel" parent="RunScreen/RunStartOptions" unique_id=-529475470]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -500.0
+offset_top = 60.0
+offset_right = 500.0
+offset_bottom = 180.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/normal_font_size = 22
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+
+[node name="StartingOptionContainer" type="VBoxContainer" parent="RunScreen/RunStartOptions" unique_id=21744175]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -300.0
+offset_top = -320.0
+offset_right = 300.0
+offset_bottom = -40.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_constants/separation = 14
+alignment = 1
 
 [node name="RewardOverlay" type="Control" parent="RunScreen" unique_id=50214048]
 unique_name_in_owner = true

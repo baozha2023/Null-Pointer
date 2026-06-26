@@ -250,8 +250,8 @@ func add_test_artifacts() -> void:
 	
 	### Filler Artifacts
 	var artifact_boss_red: ArtifactData = ArtifactData.new("artifact_boss_red")
-	artifact_boss_red.artifact_name = "外设插件：红色Boss"
-	artifact_boss_red.artifact_description = "测试用红色Boss外设插件。"
+	artifact_boss_red.artifact_name = "外设插件：红色动态生成"
+	artifact_boss_red.artifact_description = "测试用红色动态生成外设插件。"
 	artifact_boss_red.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.BOSS
 	artifact_boss_red.artifact_color_id = "color_red"
 	artifact_boss_red.artifact_texture_path = "sprites/artifacts/artifact_boss_red.png"
@@ -268,8 +268,8 @@ func add_test_artifacts() -> void:
 	Global.register_rod(artifact_shop_red)
 	
 	var artifact_boss_blue: ArtifactData = ArtifactData.new("artifact_boss_blue")
-	artifact_boss_blue.artifact_name = "外设插件：蓝色Boss"
-	artifact_boss_blue.artifact_description = "测试用蓝色Boss外设插件。"
+	artifact_boss_blue.artifact_name = "外设插件：蓝色动态生成"
+	artifact_boss_blue.artifact_description = "测试用蓝色动态生成外设插件。"
 	artifact_boss_blue.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.BOSS
 	artifact_boss_blue.artifact_color_id = "color_blue"
 	artifact_boss_blue.artifact_texture_path = "sprites/artifacts/artifact_boss_blue.png"
@@ -286,8 +286,8 @@ func add_test_artifacts() -> void:
 	Global.register_rod(artifact_shop_blue)
 	
 	var artifact_boss_green: ArtifactData = ArtifactData.new("artifact_boss_green")
-	artifact_boss_green.artifact_name = "外设插件：绿色Boss"
-	artifact_boss_green.artifact_description = "测试用绿色Boss外设插件。"
+	artifact_boss_green.artifact_name = "外设插件：绿色动态生成"
+	artifact_boss_green.artifact_description = "测试用绿色动态生成外设插件。"
 	artifact_boss_green.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.BOSS
 	artifact_boss_green.artifact_color_id = "color_green"
 	artifact_boss_green.artifact_texture_path = "sprites/artifacts/artifact_boss_green.png"
@@ -304,8 +304,8 @@ func add_test_artifacts() -> void:
 	Global.register_rod(artifact_shop_green)
 	
 	var artifact_boss_orange: ArtifactData = ArtifactData.new("artifact_boss_orange")
-	artifact_boss_orange.artifact_name = "外设插件：橙色Boss"
-	artifact_boss_orange.artifact_description = "测试用橙色Boss外设插件。"
+	artifact_boss_orange.artifact_name = "外设插件：橙色动态生成"
+	artifact_boss_orange.artifact_description = "测试用橙色动态生成外设插件。"
 	artifact_boss_orange.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.BOSS
 	artifact_boss_orange.artifact_color_id = "color_orange"
 	artifact_boss_orange.artifact_texture_path = "sprites/artifacts/artifact_boss_orange.png"
@@ -322,8 +322,8 @@ func add_test_artifacts() -> void:
 	Global.register_rod(artifact_shop_orange)
 	
 	var artifact_boss_white: ArtifactData = ArtifactData.new("artifact_boss_white")
-	artifact_boss_white.artifact_name = "外设插件：白色Boss"
-	artifact_boss_white.artifact_description = "测试用白色Boss外设插件。"
+	artifact_boss_white.artifact_name = "外设插件：白色动态生成"
+	artifact_boss_white.artifact_description = "测试用白色动态生成外设插件。"
 	artifact_boss_white.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.BOSS
 	artifact_boss_white.artifact_color_id = "color_white"
 	artifact_boss_white.artifact_texture_path = "sprites/artifacts/artifact_boss_white.png"
@@ -1701,7 +1701,7 @@ func add_test_characters() -> void:
 	character_red.character_name = "红色进程"
 	character_red.character_description = "曾参与红色战争"
 	character_red.character_color_id = "color_{0}".format([character_color])
-	character_red.character_icon_texture_path = "external/sprites/characters/character_{0}/character_{0}_icon.png".format([character_color])
+	character_red.character_icon_texture_path = "sprites/characters/character_red/character_red_idle.png"
 	
 	character_red.character_starting_health = 80
 	character_red.character_starting_artifact_ids = ["artifact_block_on_attacks"]
@@ -1733,9 +1733,23 @@ func add_test_characters() -> void:
 	var animation_character_red: AnimationData = AnimationData.new("animation_character_{0}".format([character_color]))
 	character_red.character_animation_id = animation_character_red.object_id
 	animation_character_red.add_combatant_animations(
-		["external/sprites/characters/character_{0}/character_{0}.png".format([character_color])],
-		["external/sprites/characters/character_{0}/character_{0}.png".format([character_color])],
-		["external/sprites/characters/character_{0}/character_{0}.png".format([character_color])],
+		["sprites/characters/character_red/character_red_idle.png"],
+		[
+			"sprites/characters/character_red/attack/character_red_attack_1.png",
+			"sprites/characters/character_red/attack/character_red_attack_2.png",
+			"sprites/characters/character_red/attack/character_red_attack_3.png",
+			"sprites/characters/character_red/attack/character_red_attack_4.png",
+			"sprites/characters/character_red/attack/character_red_attack_5.png",
+			"sprites/characters/character_red/attack/character_red_attack_6.png",
+		],
+		[
+			"sprites/characters/character_red/death/character_red_death_1.png",
+			"sprites/characters/character_red/death/character_red_death_2.png",
+			"sprites/characters/character_red/death/character_red_death_3.png",
+			"sprites/characters/character_red/death/character_red_death_4.png",
+			"sprites/characters/character_red/death/character_red_death_5.png",
+			"sprites/characters/character_red/death/character_red_death_6.png",
+		],
 		)
 	
 	Global.register_rod(animation_character_red)
@@ -2075,11 +2089,128 @@ func add_test_run_start_options() -> void:
 	
 	Global.register_rod(run_start_option_draft_colorless_card)
 	
-	### Complete
+	# lose more max hp
+	var run_start_option_reduce_max_hp_more: RunStartOptionData = RunStartOptionData.new("run_start_option_reduce_max_hp_more")
+	run_start_option_reduce_max_hp_more.run_start_option_bb_code = "[color=red]失去20点最大完整度[/color]"
+	run_start_option_reduce_max_hp_more.run_start_option_type = RunStartOptionData.RUN_START_OPTION_TYPES.PARTIAL_DOWNSIDE
+	run_start_option_reduce_max_hp_more.run_start_option_actions = [{Scripts.ACTION_ADD_HEALTH: {"target_override": BaseAction.TARGET_OVERRIDES.PLAYER, "health_max_amount": -20}}]
+	
+	Global.register_rod(run_start_option_reduce_max_hp_more)
+	
+	
+	### Upsides (new)
+	# pick a card to upgrade from deck
+	var run_start_option_upgrade_card: RunStartOptionData = RunStartOptionData.new("run_start_option_upgrade_card")
+	run_start_option_upgrade_card.run_start_option_bb_code = "[color=green]升级一张脚本[/color]"
+	run_start_option_upgrade_card.run_start_option_type = RunStartOptionData.RUN_START_OPTION_TYPES.PARTIAL_UPSIDE
+	run_start_option_upgrade_card.run_start_option_actions = [
+		{
+		Scripts.ACTION_PICK_UPGRADE_CARDS: {
+			"card_pick_type": HandManager.DECK,
+			"max_card_amount": 1,
+			"card_pick_text": "选择一张要升级的脚本",
+			}
+		}
+	]
+	
+	Global.register_rod(run_start_option_upgrade_card)
+	
+	# gain a random rare artifact
+	var run_start_option_gain_rare_artifact: RunStartOptionData = RunStartOptionData.new("run_start_option_gain_rare_artifact")
+	run_start_option_gain_rare_artifact.run_start_option_bb_code = "[color=green]获得随机零日外设插件[/color]"
+	run_start_option_gain_rare_artifact.run_start_option_type = RunStartOptionData.RUN_START_OPTION_TYPES.PARTIAL_UPSIDE
+	run_start_option_gain_rare_artifact.run_start_option_actions = [{Scripts.ACTION_ADD_ARTIFACTS_FROM_POOL:
+		{
+		"target_override": BaseAction.TARGET_OVERRIDES.PLAYER,
+		"artifact_count": 1,
+		"artifact_rarities": [ArtifactData.ARTIFACT_RARITIES.RARE]
+		}
+		}]
+	
+	Global.register_rod(run_start_option_gain_rare_artifact)
+	
+	# pick a card to remove from deck
+	var run_start_option_remove_card: RunStartOptionData = RunStartOptionData.new("run_start_option_remove_card")
+	run_start_option_remove_card.run_start_option_bb_code = "[color=green]删除一张脚本[/color]"
+	run_start_option_remove_card.run_start_option_type = RunStartOptionData.RUN_START_OPTION_TYPES.PARTIAL_UPSIDE
+	run_start_option_remove_card.run_start_option_actions = [
+		{
+		Scripts.ACTION_PICK_CARDS: {
+			"card_pick_type": HandManager.DECK,
+			"max_card_amount": 1,
+			"min_card_amount": 1,
+			"min_cards_are_required": true,
+			"card_pick_text": "选择一张要删除的脚本",
+			"action_data": [{Scripts.ACTION_REMOVE_CARDS_FROM_DECK: {}}],
+			}
+		}
+	]
+	
+	Global.register_rod(run_start_option_remove_card)
+	
+	# gain a random uncommon artifact
+	var run_start_option_gain_uncommon_artifact: RunStartOptionData = RunStartOptionData.new("run_start_option_gain_uncommon_artifact")
+	run_start_option_gain_uncommon_artifact.run_start_option_bb_code = "[color=green]获得随机罕见外设插件[/color]"
+	run_start_option_gain_uncommon_artifact.run_start_option_type = RunStartOptionData.RUN_START_OPTION_TYPES.PARTIAL_UPSIDE
+	run_start_option_gain_uncommon_artifact.run_start_option_actions = [{Scripts.ACTION_ADD_ARTIFACTS_FROM_POOL:
+		{
+		"target_override": BaseAction.TARGET_OVERRIDES.PLAYER,
+		"artifact_count": 1,
+		"artifact_rarities": [ArtifactData.ARTIFACT_RARITIES.UNCOMMON]
+		}
+		}]
+	
+	Global.register_rod(run_start_option_gain_uncommon_artifact)
+	
+	# heal to full
+	var run_start_option_heal_full: RunStartOptionData = RunStartOptionData.new("run_start_option_heal_full")
+	run_start_option_heal_full.run_start_option_bb_code = "[color=green]回复所有完整度[/color]"
+	run_start_option_heal_full.run_start_option_type = RunStartOptionData.RUN_START_OPTION_TYPES.PARTIAL_UPSIDE
+	run_start_option_heal_full.run_start_option_actions = [{Scripts.ACTION_ADD_HEALTH: {"target_override": BaseAction.TARGET_OVERRIDES.PLAYER, "health_amount": 999}}]
+	
+	Global.register_rod(run_start_option_heal_full)
+	
+	
+	### Complete (new)
+	# gain rare artifact but lose max hp
+	var run_start_option_rare_artifact_max_hp_loss: RunStartOptionData = RunStartOptionData.new("run_start_option_rare_artifact_max_hp_loss")
+	run_start_option_rare_artifact_max_hp_loss.run_start_option_bb_code = "[color=green]获得随机零日外设插件[/color], [color=red]失去10点最大完整度[/color]"
+	run_start_option_rare_artifact_max_hp_loss.run_start_option_type = RunStartOptionData.RUN_START_OPTION_TYPES.COMPLETE
+	run_start_option_rare_artifact_max_hp_loss.run_start_option_actions = [
+		{Scripts.ACTION_ADD_ARTIFACTS_FROM_POOL: {
+			"target_override": BaseAction.TARGET_OVERRIDES.PLAYER,
+			"artifact_count": 1,
+			"artifact_rarities": [ArtifactData.ARTIFACT_RARITIES.RARE],
+		}},
+		{Scripts.ACTION_ADD_HEALTH: {"target_override": BaseAction.TARGET_OVERRIDES.PLAYER, "health_max_amount": -10}},
+	]
+	
+	Global.register_rod(run_start_option_rare_artifact_max_hp_loss)
+	
+	# upgrade all cards but take damage
+	var run_start_option_upgrade_all_damage: RunStartOptionData = RunStartOptionData.new("run_start_option_upgrade_all_damage")
+	run_start_option_upgrade_all_damage.run_start_option_bb_code = "[color=green]升级所有脚本[/color], [color=red]失去10点完整度[/color]"
+	run_start_option_upgrade_all_damage.run_start_option_type = RunStartOptionData.RUN_START_OPTION_TYPES.COMPLETE
+	run_start_option_upgrade_all_damage.run_start_option_actions = [
+		{
+		Scripts.ACTION_PICK_CARDS: {
+			"card_pick_type": HandManager.DECK,
+			"min_cards_are_required": false,
+			"random_selection": true,
+			"max_card_amount": 99,
+			"action_data": [{Scripts.ACTION_UPGRADE_CARDS: {"upgrade_parent_card": true}}],
+			}
+		},
+		{Scripts.ACTION_ADD_HEALTH: {"target_override": BaseAction.TARGET_OVERRIDES.PLAYER, "health_amount": -10}},
+	]
+	
+	Global.register_rod(run_start_option_upgrade_all_damage)
+	
+	### Complete (original)
 	
 	# replace starting artifact with a random boss one
 	var run_start_option_artifact_swap: RunStartOptionData = RunStartOptionData.new("run_start_option_artifact_swap")
-	run_start_option_artifact_swap.run_start_option_bb_code = "[color=green]将初始外设插件替换为Boss外设插件[/color]"
+	run_start_option_artifact_swap.run_start_option_bb_code = "[color=green]将初始外设插件替换为随机动态生成外设插件[/color]"
 	run_start_option_artifact_swap.run_start_option_type = RunStartOptionData.RUN_START_OPTION_TYPES.COMPLETE
 	run_start_option_artifact_swap.run_start_option_actions = [{Scripts.ACTION_SWAP_BOSS_ARTIFACT: {}}]
 	
@@ -4502,14 +4633,14 @@ func add_test_cards() -> void:
 	card_energy_on_draw.card_name = "算力加载脚本"
 	card_energy_on_draw.card_color_id = "color_orange"
 	card_energy_on_draw.card_texture_path = "external/sprites/cards/orange/card_orange.png"
-	card_energy_on_draw.card_description = "被加载时获得 [energy_amount_energy_icons]。"
+	card_energy_on_draw.card_description = "被读取时获得 [energy_amount_energy_icons]。"
 	card_energy_on_draw.card_is_playable = false
 	card_energy_on_draw.card_type = CardData.CARD_TYPES.SKILL
 	card_energy_on_draw.card_rarity = CardData.CARD_RARITIES.UNCOMMON
 	card_energy_on_draw.card_requires_target = false
 	card_energy_on_draw.card_values = {"energy_amount": 2}
 	card_energy_on_draw.card_upgrade_value_improvements = {"energy_amount": 1}
-	card_energy_on_draw.card_first_upgrade_property_changes = {"card_description": "被加载时获得 [energy_amount_energy_icons]。"}
+	card_energy_on_draw.card_first_upgrade_property_changes = {"card_description": "被读取时获得 [energy_amount_energy_icons]。"}
 	card_energy_on_draw.card_draw_actions = [
 	{
 	Scripts.ACTION_ADD_ENERGY: {}

@@ -8,6 +8,8 @@ signal character_selected(character_id: String)
 
 func _ready():
 	button_up.connect(_on_button_up)
+	mouse_entered.connect(_on_mouse_entered)
+	mouse_exited.connect(_on_mouse_exited)
 	
 func init(_character_object_id: String) -> void:
 	character_object_id = _character_object_id
@@ -18,3 +20,9 @@ func init(_character_object_id: String) -> void:
 
 func _on_button_up():
 	character_selected.emit(character_object_id)
+
+func _on_mouse_entered() -> void:
+	UIHover.scale_up(self)
+
+func _on_mouse_exited() -> void:
+	UIHover.scale_down(self)

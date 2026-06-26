@@ -448,11 +448,13 @@ func _play_card(card_play_request: CardPlayRequest) -> void:
 	
 	# update the hand while the actions are processing
 	hand.tween_hand()
-	hand.update_hand_card_display()
 	
 	# block until the card and any subsequent effects are completely finished
 	if ActionHandler.actions_being_performed:
 		await ActionHandler.actions_ended
+	
+	# update hand card display again after actions complete (e.g. energy changes from ACTION_ADD_ENERGY)
+	hand.update_hand_card_display()
 	
 	# move the card to its destination pile
 	var card_destination_pile: String = card_play_request.card_destination_pile

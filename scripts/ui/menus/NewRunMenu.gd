@@ -106,6 +106,8 @@ func populate_character_info(character_object_id: String) -> void:
 
 func _on_character_selected(character_object_id: String):
 	selected_character_object_id = character_object_id
+	# switch back to difficulty 0 since each character has independent unlock progress
+	set_selected_difficulty_level(0)
 	populate_character_info(selected_character_object_id)
 
 #endregion

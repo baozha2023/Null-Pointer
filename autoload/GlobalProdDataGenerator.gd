@@ -276,6 +276,78 @@ func add_artifacts() -> void:
 
 	Global.register_rod(artifact_right_click_shuffle_deck)
 
+	# 垃圾回收器：消耗脚本时恢复完整度
+	var artifact_garbage_collector: ArtifactData = ArtifactData.new("artifact_garbage_collector")
+	artifact_garbage_collector.artifact_name = "垃圾回收器"
+	artifact_garbage_collector.artifact_description = "每当一个脚本被消耗时，恢复 2 点完整度。"
+	artifact_garbage_collector.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.UNCOMMON
+	artifact_garbage_collector.artifact_texture_path = "sprites/artifacts/artifact_garbage_collector.png"
+	artifact_garbage_collector.artifact_script_path = "res://scripts/artifacts/ArtifactGarbageCollector.gd"
+
+	Global.register_rod(artifact_garbage_collector)
+
+	# 镜像流量复制：手动丢弃脚本时抽牌
+	var artifact_traffic_mirroring: ArtifactData = ArtifactData.new("artifact_traffic_mirroring")
+	artifact_traffic_mirroring.artifact_name = "镜像流量复制"
+	artifact_traffic_mirroring.artifact_description = "每当手动丢弃一个脚本时，加载 1 个脚本。"
+	artifact_traffic_mirroring.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.UNCOMMON
+	artifact_traffic_mirroring.artifact_texture_path = "sprites/artifacts/artifact_traffic_mirroring.png"
+	artifact_traffic_mirroring.artifact_script_path = "res://scripts/artifacts/ArtifactTrafficMirroring.gd"
+
+	Global.register_rod(artifact_traffic_mirroring)
+
+	# 零信任网关：首回合AOE减益 + 自防
+	var artifact_zero_trust_gateway: ArtifactData = ArtifactData.new("artifact_zero_trust_gateway")
+	artifact_zero_trust_gateway.artifact_name = "零信任网关"
+	artifact_zero_trust_gateway.artifact_description = "首时钟周期对所有敌人施加 2 层漏洞暴露，并获得 4 点防火墙。"
+	artifact_zero_trust_gateway.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.RARE
+	artifact_zero_trust_gateway.artifact_texture_path = "sprites/artifacts/artifact_zero_trust_gateway.png"
+	artifact_zero_trust_gateway.artifact_first_turn_actions = [
+		{
+			Scripts.ACTION_APPLY_STATUS: {
+				"target_override": BaseAction.TARGET_OVERRIDES.ALL_ENEMIES,
+				"status_effect_object_id": "status_effect_vulnerable",
+				"status_charge_amount": 2,
+			},
+		},
+		{
+			Scripts.ACTION_BLOCK: {
+				"target_override": BaseAction.TARGET_OVERRIDES.PLAYER,
+				"block": 4,
+			},
+		},
+	]
+
+	Global.register_rod(artifact_zero_trust_gateway)
+
+	# 热修复补丁：攻击充能 → 抽牌 + 回能
+	var artifact_hotfix_patch: ArtifactData = ArtifactData.new("artifact_hotfix_patch")
+	artifact_hotfix_patch.artifact_name = "热修复补丁"
+	artifact_hotfix_patch.artifact_description = "每打出 3 次攻击，加载 1 个脚本并获得 {0}。".format([Card.ENERGY_ICON_KEYWORD])
+	artifact_hotfix_patch.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.RARE
+	artifact_hotfix_patch.artifact_texture_path = "sprites/artifacts/artifact_hotfix_patch.png"
+	artifact_hotfix_patch.artifact_script_path = "res://scripts/artifacts/ArtifactHotfixPatch.gd"
+	artifact_hotfix_patch.artifact_counter_max = 3
+	artifact_hotfix_patch.artifact_counter_wraparound = true
+	artifact_hotfix_patch.artifact_counter_reset_on_turn_start = 0
+	artifact_hotfix_patch.artifact_counter_reset_on_combat_end = 0
+	artifact_hotfix_patch.artifact_max_counter_actions = [
+		{ Scripts.ACTION_DRAW_GENERATOR: { "draw_count": 1 } },
+		{ Scripts.ACTION_ADD_ENERGY: { "energy_amount": 1 } },
+	]
+
+	Global.register_rod(artifact_hotfix_patch)
+
+	# 进程看门狗：濒死救援，单次触发后自移除
+	var artifact_watchdog: ArtifactData = ArtifactData.new("artifact_watchdog")
+	artifact_watchdog.artifact_name = "进程看门狗"
+	artifact_watchdog.artifact_description = "每场战斗中，当完整度首次低于 50% 时，恢复 30% 最大完整度。触发后此外设被永久移除。"
+	artifact_watchdog.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.BOSS
+	artifact_watchdog.artifact_texture_path = "sprites/artifacts/artifact_watchdog.png"
+	artifact_watchdog.artifact_script_path = "res://scripts/artifacts/ArtifactWatchdog.gd"
+
+	Global.register_rod(artifact_watchdog)
+
 	### Filler Artifacts
 
 
@@ -572,8 +644,8 @@ func add_rest_actions() -> void:
 #region Status Effects
 func add_status_effects() -> void:
 	var status_effect_overshield: StatusEffectData = StatusEffectData.new("status_effect_overshield")
-	status_effect_overshield.status_effect_name = "防火墙过载"
-	status_effect_overshield.status_effect_description = "抵挡等同于层数的伤害。"
+	status_effect_overshield.status_effect_name = "过载防火墙"
+	status_effect_overshield.status_effect_description = "抵挡等同于层数的伤害，可跨时钟周期存在。每个周期自然衰减 5 层。"
 	status_effect_overshield.status_effect_texture_path = "sprites/status_effects/icon_overshield.png"
 	status_effect_overshield.status_effect_decay_rate = -5
 	status_effect_overshield.status_effect_decay_type = StatusEffectData.STATUS_EFFECT_DECAY_TYPES.LINEAR
@@ -604,7 +676,7 @@ func add_status_effects() -> void:
 
 	var status_effect_preserve_overshield: StatusEffectData = StatusEffectData.new("status_effect_preserve_overshield")
 	status_effect_preserve_overshield.status_effect_name = "持久化过载"
-	status_effect_preserve_overshield.status_effect_description = "时钟周期结束时，保留所有的防火墙过载。"
+	status_effect_preserve_overshield.status_effect_description = "过载防火墙不再每回合衰减。"
 	status_effect_preserve_overshield.status_effect_texture_path = "sprites/status_effects/icon_preserve_overshield.png"
 	status_effect_preserve_overshield.status_effect_decay_rate = 0
 	status_effect_preserve_overshield.status_effect_decay_type = StatusEffectData.STATUS_EFFECT_DECAY_TYPES.LINEAR
@@ -765,7 +837,7 @@ func add_status_effects() -> void:
 	# grants energy on overheat
 	var status_effect_feedback_loop: StatusEffectData = StatusEffectData.new("status_effect_feedback_loop")
 	status_effect_feedback_loop.status_effect_name = "反馈循环"
-	status_effect_feedback_loop.status_effect_description = "每当内核过热触发爆裂时，获得等同于层数的 {0}。".format([Card.ENERGY_ICON_KEYWORD])
+	status_effect_feedback_loop.status_effect_description = "每当内核过热触发爆裂时，获得等同于层数的算力。"
 	status_effect_feedback_loop.status_effect_texture_path = "sprites/status_effects/icon_feedback_loop.png"
 	status_effect_feedback_loop.status_effect_script_path = "res://scripts/status_effects/StatusEffectFeedbackLoop.gd"
 	status_effect_feedback_loop.status_effect_decay_rate = 0
@@ -982,7 +1054,7 @@ func add_status_effects() -> void:
 	# uses an interceptor to prevent block from resetting
 	var status_effect_temp_preserve_block: StatusEffectData = StatusEffectData.new("status_effect_temp_preserve_block")
 	status_effect_temp_preserve_block.status_effect_name = "缓存防御"
-	status_effect_temp_preserve_block.status_effect_description = "本时钟周期结束时，所有防火墙都不会被清除。"
+	status_effect_temp_preserve_block.status_effect_description = "回合结束时防火墙不会被清除。每回合衰减 1 层。"
 	status_effect_temp_preserve_block.status_effect_texture_path = "sprites/status_effects/icon_temp_preserve_block.png"
 	status_effect_temp_preserve_block.status_effect_decay_rate = -1
 	status_effect_temp_preserve_block.status_effect_interceptor_ids = ["interceptor_temp_preserve_block"]
@@ -1499,30 +1571,7 @@ func add_characters() -> void:
 		"card_basic_block_green",
 		"card_basic_block_green",
 		"card_basic_block_green",
-		#"card_growth", "card_growth", "card_growth", "card_fertilize",
-		#"card_cell_wall", "card_thorns",
-		#"card_datum", "card_conclusion",
-		#"card_clippers", "card_petals",
-		"card_particle_accelerator",
-		"card_particle_accelerator",
-		#"card_fusion_cannon", "card_fusion_cannon",
-		#"card_verdant", "card_verdant",
-		#"card_containment", "card_containment",
-		"card_critical",
-		"card_wildflower",
-		"card_wildflower",
-		"card_wildflower",
-		"card_wildflower",
-		#"card_energy_next_turn", "card_energy_next_turn",
-		"card_meltdown",
-		"card_meltdown",
-		"card_photoelectric_synthesis",
-		"card_photoelectric_synthesis",
-		#"card_feedback_loop",
-		#"card_pollen",
-		#"card_symbiosis",
-		#"card_bud", "card_bud", "card_bud", 
-		#"card_moss", "card_moss",
+		"card_energy_next_turn",
 	]
 
 	# green character animations
@@ -1554,9 +1603,9 @@ func add_characters() -> void:
 	character_red.character_name = "码农"
 	character_red.character_description = "一个平凡的程序员，在数字世界中用代码对抗混乱。他擅长简洁的逻辑复用，能将有限的资源转化为可观战力。"
 	character_red.character_color_id = "color_{0}".format([character_color])
-	character_red.character_icon_texture_path = "external/sprites/characters/character_{0}/character_{0}_icon.png".format([character_color])
-	character_red.character_background_texture_path = "external/sprites/characters/character_{0}/character_{0}_poster.png".format([character_color])
-	character_red.character_starting_health = 80
+	character_red.character_icon_texture_path = "sprites/characters/character_red/character_red_idle.png"
+	character_red.character_background_texture_path = "sprites/characters/character_red/character_red_poster.png"
+	character_red.character_starting_health = 75
 	character_red.character_starting_artifact_ids = ["artifact_block_on_attacks"]
 	character_red.character_starting_card_draft_card_pack_ids = ["card_pack_{0}".format([character_color])]
 	character_red.character_starting_artifact_pack_ids = ["artifact_pack_white", "artifact_pack_{0}".format([character_color])]
@@ -1573,11 +1622,26 @@ func add_characters() -> void:
 		"card_energy_next_turn",
 	]
 
-	# 暂时没有动画资源图片，全部使用默认单帧
 	var animation_character_red: AnimationData = AnimationData.new("animation_character_{0}".format([character_color]))
 	character_red.character_animation_id = animation_character_red.object_id
 	animation_character_red.add_combatant_animations(
-		["external/sprites/characters/character_{0}/character_{0}.png".format([character_color])],
+		["sprites/characters/character_red/character_red_idle.png"],
+		[
+			"sprites/characters/character_red/attack/character_red_attack_1.png",
+			"sprites/characters/character_red/attack/character_red_attack_2.png",
+			"sprites/characters/character_red/attack/character_red_attack_3.png",
+			"sprites/characters/character_red/attack/character_red_attack_4.png",
+			"sprites/characters/character_red/attack/character_red_attack_5.png",
+			"sprites/characters/character_red/attack/character_red_attack_6.png",
+		],
+		[
+			"sprites/characters/character_red/death/character_red_death_1.png",
+			"sprites/characters/character_red/death/character_red_death_2.png",
+			"sprites/characters/character_red/death/character_red_death_3.png",
+			"sprites/characters/character_red/death/character_red_death_4.png",
+			"sprites/characters/character_red/death/character_red_death_5.png",
+			"sprites/characters/character_red/death/character_red_death_6.png",
+		],
 	)
 
 	Global.register_rod(animation_character_red)
@@ -1606,6 +1670,7 @@ func add_characters() -> void:
 		"card_basic_block_blue",
 		"card_basic_block_blue",
 		"card_basic_block_blue",
+		"card_energy_next_turn",
 	]
 
 	# 暂时没有动画资源图片，全部使用默认单帧
@@ -1742,6 +1807,14 @@ func add_run_start_options() -> void:
 
 	Global.register_rod(run_start_option_lose_money)
 
+	# lose more max hp
+	var run_start_option_reduce_max_hp_more: RunStartOptionData = RunStartOptionData.new("run_start_option_reduce_max_hp_more")
+	run_start_option_reduce_max_hp_more.run_start_option_bb_code = "[color=red]失去20点最大完整度[/color]"
+	run_start_option_reduce_max_hp_more.run_start_option_type = RunStartOptionData.RUN_START_OPTION_TYPES.PARTIAL_DOWNSIDE
+	run_start_option_reduce_max_hp_more.run_start_option_actions = [{ Scripts.ACTION_ADD_HEALTH: { "target_override": BaseAction.TARGET_OVERRIDES.PLAYER, "health_max_amount": -20 } }]
+
+	Global.register_rod(run_start_option_reduce_max_hp_more)
+
 	### Upsides
 	# add money
 	var run_start_option_add_money: RunStartOptionData = RunStartOptionData.new("run_start_option_add_money")
@@ -1850,11 +1923,120 @@ func add_run_start_options() -> void:
 
 	Global.register_rod(run_start_option_draft_colorless_card)
 
+	# pick a card to upgrade from deck
+	var run_start_option_upgrade_card: RunStartOptionData = RunStartOptionData.new("run_start_option_upgrade_card")
+	run_start_option_upgrade_card.run_start_option_bb_code = "[color=green]升级一张脚本[/color]"
+	run_start_option_upgrade_card.run_start_option_type = RunStartOptionData.RUN_START_OPTION_TYPES.PARTIAL_UPSIDE
+	run_start_option_upgrade_card.run_start_option_actions = [
+		{
+			Scripts.ACTION_PICK_UPGRADE_CARDS: {
+				"card_pick_type": HandManager.DECK,
+				"max_card_amount": 1,
+				"card_pick_text": "选择一张要升级的脚本",
+			},
+		},
+	]
+
+	Global.register_rod(run_start_option_upgrade_card)
+
+	# gain a random rare artifact
+	var run_start_option_gain_rare_artifact: RunStartOptionData = RunStartOptionData.new("run_start_option_gain_rare_artifact")
+	run_start_option_gain_rare_artifact.run_start_option_bb_code = "[color=green]获得随机零日外设插件[/color]"
+	run_start_option_gain_rare_artifact.run_start_option_type = RunStartOptionData.RUN_START_OPTION_TYPES.PARTIAL_UPSIDE
+	run_start_option_gain_rare_artifact.run_start_option_actions = [
+		{
+			Scripts.ACTION_ADD_ARTIFACTS_FROM_POOL: {
+				"target_override": BaseAction.TARGET_OVERRIDES.PLAYER,
+				"artifact_count": 1,
+				"artifact_rarities": [ArtifactData.ARTIFACT_RARITIES.RARE],
+			},
+		},
+	]
+
+	Global.register_rod(run_start_option_gain_rare_artifact)
+
+	# pick a card to remove from deck
+	var run_start_option_remove_card: RunStartOptionData = RunStartOptionData.new("run_start_option_remove_card")
+	run_start_option_remove_card.run_start_option_bb_code = "[color=green]删除一张脚本[/color]"
+	run_start_option_remove_card.run_start_option_type = RunStartOptionData.RUN_START_OPTION_TYPES.PARTIAL_UPSIDE
+	run_start_option_remove_card.run_start_option_actions = [
+		{
+			Scripts.ACTION_PICK_CARDS: {
+				"card_pick_type": HandManager.DECK,
+				"max_card_amount": 1,
+				"min_card_amount": 1,
+				"min_cards_are_required": true,
+				"card_pick_text": "选择一张要删除的脚本",
+				"action_data": [{ Scripts.ACTION_REMOVE_CARDS_FROM_DECK: { } }],
+			},
+		},
+	]
+
+	Global.register_rod(run_start_option_remove_card)
+
+	# gain a random uncommon artifact
+	var run_start_option_gain_uncommon_artifact: RunStartOptionData = RunStartOptionData.new("run_start_option_gain_uncommon_artifact")
+	run_start_option_gain_uncommon_artifact.run_start_option_bb_code = "[color=green]获得随机闭源外设插件[/color]"
+	run_start_option_gain_uncommon_artifact.run_start_option_type = RunStartOptionData.RUN_START_OPTION_TYPES.PARTIAL_UPSIDE
+	run_start_option_gain_uncommon_artifact.run_start_option_actions = [
+		{
+			Scripts.ACTION_ADD_ARTIFACTS_FROM_POOL: {
+				"target_override": BaseAction.TARGET_OVERRIDES.PLAYER,
+				"artifact_count": 1,
+				"artifact_rarities": [ArtifactData.ARTIFACT_RARITIES.UNCOMMON],
+			},
+		},
+	]
+
+	Global.register_rod(run_start_option_gain_uncommon_artifact)
+
+	# heal to full
+	var run_start_option_heal_full: RunStartOptionData = RunStartOptionData.new("run_start_option_heal_full")
+	run_start_option_heal_full.run_start_option_bb_code = "[color=green]回复所有完整度[/color]"
+	run_start_option_heal_full.run_start_option_type = RunStartOptionData.RUN_START_OPTION_TYPES.PARTIAL_UPSIDE
+	run_start_option_heal_full.run_start_option_actions = [{ Scripts.ACTION_ADD_HEALTH: { "target_override": BaseAction.TARGET_OVERRIDES.PLAYER, "health_amount": 999 } }]
+
+	Global.register_rod(run_start_option_heal_full)
+
 	### Complete
+
+	# gain rare artifact but lose max hp
+	var run_start_option_rare_artifact_max_hp_loss: RunStartOptionData = RunStartOptionData.new("run_start_option_rare_artifact_max_hp_loss")
+	run_start_option_rare_artifact_max_hp_loss.run_start_option_bb_code = "[color=green]获得随机零日外设插件[/color], [color=red]失去10点最大完整度[/color]"
+	run_start_option_rare_artifact_max_hp_loss.run_start_option_type = RunStartOptionData.RUN_START_OPTION_TYPES.COMPLETE
+	run_start_option_rare_artifact_max_hp_loss.run_start_option_actions = [
+		{ Scripts.ACTION_ADD_ARTIFACTS_FROM_POOL: {
+			"target_override": BaseAction.TARGET_OVERRIDES.PLAYER,
+			"artifact_count": 1,
+			"artifact_rarities": [ArtifactData.ARTIFACT_RARITIES.RARE],
+		}},
+		{ Scripts.ACTION_ADD_HEALTH: { "target_override": BaseAction.TARGET_OVERRIDES.PLAYER, "health_max_amount": -10 } },
+	]
+
+	Global.register_rod(run_start_option_rare_artifact_max_hp_loss)
+
+	# upgrade all cards but take damage
+	var run_start_option_upgrade_all_damage: RunStartOptionData = RunStartOptionData.new("run_start_option_upgrade_all_damage")
+	run_start_option_upgrade_all_damage.run_start_option_bb_code = "[color=green]升级所有脚本[/color], [color=red]失去10点完整度[/color]"
+	run_start_option_upgrade_all_damage.run_start_option_type = RunStartOptionData.RUN_START_OPTION_TYPES.COMPLETE
+	run_start_option_upgrade_all_damage.run_start_option_actions = [
+		{
+			Scripts.ACTION_PICK_CARDS: {
+				"card_pick_type": HandManager.DECK,
+				"min_cards_are_required": false,
+				"random_selection": true,
+				"max_card_amount": 99,
+				"action_data": [{ Scripts.ACTION_UPGRADE_CARDS: { "upgrade_parent_card": true } }],
+			},
+		},
+		{ Scripts.ACTION_ADD_HEALTH: { "target_override": BaseAction.TARGET_OVERRIDES.PLAYER, "health_amount": -10 } },
+	]
+
+	Global.register_rod(run_start_option_upgrade_all_damage)
 
 	# replace starting artifact with a random boss one
 	var run_start_option_artifact_swap: RunStartOptionData = RunStartOptionData.new("run_start_option_artifact_swap")
-	run_start_option_artifact_swap.run_start_option_bb_code = "[color=green]将初始外设插件替换为随机Boss外设插件[/color]"
+	run_start_option_artifact_swap.run_start_option_bb_code = "[color=green]将初始外设插件替换为随机动态生成外设插件[/color]"
 	run_start_option_artifact_swap.run_start_option_type = RunStartOptionData.RUN_START_OPTION_TYPES.COMPLETE
 	run_start_option_artifact_swap.run_start_option_actions = [{ Scripts.ACTION_SWAP_BOSS_ARTIFACT: { } }]
 
@@ -2044,7 +2226,7 @@ func add_card_basics() -> void:
 		card_basic_attack.card_name = "基础攻击"
 		card_basic_attack.card_color_id = "color_{0}".format([colors[i]])
 		card_basic_attack.card_description = "造成 [damage] 点伤害。"
-		card_basic_attack.card_texture_path = "sprites/card/green/card_basic_attack_green.png" if colors[i] == "green" else "external/sprites/cards/{0}/card_basic_attack_{0}.png".format([colors[i]])
+		card_basic_attack.card_texture_path = "sprites/card/green/card_basic_attack_green.png" if colors[i] == "green" else ("sprites/card/red/card_basic_attack_red.png" if colors[i] == "red" else "external/sprites/cards/{0}/card_basic_attack_{0}.png".format([colors[i]]))
 		card_basic_attack.card_hint = "这是最基础的攻击指令。虽然伤害不高，但在游戏前期是主要输出手段。"
 		card_basic_attack.card_type = CardData.CARD_TYPES.ATTACK
 		card_basic_attack.card_rarity = CardData.CARD_RARITIES.BASIC
@@ -2065,7 +2247,7 @@ func add_card_basics() -> void:
 		card_basic_block.card_name = "基础防火墙"
 		card_basic_block.card_color_id = "color_{0}".format([colors[i]])
 		card_basic_block.card_description = "获得 [block] 点防火墙"
-		card_basic_block.card_texture_path = "sprites/card/green/card_basic_block_green.png" if colors[i] == "green" else "external/sprites/cards/{0}/card_basic_block_{0}.png".format([colors[i]])
+		card_basic_block.card_texture_path = "sprites/card/green/card_basic_block_green.png" if colors[i] == "green" else ("sprites/card/red/card_basic_block_red.png" if colors[i] == "red" else "external/sprites/cards/{0}/card_basic_block_{0}.png".format([colors[i]]))
 		card_basic_block.card_hint = "这是最基础的防御指令。保持健康状态是走得更远的关键，不要忽略防御。"
 		card_basic_block.card_type = CardData.CARD_TYPES.SKILL
 		card_basic_block.card_rarity = CardData.CARD_RARITIES.BASIC

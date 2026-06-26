@@ -16,6 +16,26 @@ const INTENT_NAME_ZH: Dictionary[String, String] = {
 	"intent_attack_multi": "多重攻击",
 	"intent_block": "防火墙",
 	"intent_summon": "召唤",
+	## 第二章敌人意图
+	"intent_scan": "扫描",
+	"intent_debuff": "削弱",
+	"intent_burn": "灼烧",
+	"intent_heavy": "重击",
+	"intent_mark": "标记",
+	"intent_strike": "连击",
+	"intent_fortify": "加固",
+	"intent_breach": "突破",
+	## 第三章敌人意图
+	"intent_overclock": "超频",
+	"intent_overheat": "过热",
+	"intent_lockdown": "封锁",
+	"intent_corrupt": "腐化",
+	"intent_crit_buff": "暴击增幅",
+	"intent_crit_attack": "暴击",
+	"intent_bomb": "植入炸弹",
+	"intent_overload": "超载",
+	"intent_system_crash": "系统崩溃",
+	"intent_emergency": "紧急防护",
 }
 
 func _init(intent_object_id: String = "", difficulty_level: int = 0, intent_attack_damage: int = 1, intent_number_of_attacks: int = 1, intent_attack_impact_animation_id: String = "", intent_block: int = 0, intent_audio_path: String = "",

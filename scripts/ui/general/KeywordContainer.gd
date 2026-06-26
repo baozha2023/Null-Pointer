@@ -35,12 +35,34 @@ func populate_card_keywords(card_data: CardData) -> void:
 		if not card_keyword_object_ids.has("keyword_rebound"):
 			card_keyword_object_ids.append("keyword_rebound")
 			
-	# parse actions for status effects
-	for action in card_data.card_play_actions:
-		if action.has(Scripts.ACTION_APPLY_STATUS):
-			var status_id = action[Scripts.ACTION_APPLY_STATUS].get("status_effect_object_id", "")
-			if status_id != "" and not card_status_effect_object_ids.has(status_id):
-				card_status_effect_object_ids.append(status_id)
+	# parse actions for status effects across all action hooks
+	var all_action_lists: Array[Array] = [
+		card_data.card_play_actions,
+		card_data.card_draw_actions,
+		card_data.card_discard_actions,
+		card_data.card_exhaust_actions,
+		card_data.card_retain_actions,
+		card_data.card_end_of_turn_actions,
+		card_data.card_initial_combat_actions,
+		card_data.card_right_click_actions,
+		card_data.card_add_to_deck_actions,
+		card_data.card_remove_from_deck_actions,
+		card_data.card_transform_in_deck_actions,
+	]
+	for action_list in all_action_lists:
+		for action in action_list:
+			if action.has(Scripts.ACTION_APPLY_STATUS):
+				var status_id = action[Scripts.ACTION_APPLY_STATUS].get("status_effect_object_id", "")
+				if status_id == "":
+					status_id = card_data.card_values.get("status_effect_object_id", "")
+				if status_id != "" and not card_status_effect_object_ids.has(status_id):
+					card_status_effect_object_ids.append(status_id)
+			if action.has(Scripts.ACTION_BLOCK_TO_STATUS):
+				var status_id = action[Scripts.ACTION_BLOCK_TO_STATUS].get("status_effect_object_id", "")
+				if status_id == "":
+					status_id = card_data.card_values.get("status_effect_object_id", "")
+				if status_id != "" and not card_status_effect_object_ids.has(status_id):
+					card_status_effect_object_ids.append(status_id)
 	
 	clear_tooltips()
 	

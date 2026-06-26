@@ -14,8 +14,15 @@ var option_enabled: bool = false
 
 signal dialogue_option_clicked(dialogue_option: DialogueOption)
 
+@export var style_normal: StyleBoxTexture
+@export var style_hover: StyleBoxTexture
+@export var style_pressed: StyleBoxTexture
+
 func _ready():
+	add_theme_stylebox_override("panel", style_normal)
 	gui_input.connect(_on_gui_input)
+	mouse_entered.connect(_on_mouse_entered)
+	mouse_exited.connect(_on_mouse_exited)
 
 func init(_dialogue_option_object_id: String, option_bbcode: String, option_failed_validator_bbcode: String, _action_data: Array[Dictionary], _validators: Array[Dictionary]) -> void:
 	dialogue_option_object_id = _dialogue_option_object_id
@@ -35,6 +42,15 @@ func set_dialogue_bb_code(bb_code: String) -> void:
 	rich_text_label.parse_bbcode(bb_code)
 
 func _on_gui_input(event: InputEvent):
+	if not option_enabled:
+		return
+	if event.is_action_pressed("left_click"):
+		add_theme_stylebox_override("panel", style_pressed)
+		dialogue_option_clicked.emit(self)
+
+func _on_mouse_entered() -> void:
 	if option_enabled:
-		if event.is_action_pressed("left_click"):
-			dialogue_option_clicked.emit(self)
+		add_theme_stylebox_override("panel", style_hover)
+
+func _on_mouse_exited() -> void:
+	add_theme_stylebox_override("panel", style_normal)

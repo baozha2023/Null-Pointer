@@ -19,16 +19,20 @@ func perform_action():
 		var multiplied_values: Array = action_interceptor_processor.get_shadowed_action_values("multiplied_values", [])	# the key names of the values of child actions multiplied by this action
 		var multiplied_values_bases: Dictionary = action_interceptor_processor.get_shadowed_action_values("multiplied_values_bases", {})	# allows for a base value on top of modified values. eg Base + (X x Value)
 		
-		# get combat stat muliplier
-		var combat_stats_data: CombatStatsData = StatsHandler.current_combat_stats
-		var stat_enum: int = action_interceptor_processor.get_shadowed_action_values("stat_enum", CombatStatsData.STATS.ENEMIES_KILLED)
-		var is_total_stat: bool = action_interceptor_processor.get_shadowed_action_values("is_total_stat", false)
-		
+		# get combat stat multiplier
+		# supports both stat_enum (int) and combat_stat_name (string) key formats
 		var stat_value: int = 0
-		if is_total_stat:
-			stat_value = combat_stats_data.get_total_enum_stat(stat_enum)
+		var combat_stat_name: String = action_interceptor_processor.get_shadowed_action_values("combat_stat_name", "")
+		if combat_stat_name != "":
+			stat_value = _get_combat_stat_by_name(combat_stat_name)
 		else:
-			stat_value = combat_stats_data.get_turn_enum_stat(stat_enum)
+			var combat_stats_data: CombatStatsData = StatsHandler.current_combat_stats
+			var stat_enum: int = action_interceptor_processor.get_shadowed_action_values("stat_enum", CombatStatsData.STATS.ENEMIES_KILLED)
+			var is_total_stat: bool = action_interceptor_processor.get_shadowed_action_values("is_total_stat", false)
+			if is_total_stat:
+				stat_value = combat_stats_data.get_total_enum_stat(stat_enum)
+			else:
+				stat_value = combat_stats_data.get_turn_enum_stat(stat_enum)
 		
 		# creates a duplicate of the child action data, then modifies any keys with a multiple of the card play's input energy
 		for action in action_data.duplicate(true):
@@ -52,3 +56,18 @@ func perform_action():
 		
 		var generated_actions: Array[BaseAction] = ActionGenerator.create_actions(parent_combatant, card_play_request, targets, modified_action_data, self)
 		ActionHandler.add_actions(generated_actions)
+
+
+## Resolves a combat_stat_name string to its current integer value.
+## Supports both enum-based stats and live values like hand size.
+func _get_combat_stat_by_name(stat_name: String) -> int:
+	match stat_name:
+		"cards_in_hand":
+			return HandManager.player_hand.size()
+		"attack_cards_in_hand":
+			var count: int = 0
+			for card_data: CardData in HandManager.player_hand:
+				if card_data.card_type == CardData.CARD_TYPES.ATTACK:
+					count += 1
+			return count
+	return 0
