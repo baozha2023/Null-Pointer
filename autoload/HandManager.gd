@@ -54,6 +54,7 @@ const PILE_DISPLAY_NAMES: Dictionary = {
 }
 # magic strings for other "pile" selections in HandManager.get_pile()
 const DECK: String = "DECK"
+const UPGRADE_DECK: String = "UPGRADE_DECK"
 const COMBAT_DECK: String = "COMBAT_DECK"
 const PLAYED_THIS_TURN: String = "PLAYED_THIS_TURN"
 const PLAYED_LAST_TURN: String = "PLAYED_LAST_TURN"
@@ -250,7 +251,7 @@ func get_pile(pile_name: String) -> Array[CardData]:
 	
 	# special "piles" that are derived rather than actual piles
 	match pile_name:
-		HandManager.DECK:
+		HandManager.DECK, HandManager.UPGRADE_DECK:
 			return Global.player_data.player_deck
 		HandManager.COMBAT_DECK:
 			var combat_deck: Array[CardData] = []

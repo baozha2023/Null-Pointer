@@ -38,6 +38,7 @@ var tooltip_left_side: bool = false # if tooltip should display to the left of t
 
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
 @onready var card_glow: ColorRect = %CardGlow
+@onready var card_condition_glow: TextureRect = %CardConditionGlow
 
 @onready var keyword_timer = $KeywordTimer
 
@@ -94,6 +95,7 @@ func update_card_display(selected_enemy: Enemy = null) -> void:
 	# set card border background based on card color
 	var border_name: String = card_data.card_color_id.replace("color_", "border_")
 	card_background.texture = FileLoader.load_texture("sprites/card-borders/" + border_name + ".png")
+	card_condition_glow.texture = card_background.texture
 	
 	# updates the card's display
 	card_name.set_bbcode("[center]" + card_data.get_card_name() + "[/center]")
@@ -138,6 +140,14 @@ func _update_energy_display(selected_enemy: Enemy = null) -> void:
 
 func set_card_glow(_visible: bool) -> void:
 	card_glow.visible = _visible
+
+func set_card_condition_glow(_visible: bool) -> void:
+	if _visible:
+		card_condition_glow.visible = true
+		animation_player.play("condition_glow")
+	else:
+		animation_player.stop()
+		card_condition_glow.visible = false
 
 func toggle_card_glow() -> void:
 	card_glow.visible = !card_glow.visible
@@ -326,7 +336,7 @@ func _is_card_in_hand() -> bool:
 func _attempt_hand_glow() -> void:
 	# tests to see if cards in hand that require validation meet validation and glow
 	if _is_card_in_hand():
-		set_card_glow(_glow_validation())
+		set_card_condition_glow(_glow_validation())
 
 func _on_button_gui_input(event: InputEvent):
 	if event.is_action_released("left_click"):

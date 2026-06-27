@@ -13,7 +13,7 @@ static func add_enemies() -> void:
 	enemy_act_1_miniboss_1.add_health_bounds(120, 120, DIFFICULTY_MINIBOSS_ENEMIES_HARDER)
 	enemy_act_1_miniboss_1.enemy_type = EnemyData.ENEMY_TYPES.MINIBOSS
 	enemy_act_1_miniboss_1.enemy_name = "递归妖"
-	enemy_act_1_miniboss_1.enemy_texture_path = "external/sprites/enemies/enemy_green_medium.png"
+	enemy_act_1_miniboss_1.enemy_texture_path = "sprites/enemies/act1/enemy_recursion.png"
 	enemy_act_1_miniboss_1.add_intent_state(
 		[
 			EnemyIntentData.new(EnemyIntentData.INTENT_INITIAL, DIFFICULTY_STARTING, 0, 0, "", 0, "", {"intent_attack_1": 1, "intent_attack_2": 1}),
@@ -33,7 +33,7 @@ static func add_enemies() -> void:
 	)
 
 	var _enemy_act_1_miniboss_1_anim: AnimationData = enemy_act_1_miniboss_1.add_standard_animations(
-		["external/sprites/enemies/enemy_green_medium.png"],
+		["sprites/enemies/act1/enemy_recursion.png"],
 	)
 
 	Global.register_rod(enemy_act_1_miniboss_1)
@@ -44,7 +44,7 @@ static func add_enemies() -> void:
 	enemy_act_1_miniboss_2.add_health_bounds(70, 80, DIFFICULTY_MINIBOSS_ENEMIES_HARDER)
 	enemy_act_1_miniboss_2.enemy_type = EnemyData.ENEMY_TYPES.MINIBOSS
 	enemy_act_1_miniboss_2.enemy_name = "竞态鬼"
-	enemy_act_1_miniboss_2.enemy_texture_path = "external/sprites/enemies/enemy_red_medium.png"
+	enemy_act_1_miniboss_2.enemy_texture_path = "sprites/enemies/act1/enemy_race_condition.png"
 	enemy_act_1_miniboss_2.add_intent_state(
 		[
 			EnemyIntentData.new(EnemyIntentData.INTENT_INITIAL, DIFFICULTY_STARTING, 0, 0, "", 0, "", {"intent_attack_1": 1, "intent_attack_2": 1}),
@@ -64,7 +64,7 @@ static func add_enemies() -> void:
 	)
 
 	var _enemy_act_1_miniboss_2_anim: AnimationData = enemy_act_1_miniboss_2.add_standard_animations(
-		["external/sprites/enemies/enemy_red_medium.png"],
+		["sprites/enemies/act1/enemy_race_condition.png"],
 	)
 
 	Global.register_rod(enemy_act_1_miniboss_2)
@@ -75,7 +75,7 @@ static func add_enemies() -> void:
 	enemy_act_1_boss_1.add_health_bounds(250, 250, DIFFICULTY_BOSS_ENEMIES_HARDER)
 	enemy_act_1_boss_1.enemy_type = EnemyData.ENEMY_TYPES.BOSS
 	enemy_act_1_boss_1.enemy_name = "守护兽"
-	enemy_act_1_boss_1.enemy_texture_path = "external/sprites/enemies/enemy_red_large.png"
+	enemy_act_1_boss_1.enemy_texture_path = "sprites/enemies/act1/boss_guardian.png"
 	enemy_act_1_boss_1.add_intent_state(
 		[
 			EnemyIntentData.new(EnemyIntentData.INTENT_INITIAL, DIFFICULTY_STARTING, 0, 0, "", 0, "", {"intent_summon": 1}),
@@ -99,7 +99,23 @@ static func add_enemies() -> void:
 	)
 
 	var _enemy_act_1_boss_1_anim: AnimationData = enemy_act_1_boss_1.add_standard_animations(
-		["external/sprites/enemies/enemy_red_large.png"],
+		["sprites/enemies/act1/boss_guardian.png"],
+		[
+			"sprites/enemies/act1/boss_guardian/attack/1.png",
+			"sprites/enemies/act1/boss_guardian/attack/2.png",
+			"sprites/enemies/act1/boss_guardian/attack/3.png",
+			"sprites/enemies/act1/boss_guardian/attack/4.png",
+			"sprites/enemies/act1/boss_guardian/attack/5.png",
+			"sprites/enemies/act1/boss_guardian/attack/6.png",
+		],
+		[
+			"sprites/enemies/act1/boss_guardian/death/1.png",
+			"sprites/enemies/act1/boss_guardian/death/2.png",
+			"sprites/enemies/act1/boss_guardian/death/3.png",
+			"sprites/enemies/act1/boss_guardian/death/4.png",
+			"sprites/enemies/act1/boss_guardian/death/5.png",
+			"sprites/enemies/act1/boss_guardian/death/6.png",
+		],
 	)
 
 	Global.register_rod(enemy_act_1_boss_1)
@@ -109,7 +125,7 @@ static func add_enemies() -> void:
 	enemy_minion_1.add_health_bounds(4, 4)
 	enemy_minion_1.add_health_bounds(7, 7, DIFFICULTY_BOSS_ENEMIES_HARDER)
 	enemy_minion_1.enemy_name = "碎码兵"
-	enemy_minion_1.enemy_texture_path = "external/sprites/enemies/enemy_purple_small.png"
+	enemy_minion_1.enemy_texture_path = "sprites/enemies/act1/minion_code_fragment.png"
 	enemy_minion_1.enemy_is_minion = true
 	enemy_minion_1.add_intent_state(
 		[
@@ -124,7 +140,7 @@ static func add_enemies() -> void:
 	)
 
 	var _enemy_minion_1_anim: AnimationData = enemy_minion_1.add_standard_animations(
-		["external/sprites/enemies/enemy_purple_small.png"],
+		["sprites/enemies/act1/minion_code_fragment.png"],
 	)
 
 	Global.register_rod(enemy_minion_1)
@@ -134,7 +150,7 @@ static func add_enemies() -> void:
 	enemy_minion_2.add_health_bounds(3, 5)
 	enemy_minion_2.add_health_bounds(6, 8, DIFFICULTY_BOSS_ENEMIES_HARDER)
 	enemy_minion_2.enemy_name = "残骸怪"
-	enemy_minion_2.enemy_texture_path = "external/sprites/enemies/enemy_green_small.png"
+	enemy_minion_2.enemy_texture_path = "sprites/enemies/act1/minion_pointer_remnant.png"
 	enemy_minion_2.enemy_is_minion = true
 	enemy_minion_2.add_intent_state(
 		[
@@ -149,7 +165,7 @@ static func add_enemies() -> void:
 	)
 
 	var _enemy_minion_2_anim: AnimationData = enemy_minion_2.add_standard_animations(
-		["external/sprites/enemies/enemy_green_small.png"],
+		["sprites/enemies/act1/minion_pointer_remnant.png"],
 	)
 
 	Global.register_rod(enemy_minion_2)

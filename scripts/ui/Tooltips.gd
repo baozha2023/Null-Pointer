@@ -13,6 +13,7 @@ class_name Tooltip
 
 @onready var energy: TextureButton = %Energy
 @onready var deck_button: TextureButton = %DeckButton
+@onready var draw_top_pile_button: TextureButton = %DrawTopPile
 @onready var draw_pile_button: TextureButton = %DrawPile
 @onready var discard_pile_button: TextureButton = %DiscardPile
 @onready var exhaust_pile_button: TextureButton = %ExhaustPile
@@ -44,8 +45,9 @@ func _ready() -> void:
 		[health_label, "[color=orange]完整度[/color]\n完整度归零时，系统崩溃", true, false, true, $TooltipPositions/HealthTooltipPos],
 		[money_label, "[color=orange]数据币[/color]\n你当前拥有的数据币数量", true, false, true, $TooltipPositions/MoneyTooltipPos],
 		
+		[draw_top_pile_button, "[color=orange]预读取缓存[/color]\n按实际顺序预览内存队列顶部的脚本", false, false, false, $TooltipPositions/EnergyTooltipPos],
 		[energy, "[color=orange]算力[/color]\n用于调用脚本", false, false, false, $TooltipPositions/EnergyTooltipPos],
-		[draw_pile_button, "[color=orange]内存队列[/color]\n这些脚本将被加载到运存中", false, false, false, $TooltipPositions/EnergyTooltipPos],
+		[draw_pile_button, "[color=orange]内存队列[/color]\n这些脚本将被加载到线程中", false, false, false, $TooltipPositions/EnergyTooltipPos],
 		
 		[exhaust_pile_button, "[color=orange]坏道区[/color]\n这些脚本已从当前时钟周期中物理删除", false, false, false, $TooltipPositions/ExhaustTooltipPos],
 		[discard_pile_button, "[color=orange]回收站[/color]\n这些脚本将会被重新分配入内存队列", false, false, false, $TooltipPositions/DiscardTooltipPos],
@@ -147,10 +149,10 @@ const ARTIFACT_RARITY_DISPLAY: Dictionary = {
 }
 
 const CONSUMABLE_RARITY_DISPLAY: Dictionary = {
-	ConsumableData.CONSUMABLE_RARITIES.COMMON: "开源",
-	ConsumableData.CONSUMABLE_RARITIES.UNCOMMON: "闭源",
-	ConsumableData.CONSUMABLE_RARITIES.RARE: "零日",
-	ConsumableData.CONSUMABLE_RARITIES.LEGENDARY: "最高权限",
+	ConsumableData.CONSUMABLE_RARITIES.COMMON: "内置",
+	ConsumableData.CONSUMABLE_RARITIES.UNCOMMON: "开源",
+	ConsumableData.CONSUMABLE_RARITIES.RARE: "闭源",
+	ConsumableData.CONSUMABLE_RARITIES.LEGENDARY: "零日",
 }
 
 func display_codex_artifact_tooltip(artifact_data: ArtifactData) -> void:

@@ -111,6 +111,7 @@ const ACTION_EXHAUST_CARDS: String = "res://scripts/actions/card_actions/cardset
 const ACTION_BANISH_CARDS: String = "res://scripts/actions/card_actions/cardset_actions/ActionBanishCards.gd"
 const ACTION_MOVE_CARDS_TO_LIMBO: String = "res://scripts/actions/card_actions/cardset_actions/ActionMoveCardsToLimbo.gd"
 const ACTION_ADD_CARDS_TO_HAND: String = "res://scripts/actions/card_actions/cardset_actions/ActionAddCardsToHand.gd"
+const ACTION_IMPROVE_CARD_PROPERTIES: String = "res://scripts/actions/card_actions/cardset_actions/ActionImproveCardProperties.gd"
 const ACTION_CHANGE_CARD_ENERGIES: String = "res://scripts/actions/card_actions/cardset_actions/ActionChangeCardEnergies.gd"
 const ACTION_CHANGE_CARD_PROPERTIES: String = "res://scripts/actions/card_actions/cardset_actions/ActionChangeCardProperties.gd"
 const ACTION_RANDOMIZE_CARD_ENERGIES: String = "res://scripts/actions/card_actions/cardset_actions/ActionRandomizeCardEnergies.gd"
@@ -174,6 +175,7 @@ const VALIDATOR_ENEMY_ATTACKING: String = "res://scripts/validators/ValidatorEne
 
 # target validators
 const VALIDATOR_TARGET_STATUS_EFFECT_CHARGES: String = "res://scripts/validators/ValidatorTargetStatusEffectCharges.gd"
+const VALIDATOR_TARGET_HEALTH: String = "res://scripts/validators/ValidatorTargetHealth.gd"
 
 # player validators
 const VALIDATOR_HAS_ARTIFACT: String = "res://scripts/validators/ValidatorHasArtifact.gd"

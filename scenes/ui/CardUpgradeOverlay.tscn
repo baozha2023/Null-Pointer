@@ -1,0 +1,162 @@
+[gd_scene format=3 uid="uid://cim470d3rss83"]
+
+[ext_resource type="Script" uid="uid://dkslwr4cqiilr" path="res://scripts/ui/CardUpgradeOverlay.gd" id="1_upgrade"]
+[ext_resource type="Script" uid="uid://b2t515tpjrija" path="res://addons/smooth_scroll_container/SmoothScrollContainer.gd" id="25_t3i5t"]
+[ext_resource type="Script" uid="uid://b3nvcsku8u75w" path="res://addons/smooth_scroll_container/scroll_damper/expo_scroll_damper.gd" id="26_08sam"]
+[ext_resource type="Texture2D" uid="uid://dab6flcgmdgpn" path="res://sprites/btn_common_normal.png" id="btn_common_normal"]
+[ext_resource type="Texture2D" uid="uid://djt1sc74fp60x" path="res://sprites/btn_common_hover.png" id="btn_common_hover"]
+[ext_resource type="Texture2D" uid="uid://bkrlkjojwbv77" path="res://sprites/btn_common_pressed.png" id="btn_common_pressed"]
+
+[sub_resource type="Resource" id="Resource_tn5yy"]
+script = ExtResource("26_08sam")
+friction = 10.0
+metadata/_custom_type_script = "uid://b3nvcsku8u75w"
+
+[sub_resource type="Resource" id="Resource_kpmo0"]
+script = ExtResource("26_08sam")
+metadata/_custom_type_script = "uid://b3nvcsku8u75w"
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_btn_common_normal"]
+texture = ExtResource("btn_common_normal")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_btn_common_hover"]
+texture = ExtResource("btn_common_hover")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_btn_common_pressed"]
+texture = ExtResource("btn_common_pressed")
+
+[node name="CardUpgradeOverlay" type="Control" unique_id=696036188]
+process_mode = 1
+z_index = 10
+layout_mode = 3
+anchors_preset = 0
+offset_right = 1200.0
+offset_bottom = 700.0
+script = ExtResource("1_upgrade")
+
+[node name="Background" type="ColorRect" parent="." unique_id=1157092703]
+layout_mode = 0
+offset_right = 1200.0
+offset_bottom = 700.0
+color = Color(0.203922, 0.188235, 0.215686, 0.631373)
+
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=534331532]
+layout_mode = 0
+offset_right = 1200.0
+offset_bottom = 700.0
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="MainVBox" type="VBoxContainer" parent="MarginContainer" unique_id=1788069862]
+layout_mode = 2
+
+[node name="HeaderVBox" type="VBoxContainer" parent="MarginContainer/MainVBox" unique_id=1832591173]
+layout_mode = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="CardPickLabel" type="Label" parent="MarginContainer/MainVBox/HeaderVBox" unique_id=375391157]
+layout_mode = 2
+text = "选择脚本"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/MainVBox/HeaderVBox" unique_id=1648811058]
+layout_mode = 2
+theme_override_constants/separation = 40
+alignment = 1
+
+[node name="BackButton" type="Button" parent="MarginContainer/MainVBox/HeaderVBox/HBoxContainer" unique_id=744190338]
+visible = false
+custom_minimum_size = Vector2(120, 40)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxTexture_btn_common_normal")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_btn_common_pressed")
+theme_override_styles/hover = SubResource("StyleBoxTexture_btn_common_hover")
+text = "<-"
+
+[node name="ConfirmButton" type="Button" parent="MarginContainer/MainVBox/HeaderVBox/HBoxContainer" unique_id=207866278]
+visible = false
+custom_minimum_size = Vector2(120, 40)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxTexture_btn_common_normal")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_btn_common_pressed")
+theme_override_styles/hover = SubResource("StyleBoxTexture_btn_common_hover")
+text = "确认"
+
+[node name="ContentHBox" type="HBoxContainer" parent="MarginContainer/MainVBox" unique_id=660552287]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ScrollContainer" type="ScrollContainer" parent="MarginContainer/MainVBox/ContentHBox" unique_id=2125705579]
+layout_mode = 2
+size_flags_horizontal = 3
+follow_focus = true
+horizontal_scroll_mode = 3
+vertical_scroll_mode = 3
+script = ExtResource("25_t3i5t")
+wheel_scroll_damper = SubResource("Resource_tn5yy")
+dragging_scroll_damper = SubResource("Resource_kpmo0")
+follow_focus_margin = 200
+allow_horizontal_scroll = false
+
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/MainVBox/ContentHBox/ScrollContainer" unique_id=987980605]
+layout_mode = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_bottom = 96
+
+[node name="CardContainer" type="GridContainer" parent="MarginContainer/MainVBox/ContentHBox/ScrollContainer/MarginContainer" unique_id=315868603]
+layout_mode = 2
+theme_override_constants/h_separation = 20
+theme_override_constants/v_separation = 20
+columns = 4
+
+[node name="PreviewVBox" type="VBoxContainer" parent="MarginContainer/MainVBox/ContentHBox" unique_id=513665752]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(250, 0)
+layout_mode = 2
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="PreviewTitle" type="Label" parent="MarginContainer/MainVBox/ContentHBox/PreviewVBox" unique_id=2088699647]
+layout_mode = 2
+text = "升级预览"
+horizontal_alignment = 1
+
+[node name="LevelLabel" type="Label" parent="MarginContainer/MainVBox/ContentHBox/PreviewVBox" unique_id=158973965]
+unique_name_in_owner = true
+layout_mode = 2
+text = "等级: 1 -> 2"
+horizontal_alignment = 1
+
+[node name="PreviewCardContainer" type="CenterContainer" parent="MarginContainer/MainVBox/ContentHBox/PreviewVBox" unique_id=400009845]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(180, 250)
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="PreviewControls" type="HBoxContainer" parent="MarginContainer/MainVBox/ContentHBox/PreviewVBox" unique_id=137433140]
+layout_mode = 2
+theme_override_constants/separation = 30
+alignment = 1
+
+[node name="DowngradeButton" type="Button" parent="MarginContainer/MainVBox/ContentHBox/PreviewVBox/PreviewControls" unique_id=93962448]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(60, 40)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxTexture_btn_common_normal")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_btn_common_pressed")
+theme_override_styles/hover = SubResource("StyleBoxTexture_btn_common_hover")
+text = "<-"
+
+[node name="UpgradeButton" type="Button" parent="MarginContainer/MainVBox/ContentHBox/PreviewVBox/PreviewControls" unique_id=833379392]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(60, 40)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxTexture_btn_common_normal")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_btn_common_pressed")
+theme_override_styles/hover = SubResource("StyleBoxTexture_btn_common_hover")
+text = "->"

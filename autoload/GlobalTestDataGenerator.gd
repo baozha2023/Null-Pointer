@@ -423,7 +423,7 @@ func add_test_consumables() -> void:
 	consumable_multi_damaging.consumable_use_text = "投掷"
 	consumable_multi_damaging.consumable_description = "对所有敌人造成10点伤害"
 	consumable_multi_damaging.consumable_requires_target = false
-	consumable_multi_damaging.consumable_rarity = ConsumableData.CONSUMABLE_RARITIES.COMMON
+	consumable_multi_damaging.consumable_rarity = ConsumableData.CONSUMABLE_RARITIES.UNCOMMON
 	consumable_multi_damaging.consumable_texture_path = "sprites/consumables/consumable_multi_damaging.png"
 	consumable_multi_damaging.consumable_values = {
 		"damage": 10,
@@ -451,7 +451,7 @@ func add_test_consumables() -> void:
 	consumable_auto_revive.consumable_use_text = "使用"
 	consumable_auto_revive.consumable_requires_target = false
 	consumable_auto_revive.consumable_use_disabled = true # cannot be manually used
-	consumable_auto_revive.consumable_rarity = ConsumableData.CONSUMABLE_RARITIES.COMMON
+	consumable_auto_revive.consumable_rarity = ConsumableData.CONSUMABLE_RARITIES.RARE
 	consumable_auto_revive.consumable_texture_path = "sprites/consumables/consumable_auto_revive.png"
 	consumable_auto_revive.consumable_values = {
 		"percentage_heal_amount": 0.20,
@@ -466,6 +466,175 @@ func add_test_consumables() -> void:
 	]
 	
 	Global.register_rod(consumable_auto_revive)
+
+	# 算力注射剂 — 获得 2 点算力
+	var consumable_energy: ConsumableData = ConsumableData.new("consumable_energy")
+	consumable_energy.consumable_name = "算力注射剂"
+	consumable_energy.consumable_color_id = "color_white"
+	consumable_energy.consumable_description = "获得2点算力"
+	consumable_energy.consumable_use_text = "饮用"
+	consumable_energy.consumable_requires_target = false
+	consumable_energy.consumable_rarity = ConsumableData.CONSUMABLE_RARITIES.COMMON
+	consumable_energy.consumable_texture_path = "sprites/consumables/consumable_energy.png"
+	consumable_energy.consumable_values = {
+		"energy_amount": 2,
+	}
+	consumable_energy.consumable_actions = [
+		{
+			Scripts.ACTION_ADD_ENERGY: {
+				"target_override": BaseAction.TARGET_OVERRIDES.PLAYER,
+			},
+		},
+	]
+	Global.register_rod(consumable_energy)
+
+	# 数据币钱包 — 获得 50 数据币
+	var consumable_money: ConsumableData = ConsumableData.new("consumable_money")
+	consumable_money.consumable_name = "数据币钱包"
+	consumable_money.consumable_color_id = "color_white"
+	consumable_money.consumable_description = "获得50数据币"
+	consumable_money.consumable_use_text = "使用"
+	consumable_money.consumable_requires_target = false
+	consumable_money.consumable_rarity = ConsumableData.CONSUMABLE_RARITIES.COMMON
+	consumable_money.consumable_texture_path = "sprites/consumables/consumable_money.png"
+	consumable_money.consumable_values = {
+		"money_amount": 50,
+	}
+	consumable_money.consumable_actions = [
+		{
+			Scripts.ACTION_ADD_MONEY: {
+				"target_override": BaseAction.TARGET_OVERRIDES.PLAYER,
+			},
+		},
+	]
+	Global.register_rod(consumable_money)
+
+	# 内存扩容模块 — 读取 3 个脚本
+	var consumable_draw: ConsumableData = ConsumableData.new("consumable_draw")
+	consumable_draw.consumable_name = "内存扩容模块"
+	consumable_draw.consumable_color_id = "color_white"
+	consumable_draw.consumable_description = "读取3个脚本"
+	consumable_draw.consumable_use_text = "使用"
+	consumable_draw.consumable_requires_target = false
+	consumable_draw.consumable_rarity = ConsumableData.CONSUMABLE_RARITIES.UNCOMMON
+	consumable_draw.consumable_texture_path = "sprites/consumables/consumable_draw.png"
+	consumable_draw.consumable_values = {
+		"draw_count": 3,
+	}
+	consumable_draw.consumable_actions = [
+		{
+			Scripts.ACTION_DRAW_GENERATOR: {
+				"target_override": BaseAction.TARGET_OVERRIDES.PLAYER,
+			},
+		},
+	]
+	Global.register_rod(consumable_draw)
+
+	# 碎片整理器 — 回收站洗入抽牌堆
+	var consumable_reshuffle: ConsumableData = ConsumableData.new("consumable_reshuffle")
+	consumable_reshuffle.consumable_name = "碎片整理器"
+	consumable_reshuffle.consumable_color_id = "color_white"
+	consumable_reshuffle.consumable_description = "将回收站所有脚本洗入内存队列"
+	consumable_reshuffle.consumable_use_text = "使用"
+	consumable_reshuffle.consumable_requires_target = false
+	consumable_reshuffle.consumable_rarity = ConsumableData.CONSUMABLE_RARITIES.UNCOMMON
+	consumable_reshuffle.consumable_texture_path = "sprites/consumables/consumable_reshuffle.png"
+	consumable_reshuffle.consumable_values = {
+		"shuffle_discard_into_draw": true,
+	}
+	consumable_reshuffle.consumable_actions = [
+		{
+			Scripts.ACTION_RESHUFFLE: {
+				"target_override": BaseAction.TARGET_OVERRIDES.PLAYER,
+			},
+		},
+	]
+	Global.register_rod(consumable_reshuffle)
+
+	# 防火墙渗透器 — 清除目标防火墙
+	var consumable_reset_block: ConsumableData = ConsumableData.new("consumable_reset_block")
+	consumable_reset_block.consumable_name = "防火墙渗透器"
+	consumable_reset_block.consumable_color_id = "color_white"
+	consumable_reset_block.consumable_description = "清除目标敌人的防火墙"
+	consumable_reset_block.consumable_use_text = "执行"
+	consumable_reset_block.consumable_requires_target = true
+	consumable_reset_block.consumable_rarity = ConsumableData.CONSUMABLE_RARITIES.UNCOMMON
+	consumable_reset_block.consumable_texture_path = "sprites/consumables/consumable_reset_block.png"
+	consumable_reset_block.consumable_actions = [
+		{
+			Scripts.ACTION_RESET_BLOCK: {},
+		},
+	]
+	Global.register_rod(consumable_reset_block)
+
+	# 漏洞扫描器 — 全体敌人 3 层漏洞暴露
+	var consumable_vulnerable: ConsumableData = ConsumableData.new("consumable_vulnerable")
+	consumable_vulnerable.consumable_name = "漏洞扫描器"
+	consumable_vulnerable.consumable_color_id = "color_white"
+	consumable_vulnerable.consumable_description = "对所有敌人施加3层漏洞暴露"
+	consumable_vulnerable.consumable_use_text = "执行"
+	consumable_vulnerable.consumable_requires_target = false
+	consumable_vulnerable.consumable_energy_cost = 1
+	consumable_vulnerable.consumable_rarity = ConsumableData.CONSUMABLE_RARITIES.RARE
+	consumable_vulnerable.consumable_texture_path = "sprites/consumables/consumable_vulnerable.png"
+	consumable_vulnerable.consumable_values = {
+		"status_effect_object_id": "status_effect_vulnerable",
+		"status_charge_amount": 3,
+	}
+	consumable_vulnerable.consumable_actions = [
+		{
+			Scripts.ACTION_APPLY_STATUS: {
+				"target_override": BaseAction.TARGET_OVERRIDES.ALL_ENEMIES,
+			},
+		},
+	]
+	Global.register_rod(consumable_vulnerable)
+
+	# 超频核心 — 获得 5 层算力增幅
+	var consumable_damage_boost: ConsumableData = ConsumableData.new("consumable_damage_boost")
+	consumable_damage_boost.consumable_name = "超频核心"
+	consumable_damage_boost.consumable_color_id = "color_white"
+	consumable_damage_boost.consumable_description = "获得5层算力增幅"
+	consumable_damage_boost.consumable_use_text = "使用"
+	consumable_damage_boost.consumable_requires_target = false
+	consumable_damage_boost.consumable_energy_cost = 1
+	consumable_damage_boost.consumable_rarity = ConsumableData.CONSUMABLE_RARITIES.RARE
+	consumable_damage_boost.consumable_texture_path = "sprites/consumables/consumable_damage_boost.png"
+	consumable_damage_boost.consumable_values = {
+		"status_effect_object_id": "status_effect_damage_increase",
+		"status_charge_amount": 5,
+	}
+	consumable_damage_boost.consumable_actions = [
+		{
+			Scripts.ACTION_APPLY_STATUS: {
+				"target_override": BaseAction.TARGET_OVERRIDES.PLAYER,
+			},
+		},
+	]
+	Global.register_rod(consumable_damage_boost)
+
+	# 内存泄漏协议 — 全体单位 15 层内核腐蚀
+	var consumable_corrosion: ConsumableData = ConsumableData.new("consumable_corrosion")
+	consumable_corrosion.consumable_name = "内存泄漏协议"
+	consumable_corrosion.consumable_color_id = "color_white"
+	consumable_corrosion.consumable_description = "对所有战斗单位施加15层内核腐蚀"
+	consumable_corrosion.consumable_use_text = "执行"
+	consumable_corrosion.consumable_requires_target = false
+	consumable_corrosion.consumable_energy_cost = 2
+	consumable_corrosion.consumable_rarity = ConsumableData.CONSUMABLE_RARITIES.LEGENDARY
+	consumable_corrosion.consumable_texture_path = "sprites/consumables/consumable_corrosion.png"
+	consumable_corrosion.consumable_values = {
+		"status_effect_object_id": "status_effect_corrosion",
+		"status_charge_amount": 15,
+	}
+	consumable_corrosion.consumable_actions = [
+		{
+			Scripts.ACTION_APPLY_STATUS: {
+				"target_override": BaseAction.TARGET_OVERRIDES.ALL_COMBATANTS,
+			},
+		},
+	]
+	Global.register_rod(consumable_corrosion)
 
 #endregion
 
@@ -2252,7 +2421,7 @@ func add_test_enemies() -> void:
 	enemy_1.add_health_bounds(17, 20)
 	enemy_1.add_health_bounds(25, 30, DIFFICULTY_STANDARD_ENEMIES_HARDER) # gets more health on later difficulty
 	enemy_1.enemy_initial_status_effects = {"status_effect_negate_damage": 1}
-	enemy_1.enemy_texture_path = "external/sprites/enemies/enemy_red_small.png"
+	enemy_1.enemy_texture_path = "sprites/enemies/act1/enemy_interceptor.png"
 	# initial dummy state used to map initial attack pattern weights on starting combat
 	enemy_1.add_intent_state([
 		EnemyIntentData.new(EnemyIntentData.INTENT_INITIAL, DIFFICULTY_STARTING, 0, 0, "", 0, "", {"intent_attack_1": 1, "intent_attack_2": 1}),
@@ -2268,7 +2437,15 @@ func add_test_enemies() -> void:
 		])
 		
 	var _enemy_1_anim: AnimationData = enemy_1.add_standard_animations(
-		["external/sprites/enemies/enemy_red_small.png"]
+		["sprites/enemies/act1/enemy_interceptor.png"],
+		[
+			"sprites/enemies/act1/enemy_interceptor/attack/1.png",
+			"sprites/enemies/act1/enemy_interceptor/attack/2.png",
+			"sprites/enemies/act1/enemy_interceptor/attack/3.png",
+			"sprites/enemies/act1/enemy_interceptor/attack/4.png",
+			"sprites/enemies/act1/enemy_interceptor/attack/5.png",
+			"sprites/enemies/act1/enemy_interceptor/attack/6.png",
+		],
 	)
 
 	Global.register_rod(enemy_1)
@@ -2279,7 +2456,7 @@ func add_test_enemies() -> void:
 	enemy_2.add_health_bounds(5, 7)
 	enemy_2.add_health_bounds(8, 12, DIFFICULTY_STANDARD_ENEMIES_HARDER) # gets more health on later difficulty
 	enemy_2.enemy_initial_status_effects = {"status_effect_negate_debuff": 1}
-	enemy_2.enemy_texture_path = "external/sprites/enemies/enemy_blue_small.png"
+	enemy_2.enemy_texture_path = "sprites/enemies/act1/enemy_sandbox_probe.png"
 	enemy_2.add_intent_state([
 		EnemyIntentData.new(EnemyIntentData.INTENT_INITIAL, DIFFICULTY_STARTING, 0, 0, "", 0, "", {"intent_attack_1": 1, "intent_attack_2": 1})
 		])
@@ -2293,7 +2470,7 @@ func add_test_enemies() -> void:
 		])
 		
 	var _enemy_2_anim: AnimationData = enemy_2.add_standard_animations(
-		["external/sprites/enemies/enemy_blue_small.png"]
+		["sprites/enemies/act1/enemy_sandbox_probe.png"]
 	)
 	
 	Global.register_rod(enemy_2)
@@ -2303,7 +2480,7 @@ func add_test_enemies() -> void:
 	enemy_3.add_health_bounds(15, 25)
 	enemy_3.add_health_bounds(25, 35, DIFFICULTY_STANDARD_ENEMIES_HARDER) # gets more health on later difficulty
 	enemy_3.enemy_name = "绿色敌人"
-	enemy_3.enemy_texture_path = "external/sprites/enemies/enemy_green_small.png"
+	enemy_3.enemy_texture_path = "sprites/enemies/act1/enemy_memory_leak.png"
 	enemy_3.enemy_actions_on_death = [
 		{
 		Scripts.ACTION_APPLY_STATUS: {"status_charge_amount": 5, "status_effect_object_id": "status_effect_corrosion", "time_delay": 0.5, "target_override": BaseAction.TARGET_OVERRIDES.ALL_COMBATANTS}
@@ -2322,7 +2499,7 @@ func add_test_enemies() -> void:
 	])
 	
 	var _enemy_3_anim: AnimationData = enemy_3.add_standard_animations(
-		["external/sprites/enemies/enemy_green_small.png"]
+		["sprites/enemies/act1/enemy_memory_leak.png"]
 	)
 	
 	Global.register_rod(enemy_3)
@@ -2332,7 +2509,7 @@ func add_test_enemies() -> void:
 	enemy_4.add_health_bounds(37, 43)
 	enemy_4.add_health_bounds(47, 53, DIFFICULTY_STANDARD_ENEMIES_HARDER) # gets more health on later difficulty
 	enemy_4.enemy_name = "强攻敌人"
-	enemy_4.enemy_texture_path = "external/sprites/enemies/enemy_purple_medium.png"
+	enemy_4.enemy_texture_path = "sprites/enemies/act1/enemy_overflow.png"
 	enemy_4.enemy_actions_on_death = [
 	{
 	Scripts.ACTION_APPLY_STATUS: {"status_charge_amount": 5, "status_effect_object_id": "status_effect_corrosion", "time_delay": 0.5, "target_override": BaseAction.TARGET_OVERRIDES.ALL_COMBATANTS}
@@ -2359,7 +2536,7 @@ func add_test_enemies() -> void:
 	])
 	
 	var _enemy_4_anim: AnimationData = enemy_4.add_standard_animations(
-		["external/sprites/enemies/enemy_purple_medium.png"]
+		["sprites/enemies/act1/enemy_overflow.png"]
 	)
 	
 	Global.register_rod(enemy_4)
@@ -2369,7 +2546,7 @@ func add_test_enemies() -> void:
 	enemy_act_1_miniboss_1.add_health_bounds(120,120, DIFFICULTY_MINIBOSS_ENEMIES_HARDER) # gets more health on later difficulty
 	enemy_act_1_miniboss_1.enemy_type = EnemyData.ENEMY_TYPES.MINIBOSS
 	enemy_act_1_miniboss_1.enemy_name = "第1章精英怪"
-	enemy_act_1_miniboss_1.enemy_texture_path = "external/sprites/enemies/enemy_green_medium.png"
+	enemy_act_1_miniboss_1.enemy_texture_path = "sprites/enemies/act1/enemy_recursion.png"
 	enemy_act_1_miniboss_1.add_intent_state([
 		EnemyIntentData.new(EnemyIntentData.INTENT_INITIAL, DIFFICULTY_STARTING, 0, 0, "", 0, "", {"intent_attack_1": 1, "intent_attack_2": 1})
 	])
@@ -2383,7 +2560,7 @@ func add_test_enemies() -> void:
 		])
 	
 	var _enemy_act_1_miniboss_1_anim: AnimationData = enemy_act_1_miniboss_1.add_standard_animations(
-		["external/sprites/enemies/enemy_green_medium.png"]
+		["sprites/enemies/act1/enemy_recursion.png"]
 	)
 	
 	Global.register_rod(enemy_act_1_miniboss_1)
@@ -2393,7 +2570,7 @@ func add_test_enemies() -> void:
 	enemy_act_1_miniboss_2.add_health_bounds(70, 80, DIFFICULTY_MINIBOSS_ENEMIES_HARDER) # gets more health on later difficulty
 	enemy_act_1_miniboss_2.enemy_type = EnemyData.ENEMY_TYPES.MINIBOSS
 	enemy_act_1_miniboss_2.enemy_name = "第1章精英怪"
-	enemy_act_1_miniboss_2.enemy_texture_path = "external/sprites/enemies/enemy_red_medium.png"
+	enemy_act_1_miniboss_2.enemy_texture_path = "sprites/enemies/act1/enemy_race_condition.png"
 	enemy_act_1_miniboss_2.add_intent_state([
 		EnemyIntentData.new(EnemyIntentData.INTENT_INITIAL, DIFFICULTY_STARTING, 0, 0, "", 0, "", {"intent_attack_1": 1, "intent_attack_2": 1})
 		])
@@ -2407,7 +2584,7 @@ func add_test_enemies() -> void:
 		])
 	
 	var _enemy_act_1_miniboss_2_anim: AnimationData = enemy_act_1_miniboss_2.add_standard_animations(
-		["external/sprites/enemies/enemy_red_medium.png"]
+		["sprites/enemies/act1/enemy_race_condition.png"]
 	)
 	
 	Global.register_rod(enemy_act_1_miniboss_2)
@@ -2418,7 +2595,7 @@ func add_test_enemies() -> void:
 	enemy_act_1_boss_1.add_health_bounds(250, 250, DIFFICULTY_BOSS_ENEMIES_HARDER)
 	enemy_act_1_boss_1.enemy_type = EnemyData.ENEMY_TYPES.BOSS
 	enemy_act_1_boss_1.enemy_name = "第1章Boss"
-	enemy_act_1_boss_1.enemy_texture_path =  "external/sprites/enemies/enemy_red_large.png"
+	enemy_act_1_boss_1.enemy_texture_path =  "sprites/enemies/act1/boss_guardian.png"
 	enemy_act_1_boss_1.add_intent_state([
 		EnemyIntentData.new(EnemyIntentData.INTENT_INITIAL, DIFFICULTY_STARTING, 0, 0, "", 0, "", {"intent_summon": 1})
 		])
@@ -2436,7 +2613,23 @@ func add_test_enemies() -> void:
 	])
 	
 	var _enemy_act_1_boss_1_anim: AnimationData = enemy_act_1_boss_1.add_standard_animations(
-		["external/sprites/enemies/enemy_red_large.png"]
+		["sprites/enemies/act1/boss_guardian.png"],
+		[
+			"sprites/enemies/act1/boss_guardian/attack/1.png",
+			"sprites/enemies/act1/boss_guardian/attack/2.png",
+			"sprites/enemies/act1/boss_guardian/attack/3.png",
+			"sprites/enemies/act1/boss_guardian/attack/4.png",
+			"sprites/enemies/act1/boss_guardian/attack/5.png",
+			"sprites/enemies/act1/boss_guardian/attack/6.png",
+		],
+		[
+			"sprites/enemies/act1/boss_guardian/death/1.png",
+			"sprites/enemies/act1/boss_guardian/death/2.png",
+			"sprites/enemies/act1/boss_guardian/death/3.png",
+			"sprites/enemies/act1/boss_guardian/death/4.png",
+			"sprites/enemies/act1/boss_guardian/death/5.png",
+			"sprites/enemies/act1/boss_guardian/death/6.png",
+		],
 	)
 	
 	Global.register_rod(enemy_act_1_boss_1)
@@ -2446,7 +2639,7 @@ func add_test_enemies() -> void:
 	enemy_minion_1.add_health_bounds(4, 4)
 	enemy_minion_1.add_health_bounds(7, 7, DIFFICULTY_BOSS_ENEMIES_HARDER)
 	enemy_minion_1.enemy_name = "仆从 1"
-	enemy_minion_1.enemy_texture_path = "external/sprites/enemies/enemy_purple_small.png"
+	enemy_minion_1.enemy_texture_path = "sprites/enemies/act1/minion_code_fragment.png"
 	enemy_minion_1.enemy_is_minion = true
 	enemy_minion_1.add_intent_state([
 		EnemyIntentData.new(EnemyIntentData.INTENT_INITIAL, DIFFICULTY_STARTING, 0, 0, "", 0, "", {"intent_attack": 1})
@@ -2457,7 +2650,7 @@ func add_test_enemies() -> void:
 		])
 	
 	var _enemy_minion_1_anim: AnimationData = enemy_minion_1.add_standard_animations(
-		["external/sprites/enemies/enemy_purple_small.png"]
+		["sprites/enemies/act1/minion_code_fragment.png"]
 	)
 	
 	Global.register_rod(enemy_minion_1)
@@ -2467,7 +2660,7 @@ func add_test_enemies() -> void:
 	enemy_minion_2.add_health_bounds(3, 5)
 	enemy_minion_2.add_health_bounds(6, 8, DIFFICULTY_BOSS_ENEMIES_HARDER)
 	enemy_minion_2.enemy_name = "仆从 2"
-	enemy_minion_2.enemy_texture_path = "external/sprites/enemies/enemy_green_small.png"
+	enemy_minion_2.enemy_texture_path = "sprites/enemies/act1/minion_pointer_remnant.png"
 	enemy_minion_2.enemy_is_minion = true
 	enemy_minion_2.add_intent_state([
 		EnemyIntentData.new(EnemyIntentData.INTENT_INITIAL, DIFFICULTY_STARTING, 0, 0, "", 0, "", {"intent_attack": 1})
@@ -2478,7 +2671,7 @@ func add_test_enemies() -> void:
 		])
 	
 	var _enemy_minion_2_anim: AnimationData = enemy_minion_2.add_standard_animations(
-		["external/sprites/enemies/enemy_green_small.png"]
+		["sprites/enemies/act1/minion_pointer_remnant.png"]
 	)
 	
 	Global.register_rod(enemy_minion_2)

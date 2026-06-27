@@ -16,6 +16,31 @@ var current_drawing_line: Line2D = null
 
 ## Adds a margin to the bottom of the map display
 const MAP_Y_MARGIN: float = 150
+const SCROLL_MARGIN: float = 80.0
+const SCROLL_SPEED: float = 600.0
+
+var _scroll_accumulator: float = 0.0
+
+func _process(delta: float) -> void:
+	if not visible or not draw_mode_enabled or current_drawing_line == null:
+		return
+		
+	var mouse_pos = get_global_mouse_position()
+	var scroll_amount = 0.0
+	
+	if mouse_pos.y < scroll_container.global_position.y + SCROLL_MARGIN:
+		scroll_amount = -SCROLL_SPEED * delta
+	elif mouse_pos.y > scroll_container.global_position.y + scroll_container.size.y - SCROLL_MARGIN:
+		scroll_amount = SCROLL_SPEED * delta
+		
+	if scroll_amount != 0.0:
+		_scroll_accumulator += scroll_amount
+		if abs(_scroll_accumulator) >= 1.0:
+			var int_scroll = int(_scroll_accumulator)
+			scroll_container.scroll_vertical += int_scroll
+			_scroll_accumulator -= int_scroll
+			# Add a point while scrolling so the drawing follows the canvas movement
+			current_drawing_line.add_point(drawing_layer.get_local_mouse_position())
 
 func _ready():
 	map_button.button_up.connect(_on_map_button_up)

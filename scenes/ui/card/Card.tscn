@@ -4,6 +4,14 @@
 [ext_resource type="Script" uid="uid://k4n0whn5t0m" path="res://scripts/ui/card/Card.gd" id="1_u8ksl"]
 [ext_resource type="Texture2D" uid="uid://cv2ox1n675tm3" path="res://sprites/card-borders/border_red.png" id="2_nrldd"]
 [ext_resource type="Script" uid="uid://c5i0sjwlko88l" path="res://addons/label_font_auto_sizer/rich_label_auto_sizer.gd" id="3_8gkbw"]
+[ext_resource type="Shader" uid="uid://dtbvo4ggajnqk" path="res://scripts/ui/outline.gdshader" id="4_shader"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_condition_glow"]
+resource_local_to_scene = true
+shader = ExtResource("4_shader")
+shader_parameter/width = 0.0
+shader_parameter/outline_color = Color(1, 0.84, 0, 1)
+shader_parameter/brightness = 1.0
 
 [sub_resource type="Animation" id="Animation_qe6gy"]
 length = 0.001
@@ -52,11 +60,41 @@ tracks/0/keys = {
 "values": [Vector2(72, 60), Vector2(72, 98)]
 }
 
+[sub_resource type="Animation" id="Animation_condition_glow"]
+resource_name = "condition_glow"
+length = 1.5
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Pivot/CardVisual/CardConditionGlow:material:shader_parameter/width")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.75, 1.5),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [0.0, 6.0, 0.0]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Pivot/CardVisual/CardConditionGlow:material:shader_parameter/brightness")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.75, 1.5),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [1.0, 1.6, 1.0]
+}
+
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_156sy"]
 _data = {
 &"RESET": SubResource("Animation_qe6gy"),
 &"card_hover": SubResource("Animation_utg8m"),
-&"card_unhover": SubResource("Animation_obl53")
+&"card_unhover": SubResource("Animation_obl53"),
+&"condition_glow": SubResource("Animation_condition_glow")
 }
 
 [node name="Card" type="Control" unique_id=644929853 groups=["cards"]]
@@ -88,6 +126,18 @@ offset_top = -8.0
 offset_right = 196.0
 offset_bottom = 253.0
 color = Color(0.909804, 0.901961, 0.992157, 0.392157)
+
+[node name="CardConditionGlow" type="TextureRect" parent="Pivot/CardVisual" unique_id=-1189238805]
+unique_name_in_owner = true
+visible = false
+material = SubResource("ShaderMaterial_condition_glow")
+layout_mode = 0
+offset_left = 1.0
+offset_top = 1.0
+offset_right = 189.0
+offset_bottom = 246.0
+expand_mode = 1
+stretch_mode = 5
 
 [node name="ColorBackground" type="ColorRect" parent="Pivot/CardVisual" unique_id=1750389250]
 unique_name_in_owner = true
@@ -155,7 +205,7 @@ text = "如果你能看到这个，说明出错了"
 scroll_active = false
 script = ExtResource("3_8gkbw")
 _max_size = 12
-_min_size = 10
+_min_size = 8
 _current_font_size = 12
 _editor_defaults_set = true
 

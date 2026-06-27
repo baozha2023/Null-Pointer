@@ -1056,5 +1056,43 @@ static func add_cards_green() -> void:
 
 	Global.register_rod(card_waste)
 
+	# Garbage Collection
+	var card_garbage_collection: CardData = CardData.new("card_garbage_collection")
+	card_garbage_collection.card_name = "垃圾回收"
+	card_garbage_collection.card_color_id = "color_{0}".format([color])
+	card_garbage_collection.card_texture_path = "sprites/card/green/card_garbage_collection.png"
+	card_garbage_collection.card_description = "选择当前线程中 [exhaust_amount] 个冗余数据加入坏道区。获得 [block] 点防火墙并读取 [draw_count] 个脚本。"
+	card_garbage_collection.card_type = CardData.CARD_TYPES.SKILL
+	card_garbage_collection.card_rarity = CardData.CARD_RARITIES.COMMON
+	card_garbage_collection.card_requires_target = false
+	card_garbage_collection.card_energy_cost = 1
+	card_garbage_collection.card_values = { "exhaust_amount": 1, "block": 5, "draw_count": 1 }
+	card_garbage_collection.card_upgrade_value_improvements = { "block": 3, "draw_count": 1 }
+	card_garbage_collection.card_play_actions = [
+		{
+			Scripts.ACTION_PICK_CARDS: {
+				"custom_key_names": {"max_card_amount": "exhaust_amount", "min_card_amount": "exhaust_amount"},
+				"min_cards_are_required_for_action": false,
+				"card_pick_type": HandManager.HAND_PILE,
+				"card_pick_text": "选择要加入坏道区的冗余数据",
+				"validator_data": [
+					{ Scripts.VALIDATOR_CARD_ID: { "card_object_ids": ["card_waste"] } },
+				],
+				"action_data": [
+					{ Scripts.ACTION_EXHAUST_CARDS: {} },
+				],
+			},
+		},
+		{
+			Scripts.ACTION_BLOCK: {
+				"target_override": BaseAction.TARGET_OVERRIDES.PARENT,
+			},
+		},
+		{
+			Scripts.ACTION_DRAW_GENERATOR: { },
+		},
+	]
+	Global.register_rod(card_garbage_collection)
+
 	#endregion
 

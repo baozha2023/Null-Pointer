@@ -195,20 +195,38 @@ static func add_cards_blue() -> void:
 	card_inject_attack.card_name = "注入攻击"
 	card_inject_attack.card_color_id = "color_{0}".format([color])
 	card_inject_attack.card_texture_path = "external/sprites/cards/{0}/card_{0}.png".format([color])
-	card_inject_attack.card_description = "造成 [damage] 点伤害。施加 [status_charge_amount] 层漏洞暴露。"
+	card_inject_attack.card_description = "造成 [damage] 点伤害。若目标有漏洞暴露，额外造成 [bonus_damage] 点伤害。然后施加 [status_charge_amount] 层漏洞暴露。"
 	card_inject_attack.card_type = CardData.CARD_TYPES.ATTACK
 	card_inject_attack.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_inject_attack.card_requires_target = true
 	card_inject_attack.card_energy_cost = 1
-	card_inject_attack.card_values = {"damage": 6, "number_of_attacks": 1, "status_charge_amount": 1, "status_effect_object_id": "status_effect_vulnerable", "impact_vfx_animation_id": "animation_vfx_impact_default"}
-	card_inject_attack.card_upgrade_value_improvements = {"damage": 2, "status_charge_amount": 1}
+	card_inject_attack.card_values = {"damage": 5, "bonus_damage": 3, "number_of_attacks": 1, "status_charge_amount": 1, "status_effect_object_id": "status_effect_vulnerable", "impact_vfx_animation_id": "animation_vfx_impact_default"}
+	card_inject_attack.card_upgrade_value_improvements = {"damage": 2, "bonus_damage": 2, "status_charge_amount": 1}
 	card_inject_attack.card_play_actions = [
+		{Scripts.ACTION_ATTACK_GENERATOR: {}},
+		{
+			Scripts.ACTION_VALIDATOR: {
+				"validator_data": [
+					{Scripts.VALIDATOR_TARGET_STATUS_EFFECT_CHARGES: {
+						"status_effect_object_id": "status_effect_vulnerable",
+						"operator": ">=",
+						"status_effect_charge_comparison_value": 1,
+					}},
+				],
+				"action_data": [
+					{
+						Scripts.ACTION_ATTACK_GENERATOR: {
+							"custom_key_names": {"damage": "bonus_damage"}
+						}
+					}
+				]
+			}
+		},
 		{
 			Scripts.ACTION_APPLY_STATUS: {
 				"status_effect_object_id": "status_effect_vulnerable",
 			},
 		},
-		{Scripts.ACTION_ATTACK_GENERATOR: {}},
 	]
 
 	Global.register_rod(card_inject_attack)
@@ -671,20 +689,25 @@ static func add_cards_blue() -> void:
 	card_payload_delivery.card_name = "载荷投递"
 	card_payload_delivery.card_color_id = "color_{0}".format([color])
 	card_payload_delivery.card_texture_path = "external/sprites/cards/{0}/card_{0}.png".format([color])
-	card_payload_delivery.card_description = "造成 [damage] 点伤害。施加 [status_charge_amount] 层漏洞暴露。读取 [draw_count] 个脚本。"
+	card_payload_delivery.card_description = "造成 [number_of_attacks] 次 [damage] 点伤害。目标每有 1 层漏洞暴露，次数加 1。读取 [draw_count] 个脚本。"
 	card_payload_delivery.card_type = CardData.CARD_TYPES.ATTACK
 	card_payload_delivery.card_rarity = CardData.CARD_RARITIES.UNCOMMON
 	card_payload_delivery.card_requires_target = true
 	card_payload_delivery.card_energy_cost = 2
-	card_payload_delivery.card_values = {"damage": 8, "number_of_attacks": 1, "status_charge_amount": 2, "draw_count": 1, "impact_vfx_animation_id": "animation_vfx_impact_default"}
-	card_payload_delivery.card_upgrade_value_improvements = {"damage": 3, "status_charge_amount": 1}
+	card_payload_delivery.card_values = {"damage": 4, "number_of_attacks": 1, "draw_count": 1, "status_effect_object_id": "status_effect_vulnerable", "impact_vfx_animation_id": "animation_vfx_impact_default"}
+	card_payload_delivery.card_upgrade_value_improvements = {"damage": 2}
 	card_payload_delivery.card_play_actions = [
 		{
-			Scripts.ACTION_APPLY_STATUS: {
-				"status_effect_object_id": "status_effect_vulnerable",
+			Scripts.ACTION_VARIABLE_COMBAT_STATS_MODIFIER: {
+				"combat_stat_name": "target_status_effect_charges",
+				"stat_variable_name": "status_effect_vulnerable",
+				"multiplied_values": ["number_of_attacks"],
+				"multiplied_values_bases": {"number_of_attacks": 1},
+				"action_data": [
+					{Scripts.ACTION_ATTACK_GENERATOR: {}},
+				]
 			},
 		},
-		{Scripts.ACTION_ATTACK_GENERATOR: {}},
 		{Scripts.ACTION_DRAW_GENERATOR: {}},
 	]
 
@@ -714,5 +737,39 @@ static func add_cards_blue() -> void:
 	]
 
 	Global.register_rod(card_privilege_escalation)
+
+	# 25. 僵尸网络打击 - Finisher scaling with cards played
+	var card_botnet_strike: CardData = CardData.new("card_botnet_strike")
+	card_botnet_strike.card_name = "僵尸网络打击"
+	card_botnet_strike.card_color_id = "color_{0}".format([color])
+	card_botnet_strike.card_texture_path = "external/sprites/cards/{0}/card_{0}.png".format([color])
+	card_botnet_strike.card_description = "造成 [number_of_attacks] 次 [damage] 点伤害。在本回合每打出过 1 个脚本，次数加 [number_of_attacks_modifier]。"
+	card_botnet_strike.card_type = CardData.CARD_TYPES.ATTACK
+	card_botnet_strike.card_rarity = CardData.CARD_RARITIES.RARE
+	card_botnet_strike.card_requires_target = true
+	card_botnet_strike.card_energy_cost = 2
+	card_botnet_strike.card_values = { "damage": 5, "number_of_attacks": 1, "number_of_attacks_modifier": 1, "impact_vfx_animation_id": "animation_vfx_impact_default" }
+	card_botnet_strike.card_upgrade_value_improvements = { "damage": 2 }
+	var decorator_botnet_strike: CardDecoratorData = CardDecoratorData.new("decorator_botnet_strike")
+	decorator_botnet_strike.card_decorator_script_path = Scripts.DECORATOR_DYNAMIC_VALUE_MODIFIER
+	Global.register_rod(decorator_botnet_strike)
+	
+	card_botnet_strike.card_decorators = {
+		decorator_botnet_strike.object_id: {
+			"stat_enum": CombatStatsData.STATS.CARDS_PLAYED,
+			"is_turn_stat": true,
+			"multiplied_values": ["number_of_attacks"],
+			"multiplied_values_bases": {"number_of_attacks": 1},
+			"multiplied_values_per_stat": {"number_of_attacks": 1}
+		}
+	}
+
+	card_botnet_strike.card_play_actions = [
+		{
+			Scripts.ACTION_ATTACK_GENERATOR: { },
+		},
+	]
+
+	Global.register_rod(card_botnet_strike)
 
 	#endregion

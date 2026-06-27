@@ -206,19 +206,11 @@ static func add_cards_red() -> void:
 	card_unit_test.card_upgrade_value_improvements = {"damage": 3, "execution_damage": 4}
 	card_unit_test.card_first_upgrade_value_changes = {"threshold_percent": 60}
 	card_unit_test.card_first_upgrade_property_changes = {"card_description": "造成 [damage] 点伤害。如果目标完整度低于 [threshold_percent]%，造成 [execution_damage] 点伤害。"}
-	card_unit_test.card_glow_validators = [
-		{Scripts.VALIDATOR_COMBAT_STATS: {
-			"combat_stat_name": "target_health_percent",
-			"operator": "<=",
-			"comparison_value": card_unit_test.card_values["threshold_percent"],
-		}},
-	]
 	card_unit_test.card_play_actions = [
 		{
 			Scripts.ACTION_VALIDATOR: {
 				"validator_data": [
-					{Scripts.VALIDATOR_COMBAT_STATS: {
-						"combat_stat_name": "target_health_percent",
+					{Scripts.VALIDATOR_TARGET_HEALTH: {
 						"operator": "<=",
 						"comparison_value": card_unit_test.card_values["threshold_percent"],
 					}},
@@ -329,24 +321,25 @@ static func add_cards_red() -> void:
 		"card_description": "丢弃所有当前线程脚本，然后读取同等数量+1的脚本。",
 		"card_play_actions": [
 			{
-				Scripts.ACTION_VARIABLE_COMBAT_STATS_MODIFIER: {
-					"combat_stat_name": "cards_in_hand",
-					"multiplied_values": ["draw_count"],
-					"multiplied_values_bases": {"draw_count": 1},
-					"time_delay": 0.0,
-				},
-			},
-			{
-				Scripts.ACTION_DISCARD_CARDS: {
+				Scripts.ACTION_PICK_CARDS: {
+					"card_pick_type": HandManager.HAND_PILE,
 					"max_card_amount": 999,
 					"min_card_amount": 999,
 					"min_cards_are_required_for_action": false,
-					"card_pick_type": HandManager.HAND_PILE,
-					"random_selection": false,
-					"time_delay": 0.2,
+					"random_selection": true,
+					"action_data": [
+						{Scripts.ACTION_DRAW_GENERATOR: {}},
+						{Scripts.ACTION_DISCARD_CARDS: {}},
+						{
+							Scripts.ACTION_VARIABLE_COMBAT_STATS_MODIFIER: {
+								"combat_stat_name": "cards_in_hand",
+								"multiplied_values": ["draw_count"],
+								"multiplied_values_bases": {"draw_count": 1},
+							},
+						},
+					],
 				},
 			},
-			{Scripts.ACTION_DRAW_GENERATOR: {}},
 		],
 	}
 	card_force_push.card_discard_actions = [
@@ -354,22 +347,24 @@ static func add_cards_red() -> void:
 	]
 	card_force_push.card_play_actions = [
 		{
-			Scripts.ACTION_VARIABLE_COMBAT_STATS_MODIFIER: {
-				"combat_stat_name": "cards_in_hand",
-				"multiplied_values": ["draw_count"],
-			},
-		},
-		{
-			Scripts.ACTION_DISCARD_CARDS: {
+			Scripts.ACTION_PICK_CARDS: {
+				"card_pick_type": HandManager.HAND_PILE,
 				"max_card_amount": 999,
 				"min_card_amount": 999,
 				"min_cards_are_required_for_action": false,
-				"card_pick_type": HandManager.HAND_PILE,
-				"random_selection": false,
-				"time_delay": 0.2,
+				"random_selection": true,
+				"action_data": [
+					{Scripts.ACTION_DRAW_GENERATOR: {}},
+					{Scripts.ACTION_DISCARD_CARDS: {}},
+					{
+						Scripts.ACTION_VARIABLE_COMBAT_STATS_MODIFIER: {
+							"combat_stat_name": "cards_in_hand",
+							"multiplied_values": ["draw_count"],
+						},
+					},
+				],
 			},
 		},
-		{Scripts.ACTION_DRAW_GENERATOR: {}},
 	]
 	Global.register_rod(card_force_push)
 
@@ -815,11 +810,14 @@ static func add_cards_red() -> void:
 	card_rollback.card_first_upgrade_property_changes = {"card_energy_cost": 0}
 	card_rollback.card_play_actions = [
 		{
-			Scripts.ACTION_ADD_CARDS_TO_HAND: {
+			Scripts.ACTION_PICK_CARDS: {
 				"custom_key_names": {"max_card_amount": "card_amount", "min_card_amount": "card_amount"},
 				"min_cards_are_required_for_action": false,
 				"card_pick_type": HandManager.DISCARD_PILE,
 				"random_selection": true,
+				"action_data": [
+					{Scripts.ACTION_ADD_CARDS_TO_HAND: {}},
+				],
 			},
 		},
 	]
@@ -923,7 +921,7 @@ static func add_cards_red() -> void:
 	card_compile_opt.card_rarity = CardData.CARD_RARITIES.RARE
 	card_compile_opt.card_requires_target = false
 	card_compile_opt.card_energy_cost = 2
-	card_compile_opt.card_play_destination = HandManager.BANISH_PILE
+	card_compile_opt.card_play_destination = HandManager.EXHAUST_PILE
 	card_compile_opt.card_values = {"card_amount": 1, "cost_reduction": 1}
 	card_compile_opt.card_upgrade_value_improvements = {"card_amount": 1}
 	card_compile_opt.card_first_upgrade_property_changes = {"card_energy_cost": 1}
@@ -936,12 +934,20 @@ static func add_cards_red() -> void:
 				"card_pick_text": "选择要优化的脚本",
 				"card_pick_type": HandManager.HAND_PILE,
 				"random_selection": false,
+				"validator_data": [
+					{
+						Scripts.VALIDATOR_CARD_PROPERTIES: {
+							"card_property_name": "card_energy_cost",
+							"operator": ">",
+							"comparison_value": 0,
+						},
+					},
+				],
 				"action_data": [
 					{
-						Scripts.ACTION_IMPROVE_CARD_VALUES: {
-							"pick_played_card": false,
-							"modify_parent_card": false,
-							"card_value_improvements": {"card_energy_cost": -1},
+						Scripts.ACTION_IMPROVE_CARD_PROPERTIES: {
+							"modify_parent_card": true,
+							"card_property_improvements": {"card_energy_cost": -1},
 						},
 					},
 				],

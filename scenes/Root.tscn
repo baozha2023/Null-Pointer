@@ -28,6 +28,7 @@
 [ext_resource type="PackedScene" uid="uid://b7itoxbnyegis" path="res://scenes/ui/codex/CodexCardPackButton.tscn" id="11_kw7ld"]
 [ext_resource type="Script" uid="uid://dj8cttlgi1fow" path="res://scripts/ui/codex/CodexCardsMenu.gd" id="11_nownq"]
 [ext_resource type="Texture2D" uid="uid://csm0chktmbxho" path="res://sprites/characters/character_green/character_green_poster.png" id="11_ug4o1"]
+[ext_resource type="PackedScene" uid="uid://cim470d3rss83" path="res://scenes/ui/CardUpgradeOverlay.tscn" id="11_upgrade"]
 [ext_resource type="Script" uid="uid://bepy2gle06uwf" path="res://scripts/ui/CardDraftSelectionOverlay.gd" id="11_yys3c"]
 [ext_resource type="Script" uid="uid://dm6o2678kafwr" path="res://scripts/ui/menus/RunScreen.gd" id="12_elxq6"]
 [ext_resource type="Script" uid="uid://c2i6b2ert5jls" path="res://scripts/ui/PauseButton.gd" id="13_i7igs"]
@@ -1075,6 +1076,7 @@ layout_mode = 2
 
 [node name="CodexCardsMenu" type="Control" parent="TitleScreen/CodexMenu/VSplitContainer/CodexContentDisplay" unique_id=1853271807]
 unique_name_in_owner = true
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -1388,7 +1390,7 @@ grow_vertical = 2
 size_flags_horizontal = 0
 size_flags_vertical = 0
 expand_mode = 1
-stretch_mode = 3
+stretch_mode = 5
 
 [node name="CodexEnemyHealthLabel" type="Label" parent="TitleScreen/CodexMenu/VSplitContainer/CodexContentDisplay/CodexEnemiesMenu/MarginContainer/HSplitContainer/HSplitContainer/EnemyInfo" unique_id=1321160377]
 unique_name_in_owner = true
@@ -2221,6 +2223,9 @@ offset_left = 286.0
 offset_top = 189.0
 offset_right = 670.0
 offset_bottom = 220.0
+theme_override_styles/normal = SubResource("StyleBoxTexture_btn_common_normal")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_btn_common_pressed")
+theme_override_styles/hover = SubResource("StyleBoxTexture_btn_common_hover")
 text = "确认"
 
 [node name="Hand" type="Control" parent="RunScreen/Combat" unique_id=1468352038]
@@ -2246,20 +2251,21 @@ unique_name_in_owner = true
 visible = false
 self_modulate = Color(1, 1, 1, 0.258824)
 layout_mode = 0
-offset_left = 168.0
-offset_top = 632.0
-offset_right = 1048.0
-offset_bottom = 692.0
+offset_left = 157.0
+offset_top = 553.0
+offset_right = 1059.0
+offset_bottom = 698.0
 mouse_filter = 2
 
 [node name="EndTurnButton" type="Button" parent="RunScreen/Combat" unique_id=1702274490]
 unique_name_in_owner = true
 visible = false
 layout_mode = 0
-offset_left = 1080.0
+offset_left = 1079.0
 offset_top = 624.0
-offset_right = 1192.0
-offset_bottom = 664.0
+offset_right = 1196.0
+offset_bottom = 696.0
+theme_override_font_sizes/font_size = 18
 disabled = true
 text = "结束时钟周期"
 
@@ -2768,6 +2774,9 @@ offset_left = 16.0
 offset_top = 344.0
 offset_right = 160.0
 offset_bottom = 375.0
+theme_override_styles/normal = SubResource("StyleBoxTexture_btn_common_normal")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_btn_common_pressed")
+theme_override_styles/hover = SubResource("StyleBoxTexture_btn_common_hover")
 text = "<-"
 
 [node name="ConfirmButton" type="Button" parent="RunScreen/CardSelectionOverlay" unique_id=575565750]
@@ -2777,6 +2786,9 @@ offset_left = 504.0
 offset_top = 40.0
 offset_right = 648.0
 offset_bottom = 71.0
+theme_override_styles/normal = SubResource("StyleBoxTexture_btn_common_normal")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_btn_common_pressed")
+theme_override_styles/hover = SubResource("StyleBoxTexture_btn_common_hover")
 text = "确认"
 
 [node name="CardPickLabel" type="Label" parent="RunScreen/CardSelectionOverlay" unique_id=1269392340]
@@ -2856,6 +2868,17 @@ offset_top = 500.0
 offset_right = 672.0
 offset_bottom = 531.0
 text = "跳过"
+
+[node name="CardUpgradeOverlay" parent="RunScreen" unique_id=273723737 instance=ExtResource("11_upgrade")]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = 0.0
+offset_bottom = 0.0
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="Map" type="Control" parent="RunScreen" unique_id=1094624931]
 unique_name_in_owner = true
@@ -3023,7 +3046,6 @@ text = "放弃本轮"
 
 [node name="Tooptips" type="Control" parent="." unique_id=1044105944]
 unique_name_in_owner = true
-visible = false
 z_index = 1000
 layout_mode = 1
 anchors_preset = 15
@@ -3065,6 +3087,7 @@ theme = ExtResource("41_0h1ar")
 script = ExtResource("42_wtekq")
 
 [node name="TooltipPositions" type="Control" parent="Tooptips" unique_id=459916680]
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -3108,10 +3131,10 @@ metadata/_edit_use_anchors_ = true
 [node name="EnergyTooltipPos" type="ReferenceRect" parent="Tooptips/TooltipPositions" unique_id=1639367285]
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 0.0133333
-anchor_top = 0.72
-anchor_right = 0.24
-anchor_bottom = 0.8
+anchor_left = 0.0075
+anchor_top = 0.6342857
+anchor_right = 0.2341667
+anchor_bottom = 0.7142857
 mouse_filter = 2
 border_width = 5.0
 metadata/_edit_use_anchors_ = true

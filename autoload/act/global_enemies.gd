@@ -12,7 +12,7 @@ static func add_enemies() -> void:
 	enemy_1.add_health_bounds(17, 20)
 	enemy_1.add_health_bounds(25, 30, DIFFICULTY_STANDARD_ENEMIES_HARDER)
 	enemy_1.enemy_initial_status_effects = {"status_effect_negate_damage": 1}
-	enemy_1.enemy_texture_path = "external/sprites/enemies/enemy_red_small.png"
+	enemy_1.enemy_texture_path = "sprites/enemies/act1/enemy_interceptor.png"
 	enemy_1.add_intent_state(
 		[
 			EnemyIntentData.new(EnemyIntentData.INTENT_INITIAL, DIFFICULTY_STARTING, 0, 0, "", 0, "", {"intent_attack_1": 1, "intent_attack_2": 1}),
@@ -32,7 +32,15 @@ static func add_enemies() -> void:
 	)
 
 	var _enemy_1_anim: AnimationData = enemy_1.add_standard_animations(
-		["external/sprites/enemies/enemy_red_small.png"],
+		["sprites/enemies/act1/enemy_interceptor.png"],
+		[
+			"sprites/enemies/act1/enemy_interceptor/attack/1.png",
+			"sprites/enemies/act1/enemy_interceptor/attack/2.png",
+			"sprites/enemies/act1/enemy_interceptor/attack/3.png",
+			"sprites/enemies/act1/enemy_interceptor/attack/4.png",
+			"sprites/enemies/act1/enemy_interceptor/attack/5.png",
+			"sprites/enemies/act1/enemy_interceptor/attack/6.png",
+		],
 	)
 
 	Global.register_rod(enemy_1)
@@ -43,7 +51,7 @@ static func add_enemies() -> void:
 	enemy_2.add_health_bounds(5, 7)
 	enemy_2.add_health_bounds(8, 12, DIFFICULTY_STANDARD_ENEMIES_HARDER)
 	enemy_2.enemy_initial_status_effects = {"status_effect_negate_debuff": 1}
-	enemy_2.enemy_texture_path = "external/sprites/enemies/enemy_blue_small.png"
+	enemy_2.enemy_texture_path = "sprites/enemies/act1/enemy_sandbox_probe.png"
 	enemy_2.add_intent_state(
 		[
 			EnemyIntentData.new(EnemyIntentData.INTENT_INITIAL, DIFFICULTY_STARTING, 0, 0, "", 0, "", {"intent_attack_1": 1, "intent_attack_2": 1}),
@@ -63,7 +71,7 @@ static func add_enemies() -> void:
 	)
 
 	var _enemy_2_anim: AnimationData = enemy_2.add_standard_animations(
-		["external/sprites/enemies/enemy_blue_small.png"],
+		["sprites/enemies/act1/enemy_sandbox_probe.png"],
 	)
 
 	Global.register_rod(enemy_2)
@@ -73,7 +81,7 @@ static func add_enemies() -> void:
 	enemy_3.add_health_bounds(15, 25)
 	enemy_3.add_health_bounds(25, 35, DIFFICULTY_STANDARD_ENEMIES_HARDER)
 	enemy_3.enemy_name = "毒漏鬼"
-	enemy_3.enemy_texture_path = "external/sprites/enemies/enemy_green_small.png"
+	enemy_3.enemy_texture_path = "sprites/enemies/act1/enemy_memory_leak.png"
 	enemy_3.enemy_actions_on_death = [
 		{
 			Scripts.ACTION_APPLY_STATUS: {"status_charge_amount": 5, "status_effect_object_id": "status_effect_corrosion", "time_delay": 0.5, "target_override": BaseAction.TARGET_OVERRIDES.ALL_COMBATANTS},
@@ -98,7 +106,7 @@ static func add_enemies() -> void:
 	)
 
 	var _enemy_3_anim: AnimationData = enemy_3.add_standard_animations(
-		["external/sprites/enemies/enemy_green_small.png"],
+		["sprites/enemies/act1/enemy_memory_leak.png"],
 	)
 
 	Global.register_rod(enemy_3)
@@ -108,7 +116,7 @@ static func add_enemies() -> void:
 	enemy_4.add_health_bounds(37, 43)
 	enemy_4.add_health_bounds(47, 53, DIFFICULTY_STANDARD_ENEMIES_HARDER)
 	enemy_4.enemy_name = "溢出魔"
-	enemy_4.enemy_texture_path = "external/sprites/enemies/enemy_purple_medium.png"
+	enemy_4.enemy_texture_path = "sprites/enemies/act1/enemy_overflow.png"
 	enemy_4.enemy_actions_on_death = [
 		{
 			Scripts.ACTION_APPLY_STATUS: {"status_charge_amount": 5, "status_effect_object_id": "status_effect_corrosion", "time_delay": 0.5, "target_override": BaseAction.TARGET_OVERRIDES.ALL_COMBATANTS},
@@ -143,7 +151,7 @@ static func add_enemies() -> void:
 	)
 
 	var _enemy_4_anim: AnimationData = enemy_4.add_standard_animations(
-		["external/sprites/enemies/enemy_purple_medium.png"],
+		["sprites/enemies/act1/enemy_overflow.png"],
 	)
 
 	Global.register_rod(enemy_4)

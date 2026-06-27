@@ -12,6 +12,14 @@ func _ready():
 func init(_enemy_data: EnemyData):
 	enemy_data = _enemy_data
 	text = enemy_data.enemy_name
+	
+	match enemy_data.enemy_type:
+		EnemyData.ENEMY_TYPES.MINIBOSS:
+			add_theme_color_override("font_color", Color.DODGER_BLUE)
+		EnemyData.ENEMY_TYPES.BOSS:
+			add_theme_color_override("font_color", Color.CRIMSON)
+		_:
+			add_theme_color_override("font_color", Color.WHITE)
 
 func _on_button_up() -> void:
 	codex_enemy_button_up.emit(enemy_data)

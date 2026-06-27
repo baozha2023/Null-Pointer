@@ -24,7 +24,15 @@ func perform_action():
 		var stat_value: int = 0
 		var combat_stat_name: String = action_interceptor_processor.get_shadowed_action_values("combat_stat_name", "")
 		if combat_stat_name != "":
-			stat_value = _get_combat_stat_by_name(combat_stat_name)
+			var stat_variable_name: String = action_interceptor_processor.get_shadowed_action_values("stat_variable_name", "")
+			if combat_stat_name == "target_status_effect_charges" and stat_variable_name != "" and len(targets) > 0:
+				stat_value = targets[0].get_status_charges(stat_variable_name)
+			elif combat_stat_name == "player_status_effect_charges" and stat_variable_name != "" and parent_combatant != null:
+				stat_value = parent_combatant.get_status_charges(stat_variable_name)
+			elif combat_stat_name == "block_amount" and parent_combatant != null:
+				stat_value = parent_combatant.get_block()
+			else:
+				stat_value = _get_combat_stat_by_name(combat_stat_name)
 		else:
 			var combat_stats_data: CombatStatsData = StatsHandler.current_combat_stats
 			var stat_enum: int = action_interceptor_processor.get_shadowed_action_values("stat_enum", CombatStatsData.STATS.ENEMIES_KILLED)

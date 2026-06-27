@@ -218,8 +218,8 @@ func add_artifacts() -> void:
 	Global.register_rod(artifact_increase_attack_on_rest)
 
 	var artifact_see_top_of_draw_pile: ArtifactData = ArtifactData.new("artifact_see_top_of_draw_pile")
-	artifact_see_top_of_draw_pile.artifact_name = "查看脚本库外设插件"
-	artifact_see_top_of_draw_pile.artifact_description = "查看脚本库顶部的脚本"
+	artifact_see_top_of_draw_pile.artifact_name = "查看内存队列外设插件"
+	artifact_see_top_of_draw_pile.artifact_description = "可以查看内存队列顶部的脚本"
 	artifact_see_top_of_draw_pile.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.COMMON
 	artifact_see_top_of_draw_pile.artifact_color_id = "color_blue"
 	artifact_see_top_of_draw_pile.artifact_texture_path = "sprites/artifacts/artifact_see_top_of_draw_pile.png"
@@ -428,7 +428,7 @@ func add_consumables() -> void:
 	consumable_multi_damaging.consumable_use_text = "投掷"
 	consumable_multi_damaging.consumable_description = "对所有敌人造成10点伤害"
 	consumable_multi_damaging.consumable_requires_target = false
-	consumable_multi_damaging.consumable_rarity = ConsumableData.CONSUMABLE_RARITIES.COMMON
+	consumable_multi_damaging.consumable_rarity = ConsumableData.CONSUMABLE_RARITIES.UNCOMMON
 	consumable_multi_damaging.consumable_texture_path = "sprites/consumables/consumable_multi_damaging.png"
 	consumable_multi_damaging.consumable_values = {
 		"damage": 10,
@@ -442,6 +442,175 @@ func add_consumables() -> void:
 		},
 	]
 	Global.register_rod(consumable_multi_damaging)
+
+	# 算力注射剂 — 获得 2 点算力
+	var consumable_energy: ConsumableData = ConsumableData.new("consumable_energy")
+	consumable_energy.consumable_name = "算力注射剂"
+	consumable_energy.consumable_color_id = "color_white"
+	consumable_energy.consumable_description = "获得2点算力"
+	consumable_energy.consumable_use_text = "饮用"
+	consumable_energy.consumable_requires_target = false
+	consumable_energy.consumable_rarity = ConsumableData.CONSUMABLE_RARITIES.COMMON
+	consumable_energy.consumable_texture_path = "sprites/consumables/consumable_energy.png"
+	consumable_energy.consumable_values = {
+		"energy_amount": 2,
+	}
+	consumable_energy.consumable_actions = [
+		{
+			Scripts.ACTION_ADD_ENERGY: {
+				"target_override": BaseAction.TARGET_OVERRIDES.PLAYER,
+			},
+		},
+	]
+	Global.register_rod(consumable_energy)
+
+	# 数据币钱包 — 获得 50 数据币
+	var consumable_money: ConsumableData = ConsumableData.new("consumable_money")
+	consumable_money.consumable_name = "数据币钱包"
+	consumable_money.consumable_color_id = "color_white"
+	consumable_money.consumable_description = "获得50数据币"
+	consumable_money.consumable_use_text = "使用"
+	consumable_money.consumable_requires_target = false
+	consumable_money.consumable_rarity = ConsumableData.CONSUMABLE_RARITIES.COMMON
+	consumable_money.consumable_texture_path = "sprites/consumables/consumable_money.png"
+	consumable_money.consumable_values = {
+		"money_amount": 50,
+	}
+	consumable_money.consumable_actions = [
+		{
+			Scripts.ACTION_ADD_MONEY: {
+				"target_override": BaseAction.TARGET_OVERRIDES.PLAYER,
+			},
+		},
+	]
+	Global.register_rod(consumable_money)
+
+	# 内存扩容模块 — 读取 3 个脚本
+	var consumable_draw: ConsumableData = ConsumableData.new("consumable_draw")
+	consumable_draw.consumable_name = "内存扩容模块"
+	consumable_draw.consumable_color_id = "color_white"
+	consumable_draw.consumable_description = "读取3个脚本"
+	consumable_draw.consumable_use_text = "使用"
+	consumable_draw.consumable_requires_target = false
+	consumable_draw.consumable_rarity = ConsumableData.CONSUMABLE_RARITIES.UNCOMMON
+	consumable_draw.consumable_texture_path = "sprites/consumables/consumable_draw.png"
+	consumable_draw.consumable_values = {
+		"draw_count": 3,
+	}
+	consumable_draw.consumable_actions = [
+		{
+			Scripts.ACTION_DRAW_GENERATOR: {
+				"target_override": BaseAction.TARGET_OVERRIDES.PLAYER,
+			},
+		},
+	]
+	Global.register_rod(consumable_draw)
+
+	# 碎片整理器 — 回收站洗入抽牌堆
+	var consumable_reshuffle: ConsumableData = ConsumableData.new("consumable_reshuffle")
+	consumable_reshuffle.consumable_name = "碎片整理器"
+	consumable_reshuffle.consumable_color_id = "color_white"
+	consumable_reshuffle.consumable_description = "将回收站所有脚本洗入内存队列"
+	consumable_reshuffle.consumable_use_text = "使用"
+	consumable_reshuffle.consumable_requires_target = false
+	consumable_reshuffle.consumable_rarity = ConsumableData.CONSUMABLE_RARITIES.UNCOMMON
+	consumable_reshuffle.consumable_texture_path = "sprites/consumables/consumable_reshuffle.png"
+	consumable_reshuffle.consumable_values = {
+		"shuffle_discard_into_draw": true,
+	}
+	consumable_reshuffle.consumable_actions = [
+		{
+			Scripts.ACTION_RESHUFFLE: {
+				"target_override": BaseAction.TARGET_OVERRIDES.PLAYER,
+			},
+		},
+	]
+	Global.register_rod(consumable_reshuffle)
+
+	# 防火墙渗透器 — 清除目标防火墙
+	var consumable_reset_block: ConsumableData = ConsumableData.new("consumable_reset_block")
+	consumable_reset_block.consumable_name = "防火墙渗透器"
+	consumable_reset_block.consumable_color_id = "color_white"
+	consumable_reset_block.consumable_description = "清除目标敌人的防火墙"
+	consumable_reset_block.consumable_use_text = "执行"
+	consumable_reset_block.consumable_requires_target = true
+	consumable_reset_block.consumable_rarity = ConsumableData.CONSUMABLE_RARITIES.UNCOMMON
+	consumable_reset_block.consumable_texture_path = "sprites/consumables/consumable_reset_block.png"
+	consumable_reset_block.consumable_actions = [
+		{
+			Scripts.ACTION_RESET_BLOCK: {},
+		},
+	]
+	Global.register_rod(consumable_reset_block)
+
+	# 漏洞扫描器 — 全体敌人 3 层漏洞暴露
+	var consumable_vulnerable: ConsumableData = ConsumableData.new("consumable_vulnerable")
+	consumable_vulnerable.consumable_name = "漏洞扫描器"
+	consumable_vulnerable.consumable_color_id = "color_white"
+	consumable_vulnerable.consumable_description = "对所有敌人施加3层漏洞暴露"
+	consumable_vulnerable.consumable_use_text = "执行"
+	consumable_vulnerable.consumable_requires_target = false
+	consumable_vulnerable.consumable_energy_cost = 1
+	consumable_vulnerable.consumable_rarity = ConsumableData.CONSUMABLE_RARITIES.RARE
+	consumable_vulnerable.consumable_texture_path = "sprites/consumables/consumable_vulnerable.png"
+	consumable_vulnerable.consumable_values = {
+		"status_effect_object_id": "status_effect_vulnerable",
+		"status_charge_amount": 3,
+	}
+	consumable_vulnerable.consumable_actions = [
+		{
+			Scripts.ACTION_APPLY_STATUS: {
+				"target_override": BaseAction.TARGET_OVERRIDES.ALL_ENEMIES,
+			},
+		},
+	]
+	Global.register_rod(consumable_vulnerable)
+
+	# 超频核心 — 获得 5 层算力增幅
+	var consumable_damage_boost: ConsumableData = ConsumableData.new("consumable_damage_boost")
+	consumable_damage_boost.consumable_name = "超频核心"
+	consumable_damage_boost.consumable_color_id = "color_white"
+	consumable_damage_boost.consumable_description = "获得5层算力增幅"
+	consumable_damage_boost.consumable_use_text = "使用"
+	consumable_damage_boost.consumable_requires_target = false
+	consumable_damage_boost.consumable_energy_cost = 1
+	consumable_damage_boost.consumable_rarity = ConsumableData.CONSUMABLE_RARITIES.RARE
+	consumable_damage_boost.consumable_texture_path = "sprites/consumables/consumable_damage_boost.png"
+	consumable_damage_boost.consumable_values = {
+		"status_effect_object_id": "status_effect_damage_increase",
+		"status_charge_amount": 5,
+	}
+	consumable_damage_boost.consumable_actions = [
+		{
+			Scripts.ACTION_APPLY_STATUS: {
+				"target_override": BaseAction.TARGET_OVERRIDES.PLAYER,
+			},
+		},
+	]
+	Global.register_rod(consumable_damage_boost)
+
+	# 内存泄漏协议 — 全体单位 15 层内核腐蚀
+	var consumable_corrosion: ConsumableData = ConsumableData.new("consumable_corrosion")
+	consumable_corrosion.consumable_name = "内存泄漏协议"
+	consumable_corrosion.consumable_color_id = "color_white"
+	consumable_corrosion.consumable_description = "对所有战斗单位施加15层内核腐蚀"
+	consumable_corrosion.consumable_use_text = "执行"
+	consumable_corrosion.consumable_requires_target = false
+	consumable_corrosion.consumable_energy_cost = 2
+	consumable_corrosion.consumable_rarity = ConsumableData.CONSUMABLE_RARITIES.LEGENDARY
+	consumable_corrosion.consumable_texture_path = "sprites/consumables/consumable_corrosion.png"
+	consumable_corrosion.consumable_values = {
+		"status_effect_object_id": "status_effect_corrosion",
+		"status_charge_amount": 15,
+	}
+	consumable_corrosion.consumable_actions = [
+		{
+			Scripts.ACTION_APPLY_STATUS: {
+				"target_override": BaseAction.TARGET_OVERRIDES.ALL_COMBATANTS,
+			},
+		},
+	]
+	Global.register_rod(consumable_corrosion)
 
 #endregion
 
@@ -475,7 +644,7 @@ func add_rest_actions() -> void:
 			Scripts.ACTION_PICK_CARDS: {
 				"min_card_amount": 1,
 				"max_card_amount": 1,
-				"card_pick_type": HandManager.DECK,
+				"card_pick_type": HandManager.UPGRADE_DECK,
 				"card_pick_text": "选择至多 {0} 个脚本升级。已选 {1} 个",
 				"min_cards_are_required_for_action": true, # won't fire if you cancel it
 				"quick_pick": false,
@@ -1619,7 +1788,7 @@ func add_characters() -> void:
 		"card_basic_block_red",
 		"card_basic_block_red",
 		"card_basic_block_red",
-		"card_energy_next_turn",
+		"card_energy_next_turn"
 	]
 
 	var animation_character_red: AnimationData = AnimationData.new("animation_character_{0}".format([character_color]))

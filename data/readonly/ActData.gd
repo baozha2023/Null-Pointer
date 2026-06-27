@@ -89,6 +89,18 @@ func get_act_all_enemy_ids() -> Array[String]:
 					enemy_id_set[enemy_id] = null
 					act_enemy_ids.append(enemy_id)
 	
+				# also collect enemies that can be summoned by this enemy's intents
+				var enemy_data: EnemyData = Global.get_enemy_data(enemy_id)
+				if enemy_data != null:
+					for intent_data: EnemyIntentData in enemy_data.enemy_intents.values():
+						for custom_action: Dictionary in intent_data.enemy_intent_custom_actions:
+							for action_data: Variant in custom_action.values():
+								if action_data is Dictionary and action_data.has("random_enemy_object_ids"):
+									for summoned_id: String in action_data["random_enemy_object_ids"]:
+										if not enemy_id_set.has(summoned_id):
+											enemy_id_set[summoned_id] = null
+											act_enemy_ids.append(summoned_id)
+	
 	return act_enemy_ids
 
 func _get_native_properties() -> Dictionary:
