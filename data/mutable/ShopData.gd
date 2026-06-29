@@ -111,9 +111,17 @@ func remove_shop_card(card_data: CardData) -> void:
 		shop_cards.remove_at(index)
 		shop_card_prices.remove_at(index)
 
+func _intercept_price(base_price: int) -> int:
+	if base_price <= 0:
+		return base_price
+	var action_data: Array[Dictionary] = [{Scripts.ACTION_GET_SHOP_PRICE: {"money_amount": base_price}}]
+	var action: BaseAction = ActionGenerator.create_actions(Global.get_player(), null, [], action_data, null)[0]
+	var processor: ActionInterceptorProcessor = action._intercept_action([], true)[0]
+	return processor.get_shadowed_action_values("money_amount", base_price)
+
 func get_shop_card_price(card_data: CardData) -> int:
 	if shop_cards.has(card_data):
-		return shop_card_prices[shop_cards.find(card_data)]
+		return _intercept_price(shop_card_prices[shop_cards.find(card_data)])
 	return 0
 
 ### Shop Artifacts ###
@@ -142,7 +150,7 @@ func remove_shop_artifact(artifact_id: String) -> void:
 
 func get_shop_artifact_price(artifact_id: String) -> int:
 	if shop_artifact_ids.has(artifact_id):
-		return shop_artifact_prices[shop_artifact_ids.find(artifact_id)]
+		return _intercept_price(shop_artifact_prices[shop_artifact_ids.find(artifact_id)])
 	return 0
 
 func get_shop_artifact_options() -> Array[ArtifactData]:
@@ -186,4 +194,4 @@ func remove_shop_consumable(consumable_slot_index: int) -> void:
 	shop_consumable_slot_to_consumable_price.erase(consumable_slot_index)
 
 func get_shop_consumable_price(consumable_slot_index: int) -> int:
-	return shop_consumable_slot_to_consumable_price.get(consumable_slot_index, 0)
+	return _intercept_price(shop_consumable_slot_to_consumable_price.get(consumable_slot_index, 0))

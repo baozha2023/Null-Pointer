@@ -12,6 +12,7 @@ func perform_action():
 		var status_secondary_charge_amount: int = action_interceptor_processor.get_shadowed_action_values("status_secondary_charge_amount", 0)
 		var status_effect_object_id: String = action_interceptor_processor.get_shadowed_action_values("status_effect_object_id", "")
 		var status_force_apply_new_effect: int = action_interceptor_processor.get_shadowed_action_values("status_force_apply_new_effect", false)
+		
 		# determine whether to apply charges or to force the application of an entirely new status effect
 		if status_force_apply_new_effect:
 			target.add_new_status_effect(status_effect_object_id, status_charge_amount, status_secondary_charge_amount)

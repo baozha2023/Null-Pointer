@@ -161,7 +161,7 @@ static func add_cards_red() -> void:
 	card_binary_search.card_name = "二进制切割"
 	card_binary_search.card_color_id = "color_{0}".format([color])
 	card_binary_search.card_texture_path = "sprites/card/red/card_binary_search.png"
-	card_binary_search.card_description = "造成 [damage] 点伤害。如果目标敌人本回合没有攻击意图，额外造成 [bonus_damage] 点伤害。"
+	card_binary_search.card_description = "造成 [damage] 点伤害。如果目标敌人本时钟周期没有攻击意图，额外造成 [bonus_damage] 点伤害。"
 	card_binary_search.card_type = CardData.CARD_TYPES.ATTACK
 	card_binary_search.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_binary_search.card_requires_target = true
@@ -397,7 +397,7 @@ static func add_cards_red() -> void:
 	card_try_catch.card_name = "异常捕获"
 	card_try_catch.card_color_id = "color_{0}".format([color])
 	card_try_catch.card_texture_path = "sprites/card/red/card_try_catch.png"
-	card_try_catch.card_description = "获得 [block] 点防火墙。如果目标本回合有攻击意图，额外获得 [block_bonus] 点防火墙。"
+	card_try_catch.card_description = "获得 [block] 点防火墙。如果目标本时钟周期有攻击意图，额外获得 [block_bonus] 点防火墙。"
 	card_try_catch.card_type = CardData.CARD_TYPES.SKILL
 	card_try_catch.card_rarity = CardData.CARD_RARITIES.UNCOMMON
 	card_try_catch.card_requires_target = true
@@ -727,7 +727,7 @@ static func add_cards_red() -> void:
 	card_hotfix.card_name = "热修复"
 	card_hotfix.card_color_id = "color_{0}".format([color])
 	card_hotfix.card_texture_path = "sprites/card/red/card_hotfix.png"
-	card_hotfix.card_description = "恢复 [health_amount] 点完整度。回合结束时若仍在手牌自动触发。"
+	card_hotfix.card_description = "恢复 [health_amount] 点完整度。时钟周期结束时若仍在当前线程自动触发。"
 	card_hotfix.card_type = CardData.CARD_TYPES.SKILL
 	card_hotfix.card_rarity = CardData.CARD_RARITIES.UNCOMMON
 	card_hotfix.card_requires_target = false
@@ -828,7 +828,7 @@ static func add_cards_red() -> void:
 	card_memory_leak.card_name = "内存泄漏"
 	card_memory_leak.card_color_id = "color_{0}".format([color])
 	card_memory_leak.card_texture_path = "sprites/card/red/card_memory_leak.png"
-	card_memory_leak.card_description = "造成 [damage] 点伤害。回合结束时若仍在当前线程，对随机敌人造成 [damage] 点伤害并永久提升所有内存泄漏 [damage_growth] 点伤害。"
+	card_memory_leak.card_description = "造成 [damage] 点伤害。时钟周期结束时若仍在当前线程，对随机敌人造成 [damage] 点伤害并永久提升所有内存泄漏 [damage_growth] 点伤害。"
 	card_memory_leak.card_type = CardData.CARD_TYPES.ATTACK
 	card_memory_leak.card_rarity = CardData.CARD_RARITIES.UNCOMMON
 	card_memory_leak.card_requires_target = true
@@ -917,11 +917,11 @@ static func add_cards_red() -> void:
 	card_compile_opt.card_color_id = "color_{0}".format([color])
 	card_compile_opt.card_texture_path = "sprites/card/red/card_compile_opt.png"
 	card_compile_opt.card_description = "永久减少当前线程中 [card_amount] 个脚本的耗能 [cost_reduction] 点（最低为 0）。"
-	card_compile_opt.card_type = CardData.CARD_TYPES.POWER
+	card_compile_opt.card_type = CardData.CARD_TYPES.SKILL
 	card_compile_opt.card_rarity = CardData.CARD_RARITIES.RARE
 	card_compile_opt.card_requires_target = false
 	card_compile_opt.card_energy_cost = 2
-	card_compile_opt.card_play_destination = HandManager.EXHAUST_PILE
+	card_compile_opt.card_play_destination = HandManager.BANISH_PILE
 	card_compile_opt.card_values = {"card_amount": 1, "cost_reduction": 1}
 	card_compile_opt.card_upgrade_value_improvements = {"card_amount": 1}
 	card_compile_opt.card_first_upgrade_property_changes = {"card_energy_cost": 1}
@@ -955,5 +955,198 @@ static func add_cards_red() -> void:
 		},
 	]
 	Global.register_rod(card_compile_opt)
+
+	# 缓冲区溢出 — 随漏洞暴露增加伤害
+	var card_buffer_overflow: CardData = CardData.new("card_buffer_overflow")
+	card_buffer_overflow.card_name = "缓冲区溢出"
+	card_buffer_overflow.card_color_id = "color_{0}".format([color])
+	card_buffer_overflow.card_texture_path = "sprites/card/red/card_buffer_overflow.png"
+	card_buffer_overflow.card_description = "造成 [damage] 点伤害。目标每有一层漏洞暴露，额外造成 [bonus_damage] 点伤害。"
+	card_buffer_overflow.card_type = CardData.CARD_TYPES.ATTACK
+	card_buffer_overflow.card_rarity = CardData.CARD_RARITIES.UNCOMMON
+	card_buffer_overflow.card_requires_target = true
+	card_buffer_overflow.card_energy_cost = 1
+	card_buffer_overflow.card_values = {"damage": 5, "bonus_damage": 3, "number_of_attacks": 1, "impact_vfx_animation_id": "animation_vfx_impact_default"}
+	card_buffer_overflow.card_upgrade_value_improvements = {"damage": 2, "bonus_damage": 1}
+	card_buffer_overflow.card_play_actions = [
+		{
+			Scripts.ACTION_VARIABLE_COMBAT_STATS_MODIFIER: {
+				"combat_stat_name": "target_status_effect_charges",
+				"stat_variable_name": "status_effect_vulnerable",
+				"action_data": [
+					{Scripts.ACTION_ATTACK_GENERATOR: {"damage": card_buffer_overflow.card_values["bonus_damage"]}},
+				],
+				"multiplied_values": ["damage"],
+				"multiplied_values_bases": {"damage": card_buffer_overflow.card_values["damage"]},
+			},
+		},
+	]
+	Global.register_rod(card_buffer_overflow)
+
+	# 空指针异常 — 随机多次攻击
+	var card_null_pointer: CardData = CardData.new("card_null_pointer")
+	card_null_pointer.card_name = "空指针异常"
+	card_null_pointer.card_color_id = "color_{0}".format([color])
+	card_null_pointer.card_texture_path = "sprites/card/red/card_null_pointer.png"
+	card_null_pointer.card_description = "随机对场上任意单位（含自己）造成 [damage] 点伤害，触发 [number_of_attacks] 次。"
+	card_null_pointer.card_type = CardData.CARD_TYPES.ATTACK
+	card_null_pointer.card_rarity = CardData.CARD_RARITIES.RARE
+	card_null_pointer.card_requires_target = false
+	card_null_pointer.card_energy_cost = 2
+	card_null_pointer.card_values = {"damage": 4, "number_of_attacks": 8, "impact_vfx_animation_id": "animation_vfx_impact_default", "time_delay": 0.15}
+	card_null_pointer.card_upgrade_value_improvements = {"number_of_attacks": 2}
+	card_null_pointer.card_play_actions = [
+		{
+			Scripts.ACTION_ATTACK_GENERATOR: {
+				"target_override": BaseAction.TARGET_OVERRIDES.RANDOM_COMBATANT,
+				"time_delay": 0.15,
+			},
+		},
+	]
+	Global.register_rod(card_null_pointer)
+
+	# 线程同步 — 条件激活防御过牌
+	var card_thread_sync: CardData = CardData.new("card_thread_sync")
+	card_thread_sync.card_name = "线程同步"
+	card_thread_sync.card_color_id = "color_{0}".format([color])
+	card_thread_sync.card_texture_path = "sprites/card/red/card_thread_sync.png"
+	card_thread_sync.card_description = "仅在本时钟周期已打出至少 [card_count] 个脚本时才能打出。获得 [block] 点防火墙，读取 [draw_count] 个脚本。"
+	card_thread_sync.card_type = CardData.CARD_TYPES.SKILL
+	card_thread_sync.card_rarity = CardData.CARD_RARITIES.UNCOMMON
+	card_thread_sync.card_requires_target = false
+	card_thread_sync.card_energy_cost = 2
+	card_thread_sync.card_values = {"block": 8, "draw_count": 2, "card_count": 3}
+	card_thread_sync.card_upgrade_value_improvements = {"block": 4}
+	card_thread_sync.card_play_validators = [
+		{
+			Scripts.VALIDATOR_COMBAT_STATS: {
+				"stat_enum": CombatStatsData.STATS.CARDS_PLAYED,
+				"turn_stat_type": 0,
+				"operator": ">=",
+				"comparison_value": 3,
+			},
+		},
+	]
+	card_thread_sync.card_play_actions = [
+		{Scripts.ACTION_BLOCK: {"target_override": BaseAction.TARGET_OVERRIDES.PARENT}},
+		{Scripts.ACTION_DRAW_GENERATOR: {}},
+	]
+	Global.register_rod(card_thread_sync)
+
+	# 内核恐慌 — 条件激活斩杀反杀
+	var card_kernel_panic: CardData = CardData.new("card_kernel_panic")
+	card_kernel_panic.card_name = "内核恐慌"
+	card_kernel_panic.card_color_id = "color_{0}".format([color])
+	card_kernel_panic.card_texture_path = "sprites/card/red/card_kernel_panic.png"
+	card_kernel_panic.card_description = "仅在[前置时钟周期]受到过至少 [damage_taken] 点伤害时才能打出。造成 [damage] 点伤害，恢复 [health_amount] 点完整度。物理删除。"
+	card_kernel_panic.card_type = CardData.CARD_TYPES.ATTACK
+	card_kernel_panic.card_rarity = CardData.CARD_RARITIES.RARE
+	card_kernel_panic.card_requires_target = true
+	card_kernel_panic.card_energy_cost = 3
+	card_kernel_panic.card_is_retained = true
+	card_kernel_panic.card_keyword_object_ids = ["keyword_retain"]
+	card_kernel_panic.card_play_destination = HandManager.EXHAUST_PILE
+	card_kernel_panic.card_values = {"damage": 20, "health_amount": 10, "damage_taken": 10, "number_of_attacks": 1, "impact_vfx_animation_id": "animation_vfx_impact_default"}
+	card_kernel_panic.card_upgrade_value_improvements = {"damage": 8, "health_amount": 4}
+	card_kernel_panic.card_play_validators = [
+		{
+			Scripts.VALIDATOR_COMBAT_STATS: {
+				"stat_enum": CombatStatsData.STATS.PLAYER_DAMAGED_AMOUNT,
+				"turn_stat_type": 1,
+				"operator": ">=",
+				"comparison_value": 10,
+			},
+		},
+	]
+	card_kernel_panic.card_play_actions = [
+		{Scripts.ACTION_ATTACK_GENERATOR: {}},
+		{Scripts.ACTION_ADD_HEALTH: {"target_override": BaseAction.TARGET_OVERRIDES.PARENT}},
+	]
+	Global.register_rod(card_kernel_panic)
+
+	# 敏捷开发 — 基础攻击+过牌
+	var card_agile_development: CardData = CardData.new("card_agile_development")
+	card_agile_development.card_name = "敏捷开发"
+	card_agile_development.card_color_id = "color_{0}".format([color])
+	card_agile_development.card_texture_path = "sprites/card/red/card_agile_development.png"
+	card_agile_development.card_description = "造成 [damage] 点伤害。读取 [draw_count] 个脚本。将一张[运行时注入]添加至当前线程中。"
+	card_agile_development.card_type = CardData.CARD_TYPES.ATTACK
+	card_agile_development.card_rarity = CardData.CARD_RARITIES.COMMON
+	card_agile_development.card_requires_target = true
+	card_agile_development.card_energy_cost = 2
+	card_agile_development.card_values = {"damage": 6, "draw_count": 1, "number_of_attacks": 1, "impact_vfx_animation_id": "animation_vfx_impact_default"}
+	card_agile_development.card_upgrade_value_improvements = {"damage": 3}
+	card_agile_development.card_play_actions = [
+		{Scripts.ACTION_ATTACK_GENERATOR: {}},
+		{Scripts.ACTION_DRAW_GENERATOR: {}},
+		{
+			Scripts.ACTION_CREATE_CARDS: {
+				"created_card_object_id": "card_runtime_injection",
+				"created_card_count": 1,
+				"action_data": [
+					{Scripts.ACTION_ADD_CARDS_TO_HAND: {}},
+				],
+			},
+		},
+	]
+	Global.register_rod(card_agile_development)
+
+	# 依赖注入 — 换取隐藏衍生卡
+	var card_dependency_injection: CardData = CardData.new("card_dependency_injection")
+	card_dependency_injection.card_name = "依赖注入"
+	card_dependency_injection.card_color_id = "color_{0}".format([color])
+	card_dependency_injection.card_texture_path = "sprites/card/red/card_dependency_injection.png"
+	card_dependency_injection.card_description = "物理删除当前线程中的一个脚本，将一张[运行时注入]添加至当前线程中。"
+	card_dependency_injection.card_type = CardData.CARD_TYPES.SKILL
+	card_dependency_injection.card_rarity = CardData.CARD_RARITIES.COMMON
+	card_dependency_injection.card_requires_target = false
+	card_dependency_injection.card_energy_cost = 1
+	card_dependency_injection.card_values = {"card_amount": 1}
+	card_dependency_injection.card_upgrade_value_improvements = {}
+	card_dependency_injection.card_first_upgrade_property_changes = {"card_energy_cost": 0}
+	card_dependency_injection.card_play_actions = [
+		{
+			Scripts.ACTION_PICK_CARDS: {
+				"custom_key_names": {"max_card_amount": "card_amount", "min_card_amount": "card_amount"},
+				"min_cards_are_required_for_action": false,
+				"card_pick_type": HandManager.HAND_PILE,
+				"card_pick_text": "选择要删除的脚本",
+				"random_selection": false,
+				"action_data": [
+					{Scripts.ACTION_EXHAUST_CARDS: {}},
+					{
+						Scripts.ACTION_CREATE_CARDS: {
+							"custom_key_names": {},
+							"created_card_object_id": "card_runtime_injection",
+							"created_card_count": 1,
+							"action_data": [
+								{Scripts.ACTION_ADD_CARDS_TO_HAND: {}},
+							],
+						},
+					},
+				],
+			},
+		},
+	]
+	Global.register_rod(card_dependency_injection)
+
+	# 运行时注入 — 动态生成稀有度
+	var card_runtime_injection: CardData = CardData.new("card_runtime_injection")
+	card_runtime_injection.card_name = "运行时注入"
+	card_runtime_injection.card_color_id = "color_{0}".format([color])
+	card_runtime_injection.card_texture_path = "sprites/card/red/card_runtime_injection.png"
+	card_runtime_injection.card_description = "获得 [block] 点防火墙，获得 [energy_amount] 点算力。物理删除。"
+	card_runtime_injection.card_type = CardData.CARD_TYPES.SKILL
+	card_runtime_injection.card_rarity = CardData.CARD_RARITIES.GENERATED
+	card_runtime_injection.card_requires_target = false
+	card_runtime_injection.card_energy_cost = 0
+	card_runtime_injection.card_play_destination = HandManager.EXHAUST_PILE
+	card_runtime_injection.card_values = {"block": 5, "energy_amount": 1}
+	card_runtime_injection.card_upgrade_value_improvements = {"block": 3}
+	card_runtime_injection.card_play_actions = [
+		{Scripts.ACTION_BLOCK: {"target_override": BaseAction.TARGET_OVERRIDES.PARENT}},
+		{Scripts.ACTION_ADD_ENERGY: {}},
+	]
+	Global.register_rod(card_runtime_injection)
 
 	#endregion

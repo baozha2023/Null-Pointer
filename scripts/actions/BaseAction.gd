@@ -42,7 +42,8 @@ enum TARGET_OVERRIDES {
 	ALL_ENEMIES,
 	LEFTMOST_ENEMY,	# the target fallback will be leftmost if possible
 	ENEMY_ID,	# the targets will be enemies with given object ids
-	RANDOM_ENEMY	# a random existing enemy is chosen
+	RANDOM_ENEMY,	# a random existing enemy is chosen
+	RANDOM_COMBATANT # a random existing combatant is chosen
 	}
 
 func init(_parent_combatant: BaseCombatant = null, _card_play_request: CardPlayRequest = null, _targets: Array[BaseCombatant] = [], _values: Dictionary[String, Variant] = {}, _parent_action: BaseAction = null):
@@ -167,6 +168,20 @@ func get_adjusted_action_targets() -> Array[BaseCombatant]:
 				var rng_targeting: RandomNumberGenerator = Global.player_data.get_player_rng(rng_name)
 				valid_enemies = Random.shuffle_array(rng_targeting, valid_enemies)
 				returned_targets.append(valid_enemies[0])
+		TARGET_OVERRIDES.RANDOM_COMBATANT:
+			var combatants: Array[Node] = []
+			combatants.append_array(Global.get_tree().get_nodes_in_group("players"))
+			combatants.append_array(Global.get_tree().get_nodes_in_group("enemies_alive_or_dead"))
+			var valid_combatants: Array[BaseCombatant] = []
+			for combatant: BaseCombatant in combatants:
+				if combatant.is_alive() or force_dead_targets:
+					valid_combatants.append(combatant)
+					
+			if valid_combatants.size() > 0:
+				var rng_name: String = get_action_value("rng_name", "rng_targeting")
+				var rng_targeting: RandomNumberGenerator = Global.player_data.get_player_rng(rng_name)
+				valid_combatants = Random.shuffle_array(rng_targeting, valid_combatants)
+				returned_targets.append(valid_combatants[0])
 			
 	return returned_targets
 

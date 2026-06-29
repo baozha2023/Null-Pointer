@@ -404,7 +404,9 @@ static func add_cards_green() -> void:
 	card_wildflower.card_color_id = "color_{0}".format([color])
 	card_wildflower.card_texture_path = "sprites/card/green/card_wildflower.png"
 	card_wildflower.card_energy_cost = 2
-	card_wildflower.card_description = "造成 [damage] 点伤害。若本回合受到过伤害，则耗能为 0。"
+	card_wildflower.card_description = "造成 [damage] 点伤害。若[前置时钟周期]受到过伤害，则耗能为 0。"
+	card_wildflower.card_is_retained = true
+	card_wildflower.card_keyword_object_ids = ["keyword_retain"]
 	card_wildflower.card_type = CardData.CARD_TYPES.ATTACK
 	card_wildflower.card_rarity = CardData.CARD_RARITIES.UNCOMMON
 	card_wildflower.card_requires_target = true
@@ -422,7 +424,7 @@ static func add_cards_green() -> void:
 			"modifiy_card_energy_cost_until_played": false,
 			"modifiy_card_energy_cost_until_turn": true,
 			"stat_enum": CombatStatsData.STATS.PLAYER_DAMAGED_COUNT,
-			"is_turn_stat": true,
+			"turn_stat_type": 1,
 			"energy_per_stat": -10,
 		},
 	)
@@ -600,14 +602,14 @@ static func add_cards_green() -> void:
 	card_datum.card_name = "数据点"
 	card_datum.card_color_id = "color_{0}".format([color])
 	card_datum.card_texture_path = "sprites/card/green/card_datum.png"
-	card_datum.card_description = "获得 [block] 点防火墙。被读取时自动复制自身。保留时，回合结束后本卡耗能永久减少 [energy_cost_reduction] 点。"
+	card_datum.card_description = "获得 [block] 点防火墙。被读取时自动复制自身。保留时，时钟周期结束后本卡耗能永久减少 [energy_cost_reduction] 点。"
 	card_datum.card_type = CardData.CARD_TYPES.SKILL
 	card_datum.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_datum.card_energy_cost = 3
 	card_datum.card_requires_target = false
-	card_datum.card_is_retained = false
+	card_datum.card_is_retained = true
 	card_datum.card_play_destination = HandManager.BANISH_PILE
-	card_datum.card_values = { "block": 10, "modified_energy_cost": card_datum.card_energy_cost, "energy_cost_reduction": 1, "card_value_improvements": { "modified_energy_cost": -1 } }
+	card_datum.card_values = { "block": 10, "modified_energy_cost": card_datum.card_energy_cost, "energy_cost_reduction": 1 }
 	card_datum.card_upgrade_value_improvements = { "block": 4 }
 	card_datum.card_play_actions = [
 		{
@@ -639,40 +641,11 @@ static func add_cards_green() -> void:
 		},
 	]
 	card_datum.card_end_of_turn_actions = [
-		# pick this card and then modify its energy_cost using an alias'ed  
 		{
-			Scripts.ACTION_PICK_CARDS: {
-				"card_pick_type": ActionBasePickCards.PICK_PARENT_CARD,
-				"min_card_amount": 1,
-				"max_card_amount": 1,
-				"min_cards_are_required_for_action": true,
-				"random_selection": true,
-				"action_data": [
-					{
-						Scripts.ACTION_CHANGE_CARD_ENERGIES: {
-							# must alias the generated cards from ActionPickDuplicateCards
-							"custom_key_names": { "card_energy_cost_until_combat": "modified_energy_cost" },
-						},
-					},
-				],
-			},
-		},
-		# clamp the modified_energy value to 0
-		{
-			Scripts.ACTION_CLAMP_CARD_VALUES: {
-				"time_delay": 0.1,
+			Scripts.ACTION_IMPROVE_CARD_PROPERTIES: {
+				"modify_parent_card": true,
 				"pick_played_card": true,
-				"modify_parent_card": false,
-				"clamp_card_values": { "modified_energy_cost": [0, 99] },
-			},
-		},
-
-		# convert unused energy into changing a "modified_energy_cost" property
-		{
-			Scripts.ACTION_IMPROVE_CARD_VALUES_UNUSED_ENERGY: {
-				"time_delay": 0.1,
-				"pick_played_card": true,
-				"modify_parent_card": false,
+				"card_property_improvements": {"card_energy_cost": -card_datum.card_values["energy_cost_reduction"]},
 			},
 		},
 	]
@@ -933,7 +906,7 @@ static func add_cards_green() -> void:
 	card_meltdown.card_type = CardData.CARD_TYPES.SKILL
 	card_meltdown.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_meltdown.card_requires_target = false
-	card_meltdown.card_values = { "status_charge_amount": 15 }
+	card_meltdown.card_values = { "status_charge_amount": 15, "block": 1 }
 	card_meltdown.card_keyword_object_ids = []
 	card_meltdown.card_hint = "防火墙可吸收爆裂伤害，形成自洽闭环。"
 	card_meltdown.card_upgrade_value_improvements = { "status_charge_amount": 10 }
@@ -946,17 +919,11 @@ static func add_cards_green() -> void:
 			},
 		},
 		{
-			Scripts.ACTION_VARIABLE_COMBAT_STATS_MODIFIER: {
-				"combat_stat_name": "block_amount",
-				"card_value_name": "block",
-				"stat_variable_name": "status_effect_overheat",
-				"stat_to_value_multiplier": 1,
-				"time_delay": 0.2,
-			},
-		},
-		{
-			Scripts.ACTION_BLOCK: {
-				"target_override": BaseAction.TARGET_OVERRIDES.PARENT,
+			Scripts.ACTION_BLOCK_BY_STATUS: {
+				"target_override": BaseAction.TARGET_OVERRIDES.PLAYER,
+				"status_effect_object_id": "status_effect_overheat",
+				"block_multiplier": 1,
+				"include_pending_status_charges": true,
 			},
 		},
 	]

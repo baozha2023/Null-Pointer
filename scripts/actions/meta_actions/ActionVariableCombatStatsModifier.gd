@@ -36,11 +36,8 @@ func perform_action():
 		else:
 			var combat_stats_data: CombatStatsData = StatsHandler.current_combat_stats
 			var stat_enum: int = action_interceptor_processor.get_shadowed_action_values("stat_enum", CombatStatsData.STATS.ENEMIES_KILLED)
-			var is_total_stat: bool = action_interceptor_processor.get_shadowed_action_values("is_total_stat", false)
-			if is_total_stat:
-				stat_value = combat_stats_data.get_total_enum_stat(stat_enum)
-			else:
-				stat_value = combat_stats_data.get_turn_enum_stat(stat_enum)
+			var turn_stat_type: int = action_interceptor_processor.get_shadowed_action_values("turn_stat_type", 0)
+			stat_value = combat_stats_data.get_history_enum_stat(stat_enum, turn_stat_type)
 		
 		# creates a duplicate of the child action data, then modifies any keys with a multiple of the card play's input energy
 		for action in action_data.duplicate(true):

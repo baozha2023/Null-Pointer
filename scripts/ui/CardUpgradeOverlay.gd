@@ -139,23 +139,26 @@ func _update_preview() -> void:
 		
 	preview_vbox.visible = true
 	
-	# clamp preview target level
-	preview_target_level = clamp(preview_target_level, 0, selected_card_data.card_upgrade_amount_max)
+	# clamp preview target level (cannot preview below current level)
+	preview_target_level = clamp(preview_target_level, selected_card_data.card_upgrade_amount, selected_card_data.card_upgrade_amount_max)
 	
-	# Get a clean prototype and apply upgrades
-	var clean_data: CardData = Global.get_card_data_from_prototype(selected_card_data.object_id)
-	if preview_target_level > 0:
-		clean_data.upgrade_card(preview_target_level, true)
+	# Duplicate the actual selected card to preserve dynamic modifications
+	var preview_data: CardData = selected_card_data.duplicate(true)
+	
+	# Apply only the difference in upgrades
+	var upgrades_needed = preview_target_level - selected_card_data.card_upgrade_amount
+	if upgrades_needed > 0:
+		preview_data.upgrade_card(upgrades_needed, true)
 	
 	preview_card = Scenes.CARD.instantiate()
 	preview_card_container.add_child(preview_card)
 	preview_card.set_anchors_preset(Control.PRESET_CENTER)
-	preview_card.init(clean_data, 0, false, true)
+	preview_card.init(preview_data, 0, false, true)
 	
 	# Update labels and buttons
 	level_label.text = "当前等级: %d / %d  |  预览等级: %d" % [selected_card_data.card_upgrade_amount, selected_card_data.card_upgrade_amount_max, preview_target_level]
 	
-	downgrade_button.disabled = (preview_target_level <= 0)
+	downgrade_button.disabled = (preview_target_level <= selected_card_data.card_upgrade_amount)
 	upgrade_button.disabled = (preview_target_level >= selected_card_data.card_upgrade_amount_max)
 
 func _on_upgrade_button_up() -> void:

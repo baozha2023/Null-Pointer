@@ -15,8 +15,10 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 [application]
 
 config/name="Slay the Robot"
-run/main_scene="res://scenes/Root.tscn"
+run/main_scene="res://scenes/LoadingScreen.tscn"
 config/features=PackedStringArray("4.6")
+boot_splash/bg_color=Color(0, 0, 0, 1)
+boot_splash/image="res://logo.png"
 config/icon="uid://8kopj5luv8dc"
 
 [audio]
@@ -37,8 +39,8 @@ ActionHandler="*res://autoload/ActionHandler.gd"
 ActionGenerator="*res://autoload/ActionGenerator.gd"
 DebugLogger="*res://autoload/DebugLogger.gd"
 HandManager="*res://autoload/HandManager.gd"
-SoundManager="*uid://bjkhgdroa1wwd"
 StatsHandler="*res://autoload/StatsHandler.gd"
+SoundManager="*uid://bjkhgdroa1wwd"
 
 [debug]
 

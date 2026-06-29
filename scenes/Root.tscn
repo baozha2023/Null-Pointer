@@ -1364,20 +1364,6 @@ text = "敌人名称"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="CodexEnemyIntentsToggleButton" type="Button" parent="TitleScreen/CodexMenu/VSplitContainer/CodexContentDisplay/CodexEnemiesMenu/MarginContainer/HSplitContainer/HSplitContainer/EnemyInfo/CodexEnemyNameLabel" unique_id=331271778]
-unique_name_in_owner = true
-layout_mode = 1
-anchors_preset = 11
-anchor_left = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -64.0
-offset_bottom = -0.200001
-grow_horizontal = 0
-grow_vertical = 2
-toggle_mode = true
-text = "意图"
-
 [node name="CodexEnemyTexture" type="TextureRect" parent="TitleScreen/CodexMenu/VSplitContainer/CodexContentDisplay/CodexEnemiesMenu/MarginContainer/HSplitContainer/HSplitContainer/EnemyInfo" unique_id=515187530]
 unique_name_in_owner = true
 layout_mode = 1
@@ -1405,6 +1391,36 @@ text = "完整度: 80 - 90 | 120 - 130 (D2) | 150 - 160 (D3)"
 horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 3
+
+[node name="CodexEnemyAnimButtons" type="VBoxContainer" parent="TitleScreen/CodexMenu/VSplitContainer/CodexContentDisplay/CodexEnemiesMenu/MarginContainer/HSplitContainer/HSplitContainer/EnemyInfo" unique_id=987654321]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -64.0
+offset_bottom = 125.0
+grow_horizontal = 0
+
+[node name="CodexEnemyIntentsToggleButton" type="Button" parent="TitleScreen/CodexMenu/VSplitContainer/CodexContentDisplay/CodexEnemiesMenu/MarginContainer/HSplitContainer/HSplitContainer/EnemyInfo/CodexEnemyAnimButtons" unique_id=331271778]
+unique_name_in_owner = true
+layout_mode = 2
+toggle_mode = true
+text = "意图"
+
+[node name="CodexEnemyIdleButton" type="Button" parent="TitleScreen/CodexMenu/VSplitContainer/CodexContentDisplay/CodexEnemiesMenu/MarginContainer/HSplitContainer/HSplitContainer/EnemyInfo/CodexEnemyAnimButtons" unique_id=987654322]
+unique_name_in_owner = true
+layout_mode = 2
+text = "待机"
+
+[node name="CodexEnemyAttackButton" type="Button" parent="TitleScreen/CodexMenu/VSplitContainer/CodexContentDisplay/CodexEnemiesMenu/MarginContainer/HSplitContainer/HSplitContainer/EnemyInfo/CodexEnemyAnimButtons" unique_id=987654323]
+unique_name_in_owner = true
+layout_mode = 2
+text = "攻击"
+
+[node name="CodexEnemyDieButton" type="Button" parent="TitleScreen/CodexMenu/VSplitContainer/CodexContentDisplay/CodexEnemiesMenu/MarginContainer/HSplitContainer/HSplitContainer/EnemyInfo/CodexEnemyAnimButtons" unique_id=987654324]
+unique_name_in_owner = true
+layout_mode = 2
+text = "死亡"
 
 [node name="CodexEnemyIntents" type="Control" parent="TitleScreen/CodexMenu/VSplitContainer/CodexContentDisplay/CodexEnemiesMenu/MarginContainer/HSplitContainer/HSplitContainer" unique_id=1189076230]
 unique_name_in_owner = true

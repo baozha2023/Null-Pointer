@@ -287,9 +287,9 @@ func start_run(character_object_id: String, run_seed: int, difficulty_level: int
 			player_data.player_run_modifier_object_ids.append(run_modifier_id)
 	# 基于难度等级叠加的修改器
 	if difficulty_level > 0:
-		var difficulty_amount_max: int = min(difficulty_level, len(STANDARD_DIFFICULTY_RUN_MODIFIER_IDS))
-		player_data.player_run_modifier_object_ids = STANDARD_DIFFICULTY_RUN_MODIFIER_IDS.slice(0, difficulty_amount_max, 1, true)
-	player_data.player_run_modifier_object_ids += custom_run_modifier_object_ids
+		var difficulty_amount_max: int = min(difficulty_level + 1, len(STANDARD_DIFFICULTY_RUN_MODIFIER_IDS))
+		player_data.player_run_modifier_object_ids.append_array(STANDARD_DIFFICULTY_RUN_MODIFIER_IDS.slice(0, difficulty_amount_max, 1, true))
+	player_data.player_run_modifier_object_ids.append_array(custom_run_modifier_object_ids)
 	#endregion
 	
 	# 进程历史记录与数据统计初始化

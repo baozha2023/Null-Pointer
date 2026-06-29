@@ -12,8 +12,8 @@ func generate_production_data() -> void:
 	add_action_interceptors()
 
 	add_enemies()
-	add_events()
 	add_dialogue()
+	add_events()
 	add_acts()
 
 	add_colors()
@@ -141,6 +141,42 @@ func add_artifacts() -> void:
 	artifact_easy_mode.artifact_script_path = "res://scripts/artifacts/ArtifactEasyMode.gd"
 
 	Global.register_rod(artifact_easy_mode)
+
+	var artifact_data_scarcity: ArtifactData = ArtifactData.new("artifact_data_scarcity")
+	artifact_data_scarcity.artifact_name = "数据贫瘠插件"
+	artifact_data_scarcity.artifact_description = "获得的数据币收益减少20%。"
+	artifact_data_scarcity.artifact_texture_path = "sprites/artifacts/artifact_data_scarcity.png"
+	artifact_data_scarcity.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.EVENT
+	artifact_data_scarcity.artifact_appears_in_artifact_packs = false
+	artifact_data_scarcity.artifact_interceptor_ids = ["interceptor_reduce_add_money"]
+	Global.register_rod(artifact_data_scarcity)
+
+	var artifact_inflation: ArtifactData = ArtifactData.new("artifact_inflation")
+	artifact_inflation.artifact_name = "通货膨胀插件"
+	artifact_inflation.artifact_description = "商店所有商品价格上涨25%。"
+	artifact_inflation.artifact_texture_path = "sprites/artifacts/artifact_inflation.png"
+	artifact_inflation.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.EVENT
+	artifact_inflation.artifact_appears_in_artifact_packs = false
+	artifact_inflation.artifact_interceptor_ids = ["interceptor_increase_shop_price"]
+	Global.register_rod(artifact_inflation)
+	
+	var artifact_data_abundance: ArtifactData = ArtifactData.new("artifact_data_abundance")
+	artifact_data_abundance.artifact_name = "数据充裕插件"
+	artifact_data_abundance.artifact_description = "所有数据币获取量增加20%。"
+	artifact_data_abundance.artifact_texture_path = "sprites/artifacts/artifact_data_abundance.png"
+	artifact_data_abundance.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.RARE
+	artifact_data_abundance.artifact_appears_in_artifact_packs = true
+	artifact_data_abundance.artifact_interceptor_ids = ["interceptor_increase_add_money"]
+	Global.register_rod(artifact_data_abundance)
+	
+	var artifact_deflation: ArtifactData = ArtifactData.new("artifact_deflation")
+	artifact_deflation.artifact_name = "通货紧缩插件"
+	artifact_deflation.artifact_description = "商店所有商品价格下降25%。"
+	artifact_deflation.artifact_texture_path = "sprites/artifacts/artifact_deflation.png"
+	artifact_deflation.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.RARE
+	artifact_deflation.artifact_appears_in_artifact_packs = true
+	artifact_deflation.artifact_interceptor_ids = ["interceptor_decrease_shop_price"]
+	Global.register_rod(artifact_deflation)
 
 	var artifact_block_on_attacks: ArtifactData = ArtifactData.new("artifact_block_on_attacks")
 	artifact_block_on_attacks.artifact_name = "攻击防火墙外设插件"
@@ -1332,72 +1368,7 @@ func add_events() -> void:
 
 ## Adds test DialogueData, and their embedded DialogueStateData and DialogueOptionData payloads
 func add_dialogue() -> void:
-	### Dialogue Event 1
-	# Dialogue 1
-	var dialogue_pick_something: DialogueData = DialogueData.new("dialogue_pick_something")
-	dialogue_pick_something.dialogue_name_bbcode = "[wave amp=50.0 freq=2.0 connected=1][color=green]异常处理[/color][/wave]"
-	Global.register_rod(dialogue_pick_something)
-
-	# Option 1
-	var dialogue_pick_something_option_1: DialogueOptionData = DialogueOptionData.new("dialogue_pick_something_option_1")
-	dialogue_pick_something_option_1.dialogue_option_bbcode = "[color=red]失去 10 点完整度[/color] 并且 [color=green]获得 100 数据币[/color]"
-	dialogue_pick_something_option_1.dialogue_option_failed_validator_bbcode = "[color=grey][锁定]: 完整度不足[/color]"
-	dialogue_pick_something_option_1.dialogue_option_actions = [
-		{ Scripts.ACTION_ADD_HEALTH: { "target_override": BaseAction.TARGET_OVERRIDES.PLAYER, "health_amount": -10 } },
-		{ Scripts.ACTION_ADD_MONEY: { "money_amount": 100 } },
-	]
-	dialogue_pick_something_option_1.dialogue_option_validators = [
-		{ Scripts.VALIDATOR_PLAYER_HEALTH: { "health_amount": 11 } },
-	]
-	dialogue_pick_something_option_1.dialogue_option_next_dialogue_state_id = "" # empty ends dialogue
-
-	dialogue_pick_something._assign_option(dialogue_pick_something_option_1)
-
-	# Option 2
-	var dialogue_pick_something_option_2: DialogueOptionData = DialogueOptionData.new("dialogue_pick_something_option_2")
-	dialogue_pick_something_option_2.dialogue_option_bbcode = "[color=red]失去 50 数据币[/color] 并且 [color=green]随机获得 1 张零日脚本[/color]"
-	dialogue_pick_something_option_2.dialogue_option_failed_validator_bbcode = "[color=grey][锁定]: 数据币不足[/color]"
-	dialogue_pick_something_option_2.dialogue_option_actions = [
-		{
-			Scripts.ACTION_PICK_CARDS: {
-				"card_pick_type": ActionBasePickCards.PICK_DRAFT,
-				"pick_draft_cards": false,
-				"draft_from_card_pool": true,
-				"action_data": [{ Scripts.ACTION_ADD_CARDS_TO_DECK: { } }],
-				"validator_data": [
-					{ Scripts.VALIDATOR_CARD_RARITY: { "card_rarities": [CardData.CARD_RARITIES.RARE] } },
-					{ Scripts.VALIDATOR_CARD_DRAFTABLE: { } },
-				],
-				"rng_name": "rng_events",
-				"draft_use_player_draft": false, # this should always be false if using a validator based draft
-				"draft_is_weighted": false,
-				"draft_use_pity_system": false,
-				"random_selection": true, # auto pick it
-				"draft_max_card_amount": 1, # auto pick it
-				"min_card_amount": 1,
-				"max_card_amount": 1,
-			},
-		},
-		{ Scripts.ACTION_ADD_MONEY: { "money_amount": -50 } },
-	]
-	dialogue_pick_something_option_2.dialogue_option_validators = [
-		{ Scripts.VALIDATOR_MONEY: { "money_amount": 50 } },
-	]
-	dialogue_pick_something_option_2.dialogue_option_next_dialogue_state_id = "" # empty ends dialogue
-
-	dialogue_pick_something._assign_option(dialogue_pick_something_option_2)
-
-	# State 1
-	var dialogue_state_pick_something_initial: DialogueStateData = DialogueStateData.new("dialogue_state_pick_something_initial")
-	dialogue_state_pick_something_initial.dialogue_state_prompt_bbcode = "测试事件。请选择一个选项..."
-	dialogue_state_pick_something_initial.dialogue_state_dialogue_texture_path = "external/sprites/events/event_pick_something.png"
-	dialogue_state_pick_something_initial.dialogue_state_dialogue_option_object_ids = [
-		dialogue_pick_something_option_1.object_id,
-		dialogue_pick_something_option_2.object_id,
-	]
-
-	dialogue_pick_something._assign_state(dialogue_state_pick_something_initial)
-	dialogue_pick_something._assign_initial_state(dialogue_state_pick_something_initial)
+	GlobalDialogueGenerator.add_dialogues()
 
 #endregion
 
@@ -1576,6 +1547,32 @@ func add_action_interceptors() -> void:
 
 	Global.register_rod(interceptor_negate_add_money)
 
+	var interceptor_reduce_add_money: ActionInterceptorData = ActionInterceptorData.new("interceptor_reduce_add_money")
+	interceptor_reduce_add_money.action_interceptor_modifies_parent = true
+	interceptor_reduce_add_money.action_interceptor_script_path = Scripts.INTERCEPTOR_REDUCE_ADD_MONEY
+	interceptor_reduce_add_money.action_intercepted_action_paths = [Scripts.ACTION_ADD_MONEY]
+	Global.register_rod(interceptor_reduce_add_money)
+	
+	var interceptor_increase_add_money: ActionInterceptorData = ActionInterceptorData.new("interceptor_increase_add_money")
+	interceptor_increase_add_money.action_interceptor_modifies_parent = true
+	interceptor_increase_add_money.action_interceptor_script_path = Scripts.INTERCEPTOR_INCREASE_ADD_MONEY
+	interceptor_increase_add_money.action_intercepted_action_paths = [Scripts.ACTION_ADD_MONEY]
+	Global.register_rod(interceptor_increase_add_money)
+	
+	var interceptor_increase_shop_price: ActionInterceptorData = ActionInterceptorData.new("interceptor_increase_shop_price")
+	interceptor_increase_shop_price.action_interceptor_modifies_parent = true
+	interceptor_increase_shop_price.action_interceptor_script_path = Scripts.INTERCEPTOR_INCREASE_SHOP_PRICE
+	interceptor_increase_shop_price.action_intercepted_action_paths = [Scripts.ACTION_GET_SHOP_PRICE]
+	Global.register_rod(interceptor_increase_shop_price)
+	
+	var interceptor_decrease_shop_price: ActionInterceptorData = ActionInterceptorData.new("interceptor_decrease_shop_price")
+	interceptor_decrease_shop_price.action_interceptor_modifies_parent = true
+	interceptor_decrease_shop_price.action_interceptor_script_path = Scripts.INTERCEPTOR_DECREASE_SHOP_PRICE
+	interceptor_decrease_shop_price.action_intercepted_action_paths = [Scripts.ACTION_GET_SHOP_PRICE]
+	Global.register_rod(interceptor_decrease_shop_price)
+
+
+
 #endregion
 
 #region Colors
@@ -1675,7 +1672,7 @@ func add_keywords() -> void:
 	var keyword_banish: KeywordData = KeywordData.new("keyword_banish")
 	keyword_banish.keyword_name = "放逐"
 	keyword_banish.keyword_prefix = "[后置] "
-	keyword_banish.keyword_text_bb_code = "将该脚本从本场战斗中彻底抹除，不再进入任何卡池（包括回收站或物理删除区）。"
+	keyword_banish.keyword_text_bb_code = "打出后，该脚本从本场战斗中彻底抹除，不再进入任何卡池（包括回收站或物理删除区）。"
 	keyword_banish.keyword_child_keyword_object_ids = []
 	Global.register_rod(keyword_banish)
 
@@ -1740,7 +1737,7 @@ func add_characters() -> void:
 		"card_basic_block_green",
 		"card_basic_block_green",
 		"card_basic_block_green",
-		"card_energy_next_turn",
+    	"card_energy_next_turn"
 	]
 
 	# green character animations

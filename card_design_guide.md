@@ -65,7 +65,7 @@
 ### 2.2 支持挂载的具体行为 (Available Actions)
 在上述任意一个时机（Hooks）中，你可以配置以下底层行为脚本（定义在 `Scripts.gd` 中）：
 - **战斗动作 (Combat)**：`ACTION_ATTACK` / `ACTION_ATTACK_GENERATOR` (攻击/多次攻击)、`ACTION_BLOCK` (叠甲)、`ACTION_ADD_HEALTH` (回血)、`ACTION_DIRECT_DAMAGE` (穿甲真伤)。
-- **状态/Buff (Status)**：`ACTION_APPLY_STATUS` (挂 Buff 或 Debuff)、`ACTION_BLOCK_TO_STATUS` (将护盾转化为Buff层数)。
+- **状态/Buff (Status)**：`ACTION_APPLY_STATUS` (挂 Buff 或 Debuff)、`ACTION_BLOCK_TO_STATUS` (将护盾转化为Buff层数)、`ACTION_BLOCK_BY_STATUS` (根据目标身上的某状态层数，按倍率转化为护盾，支持 `include_pending_status_charges` 预读机制)。
 - **抽牌与算力 (Resources)**：`ACTION_DRAW` / `ACTION_DRAW_GENERATOR` (抽牌)、`ACTION_ADD_ENERGY` (回复算力)。
 - **卡牌操作 (Card Manipulation)**：
   - `ACTION_ADD_CARDS_TO_HAND` (印卡到手牌)、`ACTION_ADD_CARDS_TO_DRAW` / `ACTION_ADD_CARDS_TO_DECK` (洗入抽牌堆/牌库)。

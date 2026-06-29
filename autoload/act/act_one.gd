@@ -11,6 +11,7 @@ static func add_enemies() -> void:
 	var enemy_act_1_miniboss_1: EnemyData = EnemyData.new("enemy_act_1_miniboss_1")
 	enemy_act_1_miniboss_1.add_health_bounds(100, 100)
 	enemy_act_1_miniboss_1.add_health_bounds(120, 120, DIFFICULTY_MINIBOSS_ENEMIES_HARDER)
+	enemy_act_1_miniboss_1.add_health_bounds(135, 135, 4)
 	enemy_act_1_miniboss_1.enemy_type = EnemyData.ENEMY_TYPES.MINIBOSS
 	enemy_act_1_miniboss_1.enemy_name = "递归妖"
 	enemy_act_1_miniboss_1.enemy_texture_path = "sprites/enemies/act1/enemy_recursion.png"
@@ -42,6 +43,7 @@ static func add_enemies() -> void:
 	var enemy_act_1_miniboss_2: EnemyData = EnemyData.new("enemy_act_1_miniboss_2")
 	enemy_act_1_miniboss_2.add_health_bounds(45, 55)
 	enemy_act_1_miniboss_2.add_health_bounds(70, 80, DIFFICULTY_MINIBOSS_ENEMIES_HARDER)
+	enemy_act_1_miniboss_2.add_health_bounds(85, 95, 4)
 	enemy_act_1_miniboss_2.enemy_type = EnemyData.ENEMY_TYPES.MINIBOSS
 	enemy_act_1_miniboss_2.enemy_name = "竞态鬼"
 	enemy_act_1_miniboss_2.enemy_texture_path = "sprites/enemies/act1/enemy_race_condition.png"
@@ -73,6 +75,7 @@ static func add_enemies() -> void:
 	var enemy_act_1_boss_1: EnemyData = EnemyData.new("enemy_act_1_boss_1")
 	enemy_act_1_boss_1.add_health_bounds(200, 200)
 	enemy_act_1_boss_1.add_health_bounds(250, 250, DIFFICULTY_BOSS_ENEMIES_HARDER)
+	enemy_act_1_boss_1.add_health_bounds(280, 280, 5)
 	enemy_act_1_boss_1.enemy_type = EnemyData.ENEMY_TYPES.BOSS
 	enemy_act_1_boss_1.enemy_name = "守护兽"
 	enemy_act_1_boss_1.enemy_texture_path = "sprites/enemies/act1/boss_guardian.png"
@@ -238,10 +241,6 @@ static func add_events() -> void:
 	Global.register_rod(event_act_1_boss_1)
 
 	## Act 1 Dialogue Events
-	var event_pick_something: EventData = EventData.new("event_pick_something")
-	event_pick_something.event_dialogue_object_id = "dialogue_pick_something"
-
-	Global.register_rod(event_pick_something)
 
 	### Event Pools
 	# act 1 easy pool
@@ -272,12 +271,20 @@ static func add_events() -> void:
 
 	Global.register_rod(event_pool_act_1_hard)
 
+	var event_abandoned_server: EventData = Global.get_event_data("event_abandoned_server")
+	var event_darkweb_market: EventData = Global.get_event_data("event_darkweb_market")
+	var event_trojan_trap: EventData = Global.get_event_data("event_trojan_trap")
+	var event_wandering_ai: EventData = Global.get_event_data("event_wandering_ai")
+
 	# act 1 dialogue event pool
 	var event_pool_act_1_dialogue: EventPoolData = EventPoolData.new("event_pool_act_1_dialogue")
 	event_pool_act_1_dialogue.add_events_to_pool(
-		event_pick_something,
+		event_abandoned_server,
 		[
-			event_pick_something,
+			event_abandoned_server,
+			event_darkweb_market,
+			event_trojan_trap,
+			event_wandering_ai,
 		],
 	)
 

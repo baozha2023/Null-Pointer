@@ -15,7 +15,7 @@ static func add_cards_white() -> void:
 	card_energy_next_turn.card_type = CardData.CARD_TYPES.SKILL
 	card_energy_next_turn.card_rarity = CardData.CARD_RARITIES.UNCOMMON
 	card_energy_next_turn.card_requires_target = false
-	card_energy_next_turn.card_values = { "status_charge_amount": 3 }
+	card_energy_next_turn.card_values = { "status_charge_amount": 2 }
 	card_energy_next_turn.card_first_upgrade_property_changes = { "card_energy_cost": 0 }
 	card_energy_next_turn.card_play_actions = [
 		{
@@ -139,14 +139,20 @@ static func add_cards_white() -> void:
 	card_kernel_reconstruct.card_upgrade_value_improvements = { "number_of_cards": 1 }
 	card_kernel_reconstruct.card_play_actions = [
 		{
-			Scripts.ACTION_PICK_UPGRADE_CARDS: {
+			Scripts.ACTION_PICK_CARDS: {
 				"custom_key_names": {"max_card_amount": "number_of_cards", "min_card_amount": "number_of_cards"},
-				"min_card_amount": 1,
-				"max_card_amount": 1,
 				"min_cards_are_required_for_action": true,
 				"random_selection": false,
-				"card_pick_type": HandManager.DECK,
-				"card_pick_text": "选择一个脚本永久升级",
+				"can_back_out": true,
+				"quick_pick": false,
+				"card_pick_type": HandManager.UPGRADE_DECK,
+				"card_pick_text": "选择最多 {0} 个脚本永久升级。已选 {1} 个",
+				"validator_data": [
+					{ Scripts.VALIDATOR_CARD_UPGRADEABLE: { } },
+				],
+				"action_data": [
+					{ Scripts.ACTION_UPGRADE_CARDS: { "upgrade_parent_card": true } },
+				],
 			},
 		},
 	]

@@ -39,6 +39,7 @@ Slay The Robot is a **roguelike deckbuilder framework** for **Godot 4.6** (GDScr
 | `autoload/` | 14 singleton scripts (see loading order below) — global state, factories, managers |
 | `autoload/act/` | Per-act content generators (`act_one.gd`, `act_two.gd`, `act_three.gd`) + `global_enemies.gd` (shared enemies) |
 | `autoload/card_generators/` | Per-color card set generators (`blue_cards.gd`, `green_cards.gd`, `red_cards.gd`) |
+| `autoload/event_generators/` | Global event and dialogue generators (`global_dialogues.gd`) |
 | `data/` | Data layer — `SerializableData` base class, prototype templates, readonly config, mutable runtime state, filters |
 | `data/prototype/` | Read-only template data (`CardData`, `EnemyData`, etc.) — cloned via `.get_prototype(true)` for mutable runtime copies |
 | `data/readonly/` | Immutable dictionary configs (keywords, colors, acts, events, run modifiers, card packs, etc.) |
@@ -286,6 +287,3 @@ All UI scenes are preloaded in the `Scenes` singleton. UI scripts are in `script
 - **Interceptor previews**: Enemy intents and card description text use the exact same interceptor pipeline as game logic — there is absolutely no separate calculation system.
 - **`.gdignore` in `external/`**: Prevents Godot from scanning external assets on project load. Always keep this file present.
 
-## Godot MCP Tools
-
-This project has Godot MCP tools available. Project path: `F:/Godot/games/Slay-The-Robot`. Use `mcp__godot-mcp__run_project` to launch and `mcp__godot-mcp__stop_project` to stop.

@@ -41,6 +41,7 @@ func populate_shop() -> void:
 			card_container.add_child(card_shop_button)
 			
 			# generate action payload
+			var original_price: int = shop_data.shop_card_prices[shop_data.shop_cards.find(card_data)]
 			var card_price: int = shop_data.get_shop_card_price(card_data)
 			
 			var purchase_card_action_data: Array[Dictionary] = [
@@ -48,6 +49,7 @@ func populate_shop() -> void:
 				Scripts.ACTION_SHOP_PURCHASE_ITEMS: {
 					"card_data": card_data,
 					"money_amount": card_price,
+					"original_money_amount": original_price,
 					}
 				}
 			]
@@ -66,6 +68,7 @@ func populate_shop() -> void:
 			
 			# generate action payload
 			var artifact_id: String = artifact_data.object_id
+			var original_price: int = shop_data.shop_artifact_prices[shop_data.shop_artifact_ids.find(artifact_id)]
 			var artifact_price: int = shop_data.get_shop_artifact_price(artifact_id)
 			
 			var purchase_artifact_action_data: Array[Dictionary] = [
@@ -73,6 +76,7 @@ func populate_shop() -> void:
 				Scripts.ACTION_SHOP_PURCHASE_ITEMS: {
 					"artifact_id": artifact_id,
 					"money_amount": artifact_price,
+					"original_money_amount": original_price,
 					}
 				}
 			]
@@ -90,6 +94,7 @@ func populate_shop() -> void:
 			
 			# generate action payload
 			var consumable_object_id: String = shop_data.shop_consumable_slot_to_consumable_object_id[consumable_slot_index]
+			var original_price: int = shop_data.shop_consumable_slot_to_consumable_price.get(consumable_slot_index, 0)
 			var consumable_price: int = shop_data.get_shop_consumable_price(consumable_slot_index)
 			
 			var purchase_consumable_action_data: Array[Dictionary] = [
@@ -98,6 +103,7 @@ func populate_shop() -> void:
 					"consumable_object_id": consumable_object_id,
 					"consumable_slot_index": consumable_slot_index,
 					"money_amount": consumable_price,
+					"original_money_amount": original_price,
 					}
 				}
 			]

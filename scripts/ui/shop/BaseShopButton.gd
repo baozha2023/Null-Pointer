@@ -11,7 +11,15 @@ func init(_action_on_click: BaseAction) -> void:
 	action_on_click = _action_on_click
 	
 	var price: int = action_on_click.get_action_value("money_amount", 0)
-	price_label.text = str(price)
+	var original_price: int = action_on_click.get_action_value("original_money_amount", price)
+	
+	var arrow: String = ""
+	if price > original_price:
+		arrow = " ↑"
+	elif price < original_price:
+		arrow = " ↓"
+		
+	price_label.text = str(price) + arrow
 	
 	if price > Global.player_data.player_money:
 		price_label.modulate = Color.RED

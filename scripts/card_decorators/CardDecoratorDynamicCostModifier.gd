@@ -23,7 +23,7 @@ func _on_combat_stat_changed(_stat_enum: int):
 
 func _update_card_cost() -> void:
 	var energy_per_stat: int = decorator_values.get("energy_per_stat", -1)	# can be positive or negative
-	var is_turn_stat: bool = decorator_values.get("is_turn_stat", true)
+	var turn_stat_type: int = decorator_values.get("turn_stat_type", 0)
 	
 	# flags for which energy stats to modify
 	var modifiy_card_energy_cost_until_combat: bool = decorator_values.get("modifiy_card_energy_cost_until_combat", false)
@@ -32,11 +32,7 @@ func _update_card_cost() -> void:
 	
 	# get the stat and its value
 	var combat_stats: CombatStatsData = StatsHandler.current_combat_stats
-	var stat: int
-	if is_turn_stat:
-		stat = combat_stats.get_turn_enum_stat(stat_enum)
-	else:
-		stat = combat_stats.get_total_enum_stat(stat_enum)
+	var stat: int = combat_stats.get_history_enum_stat(stat_enum, turn_stat_type)
 	
 	# calculate new card cost and determine if it requires changing
 	var raw_card_cost: int = parent_card.card_data.get_card_energy_cost(false)

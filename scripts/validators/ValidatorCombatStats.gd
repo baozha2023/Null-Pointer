@@ -6,14 +6,10 @@ func _validation(_card_data: CardData, _action: BaseAction, values: Dictionary[S
 	var combat_stats_data: CombatStatsData = StatsHandler.current_combat_stats
 	
 	var stat_enum: int = _get_validator_value("stat_enum", values, _action, CombatStatsData.STATS.ENEMIES_KILLED)
-	var is_total_stat: bool = _get_validator_value("is_total_stat", values, _action, false) 	# whether to use turn or total stat for the fight
-	var operator: String = _get_validator_value("operator", values, _action, ">") 	# whether to use turn or total stat for the fight
+	var turn_stat_type: int = _get_validator_value("turn_stat_type", values, _action, 0) 	# -1 = total, 0 = turn, 1 = last turn, etc.
+	var operator: String = _get_validator_value("operator", values, _action, ">")
 	var comparison_value: int = _get_validator_value("comparison_value", values, _action, 0)
 	
-	var stat_value: int = 0
-	if is_total_stat:
-		stat_value = combat_stats_data.get_total_enum_stat(stat_enum)
-	else:
-		stat_value = combat_stats_data.get_turn_enum_stat(stat_enum)
+	var stat_value: int = combat_stats_data.get_history_enum_stat(stat_enum, turn_stat_type)
 	
 	return _compare(stat_value, comparison_value, operator)

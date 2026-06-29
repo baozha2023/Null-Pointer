@@ -112,16 +112,16 @@ func _get_native_properties() -> Dictionary:
 ## Each chapter's add_act() can call this or supply its own custom array.
 static func default_floor_templates() -> Array[Dictionary]:
 	return [
-		{"min": 4, "max": 6, "pool": "easy", "fixed": []},                        # 1
-		{"min": 4, "max": 6, "pool": "easy", "fixed": []},                        # 2
-		{"min": 3, "max": 4, "pool": "easy", "fixed": ["SHOP"]},                  # 3  shop
-		{"min": 4, "max": 6, "pool": "easy", "fixed": ["SHOP"]},                  # 4  shop
-		{"min": 4, "max": 6, "pool": "easy", "fixed": []},                        # 5
-		{"min": 3, "max": 4, "pool": "easy", "fixed": ["MINIBOSS"]},              # 6  miniboss
-		{"min": 2, "max": 3, "pool": "easy", "fixed": ["REST_SITE"]},             # 7  rest
-		{"min": 4, "max": 6, "pool": "hard", "fixed": ["MINIBOSS"]},              # 8  miniboss
-		{"min": 4, "max": 6, "pool": "hard", "fixed": []},                        # 9
-		{"min": 3, "max": 4, "pool": "easy", "fixed": ["TREASURE", "SHOP"]},      # 10 treasure+shop
-		{"min": 3, "max": 5, "pool": "hard", "fixed": ["REST_SITE"]},             # 11 rest
-		{"min": 3, "max": 5, "pool": "hard", "fixed": []},                        # 12
+		{"min": 4, "max": 6, "pool": "easy", "fixed": []},                                # 1
+		{"min": 4, "max": 6, "pool": "easy", "fixed": []},                                # 2
+		{"min": 3, "max": 4, "pool": "easy", "fixed": []},                                # 3: 无保底
+		{"min": 4, "max": 6, "pool": "easy", "fixed": ["TREASURE"]},                      # 4: 1 宝箱
+		{"min": 4, "max": 6, "pool": "easy", "fixed": ["SHOP"]},                          # 5: 1 商店
+		{"min": 3, "max": 4, "pool": "easy", "fixed": ["MINIBOSS", "REST_SITE"]},         # 6: 1 精英, 1 休息处
+		{"min": 2, "max": 3, "pool": "easy", "fixed": []},                                # 7: 无保底
+		{"min": 4, "max": 6, "pool": "hard", "fixed": ["MINIBOSS"]},                      # 8: 1 精英
+		{"min": 4, "max": 6, "pool": "hard", "fixed": []},                                # 9: 无保底
+		{"min": 3, "max": 4, "pool": "hard", "fixed": ["TREASURE", "SHOP"]},              # 10: 1 宝箱, 1 商店
+		{"min": 3, "max": 5, "pool": "hard", "fixed": ["REST_SITE"]},                     # 11: 1 休息处
+		{"min": 3, "max": 5, "pool": "hard", "fixed": []},                                # 12: 无保底
 	]

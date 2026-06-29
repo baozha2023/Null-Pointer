@@ -279,8 +279,14 @@ func get_location_card_rewards(location_data: LocationData = Global.get_player_l
 
 func get_location_money_reward(location_data: LocationData = Global.get_player_location_data()) -> int:
 	var rng_reward_money: RandomNumberGenerator = Global.player_data.get_player_rng("rng_reward_money")
-	return 25 + (rng_reward_money.randi() % 25)
-
+	var location_type: int = location_data.location_type
+	match location_type:
+		LocationData.LOCATION_TYPES.MINIBOSS:
+			return 50 + (rng_reward_money.randi() % 30) # 50 to 79
+		LocationData.LOCATION_TYPES.BOSS:
+			return 100 + (rng_reward_money.randi() % 50) # 100 to 149
+		_:
+			return 25 + (rng_reward_money.randi() % 25) # 25 to 49
 ## Maps the chances of receiving a certain type of artifact from opening a chest.
 const ARTIFACT_CHEST_RARITY_WEIGHTS: Dictionary[Variant, int] = {
 	ArtifactData.ARTIFACT_RARITIES.COMMON: 50,

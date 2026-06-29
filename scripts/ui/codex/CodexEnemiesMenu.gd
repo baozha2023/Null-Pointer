@@ -20,14 +20,29 @@ var act_difficulties: Dictionary = {}
 var current_enemy_data: EnemyData = null
 var current_act_id: String = ""
 
+var current_sprite_frames: SpriteFrames = null
+var current_anim_name: String = ""
+var current_anim_frame: int = 0
+var current_anim_timer: float = 0.0
+
+@onready var codex_enemy_idle_button: Button = %CodexEnemyIdleButton
+@onready var codex_enemy_attack_button: Button = %CodexEnemyAttackButton
+@onready var codex_enemy_die_button: Button = %CodexEnemyDieButton
+
 func _ready() -> void:
 	codex_enemy_intents_toggle_button.toggled.connect(_on_enemy_intent_toggle)
+	set_process(false)
+	
+	codex_enemy_idle_button.pressed.connect(_on_play_anim.bind(AnimationData.ANIMATION_IDLE))
+	codex_enemy_attack_button.pressed.connect(_on_play_anim.bind(AnimationData.ANIMATION_ATTACK))
+	codex_enemy_die_button.pressed.connect(_on_play_anim.bind(AnimationData.ANIMATION_DEATH))
 
 func populate_menu() -> void:
 	super()
 	_populate_codex_enemies()
 
 func clear_menu() -> void:
+	stop_animation()
 	super()
 	clear_codex_enemies()
 	clear_codex_enemy_intents()
@@ -42,6 +57,7 @@ func clear_codex_enemies() -> void:
 func clear_codex_enemy_intents() -> void:
 	for child: Node in codex_enemy_intents_container.get_children():
 		child.queue_free()
+
 
 func _populate_codex_enemies() -> void:
 	clear_codex_enemies()
@@ -110,6 +126,7 @@ func _get_difficulty_health(enemy_data: EnemyData, difficulty: int) -> Dictionar
 
 ## Populates info for a given enemy, and a list of intents
 func populate_codex_enemy(enemy_data: EnemyData) -> void:
+	stop_animation()
 	var difficulty: int = act_difficulties.get(current_act_id, 0)
 	codex_enemy_name_label.text = enemy_data.enemy_name
 	codex_enemy_texture.texture = FileLoader.load_texture(enemy_data.enemy_texture_path)
@@ -169,3 +186,40 @@ func _codex_enemy_sort(enemy_id_1: String, enemy_id_2: String) -> bool:
 		return enemy_data_1.enemy_name < enemy_data_2.enemy_name
 	else:
 		return enemy_data_1.enemy_type < enemy_data_2.enemy_type
+
+#region Animations
+func _on_play_anim(anim_name: String) -> void:
+	if current_enemy_data == null: return
+	var anim_data: AnimationData = Global.get_animation_data(current_enemy_data.enemy_animation_id)
+	if anim_data != null and anim_data.animations != null and anim_data.animations.has_animation(anim_name):
+		current_sprite_frames = anim_data.animations
+		current_anim_name = anim_name
+		current_anim_frame = 0
+		current_anim_timer = 0.0
+		set_process(true)
+		codex_enemy_texture.texture = current_sprite_frames.get_frame_texture(current_anim_name, 0)
+	else:
+		stop_animation()
+
+func stop_animation() -> void:
+	current_sprite_frames = null
+	set_process(false)
+	if current_enemy_data != null:
+		codex_enemy_texture.texture = FileLoader.load_texture(current_enemy_data.enemy_texture_path)
+
+func _process(delta: float) -> void:
+	if current_sprite_frames != null:
+		current_anim_timer += delta
+		var fps: float = current_sprite_frames.get_animation_speed(current_anim_name)
+		if fps <= 0: fps = 5.0
+		var frame_duration: float = 1.0 / fps
+		
+		if current_anim_timer >= frame_duration:
+			current_anim_timer -= frame_duration
+			current_anim_frame += 1
+			
+			if current_anim_frame >= current_sprite_frames.get_frame_count(current_anim_name):
+				stop_animation()
+			else:
+				codex_enemy_texture.texture = current_sprite_frames.get_frame_texture(current_anim_name, current_anim_frame)
+#endregion

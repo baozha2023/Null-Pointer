@@ -72,6 +72,7 @@ const ACTION_ADD_CONSUMABLE: String = "res://scripts/actions/combatant_actions/p
 const ACTION_USE_CONSUMABLE: String = "res://scripts/actions/combatant_actions/player_actions/ActionUseConsumable.gd"
 const ACTION_CONSUMABLE: String = "res://scripts/actions/combatant_actions/player_actions/ActionConsumable.gd"
 const ACTION_END_TURN: String = "res://scripts/actions/combatant_actions/player_actions/ActionEndTurn.gd"
+const ACTION_BLOCK_BY_STATUS: String = "res://scripts/actions/combatant_actions/player_actions/ActionBlockByStatus.gd"
 
 # enemy actions
 const ACTION_CYCLE_ENEMY_INTENT: String = "res://scripts/actions/combatant_actions/enemy_actions/ActionCycleEnemyIntent.gd"
@@ -83,6 +84,7 @@ const ACTION_CLEAR_REWARDS = "res://scripts/actions/rewards/ActionClearRewards.g
 
 # shop
 const ACTION_SHOP_PURCHASE_ITEMS: String = "res://scripts/actions/shop_actions/ActionShopPurchaseItems.gd"
+const ACTION_GET_SHOP_PRICE: String = "res://scripts/actions/shop_actions/ActionGetShopPrice.gd"
 const ACTION_SHOP_POPULATE_ITEMS: String = "res://scripts/actions/shop_actions/ActionShopPopulateItems.gd"
 
 # artifact actions
@@ -203,6 +205,10 @@ const INTERCEPTOR_NEGATE_DAMAGE: String = "res://scripts/action_interceptors/Int
 const INTERCEPTOR_CAP_DAMAGE: String = "res://scripts/action_interceptors/InterceptorCapDamage.gd"
 const INTERCEPTOR_NEGATE_DEBUFF: String = "res://scripts/action_interceptors/InterceptorNegateDebuff.gd"
 const INTERCEPTOR_NEGATE_ADD_MONEY: String = "res://scripts/action_interceptors/InterceptorNegateAddMoney.gd"
+const INTERCEPTOR_REDUCE_ADD_MONEY: String = "res://scripts/action_interceptors/InterceptorReduceAddMoney.gd"
+const INTERCEPTOR_INCREASE_ADD_MONEY: String = "res://scripts/action_interceptors/InterceptorIncreaseAddMoney.gd"
+const INTERCEPTOR_INCREASE_SHOP_PRICE: String = "res://scripts/action_interceptors/InterceptorIncreaseShopPrice.gd"
+const INTERCEPTOR_DECREASE_SHOP_PRICE: String = "res://scripts/action_interceptors/InterceptorDecreaseShopPrice.gd"
 # auto revive
 const INTERCEPTOR_CONSUMABLE_AUTO_REVIVE: String = "res://scripts/action_interceptors/InterceptorConsumableAutoRevive.gd"
 # modifiers

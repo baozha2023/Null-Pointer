@@ -14,6 +14,18 @@ func perform_action():
 		# potentially upgrade parent if it exists
 		if upgrade_parent_card and card_data.parent_card != null:
 			card_data.parent_card.upgrade_card(upgrade_count, bypass_upgrade_max)
+		
+		# Synchronize the upgrade to any combat clones (so UI updates immediately in combat)
+		var master_card: CardData = card_data.parent_card if card_data.parent_card != null else card_data
+		var combat_cards: Array[CardData] = []
+		combat_cards.append_array(HandManager.player_hand)
+		combat_cards.append_array(HandManager.player_draw)
+		combat_cards.append_array(HandManager.player_discard)
+		combat_cards.append_array(HandManager.player_exhaust)
+		
+		for combat_card in combat_cards:
+			if combat_card.parent_card == master_card and combat_card != card_data:
+				combat_card.upgrade_card(upgrade_count, bypass_upgrade_max)
 
 func _to_string():
 	return "Upgrade Card Action"

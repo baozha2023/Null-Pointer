@@ -48,6 +48,7 @@ enum STATS {
 
 @export var turn_stats: Dictionary = {}	# maintains numberical stats on all trackable things done this turn 
 @export var total_stats: Dictionary = {} # maintains numberical stats on all trackable things done this combat
+@export var turn_stats_history: Array[Dictionary] = [] # maintains history of turn stats
 
 func _init(_event_object_id: String = "", _combat_floor: int = 0):
 	event_object_id = _event_object_id
@@ -64,7 +65,7 @@ func initialize_stats() -> void:
 		if custom_signal_data.custom_signal_is_stat:
 			turn_stats[custom_signal_data.custom_signal_stat_name] = 0
 			total_stats[custom_signal_data.custom_signal_stat_name] = 0
-
+	turn_stats_history.clear()
 
 #region Card Plays
 
@@ -102,6 +103,7 @@ func get_card_data_played_last_turn(include_duplicates: bool = false) -> Array[C
 
 #region Stat Tracking
 func reset_turn_stats() -> void:
+	turn_stats_history.append(turn_stats.duplicate())
 	for stat_name in turn_stats:
 		turn_stats[stat_name] = 0
 
@@ -144,4 +146,21 @@ func get_turn_enum_stat(stat_enum: int) -> int:
 func get_total_enum_stat(stat_enum: int) -> int:
 	var stat_name: String = _get_stat_name(stat_enum)
 	return get_total_stat(stat_name)
+
+## Gets a stat from a specific turn's history. -1 = total, 0 = current turn, 1 = last turn, 2 = two turns ago, etc.
+func get_history_stat(stat_name: String, turn_stat_type: int) -> int:
+	if turn_stat_type == -1:
+		return get_total_stat(stat_name)
+	elif turn_stat_type == 0:
+		return get_turn_stat(stat_name)
+	else:
+		var history_index: int = turn_stats_history.size() - turn_stat_type
+		if history_index >= 0 and history_index < turn_stats_history.size():
+			return turn_stats_history[history_index].get(stat_name, 0)
+		return 0
+
+## Gets a stat from a specific turn's history using hardcoded STATS enum value.
+func get_history_enum_stat(stat_enum: int, turn_stat_type: int) -> int:
+	var stat_name: String = _get_stat_name(stat_enum)
+	return get_history_stat(stat_name, turn_stat_type)
 #endregion

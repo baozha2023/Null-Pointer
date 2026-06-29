@@ -41,8 +41,8 @@ func perform_action() -> void:
 		var floor_count: int = len(templates) + 2  # +start +boss
 
 		# allow interceptors to override
-		var obfuscation_rate: float = aip.get_shadowed_action_values("location_obfuscation_rate", 0.3)
-		var event_conversion_rate: float = aip.get_shadowed_action_values("location_non_combat_event_rate", 0.12)
+		var obfuscation_rate: float = aip.get_shadowed_action_values("location_obfuscation_rate", 0.25)
+		var event_conversion_rate: float = aip.get_shadowed_action_values("location_non_combat_event_rate", 0.2)
 
 		# positioning constants
 		var template_max_nodes: int = 5
@@ -122,7 +122,7 @@ func perform_action() -> void:
 				loc.location_position = Vector2(x_pos, y_pos)
 
 				# obfuscation
-				if loc.location_type in [LocationData.LOCATION_TYPES.COMBAT, LocationData.LOCATION_TYPES.TREASURE]:
+				if loc.location_type == LocationData.LOCATION_TYPES.COMBAT:
 					if rng.randf() < obfuscation_rate:
 						loc.location_obfuscated = true
 

@@ -175,6 +175,7 @@ static func add_enemies() -> void:
 	var enemy_act_3_miniboss_1: EnemyData = EnemyData.new("enemy_act_3_miniboss_1")
 	enemy_act_3_miniboss_1.add_health_bounds(115, 115)
 	enemy_act_3_miniboss_1.add_health_bounds(140, 140, DIFFICULTY_MINIBOSS_ENEMIES_HARDER)
+	enemy_act_3_miniboss_1.add_health_bounds(155, 155, 4)
 	enemy_act_3_miniboss_1.enemy_type = EnemyData.ENEMY_TYPES.MINIBOSS
 	enemy_act_3_miniboss_1.enemy_name = "暴击兽"
 	enemy_act_3_miniboss_1.enemy_texture_path = "external/sprites/enemies/enemy_green_large.png"
@@ -213,6 +214,7 @@ static func add_enemies() -> void:
 	var enemy_act_3_miniboss_2: EnemyData = EnemyData.new("enemy_act_3_miniboss_2")
 	enemy_act_3_miniboss_2.add_health_bounds(85, 95)
 	enemy_act_3_miniboss_2.add_health_bounds(105, 115, DIFFICULTY_MINIBOSS_ENEMIES_HARDER)
+	enemy_act_3_miniboss_2.add_health_bounds(115, 125, 4)
 	enemy_act_3_miniboss_2.enemy_type = EnemyData.ENEMY_TYPES.MINIBOSS
 	enemy_act_3_miniboss_2.enemy_name = "炸弹兵"
 	enemy_act_3_miniboss_2.enemy_texture_path = "external/sprites/enemies/enemy_yellow_large.png"
@@ -254,6 +256,7 @@ static func add_enemies() -> void:
 	var enemy_act_3_boss_1: EnemyData = EnemyData.new("enemy_act_3_boss_1")
 	enemy_act_3_boss_1.add_health_bounds(260, 260)
 	enemy_act_3_boss_1.add_health_bounds(320, 320, DIFFICULTY_BOSS_ENEMIES_HARDER)
+	enemy_act_3_boss_1.add_health_bounds(350, 350, 5)
 	enemy_act_3_boss_1.enemy_type = EnemyData.ENEMY_TYPES.BOSS
 	enemy_act_3_boss_1.enemy_name = "核霸主"
 	enemy_act_3_boss_1.enemy_texture_path = "external/sprites/enemies/enemy_red_large.png"
@@ -430,12 +433,20 @@ static func add_events() -> void:
 
 	Global.register_rod(event_pool_act_3_hard)
 
-	# act 3 dialogue event pool — 复用第一章的对话
+	var event_abandoned_server: EventData = Global.get_event_data("event_abandoned_server")
+	var event_darkweb_market: EventData = Global.get_event_data("event_darkweb_market")
+	var event_trojan_trap: EventData = Global.get_event_data("event_trojan_trap")
+	var event_wandering_ai: EventData = Global.get_event_data("event_wandering_ai")
+
+	# act 3 dialogue event pool
 	var event_pool_act_3_dialogue: EventPoolData = EventPoolData.new("event_pool_act_3_dialogue")
 	event_pool_act_3_dialogue.add_events_to_pool(
-		Global.get_event_data("event_pick_something"),
+		event_abandoned_server,
 		[
-			Global.get_event_data("event_pick_something"),
+			event_abandoned_server,
+			event_darkweb_market,
+			event_trojan_trap,
+			event_wandering_ai,
 		],
 	)
 

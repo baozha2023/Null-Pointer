@@ -12,8 +12,8 @@ func generate_test_data() -> void:
 	add_test_action_interceptors()
 	
 	add_test_enemies()
-	add_test_events()
 	add_test_dialogue()
+	add_test_events()
 	add_test_acts()
 	
 	add_test_colors()
@@ -137,6 +137,22 @@ func add_test_artifacts() -> void:
 	artifact_easy_mode.artifact_script_path = "res://scripts/artifacts/ArtifactEasyMode.gd"
 	
 	Global.register_rod(artifact_easy_mode)
+	
+	var artifact_data_scarcity: ArtifactData = ArtifactData.new("artifact_data_scarcity")
+	artifact_data_scarcity.artifact_name = "数据贫瘠插件"
+	artifact_data_scarcity.artifact_description = "获得的数据币收益减少20%。"
+	artifact_data_scarcity.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.EVENT
+	artifact_data_scarcity.artifact_appears_in_artifact_packs = false
+	artifact_data_scarcity.artifact_interceptor_ids = ["interceptor_reduce_add_money"]
+	Global.register_rod(artifact_data_scarcity)
+
+	var artifact_inflation: ArtifactData = ArtifactData.new("artifact_inflation")
+	artifact_inflation.artifact_name = "通货膨胀插件"
+	artifact_inflation.artifact_description = "商店所有商品价格上涨25%。"
+	artifact_inflation.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.EVENT
+	artifact_inflation.artifact_appears_in_artifact_packs = false
+	artifact_inflation.artifact_interceptor_ids = ["interceptor_increase_shop_price"]
+	Global.register_rod(artifact_inflation)
 	
 	var artifact_block_on_attacks: ArtifactData = ArtifactData.new("artifact_block_on_attacks")
 	artifact_block_on_attacks.artifact_name = "外设插件：攻击加盾"
@@ -1286,76 +1302,8 @@ func add_test_events() -> void:
 
 ## Adds test DialogueData, and their embedded DialogueStateData and DialogueOptionData payloads
 func add_test_dialogue() -> void:
-	#region Dialogue Event 1
-	# Dialogue 1
-	var dialogue_pick_something: DialogueData = DialogueData.new("dialogue_pick_something")
-	dialogue_pick_something.dialogue_name_bbcode = "[wave amp=50.0 freq=2.0 connected=1][color=green]选择物品[/color][/wave]"
-	Global.register_rod(dialogue_pick_something)
-	
-	# Option 1
-	var dialogue_pick_something_option_1: DialogueOptionData = DialogueOptionData.new("dialogue_pick_something_option_1")
-	dialogue_pick_something_option_1.dialogue_option_bbcode = "[color=red]失去10点完整度[/color]并[color=green]获得100数据币[/color]"
-	dialogue_pick_something_option_1.dialogue_option_failed_validator_bbcode = "[color=grey][已锁定]: 完整度不足[/color]"
-	dialogue_pick_something_option_1.dialogue_option_actions = [
-		{Scripts.ACTION_ADD_HEALTH: {"target_override": BaseAction.TARGET_OVERRIDES.PLAYER, "health_amount": -10}},
-		{Scripts.ACTION_ADD_MONEY: {"money_amount": 100}},
-		]
-	dialogue_pick_something_option_1.dialogue_option_validators = [
-		{Scripts.VALIDATOR_PLAYER_HEALTH: {"health_amount": 11}},
-	]
-	dialogue_pick_something_option_1.dialogue_option_next_dialogue_state_id = "" # empty ends dialogue
-	
-	dialogue_pick_something._assign_option(dialogue_pick_something_option_1)
-	
-	# Option 2
-	var dialogue_pick_something_option_2: DialogueOptionData = DialogueOptionData.new("dialogue_pick_something_option_2")
-	dialogue_pick_something_option_2.dialogue_option_bbcode = "[color=red]失去50数据币[/color]并[color=green]获得随机稀有脚本[/color]"
-	dialogue_pick_something_option_2.dialogue_option_failed_validator_bbcode = "[color=grey][已锁定]: 数据币不足[/color]"
-	dialogue_pick_something_option_2.dialogue_option_actions = [
-		{
-		Scripts.ACTION_PICK_CARDS: {
-			"card_pick_type": ActionBasePickCards.PICK_DRAFT,
-			"pick_draft_cards": false,
-			"draft_from_card_pool": true,
-			"action_data": [{Scripts.ACTION_ADD_CARDS_TO_DECK: {}}],
-			"validator_data": [
-				{Scripts.VALIDATOR_CARD_RARITY: {"card_rarities": [CardData.CARD_RARITIES.RARE]}},
-				{Scripts.VALIDATOR_CARD_DRAFTABLE: {}},
-			],
-			"rng_name": "rng_events",
-			"draft_use_player_draft": false, # this should always be false if using a validator based draft
-			"draft_is_weighted": false,
-			"draft_use_pity_system": false,
-			"random_selection": true, # auto pick it
-			"draft_max_card_amount": 1, # auto pick it
-			"min_card_amount": 1,
-			"max_card_amount": 1,
-			}
-		},
-		{Scripts.ACTION_ADD_MONEY: {"money_amount": -50}},
-	]
-	dialogue_pick_something_option_2.dialogue_option_validators = [
-		{Scripts.VALIDATOR_MONEY: {"money_amount": 50}},
-	]
-	dialogue_pick_something_option_2.dialogue_option_next_dialogue_state_id = "" # empty ends dialogue
-	
-	dialogue_pick_something._assign_option(dialogue_pick_something_option_2)
-	
-	# State 1
-	var dialogue_state_pick_something_initial: DialogueStateData = DialogueStateData.new("dialogue_state_pick_something_initial")
-	dialogue_state_pick_something_initial.dialogue_state_prompt_bbcode = "测试事件。选择一个选项..."
-	dialogue_state_pick_something_initial.dialogue_state_dialogue_texture_path = "external/sprites/events/event_pick_something.png"
-	dialogue_state_pick_something_initial.add_state_dialogue_options(
-		[
-			dialogue_pick_something_option_1,
-			dialogue_pick_something_option_2,
-		]
-	)
-	
-	dialogue_pick_something._assign_state(dialogue_state_pick_something_initial)
-	dialogue_pick_something._assign_initial_state(dialogue_state_pick_something_initial)
-	
-	#endregion
+	GlobalDialogueGenerator.add_dialogues()
+
 	#region Dialogue Event 2
 	# Dialogue 2
 	var dialogue_modify_card: DialogueData = DialogueData.new("dialogue_modify_card")
@@ -1695,6 +1643,18 @@ func add_test_action_interceptors() -> void:
 	interceptor_negate_add_money.action_intercepted_action_paths = [Scripts.ACTION_ADD_MONEY]
 	
 	Global.register_rod(interceptor_negate_add_money)
+
+	var interceptor_reduce_add_money: ActionInterceptorData = ActionInterceptorData.new("interceptor_reduce_add_money")
+	interceptor_reduce_add_money.action_interceptor_modifies_parent = true
+	interceptor_reduce_add_money.action_interceptor_script_path = Scripts.INTERCEPTOR_REDUCE_ADD_MONEY
+	interceptor_reduce_add_money.action_intercepted_action_paths = [Scripts.ACTION_ADD_MONEY]
+	Global.register_rod(interceptor_reduce_add_money)
+
+	var interceptor_increase_shop_price: ActionInterceptorData = ActionInterceptorData.new("interceptor_increase_shop_price")
+	interceptor_increase_shop_price.action_interceptor_modifies_parent = true
+	interceptor_increase_shop_price.action_interceptor_script_path = Scripts.INTERCEPTOR_INCREASE_SHOP_PRICE
+	interceptor_increase_shop_price.action_intercepted_action_paths = [Scripts.ACTION_GET_SHOP_PRICE]
+	Global.register_rod(interceptor_increase_shop_price)
 	
 
 #endregion
@@ -3529,7 +3489,7 @@ func add_test_cards() -> void:
 	card_attack_number_of_cards_played.add_card_decorator("card_decorator_dynamic_value_modifier",
 		{
 		"stat_enum": CombatStatsData.STATS.CARDS_PLAYED,
-		"is_turn_stat": false,
+		"turn_stat_type": -1,
 		"multiplied_values": ["damage"],
 		"multiplied_values_bases": {"damage": 0},
 		"multiplied_values_per_stat": {"damage": 2},
@@ -4262,7 +4222,7 @@ func add_test_cards() -> void:
 		"modifiy_card_energy_cost_until_played": false,
 		"modifiy_card_energy_cost_until_turn": true,
 		"stat_enum": CombatStatsData.STATS.CARDS_DISCARDED,
-		"is_turn_stat": true,
+		"turn_stat_type": 0,
 		"energy_per_stat": -2
 		})
 
@@ -4290,7 +4250,7 @@ func add_test_cards() -> void:
 		"modifiy_card_energy_cost_until_played": false,
 		"modifiy_card_energy_cost_until_turn": false,
 		"stat_enum": CombatStatsData.STATS.PLAYER_DAMAGED_COUNT,
-		"is_turn_stat": false,
+		"turn_stat_type": -1,
 		"energy_per_stat": 1
 		})
 
@@ -4323,7 +4283,7 @@ func add_test_cards() -> void:
 		Scripts.VALIDATOR_COMBAT_STATS: 
 			{
 			"stat_enum": CombatStatsData.STATS.CARDS_EXHAUSTED,
-			"is_total_stat": false,
+			"turn_stat_type": 0,
 			"operator": ">=",
 			"comparison_value": 1,
 			}

@@ -98,7 +98,11 @@ func update_card_display(selected_enemy: Enemy = null) -> void:
 	card_condition_glow.texture = card_background.texture
 	
 	# updates the card's display
-	card_name.set_bbcode("[center]" + card_data.get_card_name() + "[/center]")
+	var card_name_text: String = card_data.get_card_name()
+	if card_data.card_upgrade_amount > 0:
+		card_name_text = "[color=green]" + card_name_text + "[/color]"
+	card_name.set_bbcode("[center]" + card_name_text + "[/center]")
+	
 	card_description.set_bbcode(get_card_description(selected_enemy))
 	card_type.text = CardData.CARD_RARITY_DISPLAY.get(card_data.card_rarity, "???") + " " + CardData.CARD_TYPE_DISPLAY.get(card_data.card_type, "???")
 	

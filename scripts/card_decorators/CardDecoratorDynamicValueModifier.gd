@@ -36,15 +36,11 @@ func _update_card_values() -> void:
 	var multiplied_values_min: Dictionary = decorator_values.get("multiplied_values_min", {})	# if a key is provided, will bind the value to a minimum after calculation
 	var multiplied_values_max: Dictionary = decorator_values.get("multiplied_values_max", {})	# if a key is provided, will bind the value to a maximum after calculation
 	
-	var is_turn_stat: bool = decorator_values.get("is_turn_stat", true)
+	var turn_stat_type: int = decorator_values.get("turn_stat_type", 0)
 	
 	# get the stat and its value
 	var combat_stats: CombatStatsData = StatsHandler.current_combat_stats
-	var stat_value: int = 0
-	if is_turn_stat:
-		stat_value = combat_stats.get_turn_enum_stat(stat_enum)
-	else:
-		stat_value = combat_stats.get_total_enum_stat(stat_enum)
+	var stat_value: int = combat_stats.get_history_enum_stat(stat_enum, turn_stat_type)
 	
 	# calculate each card value from the stat
 	var card_values: Dictionary = parent_card.card_data.card_values.duplicate(true)

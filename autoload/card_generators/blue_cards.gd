@@ -51,7 +51,7 @@ static func add_cards_blue() -> void:
 	card_cache_warmup.card_name = "缓存预热"
 	card_cache_warmup.card_color_id = "color_{0}".format([color])
 	card_cache_warmup.card_texture_path = "external/sprites/cards/{0}/card_{0}.png".format([color])
-	card_cache_warmup.card_description = "获得 [block] 点防火墙。打出后置于抽牌堆顶部。"
+	card_cache_warmup.card_description = "获得 [block] 点防火墙。打出后置于脚本库顶部。"
 	card_cache_warmup.card_type = CardData.CARD_TYPES.SKILL
 	card_cache_warmup.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_cache_warmup.card_requires_target = false
@@ -76,18 +76,20 @@ static func add_cards_blue() -> void:
 	card_traffic_analysis.card_rarity = CardData.CARD_RARITIES.UNCOMMON
 	card_traffic_analysis.card_requires_target = false
 	card_traffic_analysis.card_energy_cost = 0
-	card_traffic_analysis.card_values = {"block": 0, "block_per_card": 2}
-	card_traffic_analysis.card_upgrade_value_improvements = {"block_per_card": 1}
+	card_traffic_analysis.card_values = {"block": 2, "block_per_card": 2}
+	card_traffic_analysis.card_upgrade_value_improvements = {"block": 1, "block_per_card": 1}
 	card_traffic_analysis.card_play_actions = [
 		{
 			Scripts.ACTION_VARIABLE_COMBAT_STATS_MODIFIER: {
 				"combat_stat_name": "cards_in_hand",
-				"card_value_name": "block",
-				"stat_to_value_multiplier": 2,
+				"multiplied_values": ["block"],
+				"multiplied_values_bases": {"block": 0},
 				"time_delay": 0.0,
+				"action_data": [
+					{Scripts.ACTION_BLOCK: {"target_override": BaseAction.TARGET_OVERRIDES.PARENT}},
+				],
 			},
 		},
-		{Scripts.ACTION_BLOCK: {"target_override": BaseAction.TARGET_OVERRIDES.PARENT}},
 	]
 
 	Global.register_rod(card_traffic_analysis)
@@ -97,7 +99,7 @@ static func add_cards_blue() -> void:
 	card_stack_trace.card_name = "栈追踪"
 	card_stack_trace.card_color_id = "color_{0}".format([color])
 	card_stack_trace.card_texture_path = "external/sprites/cards/{0}/card_{0}.png".format([color])
-	card_stack_trace.card_description = "选择弃牌堆中一张脚本放回当前线程，本回合费用变为 0。消耗。"
+	card_stack_trace.card_description = "选择回收站中一张脚本放回当前线程，本时钟周期耗能变为 0。物理删除。"
 	card_stack_trace.card_type = CardData.CARD_TYPES.SKILL
 	card_stack_trace.card_rarity = CardData.CARD_RARITIES.UNCOMMON
 	card_stack_trace.card_requires_target = false
@@ -128,40 +130,6 @@ static func add_cards_blue() -> void:
 
 	Global.register_rod(card_stack_trace)
 
-	# 6. 内存转储 — 丢弃所有手牌，读取等量 (升级多读 1)
-	var card_memory_dump: CardData = CardData.new("card_memory_dump")
-	card_memory_dump.card_name = "内存转储"
-	card_memory_dump.card_color_id = "color_{0}".format([color])
-	card_memory_dump.card_texture_path = "external/sprites/cards/{0}/card_{0}.png".format([color])
-	card_memory_dump.card_description = "丢弃当前线程中所有脚本，然后读取等量的脚本。"
-	card_memory_dump.card_type = CardData.CARD_TYPES.SKILL
-	card_memory_dump.card_rarity = CardData.CARD_RARITIES.UNCOMMON
-	card_memory_dump.card_requires_target = false
-	card_memory_dump.card_energy_cost = 1
-	card_memory_dump.card_values = {"draw_count": 0}
-	card_memory_dump.card_upgrade_value_improvements = {"draw_count": 1}
-	card_memory_dump.card_play_actions = [
-		{
-			Scripts.ACTION_DISCARD_CARDS: {
-				"card_pick_type": HandManager.HAND_PILE,
-				"min_card_amount": 999,
-				"max_card_amount": 999,
-				"min_cards_are_required_for_action": false,
-				"random_selection": true,
-			},
-		},
-		{
-			Scripts.ACTION_VARIABLE_COMBAT_STATS_MODIFIER: {
-				"combat_stat_name": "cards_discarded_this_action",
-				"card_value_name": "draw_count",
-				"stat_to_value_multiplier": 1,
-				"time_delay": 0.0,
-			},
-		},
-		{Scripts.ACTION_DRAW_GENERATOR: {}},
-	]
-
-	Global.register_rod(card_memory_dump)
 
 	# 7. 数据挖掘 — 能力：每回合额外抽牌
 	var card_data_mining: CardData = CardData.new("card_data_mining")
@@ -263,24 +231,26 @@ static func add_cards_blue() -> void:
 	card_penetration_test.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_penetration_test.card_requires_target = true
 	card_penetration_test.card_energy_cost = 1
-	card_penetration_test.card_values = {"damage": 0, "number_of_attacks": 1, "status_charge_amount": 1, "status_effect_object_id": "status_effect_vulnerable", "impact_vfx_animation_id": "animation_vfx_impact_default"}
+	card_penetration_test.card_values = {"damage": 1, "number_of_attacks": 1, "status_charge_amount": 1, "status_effect_object_id": "status_effect_vulnerable", "impact_vfx_animation_id": "animation_vfx_impact_default"}
 	card_penetration_test.card_upgrade_value_improvements = {"status_charge_amount": 1}
 	card_penetration_test.card_play_actions = [
+		{
+			Scripts.ACTION_VARIABLE_COMBAT_STATS_MODIFIER: {
+				"combat_stat_name": "target_status_effect_charges",
+				"multiplied_values": ["damage"],
+				"multiplied_values_bases": {"damage": 0},
+				"stat_variable_name": "status_effect_vulnerable",
+				"time_delay": 0.0,
+				"action_data": [
+					{Scripts.ACTION_ATTACK_GENERATOR: {}},
+				],
+			},
+		},
 		{
 			Scripts.ACTION_APPLY_STATUS: {
 				"status_effect_object_id": "status_effect_vulnerable",
 			},
 		},
-		{
-			Scripts.ACTION_VARIABLE_COMBAT_STATS_MODIFIER: {
-				"combat_stat_name": "target_status_effect_charges",
-				"card_value_name": "damage",
-				"stat_variable_name": "status_effect_vulnerable",
-				"stat_to_value_multiplier": 1,
-				"time_delay": 0.0,
-			},
-		},
-		{Scripts.ACTION_ATTACK_GENERATOR: {}},
 	]
 
 	Global.register_rod(card_penetration_test)
@@ -355,7 +325,7 @@ static func add_cards_blue() -> void:
 	card_backdoor_inject.card_name = "后门植入"
 	card_backdoor_inject.card_color_id = "color_{0}".format([color])
 	card_backdoor_inject.card_texture_path = "external/sprites/cards/{0}/card_{0}.png".format([color])
-	card_backdoor_inject.card_description = "将一张[漏洞注入]加入当前线程。消耗。"
+	card_backdoor_inject.card_description = "将一张[漏洞注入]加入当前线程。物理删除。"
 	card_backdoor_inject.card_type = CardData.CARD_TYPES.SKILL
 	card_backdoor_inject.card_rarity = CardData.CARD_RARITIES.UNCOMMON
 	card_backdoor_inject.card_requires_target = false
@@ -363,7 +333,7 @@ static func add_cards_blue() -> void:
 	card_backdoor_inject.card_play_destination = HandManager.EXHAUST_PILE
 	card_backdoor_inject.card_values = {}
 	card_backdoor_inject.card_first_upgrade_property_changes = {
-		"card_description": "将两张[漏洞注入]加入当前线程。消耗。",
+		"card_description": "将两张[漏洞注入]加入当前线程。物理删除。",
 		"card_play_actions": [
 			{Scripts.ACTION_ADD_CARDS_TO_HAND: {"picked_cards": ["card_exploit_token", "card_exploit_token"]}},
 		],
@@ -379,14 +349,13 @@ static func add_cards_blue() -> void:
 	card_exploit_token.card_name = "漏洞注入"
 	card_exploit_token.card_color_id = "color_{0}".format([color])
 	card_exploit_token.card_texture_path = "external/sprites/cards/{0}/card_{0}.png".format([color])
-	card_exploit_token.card_description = "施加 [status_charge_amount] 层漏洞暴露。消耗。"
+	card_exploit_token.card_description = "施加 [status_charge_amount] 层漏洞暴露。物理删除。"
 	card_exploit_token.card_type = CardData.CARD_TYPES.SKILL
 	card_exploit_token.card_rarity = CardData.CARD_RARITIES.GENERATED
 	card_exploit_token.card_requires_target = true
 	card_exploit_token.card_energy_cost = 0
 	card_exploit_token.card_play_destination = HandManager.EXHAUST_PILE
 	card_exploit_token.card_values = {"status_charge_amount": 2, "status_effect_object_id": "status_effect_vulnerable"}
-	card_exploit_token.card_appears_in_card_packs = false
 	card_exploit_token.card_play_actions = [
 		{
 			Scripts.ACTION_APPLY_STATUS: {
@@ -474,16 +443,21 @@ static func add_cards_blue() -> void:
 	card_proxy_forward.card_values = {"block": 6, "block_per_attack": 2}
 	card_proxy_forward.card_upgrade_value_improvements = {"block": 3}
 	card_proxy_forward.card_play_actions = [
+		{Scripts.ACTION_BLOCK: {"target_override": BaseAction.TARGET_OVERRIDES.PARENT}},
 		{
 			Scripts.ACTION_VARIABLE_COMBAT_STATS_MODIFIER: {
 				"combat_stat_name": "attack_cards_in_hand",
-				"card_value_name": "block",
-				"stat_to_value_multiplier": 2,
-				"add_base_value": true,
+				"multiplied_values": ["block_per_attack"],
+				"multiplied_values_bases": {"block_per_attack": 0},
 				"time_delay": 0.0,
+				"action_data": [
+					{Scripts.ACTION_BLOCK: {
+						"target_override": BaseAction.TARGET_OVERRIDES.PARENT,
+						"custom_key_names": {"block": "block_per_attack"},
+					}},
+				],
 			},
 		},
-		{Scripts.ACTION_BLOCK: {"target_override": BaseAction.TARGET_OVERRIDES.PARENT}},
 	]
 
 	Global.register_rod(card_proxy_forward)
@@ -511,7 +485,7 @@ static func add_cards_blue() -> void:
 	card_logic_bomb.card_name = "逻辑炸弹"
 	card_logic_bomb.card_color_id = "color_{0}".format([color])
 	card_logic_bomb.card_texture_path = "external/sprites/cards/{0}/card_{0}.png".format([color])
-	card_logic_bomb.card_description = "造成 [damage] 点伤害。施加 [bomb_amount] 层逻辑炸弹。消耗。"
+	card_logic_bomb.card_description = "造成 [damage] 点伤害。施加 [bomb_amount] 层逻辑炸弹。物理删除。"
 	card_logic_bomb.card_type = CardData.CARD_TYPES.ATTACK
 	card_logic_bomb.card_rarity = CardData.CARD_RARITIES.UNCOMMON
 	card_logic_bomb.card_requires_target = true
@@ -536,7 +510,7 @@ static func add_cards_blue() -> void:
 	card_darknet_protocol.card_name = "暗网协议"
 	card_darknet_protocol.card_color_id = "color_{0}".format([color])
 	card_darknet_protocol.card_texture_path = "external/sprites/cards/{0}/card_{0}.png".format([color])
-	card_darknet_protocol.card_description = "获得等同于消耗 [energy_icon] 数量的算力增幅层数。消耗，虚无。"
+	card_darknet_protocol.card_description = "获得等同于消耗 [energy_icon] 数量的算力增幅层数。物理删除，易失。"
 	card_darknet_protocol.card_type = CardData.CARD_TYPES.SKILL
 	card_darknet_protocol.card_rarity = CardData.CARD_RARITIES.RARE
 	card_darknet_protocol.card_requires_target = false
@@ -549,7 +523,7 @@ static func add_cards_blue() -> void:
 	card_darknet_protocol.card_upgrade_value_improvements = {"multiplier_offset": 1}
 	card_darknet_protocol.card_first_upgrade_property_changes = {
 		"card_end_of_turn_destination": HandManager.DISCARD_PILE,
-		"card_description": "获得等同于消耗 [energy_icon] 数量的算力增幅层数。消耗。",
+		"card_description": "获得等同于消耗 [energy_icon] 数量的算力增幅层数。物理删除。",
 	}
 	card_darknet_protocol.card_play_actions = [
 		{
@@ -575,26 +549,28 @@ static func add_cards_blue() -> void:
 	card_security_audit.card_name = "安全审计"
 	card_security_audit.card_color_id = "color_{0}".format([color])
 	card_security_audit.card_texture_path = "external/sprites/cards/{0}/card_{0}.png".format([color])
-	card_security_audit.card_description = "施加等同于当前线程中脚本数量的漏洞暴露层数。消耗。"
+	card_security_audit.card_description = "施加等同于当前线程中脚本数量的漏洞暴露层数。物理删除。"
 	card_security_audit.card_type = CardData.CARD_TYPES.SKILL
 	card_security_audit.card_rarity = CardData.CARD_RARITIES.UNCOMMON
 	card_security_audit.card_requires_target = true
 	card_security_audit.card_energy_cost = 1
 	card_security_audit.card_play_destination = HandManager.EXHAUST_PILE
-	card_security_audit.card_values = {"status_charge_amount": 0, "status_effect_object_id": "status_effect_vulnerable"}
+	card_security_audit.card_values = {"status_charge_amount": 1, "status_effect_object_id": "status_effect_vulnerable"}
 	card_security_audit.card_first_upgrade_property_changes = {"card_play_destination": HandManager.DISCARD_PILE}
 	card_security_audit.card_play_actions = [
 		{
 			Scripts.ACTION_VARIABLE_COMBAT_STATS_MODIFIER: {
 				"combat_stat_name": "cards_in_hand",
-				"card_value_name": "status_charge_amount",
-				"stat_to_value_multiplier": 1,
+				"multiplied_values": ["status_charge_amount"],
+				"multiplied_values_bases": {"status_charge_amount": 0},
 				"time_delay": 0.0,
-			},
-		},
-		{
-			Scripts.ACTION_APPLY_STATUS: {
-				"status_effect_object_id": "status_effect_vulnerable",
+				"action_data": [
+					{
+						Scripts.ACTION_APPLY_STATUS: {
+							"status_effect_object_id": "status_effect_vulnerable",
+						},
+					},
+				],
 			},
 		},
 	]
@@ -638,7 +614,7 @@ static func add_cards_blue() -> void:
 	card_data_backup.card_name = "数据备份"
 	card_data_backup.card_color_id = "color_{0}".format([color])
 	card_data_backup.card_texture_path = "external/sprites/cards/{0}/card_{0}.png".format([color])
-	card_data_backup.card_description = "恢复 [health_amount] 点完整度。消耗。"
+	card_data_backup.card_description = "恢复 [health_amount] 点完整度。物理删除。"
 	card_data_backup.card_type = CardData.CARD_TYPES.SKILL
 	card_data_backup.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_data_backup.card_requires_target = false
@@ -718,7 +694,7 @@ static func add_cards_blue() -> void:
 	card_privilege_escalation.card_name = "权限提升"
 	card_privilege_escalation.card_color_id = "color_{0}".format([color])
 	card_privilege_escalation.card_texture_path = "external/sprites/cards/{0}/card_{0}.png".format([color])
-	card_privilege_escalation.card_description = "永久获得 [energy_amount_max] 点最大算力。消耗。"
+	card_privilege_escalation.card_description = "永久获得 [energy_amount_max] 点最大算力。物理删除。"
 	card_privilege_escalation.card_type = CardData.CARD_TYPES.POWER
 	card_privilege_escalation.card_rarity = CardData.CARD_RARITIES.RARE
 	card_privilege_escalation.card_requires_target = false
@@ -743,7 +719,7 @@ static func add_cards_blue() -> void:
 	card_botnet_strike.card_name = "僵尸网络打击"
 	card_botnet_strike.card_color_id = "color_{0}".format([color])
 	card_botnet_strike.card_texture_path = "external/sprites/cards/{0}/card_{0}.png".format([color])
-	card_botnet_strike.card_description = "造成 [number_of_attacks] 次 [damage] 点伤害。在本回合每打出过 1 个脚本，次数加 [number_of_attacks_modifier]。"
+	card_botnet_strike.card_description = "造成 [number_of_attacks] 次 [damage] 点伤害。在本时钟周期每打出过 1 个脚本，次数加 [number_of_attacks_modifier]。"
 	card_botnet_strike.card_type = CardData.CARD_TYPES.ATTACK
 	card_botnet_strike.card_rarity = CardData.CARD_RARITIES.RARE
 	card_botnet_strike.card_requires_target = true
@@ -757,7 +733,7 @@ static func add_cards_blue() -> void:
 	card_botnet_strike.card_decorators = {
 		decorator_botnet_strike.object_id: {
 			"stat_enum": CombatStatsData.STATS.CARDS_PLAYED,
-			"is_turn_stat": true,
+			"turn_stat_type": 0,
 			"multiplied_values": ["number_of_attacks"],
 			"multiplied_values_bases": {"number_of_attacks": 1},
 			"multiplied_values_per_stat": {"number_of_attacks": 1}
