@@ -2843,7 +2843,7 @@ theme_override_constants/margin_bottom = 96
 layout_mode = 2
 theme_override_constants/h_separation = 20
 theme_override_constants/v_separation = 20
-columns = 5
+columns = 4
 
 [node name="CardDraftSelectionOverlay" type="Control" parent="RunScreen" unique_id=302868452]
 unique_name_in_owner = true

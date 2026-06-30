@@ -116,7 +116,11 @@ func _on_character_selected(character_object_id: String):
 func _on_seed_input_text_changed(new_text: String):
 	# validate the input of the line edit
 	var caret_column: int = seed_input.caret_column	# store cursor position as changing text resets it
-	seed_input.text = str(new_text.to_int()) # validate inputs to only int
+	var filtered_text: String = ""
+	for c in new_text:
+		if c >= "0" and c <= "9":
+			filtered_text += c
+	seed_input.text = filtered_text
 	seed_input.caret_column = min(caret_column, len(seed_input.text)) # reset the cursor position
 
 #endregion

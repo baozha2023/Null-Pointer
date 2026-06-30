@@ -41,6 +41,7 @@ DebugLogger="*res://autoload/DebugLogger.gd"
 HandManager="*res://autoload/HandManager.gd"
 StatsHandler="*res://autoload/StatsHandler.gd"
 SoundManager="*uid://bjkhgdroa1wwd"
+UIMessage="*res://autoload/UIMessage.gd"
 
 [debug]
 

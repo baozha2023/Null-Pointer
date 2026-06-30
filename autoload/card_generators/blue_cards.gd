@@ -13,7 +13,7 @@ static func add_cards_blue() -> void:
 	var card_port_scan: CardData = CardData.new("card_port_scan")
 	card_port_scan.card_name = "端口扫描"
 	card_port_scan.card_color_id = "color_{0}".format([color])
-	card_port_scan.card_texture_path = "external/sprites/cards/{0}/card_{0}.png".format([color])
+	card_port_scan.card_texture_path = "sprites/card/blue/card_port_scan.png"
 	card_port_scan.card_description = "读取 [draw_count] 个脚本。"
 	card_port_scan.card_type = CardData.CARD_TYPES.SKILL
 	card_port_scan.card_rarity = CardData.CARD_RARITIES.COMMON
@@ -31,7 +31,7 @@ static func add_cards_blue() -> void:
 	var card_data_sniff: CardData = CardData.new("card_data_sniff")
 	card_data_sniff.card_name = "数据嗅探"
 	card_data_sniff.card_color_id = "color_{0}".format([color])
-	card_data_sniff.card_texture_path = "external/sprites/cards/{0}/card_{0}.png".format([color])
+	card_data_sniff.card_texture_path = "sprites/card/blue/card_data_sniff.png"
 	card_data_sniff.card_description = "造成 [damage] 点伤害。读取 [draw_count] 个脚本。"
 	card_data_sniff.card_type = CardData.CARD_TYPES.ATTACK
 	card_data_sniff.card_rarity = CardData.CARD_RARITIES.COMMON
@@ -50,7 +50,7 @@ static func add_cards_blue() -> void:
 	var card_cache_warmup: CardData = CardData.new("card_cache_warmup")
 	card_cache_warmup.card_name = "缓存预热"
 	card_cache_warmup.card_color_id = "color_{0}".format([color])
-	card_cache_warmup.card_texture_path = "external/sprites/cards/{0}/card_{0}.png".format([color])
+	card_cache_warmup.card_texture_path = "sprites/card/blue/card_cache_warmup.png"
 	card_cache_warmup.card_description = "获得 [block] 点防火墙。打出后置于脚本库顶部。"
 	card_cache_warmup.card_type = CardData.CARD_TYPES.SKILL
 	card_cache_warmup.card_rarity = CardData.CARD_RARITIES.COMMON
@@ -70,7 +70,7 @@ static func add_cards_blue() -> void:
 	var card_traffic_analysis: CardData = CardData.new("card_traffic_analysis")
 	card_traffic_analysis.card_name = "流量分析"
 	card_traffic_analysis.card_color_id = "color_{0}".format([color])
-	card_traffic_analysis.card_texture_path = "external/sprites/cards/{0}/card_{0}.png".format([color])
+	card_traffic_analysis.card_texture_path = "sprites/card/blue/card_traffic_analysis.png"
 	card_traffic_analysis.card_description = "当前线程中每有一个脚本，获得 [block_per_card] 点防火墙。"
 	card_traffic_analysis.card_type = CardData.CARD_TYPES.SKILL
 	card_traffic_analysis.card_rarity = CardData.CARD_RARITIES.UNCOMMON
@@ -98,7 +98,7 @@ static func add_cards_blue() -> void:
 	var card_stack_trace: CardData = CardData.new("card_stack_trace")
 	card_stack_trace.card_name = "栈追踪"
 	card_stack_trace.card_color_id = "color_{0}".format([color])
-	card_stack_trace.card_texture_path = "external/sprites/cards/{0}/card_{0}.png".format([color])
+	card_stack_trace.card_texture_path = "sprites/card/blue/card_stack_trace.png"
 	card_stack_trace.card_description = "选择回收站中一张脚本放回当前线程，本时钟周期耗能变为 0。物理删除。"
 	card_stack_trace.card_type = CardData.CARD_TYPES.SKILL
 	card_stack_trace.card_rarity = CardData.CARD_RARITIES.UNCOMMON
@@ -135,7 +135,7 @@ static func add_cards_blue() -> void:
 	var card_data_mining: CardData = CardData.new("card_data_mining")
 	card_data_mining.card_name = "数据挖掘"
 	card_data_mining.card_color_id = "color_{0}".format([color])
-	card_data_mining.card_texture_path = "external/sprites/cards/{0}/card_{0}.png".format([color])
+	card_data_mining.card_texture_path = "sprites/card/blue/card_data_mining.png"
 	card_data_mining.card_description = "每个时钟周期开始时，额外读取 [status_charge_amount] 个脚本。"
 	card_data_mining.card_type = CardData.CARD_TYPES.POWER
 	card_data_mining.card_rarity = CardData.CARD_RARITIES.RARE
@@ -162,7 +162,7 @@ static func add_cards_blue() -> void:
 	var card_inject_attack: CardData = CardData.new("card_inject_attack")
 	card_inject_attack.card_name = "注入攻击"
 	card_inject_attack.card_color_id = "color_{0}".format([color])
-	card_inject_attack.card_texture_path = "external/sprites/cards/{0}/card_{0}.png".format([color])
+	card_inject_attack.card_texture_path = "sprites/card/blue/card_inject_attack.png"
 	card_inject_attack.card_description = "造成 [damage] 点伤害。若目标有漏洞暴露，额外造成 [bonus_damage] 点伤害。然后施加 [status_charge_amount] 层漏洞暴露。"
 	card_inject_attack.card_type = CardData.CARD_TYPES.ATTACK
 	card_inject_attack.card_rarity = CardData.CARD_RARITIES.COMMON
@@ -203,7 +203,7 @@ static func add_cards_blue() -> void:
 	var card_trojan_plant: CardData = CardData.new("card_trojan_plant")
 	card_trojan_plant.card_name = "木马植入"
 	card_trojan_plant.card_color_id = "color_{0}".format([color])
-	card_trojan_plant.card_texture_path = "external/sprites/cards/{0}/card_{0}.png".format([color])
+	card_trojan_plant.card_texture_path = "sprites/card/blue/card_trojan_plant.png"
 	card_trojan_plant.card_description = "施加 [status_charge_amount] 层漏洞暴露。"
 	card_trojan_plant.card_type = CardData.CARD_TYPES.SKILL
 	card_trojan_plant.card_rarity = CardData.CARD_RARITIES.COMMON
@@ -225,7 +225,7 @@ static func add_cards_blue() -> void:
 	var card_penetration_test: CardData = CardData.new("card_penetration_test")
 	card_penetration_test.card_name = "渗透测试"
 	card_penetration_test.card_color_id = "color_{0}".format([color])
-	card_penetration_test.card_texture_path = "external/sprites/cards/{0}/card_{0}.png".format([color])
+	card_penetration_test.card_texture_path = "sprites/card/blue/card_penetration_test.png"
 	card_penetration_test.card_description = "施加 [status_charge_amount] 层漏洞暴露，然后造成等同于漏洞暴露层数的伤害。"
 	card_penetration_test.card_type = CardData.CARD_TYPES.ATTACK
 	card_penetration_test.card_rarity = CardData.CARD_RARITIES.COMMON
@@ -259,7 +259,7 @@ static func add_cards_blue() -> void:
 	var card_sql_injection: CardData = CardData.new("card_sql_injection")
 	card_sql_injection.card_name = "SQL注入"
 	card_sql_injection.card_color_id = "color_{0}".format([color])
-	card_sql_injection.card_texture_path = "external/sprites/cards/{0}/card_{0}.png".format([color])
+	card_sql_injection.card_texture_path = "sprites/card/blue/card_sql_injection.png"
 	card_sql_injection.card_description = "造成 [number_of_attacks] 次 [damage] 点伤害。若目标有漏洞暴露，额外造成一次伤害。"
 	card_sql_injection.card_type = CardData.CARD_TYPES.ATTACK
 	card_sql_injection.card_rarity = CardData.CARD_RARITIES.UNCOMMON
@@ -295,7 +295,7 @@ static func add_cards_blue() -> void:
 	var card_denial_of_service: CardData = CardData.new("card_denial_of_service")
 	card_denial_of_service.card_name = "拒绝服务"
 	card_denial_of_service.card_color_id = "color_{0}".format([color])
-	card_denial_of_service.card_texture_path = "external/sprites/cards/{0}/card_{0}.png".format([color])
+	card_denial_of_service.card_texture_path = "sprites/card/blue/card_denial_of_service.png"
 	card_denial_of_service.card_description = "施加 [vulnerable_amount] 层漏洞暴露和 [weaken_amount] 层输出降级。"
 	card_denial_of_service.card_type = CardData.CARD_TYPES.SKILL
 	card_denial_of_service.card_rarity = CardData.CARD_RARITIES.UNCOMMON
@@ -324,7 +324,7 @@ static func add_cards_blue() -> void:
 	var card_backdoor_inject: CardData = CardData.new("card_backdoor_inject")
 	card_backdoor_inject.card_name = "后门植入"
 	card_backdoor_inject.card_color_id = "color_{0}".format([color])
-	card_backdoor_inject.card_texture_path = "external/sprites/cards/{0}/card_{0}.png".format([color])
+	card_backdoor_inject.card_texture_path = "sprites/card/blue/card_backdoor_inject.png"
 	card_backdoor_inject.card_description = "将一张[漏洞注入]加入当前线程。物理删除。"
 	card_backdoor_inject.card_type = CardData.CARD_TYPES.SKILL
 	card_backdoor_inject.card_rarity = CardData.CARD_RARITIES.UNCOMMON
@@ -348,7 +348,7 @@ static func add_cards_blue() -> void:
 	var card_exploit_token: CardData = CardData.new("card_exploit_token")
 	card_exploit_token.card_name = "漏洞注入"
 	card_exploit_token.card_color_id = "color_{0}".format([color])
-	card_exploit_token.card_texture_path = "external/sprites/cards/{0}/card_{0}.png".format([color])
+	card_exploit_token.card_texture_path = "sprites/card/blue/card_exploit_token.png"
 	card_exploit_token.card_description = "施加 [status_charge_amount] 层漏洞暴露。物理删除。"
 	card_exploit_token.card_type = CardData.CARD_TYPES.SKILL
 	card_exploit_token.card_rarity = CardData.CARD_RARITIES.GENERATED
@@ -370,7 +370,7 @@ static func add_cards_blue() -> void:
 	var card_worm_virus: CardData = CardData.new("card_worm_virus")
 	card_worm_virus.card_name = "蠕虫病毒"
 	card_worm_virus.card_color_id = "color_{0}".format([color])
-	card_worm_virus.card_texture_path = "external/sprites/cards/{0}/card_{0}.png".format([color])
+	card_worm_virus.card_texture_path = "sprites/card/blue/card_worm_virus.png"
 	card_worm_virus.card_description = "战斗开始时，对所有敌人施加 [status_charge_amount] 层漏洞暴露。"
 	card_worm_virus.card_type = CardData.CARD_TYPES.POWER
 	card_worm_virus.card_rarity = CardData.CARD_RARITIES.RARE
@@ -394,7 +394,7 @@ static func add_cards_blue() -> void:
 	var card_zero_day: CardData = CardData.new("card_zero_day")
 	card_zero_day.card_name = "零日漏洞"
 	card_zero_day.card_color_id = "color_{0}".format([color])
-	card_zero_day.card_texture_path = "external/sprites/cards/{0}/card_{0}.png".format([color])
+	card_zero_day.card_texture_path = "sprites/card/blue/card_zero_day.png"
 	card_zero_day.card_description = "造成 [damage] 点伤害。若目标有漏洞暴露，伤害翻倍。"
 	card_zero_day.card_type = CardData.CARD_TYPES.ATTACK
 	card_zero_day.card_rarity = CardData.CARD_RARITIES.RARE
@@ -434,7 +434,7 @@ static func add_cards_blue() -> void:
 	var card_proxy_forward: CardData = CardData.new("card_proxy_forward")
 	card_proxy_forward.card_name = "代理转发"
 	card_proxy_forward.card_color_id = "color_{0}".format([color])
-	card_proxy_forward.card_texture_path = "external/sprites/cards/{0}/card_{0}.png".format([color])
+	card_proxy_forward.card_texture_path = "sprites/card/blue/card_proxy_forward.png"
 	card_proxy_forward.card_description = "获得 [block] 点防火墙。当前线程中每有一张攻击脚本，额外获得 [block_per_attack] 点。"
 	card_proxy_forward.card_type = CardData.CARD_TYPES.SKILL
 	card_proxy_forward.card_rarity = CardData.CARD_RARITIES.COMMON
@@ -463,10 +463,10 @@ static func add_cards_blue() -> void:
 	Global.register_rod(card_proxy_forward)
 
 	# 17. 缓冲区溢出 — 标准 2 费直伤
-	var card_buffer_overflow: CardData = CardData.new("card_buffer_overflow")
+	var card_buffer_overflow: CardData = CardData.new("card_buffer_overflow_blue")
 	card_buffer_overflow.card_name = "缓冲区溢出"
 	card_buffer_overflow.card_color_id = "color_{0}".format([color])
-	card_buffer_overflow.card_texture_path = "external/sprites/cards/{0}/card_{0}.png".format([color])
+	card_buffer_overflow.card_texture_path = "sprites/card/blue/card_buffer_overflow_blue.png"
 	card_buffer_overflow.card_description = "造成 [damage] 点伤害。"
 	card_buffer_overflow.card_type = CardData.CARD_TYPES.ATTACK
 	card_buffer_overflow.card_rarity = CardData.CARD_RARITIES.COMMON
@@ -484,7 +484,7 @@ static func add_cards_blue() -> void:
 	var card_logic_bomb: CardData = CardData.new("card_logic_bomb")
 	card_logic_bomb.card_name = "逻辑炸弹"
 	card_logic_bomb.card_color_id = "color_{0}".format([color])
-	card_logic_bomb.card_texture_path = "external/sprites/cards/{0}/card_{0}.png".format([color])
+	card_logic_bomb.card_texture_path = "sprites/card/blue/card_logic_bomb.png"
 	card_logic_bomb.card_description = "造成 [damage] 点伤害。施加 [bomb_amount] 层逻辑炸弹。物理删除。"
 	card_logic_bomb.card_type = CardData.CARD_TYPES.ATTACK
 	card_logic_bomb.card_rarity = CardData.CARD_RARITIES.UNCOMMON
@@ -509,7 +509,7 @@ static func add_cards_blue() -> void:
 	var card_darknet_protocol: CardData = CardData.new("card_darknet_protocol")
 	card_darknet_protocol.card_name = "暗网协议"
 	card_darknet_protocol.card_color_id = "color_{0}".format([color])
-	card_darknet_protocol.card_texture_path = "external/sprites/cards/{0}/card_{0}.png".format([color])
+	card_darknet_protocol.card_texture_path = "sprites/card/blue/card_darknet_protocol.png"
 	card_darknet_protocol.card_description = "获得等同于消耗 [energy_icon] 数量的算力增幅层数。物理删除，易失。"
 	card_darknet_protocol.card_type = CardData.CARD_TYPES.SKILL
 	card_darknet_protocol.card_rarity = CardData.CARD_RARITIES.RARE
@@ -548,7 +548,7 @@ static func add_cards_blue() -> void:
 	var card_security_audit: CardData = CardData.new("card_security_audit")
 	card_security_audit.card_name = "安全审计"
 	card_security_audit.card_color_id = "color_{0}".format([color])
-	card_security_audit.card_texture_path = "external/sprites/cards/{0}/card_{0}.png".format([color])
+	card_security_audit.card_texture_path = "sprites/card/blue/card_security_audit.png"
 	card_security_audit.card_description = "施加等同于当前线程中脚本数量的漏洞暴露层数。物理删除。"
 	card_security_audit.card_type = CardData.CARD_TYPES.SKILL
 	card_security_audit.card_rarity = CardData.CARD_RARITIES.UNCOMMON
@@ -585,7 +585,7 @@ static func add_cards_blue() -> void:
 	var card_broadcast_storm: CardData = CardData.new("card_broadcast_storm")
 	card_broadcast_storm.card_name = "广播风暴"
 	card_broadcast_storm.card_color_id = "color_{0}".format([color])
-	card_broadcast_storm.card_texture_path = "external/sprites/cards/{0}/card_{0}.png".format([color])
+	card_broadcast_storm.card_texture_path = "sprites/card/blue/card_broadcast_storm.png"
 	card_broadcast_storm.card_description = "对所有敌人造成 [damage] 点伤害。施加 [status_charge_amount] 层漏洞暴露。"
 	card_broadcast_storm.card_type = CardData.CARD_TYPES.ATTACK
 	card_broadcast_storm.card_rarity = CardData.CARD_RARITIES.UNCOMMON
@@ -613,7 +613,7 @@ static func add_cards_blue() -> void:
 	var card_data_backup: CardData = CardData.new("card_data_backup")
 	card_data_backup.card_name = "数据备份"
 	card_data_backup.card_color_id = "color_{0}".format([color])
-	card_data_backup.card_texture_path = "external/sprites/cards/{0}/card_{0}.png".format([color])
+	card_data_backup.card_texture_path = "sprites/card/blue/card_data_backup.png"
 	card_data_backup.card_description = "恢复 [health_amount] 点完整度。物理删除。"
 	card_data_backup.card_type = CardData.CARD_TYPES.SKILL
 	card_data_backup.card_rarity = CardData.CARD_RARITIES.COMMON
@@ -636,7 +636,7 @@ static func add_cards_blue() -> void:
 	var card_honeypot: CardData = CardData.new("card_honeypot")
 	card_honeypot.card_name = "蜜罐陷阱"
 	card_honeypot.card_color_id = "color_{0}".format([color])
-	card_honeypot.card_texture_path = "external/sprites/cards/{0}/card_{0}.png".format([color])
+	card_honeypot.card_texture_path = "sprites/card/blue/card_honeypot.png"
 	card_honeypot.card_description = "获得 [block] 点防火墙。对所有敌人施加 [status_charge_amount] 层输出降级。"
 	card_honeypot.card_type = CardData.CARD_TYPES.SKILL
 	card_honeypot.card_rarity = CardData.CARD_RARITIES.UNCOMMON
@@ -664,7 +664,7 @@ static func add_cards_blue() -> void:
 	var card_payload_delivery: CardData = CardData.new("card_payload_delivery")
 	card_payload_delivery.card_name = "载荷投递"
 	card_payload_delivery.card_color_id = "color_{0}".format([color])
-	card_payload_delivery.card_texture_path = "external/sprites/cards/{0}/card_{0}.png".format([color])
+	card_payload_delivery.card_texture_path = "sprites/card/blue/card_payload_delivery.png"
 	card_payload_delivery.card_description = "造成 [number_of_attacks] 次 [damage] 点伤害。目标每有 1 层漏洞暴露，次数加 1。读取 [draw_count] 个脚本。"
 	card_payload_delivery.card_type = CardData.CARD_TYPES.ATTACK
 	card_payload_delivery.card_rarity = CardData.CARD_RARITIES.UNCOMMON
@@ -693,7 +693,7 @@ static func add_cards_blue() -> void:
 	var card_privilege_escalation: CardData = CardData.new("card_privilege_escalation")
 	card_privilege_escalation.card_name = "权限提升"
 	card_privilege_escalation.card_color_id = "color_{0}".format([color])
-	card_privilege_escalation.card_texture_path = "external/sprites/cards/{0}/card_{0}.png".format([color])
+	card_privilege_escalation.card_texture_path = "sprites/card/blue/card_privilege_escalation.png"
 	card_privilege_escalation.card_description = "永久获得 [energy_amount_max] 点最大算力。物理删除。"
 	card_privilege_escalation.card_type = CardData.CARD_TYPES.POWER
 	card_privilege_escalation.card_rarity = CardData.CARD_RARITIES.RARE
@@ -718,7 +718,7 @@ static func add_cards_blue() -> void:
 	var card_botnet_strike: CardData = CardData.new("card_botnet_strike")
 	card_botnet_strike.card_name = "僵尸网络打击"
 	card_botnet_strike.card_color_id = "color_{0}".format([color])
-	card_botnet_strike.card_texture_path = "external/sprites/cards/{0}/card_{0}.png".format([color])
+	card_botnet_strike.card_texture_path = "sprites/card/blue/card_botnet_strike.png"
 	card_botnet_strike.card_description = "造成 [number_of_attacks] 次 [damage] 点伤害。在本时钟周期每打出过 1 个脚本，次数加 [number_of_attacks_modifier]。"
 	card_botnet_strike.card_type = CardData.CARD_TYPES.ATTACK
 	card_botnet_strike.card_rarity = CardData.CARD_RARITIES.RARE

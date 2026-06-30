@@ -22,6 +22,10 @@ func _ready() -> void:
 	# 关闭自动跟随焦点，防止双击卡牌时列表自动滚动导致鼠标偏移而判定失败
 	codex_card_rgsc.follow_focus = false
 	
+	# 优化布局：增大卡牌的左右和上下间距
+	codex_card_rgsc.grid_container.add_theme_constant_override("h_separation", 45)
+	codex_card_rgsc.grid_container.add_theme_constant_override("v_separation", 45)
+	
 	var bg = ButtonGroup.new()
 	codex_card_rarity_sort_button.button_group = bg
 	codex_card_cost_sort_button.button_group = bg
@@ -157,6 +161,15 @@ func _connect_card_signals() -> void:
 	for card_node: Node in codex_card_rgsc.grid_container.get_children():
 		if card_node is Card and not card_node.card_selected.is_connected(_on_codex_card_clicked):
 			card_node.card_selected.connect(_on_codex_card_clicked)
+			card_node.card_hovered.connect(_on_card_hovered)
+			card_node.card_unhovered.connect(_on_card_unhovered)
+
+func _on_card_hovered(card: Card) -> void:
+	# 这里演示了如何传入变大比例参数，目前设为 1.15
+	UIHover.scale_up(card, 1.15)
+
+func _on_card_unhovered(card: Card) -> void:
+	UIHover.scale_down(card)
 
 func _on_codex_card_clicked(card: Card) -> void:
 	var now: int = Time.get_ticks_msec()

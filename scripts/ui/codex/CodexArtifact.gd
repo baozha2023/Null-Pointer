@@ -14,8 +14,10 @@ func init(_artifact_data: ArtifactData):
 	texture_normal = FileLoader.load_texture(artifact_data.artifact_texture_path)
 
 func _on_mouse_entered() -> void:
+	UIHover.scale_up(self)
 	if artifact_data != null:
 		if artifact_data.artifact_description != "":
 			HandManager.tooltip.display_codex_artifact_tooltip(artifact_data)
 func _on_mouse_exited() -> void:
+	UIHover.scale_down(self)
 	HandManager.tooltip.hide_tooltip()

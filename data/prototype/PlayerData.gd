@@ -505,7 +505,7 @@ func remove_artifact_from_pool(artifact_object_id: String) -> void:
 #endregion
 #region Player Artifacts
 
-func add_artifact(artifact_id: String) -> void:
+func add_artifact(artifact_id: String, custom_values: Dictionary = {}) -> void:
 	# adds an artifact to the player as if they obtained it
 	if not player_artifact_uid_to_artifact_data.has(artifact_id):
 		var artifact_data: ArtifactData = Global.get_artifact_data_from_prototype(artifact_id)
@@ -513,6 +513,9 @@ func add_artifact(artifact_id: String) -> void:
 		if artifact_data == null:
 			DebugLogger.log_error("Player.add_artifact(): No artifact of id \"{0}\"".format([artifact_id]))
 		else:
+			# override any custom properties provided externally before adding
+			for key in custom_values:
+				artifact_data.set(key, custom_values[key])
 			player_artifact_uid_to_artifact_data[artifact_data.object_uid] = artifact_data
 		
 			# use a temp artifact script to perform any logic if the artifact has effect when added

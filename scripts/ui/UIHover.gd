@@ -12,6 +12,8 @@ static func add_hover_scale(ctrl: Control, hover_scale: float = DEFAULT_HOVER_SC
 
 ## 手动调用：放大
 static func scale_up(ctrl: Control, hover_scale: float = DEFAULT_HOVER_SCALE, duration: float = DEFAULT_DURATION) -> void:
+	# 设置中心点为控件中心，使其向四周放大
+	ctrl.pivot_offset = ctrl.size / 2.0
 	var t := ctrl.create_tween()
 	t.tween_property(ctrl, "scale", Vector2(hover_scale, hover_scale), duration)
 

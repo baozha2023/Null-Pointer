@@ -13,7 +13,8 @@ func perform_action():
 			breakpoint
 			DebugLogger.log_error("ActionAddArtifact: No artifact with ID of \"{0}\"".format([artifact_id]))
 			return
-		Global.player_data.add_artifact(artifact_id)
+		var custom_values: Dictionary = get_action_value("custom_values", {})
+		Global.player_data.add_artifact(artifact_id, custom_values)
 
 func _to_string():
 	var artifact_id: String = get_action_value("artifact_id", "")

@@ -157,3 +157,24 @@ static func add_cards_white() -> void:
 		},
 	]
 	Global.register_rod(card_kernel_reconstruct)
+
+	# 异常脚本（诅咒卡牌）
+	var card_curse_exception: CardData = CardData.new("card_curse_exception")
+	card_curse_exception.card_name = "异常报错"
+	card_curse_exception.card_color_id = "color_white"
+	card_curse_exception.card_texture_path = "sprites/card/white/card_kernel_reconstruct.png"
+	card_curse_exception.card_description = "无用。不可打出。\n[color=#ff6b6b]抽到此牌时，受到1点伤害。[/color]"
+	card_curse_exception.card_hint = "这是一张诅咒卡牌。不仅会污染卡池，某些情况下还会造成负面效果。"
+	card_curse_exception.card_type = CardData.CARD_TYPES.CURSE
+	card_curse_exception.card_rarity = CardData.CARD_RARITIES.GENERATED
+	card_curse_exception.card_is_playable = false
+	card_curse_exception.card_draw_actions = [
+		{
+			Scripts.ACTION_DIRECT_DAMAGE: {
+				"target_override": BaseAction.TARGET_OVERRIDES.PLAYER,
+				"damage": 1,
+				"bypass_block": true
+			}
+		}
+	]
+	Global.register_rod(card_curse_exception)

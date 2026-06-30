@@ -100,6 +100,7 @@ Order is critical because later autoloads depend on earlier ones. `Global._ready
 | 12 | `HandManager` | Manages the player's hand cards |
 | 13 | `SoundManager` | Audio playback (plugin-based, registered as `uid://`) |
 | 14 | `StatsHandler` | Tracks per-turn, per-combat, per-run statistics; manages profile save/load |
+| 15 | `UIMessage` | Global UI message overlay for floating notifications |
 
 ### Data Layer (`data/`)
 

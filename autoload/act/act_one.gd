@@ -275,16 +275,37 @@ static func add_events() -> void:
 	var event_darkweb_market: EventData = Global.get_event_data("event_darkweb_market")
 	var event_trojan_trap: EventData = Global.get_event_data("event_trojan_trap")
 	var event_wandering_ai: EventData = Global.get_event_data("event_wandering_ai")
+	
+	var event_product_manager: EventData = Global.get_event_data("event_product_manager")
+	var event_rm_rf: EventData = Global.get_event_data("event_rm_rf")
+	var event_996_blessing: EventData = Global.get_event_data("event_996_blessing")
+	var event_code_review: EventData = Global.get_event_data("event_code_review")
+	var event_open_source: EventData = Global.get_event_data("event_open_source")
+	var event_equity: EventData = Global.get_event_data("event_equity")
+	var event_spaghetti_code: EventData = Global.get_event_data("event_spaghetti_code")
+	var event_test_env_crash: EventData = Global.get_event_data("event_test_env_crash")
+	var event_paid_pooping: EventData = Global.get_event_data("event_paid_pooping")
+	var event_outsourcing: EventData = Global.get_event_data("event_outsourcing")
 
 	# act 1 dialogue event pool
 	var event_pool_act_1_dialogue: EventPoolData = EventPoolData.new("event_pool_act_1_dialogue")
 	event_pool_act_1_dialogue.add_events_to_pool(
 		event_abandoned_server,
 		[
-			event_abandoned_server,
-			event_darkweb_market,
-			event_trojan_trap,
-			event_wandering_ai,
+			 event_abandoned_server,
+			 event_darkweb_market,
+			 event_trojan_trap,
+			 event_wandering_ai,
+			 event_product_manager,
+			 event_rm_rf,
+			 event_996_blessing,
+			 event_code_review,
+			 event_open_source,
+			 event_equity,
+			 event_spaghetti_code,
+			 event_test_env_crash,
+			 event_paid_pooping,
+			 event_outsourcing,
 		],
 	)
 

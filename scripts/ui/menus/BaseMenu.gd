@@ -34,7 +34,8 @@ func populate_menu() -> void:
 		for button: Button in navigation_button_to_sub_menu:
 			if navigation_button_to_sub_menu[button] == default_sub_menu:
 				button.set_pressed_no_signal(true)
-				break
+			else:
+				button.set_pressed_no_signal(false)
 				
 	# play the intro animation for this menu if it exists
 	var intro_tween: Tween = _get_menu_intro_tween()

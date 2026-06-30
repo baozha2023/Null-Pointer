@@ -48,6 +48,24 @@ func add_artifacts() -> void:
 
 	Global.register_rod(artifact_add_money)
 
+	var artifact_high_latency: ArtifactData = ArtifactData.new("artifact_high_latency")
+	artifact_high_latency.artifact_name = "高延迟插件"
+	artifact_high_latency.artifact_texture_path = "sprites/artifacts/artifact_high_latency.png"
+	artifact_high_latency.artifact_description = "每回合开始时，少抽 1 张牌。"
+	artifact_high_latency.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.EVENT
+	artifact_high_latency.artifact_appears_in_artifact_packs = false
+	artifact_high_latency.artifact_interceptor_ids = ["interceptor_high_latency"]
+	Global.register_rod(artifact_high_latency)
+
+	var artifact_memory_leak: ArtifactData = ArtifactData.new("artifact_memory_leak")
+	artifact_memory_leak.artifact_name = "内存泄漏插件"
+	artifact_memory_leak.artifact_texture_path = "sprites/artifacts/artifact_memory_leak.png"
+	artifact_memory_leak.artifact_description = "每回合开始时，失去 1 点完整度。"
+	artifact_memory_leak.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.EVENT
+	artifact_memory_leak.artifact_appears_in_artifact_packs = false
+	artifact_memory_leak.artifact_turn_start_actions = [{ Scripts.ACTION_ADD_HEALTH: { "target_override": BaseAction.TARGET_OVERRIDES.PLAYER, "health_amount": -1 } }]
+	Global.register_rod(artifact_memory_leak)
+
 	var artifact_negate_money_gain: ArtifactData = ArtifactData.new("artifact_negate_money_gain")
 	artifact_negate_money_gain.artifact_name = "算力外设插件"
 	artifact_negate_money_gain.artifact_texture_path = "sprites/artifacts/artifact_negate_money_gain.png"
@@ -1571,6 +1589,12 @@ func add_action_interceptors() -> void:
 	interceptor_decrease_shop_price.action_intercepted_action_paths = [Scripts.ACTION_GET_SHOP_PRICE]
 	Global.register_rod(interceptor_decrease_shop_price)
 
+	var interceptor_high_latency: ActionInterceptorData = ActionInterceptorData.new("interceptor_high_latency")
+	interceptor_high_latency.action_interceptor_modifies_parent = true
+	interceptor_high_latency.action_interceptor_script_path = Scripts.INTERCEPTOR_HIGH_LATENCY
+	interceptor_high_latency.action_intercepted_action_paths = [Scripts.ACTION_DRAW_GENERATOR]
+	Global.register_rod(interceptor_high_latency)
+
 
 
 #endregion
@@ -1948,265 +1972,7 @@ func add_run_modifiers() -> void:
 #region Run Start Options
 
 func add_run_start_options() -> void:
-	### Downsides
-	# remove max hp
-	var run_start_option_reduce_max_hp: RunStartOptionData = RunStartOptionData.new("run_start_option_reduce_max_hp")
-	run_start_option_reduce_max_hp.run_start_option_bb_code = "[color=red]失去10点最大完整度[/color]"
-	run_start_option_reduce_max_hp.run_start_option_type = RunStartOptionData.RUN_START_OPTION_TYPES.PARTIAL_DOWNSIDE
-	run_start_option_reduce_max_hp.run_start_option_actions = [{ Scripts.ACTION_ADD_HEALTH: { "target_override": BaseAction.TARGET_OVERRIDES.PARENT, "health_max_amount": -10 } }]
-
-	Global.register_rod(run_start_option_reduce_max_hp)
-
-	# take damage
-	var run_start_option_take_damage: RunStartOptionData = RunStartOptionData.new("run_start_option_take_damage")
-	run_start_option_take_damage.run_start_option_bb_code = "[color=red]失去5点完整度[/color]"
-	run_start_option_take_damage.run_start_option_type = RunStartOptionData.RUN_START_OPTION_TYPES.PARTIAL_DOWNSIDE
-	run_start_option_take_damage.run_start_option_actions = [{ Scripts.ACTION_ADD_HEALTH: { "target_override": BaseAction.TARGET_OVERRIDES.PARENT, "health_amount": -5 } }]
-
-	Global.register_rod(run_start_option_take_damage)
-
-	# lose all money
-	var run_start_option_lose_money: RunStartOptionData = RunStartOptionData.new("run_start_option_lose_money")
-	run_start_option_lose_money.run_start_option_bb_code = "[color=red]失去所有数据币[/color]"
-	run_start_option_lose_money.run_start_option_type = RunStartOptionData.RUN_START_OPTION_TYPES.PARTIAL_DOWNSIDE
-	run_start_option_lose_money.run_start_option_actions = [{ Scripts.ACTION_ADD_MONEY: { "money_amount": -1000 } }]
-
-	Global.register_rod(run_start_option_lose_money)
-
-	# lose more max hp
-	var run_start_option_reduce_max_hp_more: RunStartOptionData = RunStartOptionData.new("run_start_option_reduce_max_hp_more")
-	run_start_option_reduce_max_hp_more.run_start_option_bb_code = "[color=red]失去20点最大完整度[/color]"
-	run_start_option_reduce_max_hp_more.run_start_option_type = RunStartOptionData.RUN_START_OPTION_TYPES.PARTIAL_DOWNSIDE
-	run_start_option_reduce_max_hp_more.run_start_option_actions = [{ Scripts.ACTION_ADD_HEALTH: { "target_override": BaseAction.TARGET_OVERRIDES.PLAYER, "health_max_amount": -20 } }]
-
-	Global.register_rod(run_start_option_reduce_max_hp_more)
-
-	### Upsides
-	# add money
-	var run_start_option_add_money: RunStartOptionData = RunStartOptionData.new("run_start_option_add_money")
-	run_start_option_add_money.run_start_option_bb_code = "[color=green]获得50数据币[/color]"
-	run_start_option_add_money.run_start_option_type = RunStartOptionData.RUN_START_OPTION_TYPES.PARTIAL_UPSIDE
-	run_start_option_add_money.run_start_option_actions = [{ Scripts.ACTION_ADD_MONEY: { "money_amount": 50 } }]
-
-	Global.register_rod(run_start_option_add_money)
-
-	# gain max hp
-	var run_start_option_gain_max_hp: RunStartOptionData = RunStartOptionData.new("run_start_option_gain_max_hp")
-	run_start_option_gain_max_hp.run_start_option_bb_code = "[color=green]获得10点最大完整度[/color]"
-	run_start_option_gain_max_hp.run_start_option_type = RunStartOptionData.RUN_START_OPTION_TYPES.PARTIAL_UPSIDE
-	run_start_option_gain_max_hp.run_start_option_actions = [{ Scripts.ACTION_ADD_HEALTH: { "target_override": BaseAction.TARGET_OVERRIDES.PLAYER, "health_amount": 10, "health_max_amount": 10 } }]
-
-	Global.register_rod(run_start_option_gain_max_hp)
-
-	# draft a card from player's pool
-	# functions identically to a standard draft
-	var run_start_option_draft_card: RunStartOptionData = RunStartOptionData.new("run_start_option_draft_card")
-	run_start_option_draft_card.run_start_option_bb_code = "[color=green]选择一张脚本[/color]"
-	run_start_option_draft_card.run_start_option_type = RunStartOptionData.RUN_START_OPTION_TYPES.PARTIAL_UPSIDE
-	run_start_option_draft_card.run_start_option_actions = [
-		{
-			Scripts.ACTION_PICK_CARDS: {
-				"card_pick_type": ActionBasePickCards.PICK_DRAFT,
-				"pick_draft_cards": false,
-				"draft_from_card_pool": true,
-				"action_data": [{ Scripts.ACTION_ADD_CARDS_TO_DECK: { } }],
-				# use same rng as player drafting so it counts as draft
-				"rng_name": "rng_card_drafting",
-				"validator_data": [], # this should always be empty if draft_use_player_draft = true
-				# weighted draft from player draft pool with pity system
-				"draft_use_player_draft": true,
-				"draft_is_weighted": false,
-				"draft_use_pity_system": false,
-			},
-		},
-	]
-
-	Global.register_rod(run_start_option_draft_card)
-
-	# draft common card available to the player
-	# this uses validators to scan the entire card pool for a draft
-	# you could also use a card pack to achieve a similar effect
-	var run_start_option_draft_common_card: RunStartOptionData = RunStartOptionData.new("run_start_option_draft_common_card")
-	run_start_option_draft_common_card.run_start_option_bb_code = "[color=green]选择一张普通脚本[/color]"
-	run_start_option_draft_common_card.run_start_option_type = RunStartOptionData.RUN_START_OPTION_TYPES.PARTIAL_UPSIDE
-	run_start_option_draft_common_card.run_start_option_actions = [
-		{
-			Scripts.ACTION_PICK_CARDS: {
-				"card_pick_type": ActionBasePickCards.PICK_DRAFT,
-				"pick_draft_cards": false,
-				"draft_from_card_pool": true,
-				"action_data": [{ Scripts.ACTION_ADD_CARDS_TO_DECK: { } }],
-				"validator_data": [
-					{ Scripts.VALIDATOR_CARD_RARITY: { "card_rarities": [CardData.CARD_RARITIES.COMMON] } },
-					{ Scripts.VALIDATOR_CARD_DRAFTABLE: { } },
-				],
-				# use same rng as player drafting so it counts as draft
-				"rng_name": "rng_card_drafting",
-				"draft_use_player_draft": false, # this should always be false if using a validator based draft
-				"draft_is_weighted": false,
-				"draft_use_pity_system": false,
-			},
-		},
-	]
-
-	Global.register_rod(run_start_option_draft_common_card)
-
-	# gain a random common artifact
-	var run_start_option_gain_common_artifact: RunStartOptionData = RunStartOptionData.new("run_start_option_gain_common_artifact")
-	run_start_option_gain_common_artifact.run_start_option_bb_code = "[color=green]获得一个随机普通外设插件[/color]"
-	run_start_option_gain_common_artifact.run_start_option_type = RunStartOptionData.RUN_START_OPTION_TYPES.PARTIAL_UPSIDE
-	run_start_option_gain_common_artifact.run_start_option_actions = [
-		{
-			Scripts.ACTION_ADD_ARTIFACTS_FROM_POOL: {
-				"target_override": BaseAction.TARGET_OVERRIDES.PLAYER,
-				"artifact_count": 1,
-				"artifact_rarities": [ArtifactData.ARTIFACT_RARITIES.COMMON],
-			},
-		},
-	]
-
-	Global.register_rod(run_start_option_gain_common_artifact)
-
-	# draft a colorless card from the white card pack
-	var run_start_option_draft_colorless_card: RunStartOptionData = RunStartOptionData.new("run_start_option_draft_colorless_card")
-	run_start_option_draft_colorless_card.run_start_option_bb_code = "[color=green]选择一张无色脚本[/color]"
-	run_start_option_draft_colorless_card.run_start_option_type = RunStartOptionData.RUN_START_OPTION_TYPES.PARTIAL_UPSIDE
-	run_start_option_draft_colorless_card.run_start_option_actions = [
-		{
-			Scripts.ACTION_PICK_CARDS: {
-				"card_pick_type": ActionBasePickCards.PICK_DRAFT,
-				"pick_draft_cards": false,
-				"draft_from_card_pool": true,
-				"action_data": [{ Scripts.ACTION_ADD_CARDS_TO_DECK: { } }],
-				"validator_data": [],
-				# use same rng as player drafting so it counts as draft
-				"rng_name": "rng_card_drafting",
-				# get white cards
-				"draft_card_pack_id": "card_pack_white",
-			},
-		},
-	]
-
-	Global.register_rod(run_start_option_draft_colorless_card)
-
-	# pick a card to upgrade from deck
-	var run_start_option_upgrade_card: RunStartOptionData = RunStartOptionData.new("run_start_option_upgrade_card")
-	run_start_option_upgrade_card.run_start_option_bb_code = "[color=green]升级一张脚本[/color]"
-	run_start_option_upgrade_card.run_start_option_type = RunStartOptionData.RUN_START_OPTION_TYPES.PARTIAL_UPSIDE
-	run_start_option_upgrade_card.run_start_option_actions = [
-		{
-			Scripts.ACTION_PICK_UPGRADE_CARDS: {
-				"card_pick_type": HandManager.DECK,
-				"max_card_amount": 1,
-				"card_pick_text": "选择一张要升级的脚本",
-			},
-		},
-	]
-
-	Global.register_rod(run_start_option_upgrade_card)
-
-	# gain a random rare artifact
-	var run_start_option_gain_rare_artifact: RunStartOptionData = RunStartOptionData.new("run_start_option_gain_rare_artifact")
-	run_start_option_gain_rare_artifact.run_start_option_bb_code = "[color=green]获得随机零日外设插件[/color]"
-	run_start_option_gain_rare_artifact.run_start_option_type = RunStartOptionData.RUN_START_OPTION_TYPES.PARTIAL_UPSIDE
-	run_start_option_gain_rare_artifact.run_start_option_actions = [
-		{
-			Scripts.ACTION_ADD_ARTIFACTS_FROM_POOL: {
-				"target_override": BaseAction.TARGET_OVERRIDES.PLAYER,
-				"artifact_count": 1,
-				"artifact_rarities": [ArtifactData.ARTIFACT_RARITIES.RARE],
-			},
-		},
-	]
-
-	Global.register_rod(run_start_option_gain_rare_artifact)
-
-	# pick a card to remove from deck
-	var run_start_option_remove_card: RunStartOptionData = RunStartOptionData.new("run_start_option_remove_card")
-	run_start_option_remove_card.run_start_option_bb_code = "[color=green]删除一张脚本[/color]"
-	run_start_option_remove_card.run_start_option_type = RunStartOptionData.RUN_START_OPTION_TYPES.PARTIAL_UPSIDE
-	run_start_option_remove_card.run_start_option_actions = [
-		{
-			Scripts.ACTION_PICK_CARDS: {
-				"card_pick_type": HandManager.DECK,
-				"max_card_amount": 1,
-				"min_card_amount": 1,
-				"min_cards_are_required": true,
-				"card_pick_text": "选择一张要删除的脚本",
-				"action_data": [{ Scripts.ACTION_REMOVE_CARDS_FROM_DECK: { } }],
-			},
-		},
-	]
-
-	Global.register_rod(run_start_option_remove_card)
-
-	# gain a random uncommon artifact
-	var run_start_option_gain_uncommon_artifact: RunStartOptionData = RunStartOptionData.new("run_start_option_gain_uncommon_artifact")
-	run_start_option_gain_uncommon_artifact.run_start_option_bb_code = "[color=green]获得随机闭源外设插件[/color]"
-	run_start_option_gain_uncommon_artifact.run_start_option_type = RunStartOptionData.RUN_START_OPTION_TYPES.PARTIAL_UPSIDE
-	run_start_option_gain_uncommon_artifact.run_start_option_actions = [
-		{
-			Scripts.ACTION_ADD_ARTIFACTS_FROM_POOL: {
-				"target_override": BaseAction.TARGET_OVERRIDES.PLAYER,
-				"artifact_count": 1,
-				"artifact_rarities": [ArtifactData.ARTIFACT_RARITIES.UNCOMMON],
-			},
-		},
-	]
-
-	Global.register_rod(run_start_option_gain_uncommon_artifact)
-
-	# heal to full
-	var run_start_option_heal_full: RunStartOptionData = RunStartOptionData.new("run_start_option_heal_full")
-	run_start_option_heal_full.run_start_option_bb_code = "[color=green]回复所有完整度[/color]"
-	run_start_option_heal_full.run_start_option_type = RunStartOptionData.RUN_START_OPTION_TYPES.PARTIAL_UPSIDE
-	run_start_option_heal_full.run_start_option_actions = [{ Scripts.ACTION_ADD_HEALTH: { "target_override": BaseAction.TARGET_OVERRIDES.PLAYER, "health_amount": 999 } }]
-
-	Global.register_rod(run_start_option_heal_full)
-
-	### Complete
-
-	# gain rare artifact but lose max hp
-	var run_start_option_rare_artifact_max_hp_loss: RunStartOptionData = RunStartOptionData.new("run_start_option_rare_artifact_max_hp_loss")
-	run_start_option_rare_artifact_max_hp_loss.run_start_option_bb_code = "[color=green]获得随机零日外设插件[/color], [color=red]失去10点最大完整度[/color]"
-	run_start_option_rare_artifact_max_hp_loss.run_start_option_type = RunStartOptionData.RUN_START_OPTION_TYPES.COMPLETE
-	run_start_option_rare_artifact_max_hp_loss.run_start_option_actions = [
-		{ Scripts.ACTION_ADD_ARTIFACTS_FROM_POOL: {
-			"target_override": BaseAction.TARGET_OVERRIDES.PLAYER,
-			"artifact_count": 1,
-			"artifact_rarities": [ArtifactData.ARTIFACT_RARITIES.RARE],
-		}},
-		{ Scripts.ACTION_ADD_HEALTH: { "target_override": BaseAction.TARGET_OVERRIDES.PLAYER, "health_max_amount": -10 } },
-	]
-
-	Global.register_rod(run_start_option_rare_artifact_max_hp_loss)
-
-	# upgrade all cards but take damage
-	var run_start_option_upgrade_all_damage: RunStartOptionData = RunStartOptionData.new("run_start_option_upgrade_all_damage")
-	run_start_option_upgrade_all_damage.run_start_option_bb_code = "[color=green]升级所有脚本[/color], [color=red]失去10点完整度[/color]"
-	run_start_option_upgrade_all_damage.run_start_option_type = RunStartOptionData.RUN_START_OPTION_TYPES.COMPLETE
-	run_start_option_upgrade_all_damage.run_start_option_actions = [
-		{
-			Scripts.ACTION_PICK_CARDS: {
-				"card_pick_type": HandManager.DECK,
-				"min_cards_are_required": false,
-				"random_selection": true,
-				"max_card_amount": 99,
-				"action_data": [{ Scripts.ACTION_UPGRADE_CARDS: { "upgrade_parent_card": true } }],
-			},
-		},
-		{ Scripts.ACTION_ADD_HEALTH: { "target_override": BaseAction.TARGET_OVERRIDES.PLAYER, "health_amount": -10 } },
-	]
-
-	Global.register_rod(run_start_option_upgrade_all_damage)
-
-	# replace starting artifact with a random boss one
-	var run_start_option_artifact_swap: RunStartOptionData = RunStartOptionData.new("run_start_option_artifact_swap")
-	run_start_option_artifact_swap.run_start_option_bb_code = "[color=green]将初始外设插件替换为随机动态生成外设插件[/color]"
-	run_start_option_artifact_swap.run_start_option_type = RunStartOptionData.RUN_START_OPTION_TYPES.COMPLETE
-	run_start_option_artifact_swap.run_start_option_actions = [{ Scripts.ACTION_SWAP_BOSS_ARTIFACT: { } }]
-
-	Global.register_rod(run_start_option_artifact_swap)
+	GlobalRunStartOptionsGenerator.add_run_start_options()
 
 #endregion
 

@@ -14,6 +14,16 @@ const INTRO_TEXTS: Array[String] = [
 	"黑入系统的第一秒，你就知道自己不该来这里。\n但来都来了。选择你的[color=#da70d6]机遇[/color]吧。",
 	"终端屏幕上，一行像素拼凑的文字缓缓浮现：\n'你是我见过的最有趣的变量。' 随即，一个[color=#ff8c00]提议[/color]出现。",
 	"深夜的服务器机房，只有你的键盘在响。\n没有人知道你是谁——趁现在，抓住你的[color=#00ced1]筹码[/color]。",
+	"系统重置完成。检测到残留缓存，请选择要保留的碎片：",
+	"内核恐慌已恢复。在下一次崩溃前，挑选你的救命稻草：",
+	"欢迎回到赛博深渊。网络安全协议已禁用，请自求多福：",
+	"老板说今天必须上线。这是他给你的唯一支援：",
+	"检测到未授权的接入... 谁管呢，快拿上这些工具：",
+	"内存转储完成。你在垃圾数据中翻找到了一些有用的东西：",
+	"你的绩效评估为D。公司决定给你最后一次戴罪立功的机会：",
+	"编译失败：99个错误。也许这些补丁能帮到你：",
+	"前方检测到高危防火墙。你需要一些‘特殊’的手段：",
+	"在这个0和1的世界里，运气也是算法的一部分。做个选择吧："
 ]
 
 @onready var starting_option_container = $StartingOptionContainer
@@ -76,7 +86,7 @@ func populate_run_start_options() -> void:
 	var rng_run_start_options: RandomNumberGenerator = Global.player_data.get_player_rng("rng_run_start_options")
 	Random.shuffle_array(rng_run_start_options, downside_option_ids)
 	Random.shuffle_array(rng_run_start_options, upside_option_ids)
-	Random.shuffle_array(rng_run_start_options, downside_option_ids)
+	Random.shuffle_array(rng_run_start_options, complete_option_ids)
 	
 	# populate mixed options
 	var mixed_option_count: int = min(MIXED_OPTION_COUNT, len(upside_option_ids), len(downside_option_ids))

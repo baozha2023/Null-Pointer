@@ -16,7 +16,7 @@ static func add_enemies() -> void:
 	enemy_act_3_overclocker.add_health_bounds(24, 30)
 	enemy_act_3_overclocker.add_health_bounds(32, 40, DIFFICULTY_STANDARD_ENEMIES_HARDER)
 	enemy_act_3_overclocker.enemy_name = "超频怪"
-	enemy_act_3_overclocker.enemy_texture_path = "external/sprites/enemies/enemy_yellow_large.png"
+	enemy_act_3_overclocker.enemy_texture_path = "sprites/enemies/act3/enemy_act_3_overclocker.png"
 	var overclocker_buff_actions_1: Array[Dictionary] = [
 		{Scripts.ACTION_APPLY_STATUS: {"status_effect_object_id": "status_effect_damage_increase", "status_charge_amount": 3, "target_override": BaseAction.TARGET_OVERRIDES.PARENT}},
 	]
@@ -41,10 +41,9 @@ static func add_enemies() -> void:
 		],
 	)
 
-	var _enemy_act_3_overclocker_anim: AnimationData = enemy_act_3_overclocker.add_standard_animations(
-		["external/sprites/enemies/enemy_yellow_large.png"],
-	)
 
+
+	var _enemy_act_3_overclocker_anim = enemy_act_3_overclocker.add_standard_animations([enemy_act_3_overclocker.enemy_texture_path])
 	Global.register_rod(enemy_act_3_overclocker)
 
 	# 熔毁核心 — 过热施加 + 死亡爆炸
@@ -52,7 +51,7 @@ static func add_enemies() -> void:
 	enemy_act_3_meltdown.add_health_bounds(22, 28)
 	enemy_act_3_meltdown.add_health_bounds(30, 36, DIFFICULTY_STANDARD_ENEMIES_HARDER)
 	enemy_act_3_meltdown.enemy_name = "熔毁核心"
-	enemy_act_3_meltdown.enemy_texture_path = "external/sprites/enemies/enemy_blue_large.png"
+	enemy_act_3_meltdown.enemy_texture_path = "sprites/enemies/act3/enemy_act_3_meltdown.png"
 	enemy_act_3_meltdown.enemy_actions_on_death = [
 		{
 			Scripts.ACTION_APPLY_STATUS: {"status_charge_amount": 10, "status_effect_object_id": "status_effect_corrosion", "target_override": BaseAction.TARGET_OVERRIDES.PLAYER},
@@ -85,10 +84,9 @@ static func add_enemies() -> void:
 		],
 	)
 
-	var _enemy_act_3_meltdown_anim: AnimationData = enemy_act_3_meltdown.add_standard_animations(
-		["external/sprites/enemies/enemy_blue_large.png"],
-	)
 
+
+	var _enemy_act_3_meltdown_anim = enemy_act_3_meltdown.add_standard_animations([enemy_act_3_meltdown.enemy_texture_path])
 	Global.register_rod(enemy_act_3_meltdown)
 
 	# 核心卫士 — 高护盾 + 尖刺 + 脆弱
@@ -96,7 +94,7 @@ static func add_enemies() -> void:
 	enemy_act_3_core_guard.add_health_bounds(27, 33)
 	enemy_act_3_core_guard.add_health_bounds(34, 40, DIFFICULTY_STANDARD_ENEMIES_HARDER)
 	enemy_act_3_core_guard.enemy_name = "核卫兵"
-	enemy_act_3_core_guard.enemy_texture_path = "external/sprites/enemies/enemy_purple_large.png"
+	enemy_act_3_core_guard.enemy_texture_path = "sprites/enemies/act3/enemy_act_3_core_guard.png"
 	enemy_act_3_core_guard.enemy_initial_status_effects = {"status_effect_pointy": 3}
 	var guard_vuln_actions_1: Array[Dictionary] = [
 		{Scripts.ACTION_APPLY_STATUS: {"status_effect_object_id": "status_effect_vulnerable", "status_charge_amount": 2, "target_override": BaseAction.TARGET_OVERRIDES.PLAYER}},
@@ -123,10 +121,9 @@ static func add_enemies() -> void:
 		],
 	)
 
-	var _enemy_act_3_core_guard_anim: AnimationData = enemy_act_3_core_guard.add_standard_animations(
-		["external/sprites/enemies/enemy_purple_large.png"],
-	)
 
+
+	var _enemy_act_3_core_guard_anim = enemy_act_3_core_guard.add_standard_animations([enemy_act_3_core_guard.enemy_texture_path])
 	Global.register_rod(enemy_act_3_core_guard)
 
 	# 腐化程序 — 虚弱 + 易伤 双重 debuff + 攻击
@@ -134,7 +131,7 @@ static func add_enemies() -> void:
 	enemy_act_3_corruptor.add_health_bounds(18, 24)
 	enemy_act_3_corruptor.add_health_bounds(24, 30, DIFFICULTY_STANDARD_ENEMIES_HARDER)
 	enemy_act_3_corruptor.enemy_name = "腐化妖"
-	enemy_act_3_corruptor.enemy_texture_path = "external/sprites/enemies/enemy_green_large.png"
+	enemy_act_3_corruptor.enemy_texture_path = "sprites/enemies/act3/enemy_act_3_corruptor.png"
 	var corrupt_debuff_actions_1: Array[Dictionary] = [
 		{Scripts.ACTION_APPLY_STATUS: {"status_effect_object_id": "status_effect_vulnerable", "status_charge_amount": 2, "target_override": BaseAction.TARGET_OVERRIDES.PLAYER}},
 		{Scripts.ACTION_APPLY_STATUS: {"status_effect_object_id": "status_effect_weaken", "status_charge_amount": 2, "target_override": BaseAction.TARGET_OVERRIDES.PLAYER}},
@@ -161,10 +158,9 @@ static func add_enemies() -> void:
 		],
 	)
 
-	var _enemy_act_3_corruptor_anim: AnimationData = enemy_act_3_corruptor.add_standard_animations(
-		["external/sprites/enemies/enemy_green_large.png"],
-	)
 
+
+	var _enemy_act_3_corruptor_anim = enemy_act_3_corruptor.add_standard_animations([enemy_act_3_corruptor.enemy_texture_path])
 	Global.register_rod(enemy_act_3_corruptor)
 
 	#endregion
@@ -178,7 +174,7 @@ static func add_enemies() -> void:
 	enemy_act_3_miniboss_1.add_health_bounds(155, 155, 4)
 	enemy_act_3_miniboss_1.enemy_type = EnemyData.ENEMY_TYPES.MINIBOSS
 	enemy_act_3_miniboss_1.enemy_name = "暴击兽"
-	enemy_act_3_miniboss_1.enemy_texture_path = "external/sprites/enemies/enemy_green_large.png"
+	enemy_act_3_miniboss_1.enemy_texture_path = "sprites/enemies/act3/enemy_act_3_miniboss_1.png"
 	var crit_buff_actions_1: Array[Dictionary] = [
 		{Scripts.ACTION_APPLY_STATUS: {"status_effect_object_id": "status_effect_critical", "status_charge_amount": 15, "target_override": BaseAction.TARGET_OVERRIDES.PARENT}},
 	]
@@ -204,10 +200,9 @@ static func add_enemies() -> void:
 		],
 	)
 
-	var _enemy_act_3_miniboss_1_anim: AnimationData = enemy_act_3_miniboss_1.add_standard_animations(
-		["external/sprites/enemies/enemy_green_large.png"],
-	)
 
+
+	var _enemy_act_3_miniboss_1_anim = enemy_act_3_miniboss_1.add_standard_animations([enemy_act_3_miniboss_1.enemy_texture_path])
 	Global.register_rod(enemy_act_3_miniboss_1)
 
 	# 精英怪 2：定时炸弹 — 叠炸弹 + 护盾拖延
@@ -217,7 +212,7 @@ static func add_enemies() -> void:
 	enemy_act_3_miniboss_2.add_health_bounds(115, 125, 4)
 	enemy_act_3_miniboss_2.enemy_type = EnemyData.ENEMY_TYPES.MINIBOSS
 	enemy_act_3_miniboss_2.enemy_name = "炸弹兵"
-	enemy_act_3_miniboss_2.enemy_texture_path = "external/sprites/enemies/enemy_yellow_large.png"
+	enemy_act_3_miniboss_2.enemy_texture_path = "sprites/enemies/act3/enemy_act_3_miniboss_2.png"
 	var bomb_plant_actions_1: Array[Dictionary] = [
 		{Scripts.ACTION_APPLY_STATUS: {"status_effect_object_id": "status_effect_bomb", "status_charge_amount": 15, "target_override": BaseAction.TARGET_OVERRIDES.PLAYER}},
 	]
@@ -243,10 +238,9 @@ static func add_enemies() -> void:
 		],
 	)
 
-	var _enemy_act_3_miniboss_2_anim: AnimationData = enemy_act_3_miniboss_2.add_standard_animations(
-		["external/sprites/enemies/enemy_yellow_large.png"],
-	)
 
+
+	var _enemy_act_3_miniboss_2_anim = enemy_act_3_miniboss_2.add_standard_animations([enemy_act_3_miniboss_2.enemy_texture_path])
 	Global.register_rod(enemy_act_3_miniboss_2)
 
 	#endregion
@@ -259,7 +253,7 @@ static func add_enemies() -> void:
 	enemy_act_3_boss_1.add_health_bounds(350, 350, 5)
 	enemy_act_3_boss_1.enemy_type = EnemyData.ENEMY_TYPES.BOSS
 	enemy_act_3_boss_1.enemy_name = "核霸主"
-	enemy_act_3_boss_1.enemy_texture_path = "external/sprites/enemies/enemy_red_large.png"
+	enemy_act_3_boss_1.enemy_texture_path = "sprites/enemies/act3/enemy_act_3_boss_1.png"
 	enemy_act_3_boss_1.enemy_initial_status_effects = {"status_effect_pointy": 3}
 
 	# 初始 → 召唤
@@ -326,10 +320,9 @@ static func add_enemies() -> void:
 		],
 	)
 
-	var _enemy_act_3_boss_1_anim: AnimationData = enemy_act_3_boss_1.add_standard_animations(
-		["external/sprites/enemies/enemy_red_large.png"],
-	)
 
+
+	var _enemy_act_3_boss_1_anim = enemy_act_3_boss_1.add_standard_animations([enemy_act_3_boss_1.enemy_texture_path])
 	Global.register_rod(enemy_act_3_boss_1)
 
 	#endregion
@@ -437,6 +430,17 @@ static func add_events() -> void:
 	var event_darkweb_market: EventData = Global.get_event_data("event_darkweb_market")
 	var event_trojan_trap: EventData = Global.get_event_data("event_trojan_trap")
 	var event_wandering_ai: EventData = Global.get_event_data("event_wandering_ai")
+	
+	var event_product_manager: EventData = Global.get_event_data("event_product_manager")
+	var event_rm_rf: EventData = Global.get_event_data("event_rm_rf")
+	var event_996_blessing: EventData = Global.get_event_data("event_996_blessing")
+	var event_code_review: EventData = Global.get_event_data("event_code_review")
+	var event_open_source: EventData = Global.get_event_data("event_open_source")
+	var event_equity: EventData = Global.get_event_data("event_equity")
+	var event_spaghetti_code: EventData = Global.get_event_data("event_spaghetti_code")
+	var event_test_env_crash: EventData = Global.get_event_data("event_test_env_crash")
+	var event_paid_pooping: EventData = Global.get_event_data("event_paid_pooping")
+	var event_outsourcing: EventData = Global.get_event_data("event_outsourcing")
 
 	# act 3 dialogue event pool
 	var event_pool_act_3_dialogue: EventPoolData = EventPoolData.new("event_pool_act_3_dialogue")
@@ -447,6 +451,16 @@ static func add_events() -> void:
 			event_darkweb_market,
 			event_trojan_trap,
 			event_wandering_ai,
+			event_product_manager,
+			event_rm_rf,
+			event_996_blessing,
+			event_code_review,
+			event_open_source,
+			event_equity,
+			event_spaghetti_code,
+			event_test_env_crash,
+			event_paid_pooping,
+			event_outsourcing,
 		],
 	)
 

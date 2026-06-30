@@ -1,0 +1,36 @@
+[gd_scene format=3 uid="uid://xgtqv68oagi5"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.12, 0.12, 0.12, 0.95)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0, 0.8, 0.2, 0.5)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[node name="UiMessageItem" type="MarginContainer" unique_id=1415001090]
+offset_right = 40.0
+offset_bottom = 40.0
+size_flags_horizontal = 4
+mouse_filter = 2
+
+[node name="PanelContainer" type="PanelContainer" parent="." unique_id=1901579250]
+layout_mode = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_1")
+
+[node name="Label" type="Label" parent="PanelContainer" unique_id=202896427]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.9, 0.9, 1)
+theme_override_font_sizes/font_size = 14
+text = "提示信息"
+horizontal_alignment = 1
+vertical_alignment = 1

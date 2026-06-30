@@ -176,7 +176,7 @@ func _ready():
 	
 	### 生成生产环境数据（真实游戏内容）
 	GlobalProdDataGenerator.generate_production_data()
-	ProfileData.ENABLE_ALL_DIFFICULTIES = false
+	ProfileData.ENABLE_ALL_DIFFICULTIES = true
 	
 	### 生成测试环境数据（用于开发调试）
 	#GlobalTestDataGenerator.generate_test_data()

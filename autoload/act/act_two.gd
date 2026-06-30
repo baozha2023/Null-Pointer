@@ -16,7 +16,7 @@ static func add_enemies() -> void:
 	enemy_act_2_firewall.add_health_bounds(18, 22)
 	enemy_act_2_firewall.add_health_bounds(25, 30, DIFFICULTY_STANDARD_ENEMIES_HARDER)
 	enemy_act_2_firewall.enemy_name = "火墙兵"
-	enemy_act_2_firewall.enemy_texture_path = "external/sprites/enemies/enemy_yellow_small.png"
+	enemy_act_2_firewall.enemy_texture_path = "sprites/enemies/act2/enemy_act_2_firewall.png"
 	enemy_act_2_firewall.enemy_initial_status_effects = {"status_effect_pointy": 3}
 	enemy_act_2_firewall.add_intent_state(
 		[
@@ -36,10 +36,9 @@ static func add_enemies() -> void:
 		],
 	)
 
-	var _enemy_act_2_firewall_anim: AnimationData = enemy_act_2_firewall.add_standard_animations(
-		["external/sprites/enemies/enemy_yellow_small.png"],
-	)
 
+
+	var _enemy_act_2_firewall_anim = enemy_act_2_firewall.add_standard_animations([enemy_act_2_firewall.enemy_texture_path])
 	Global.register_rod(enemy_act_2_firewall)
 
 	# 扫描器 — 标记脆弱 + 攻击
@@ -47,7 +46,7 @@ static func add_enemies() -> void:
 	enemy_act_2_scanner.add_health_bounds(12, 16)
 	enemy_act_2_scanner.add_health_bounds(15, 19, DIFFICULTY_STANDARD_ENEMIES_HARDER)
 	enemy_act_2_scanner.enemy_name = "扫描兵"
-	enemy_act_2_scanner.enemy_texture_path = "external/sprites/enemies/enemy_blue_medium.png"
+	enemy_act_2_scanner.enemy_texture_path = "sprites/enemies/act2/enemy_act_2_scanner.png"
 	var scanner_vuln_actions_1: Array[Dictionary] = [
 		{Scripts.ACTION_APPLY_STATUS: {"status_effect_object_id": "status_effect_vulnerable", "status_charge_amount": 2, "target_override": BaseAction.TARGET_OVERRIDES.PLAYER}},
 	]
@@ -72,10 +71,9 @@ static func add_enemies() -> void:
 		],
 	)
 
-	var _enemy_act_2_scanner_anim: AnimationData = enemy_act_2_scanner.add_standard_animations(
-		["external/sprites/enemies/enemy_blue_medium.png"],
-	)
 
+
+	var _enemy_act_2_scanner_anim = enemy_act_2_scanner.add_standard_animations([enemy_act_2_scanner.enemy_texture_path])
 	Global.register_rod(enemy_act_2_scanner)
 
 	# 守护进程 — 混合型：虚弱 + 攻击
@@ -83,7 +81,7 @@ static func add_enemies() -> void:
 	enemy_act_2_warden.add_health_bounds(20, 25)
 	enemy_act_2_warden.add_health_bounds(26, 32, DIFFICULTY_STANDARD_ENEMIES_HARDER)
 	enemy_act_2_warden.enemy_name = "监守者"
-	enemy_act_2_warden.enemy_texture_path = "external/sprites/enemies/enemy_yellow_medium.png"
+	enemy_act_2_warden.enemy_texture_path = "sprites/enemies/act2/enemy_act_2_warden.png"
 	var warden_weaken_actions_1: Array[Dictionary] = [
 		{Scripts.ACTION_APPLY_STATUS: {"status_effect_object_id": "status_effect_weaken", "status_charge_amount": 2, "target_override": BaseAction.TARGET_OVERRIDES.PLAYER}},
 	]
@@ -108,10 +106,9 @@ static func add_enemies() -> void:
 		],
 	)
 
-	var _enemy_act_2_warden_anim: AnimationData = enemy_act_2_warden.add_standard_animations(
-		["external/sprites/enemies/enemy_yellow_medium.png"],
-	)
 
+
+	var _enemy_act_2_warden_anim = enemy_act_2_warden.add_standard_animations([enemy_act_2_warden.enemy_texture_path])
 	Global.register_rod(enemy_act_2_warden)
 
 	# 特洛伊木马 — 重击型 + 死亡腐蚀
@@ -119,7 +116,7 @@ static func add_enemies() -> void:
 	enemy_act_2_trojan.add_health_bounds(35, 42)
 	enemy_act_2_trojan.add_health_bounds(45, 55, DIFFICULTY_STANDARD_ENEMIES_HARDER)
 	enemy_act_2_trojan.enemy_name = "特洛伊木马"
-	enemy_act_2_trojan.enemy_texture_path = "external/sprites/enemies/enemy_purple_large.png"
+	enemy_act_2_trojan.enemy_texture_path = "sprites/enemies/act2/enemy_act_2_trojan.png"
 	enemy_act_2_trojan.enemy_actions_on_death = [
 		{
 			Scripts.ACTION_APPLY_STATUS: {"status_charge_amount": 8, "status_effect_object_id": "status_effect_corrosion", "target_override": BaseAction.TARGET_OVERRIDES.PLAYER},
@@ -143,10 +140,9 @@ static func add_enemies() -> void:
 		],
 	)
 
-	var _enemy_act_2_trojan_anim: AnimationData = enemy_act_2_trojan.add_standard_animations(
-		["external/sprites/enemies/enemy_purple_large.png"],
-	)
 
+
+	var _enemy_act_2_trojan_anim = enemy_act_2_trojan.add_standard_animations([enemy_act_2_trojan.enemy_texture_path])
 	Global.register_rod(enemy_act_2_trojan)
 
 	#endregion
@@ -160,7 +156,7 @@ static func add_enemies() -> void:
 	enemy_act_2_miniboss_1.add_health_bounds(150, 150, 4)
 	enemy_act_2_miniboss_1.enemy_type = EnemyData.ENEMY_TYPES.MINIBOSS
 	enemy_act_2_miniboss_1.enemy_name = "风暴王"
-	enemy_act_2_miniboss_1.enemy_texture_path = "external/sprites/enemies/enemy_blue_large.png"
+	enemy_act_2_miniboss_1.enemy_texture_path = "sprites/enemies/act2/enemy_act_2_miniboss_1.png"
 	var storm_overheat_actions_1: Array[Dictionary] = [
 		{Scripts.ACTION_APPLY_STATUS: {"status_effect_object_id": "status_effect_overheat", "status_charge_amount": 3, "target_override": BaseAction.TARGET_OVERRIDES.PLAYER}},
 	]
@@ -185,10 +181,9 @@ static func add_enemies() -> void:
 		],
 	)
 
-	var _enemy_act_2_miniboss_1_anim: AnimationData = enemy_act_2_miniboss_1.add_standard_animations(
-		["external/sprites/enemies/enemy_blue_large.png"],
-	)
 
+
+	var _enemy_act_2_miniboss_1_anim = enemy_act_2_miniboss_1.add_standard_animations([enemy_act_2_miniboss_1.enemy_texture_path])
 	Global.register_rod(enemy_act_2_miniboss_1)
 
 	# 精英怪 2：双重验证 — 脆弱 + 多重攻击
@@ -198,7 +193,7 @@ static func add_enemies() -> void:
 	enemy_act_2_miniboss_2.add_health_bounds(95, 105, 4)
 	enemy_act_2_miniboss_2.enemy_type = EnemyData.ENEMY_TYPES.MINIBOSS
 	enemy_act_2_miniboss_2.enemy_name = "验证者"
-	enemy_act_2_miniboss_2.enemy_texture_path = "external/sprites/enemies/enemy_yellow_large.png"
+	enemy_act_2_miniboss_2.enemy_texture_path = "sprites/enemies/act2/enemy_act_2_miniboss_2.png"
 	var auth_vuln_actions_1: Array[Dictionary] = [
 		{Scripts.ACTION_APPLY_STATUS: {"status_effect_object_id": "status_effect_vulnerable", "status_charge_amount": 3, "target_override": BaseAction.TARGET_OVERRIDES.PLAYER}},
 	]
@@ -223,10 +218,9 @@ static func add_enemies() -> void:
 		],
 	)
 
-	var _enemy_act_2_miniboss_2_anim: AnimationData = enemy_act_2_miniboss_2.add_standard_animations(
-		["external/sprites/enemies/enemy_yellow_large.png"],
-	)
 
+
+	var _enemy_act_2_miniboss_2_anim = enemy_act_2_miniboss_2.add_standard_animations([enemy_act_2_miniboss_2.enemy_texture_path])
 	Global.register_rod(enemy_act_2_miniboss_2)
 
 	#endregion
@@ -239,7 +233,7 @@ static func add_enemies() -> void:
 	enemy_act_2_boss_1.add_health_bounds(290, 290, 5)
 	enemy_act_2_boss_1.enemy_type = EnemyData.ENEMY_TYPES.BOSS
 	enemy_act_2_boss_1.enemy_name = "火墙守将"
-	enemy_act_2_boss_1.enemy_texture_path = "external/sprites/enemies/enemy_green_large.png"
+	enemy_act_2_boss_1.enemy_texture_path = "sprites/enemies/act2/enemy_act_2_boss_1.png"
 
 	# 初始 → 召唤
 	enemy_act_2_boss_1.add_intent_state(
@@ -285,10 +279,9 @@ static func add_enemies() -> void:
 		],
 	)
 
-	var _enemy_act_2_boss_1_anim: AnimationData = enemy_act_2_boss_1.add_standard_animations(
-		["external/sprites/enemies/enemy_green_large.png"],
-	)
 
+
+	var _enemy_act_2_boss_1_anim = enemy_act_2_boss_1.add_standard_animations([enemy_act_2_boss_1.enemy_texture_path])
 	Global.register_rod(enemy_act_2_boss_1)
 
 	#endregion
@@ -396,6 +389,17 @@ static func add_events() -> void:
 	var event_darkweb_market: EventData = Global.get_event_data("event_darkweb_market")
 	var event_trojan_trap: EventData = Global.get_event_data("event_trojan_trap")
 	var event_wandering_ai: EventData = Global.get_event_data("event_wandering_ai")
+	
+	var event_product_manager: EventData = Global.get_event_data("event_product_manager")
+	var event_rm_rf: EventData = Global.get_event_data("event_rm_rf")
+	var event_996_blessing: EventData = Global.get_event_data("event_996_blessing")
+	var event_code_review: EventData = Global.get_event_data("event_code_review")
+	var event_open_source: EventData = Global.get_event_data("event_open_source")
+	var event_equity: EventData = Global.get_event_data("event_equity")
+	var event_spaghetti_code: EventData = Global.get_event_data("event_spaghetti_code")
+	var event_test_env_crash: EventData = Global.get_event_data("event_test_env_crash")
+	var event_paid_pooping: EventData = Global.get_event_data("event_paid_pooping")
+	var event_outsourcing: EventData = Global.get_event_data("event_outsourcing")
 
 	# act 2 dialogue event pool
 	var event_pool_act_2_dialogue: EventPoolData = EventPoolData.new("event_pool_act_2_dialogue")
@@ -406,6 +410,16 @@ static func add_events() -> void:
 			event_darkweb_market,
 			event_trojan_trap,
 			event_wandering_ai,
+			event_product_manager,
+			event_rm_rf,
+			event_996_blessing,
+			event_code_review,
+			event_open_source,
+			event_equity,
+			event_spaghetti_code,
+			event_test_env_crash,
+			event_paid_pooping,
+			event_outsourcing,
 		],
 	)
 

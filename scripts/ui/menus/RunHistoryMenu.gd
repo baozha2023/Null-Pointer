@@ -34,6 +34,19 @@ func _ready() -> void:
 	super()
 	previous_run_button.button_up.connect(_on_previous_run_button_up)
 	next_run_button.button_up.connect(_on_next_run_button_up)
+	
+	run_history_seed_label.mouse_filter = Control.MOUSE_FILTER_STOP
+	run_history_seed_label.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	run_history_seed_label.gui_input.connect(_on_seed_label_gui_input)
+
+func _on_seed_label_gui_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+		if current_run_history_index >= 0:
+			var profile_data: ProfileData = Global.profile_data
+			var profile_run_history: Array[RunStatsData] = profile_data.profile_run_history
+			var run_stats_data: RunStatsData = profile_run_history[current_run_history_index]
+			DisplayServer.clipboard_set(str(run_stats_data.run_seed))
+			UIMessage.show_message("种子已复制")
 
 func populate_menu() -> void:
 	super()
