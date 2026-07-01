@@ -109,6 +109,10 @@ signal end_turn_requested(end_turn_immediacy_level: int)	# requests to end the t
 # custom ui
 signal custom_ui_requested
 
+# options
+signal option_pick_requested(action_pick_options: ActionBasePickOptions)
+signal option_pick_confirmed()
+
 # block
 signal combatant_block_added(base_combatant: BaseCombatant)
 signal combatant_block_broken(base_combatant: BaseCombatant)	# the combatant has had their block broken through. Not emitted if bypassed damage
@@ -137,4 +141,7 @@ signal consumable_added(consumable_index: int, consumable_object_id: String)
 signal consumable_purchased(consumable_object_id: String)
 
 signal add_consumable_requested(consumable_object_id: String)
+
+# forge
+signal forge_actions_changed
 #endregion

@@ -2,8 +2,8 @@
 extends Control
 class_name BaseCombatant
 
-@onready var block: Sprite2D = $Visible/Block
-@onready var block_amount: Label = $Visible/Block/BlockAmount
+@onready var block: BlockIndicator = $Visible/Block
+@onready var block_amount: Label = $Visible/Block/BaseSprite/BlockAmount
 
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
 
@@ -22,8 +22,6 @@ class_name BaseCombatant
 
 var status_id_to_status_effects: Dictionary = {}	# maps status id to the array of ui element(s) it matches
 var custom_ui_object_id_to_custom_ui: Dictionary = {} # maps a custom ui id to the ui component it matches. Duplicate registrations will be ignored
-
-const BLOCK_TEXTURE: Texture = preload("res://icon.svg")
 
 func _ready():
 	Signals.combat_started.connect(_on_combat_started)
@@ -206,7 +204,8 @@ func create_damage_text(damage_amount: int) -> void:
 	text_fade.init(str(damage_amount))
 
 func create_block_fade() -> void:
-	create_image_fade(BLOCK_TEXTURE)
+	if block and block.base_sprite and block.base_sprite.texture:
+		create_image_fade(block.base_sprite.texture)
 
 func create_image_fade(texture: Texture) -> void:
 	var image_fade: ImageFade = Scenes.IMAGE_FADE.instantiate()

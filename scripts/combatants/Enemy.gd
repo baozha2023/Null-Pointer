@@ -45,6 +45,10 @@ func init(_enemy_data: EnemyData):
 	enemy_intent_amount_label.mouse_entered.connect(_on_single_intent_mouse_entered.bind(EnemyIntentData.INTENT_DISPLAY_TYPES.ATTACKING, enemy_intent_amount_label))
 	enemy_intent_amount_label.mouse_exited.connect(_on_intent_mouse_exited.bind(enemy_intent_amount_label))
 	
+	var special_intent: TextureRect = summoning_intent.duplicate()
+	enemy_intent.add_child(special_intent)
+	INTENT_DISPLAY_TYPE_TO_INTENT[EnemyIntentData.INTENT_DISPLAY_TYPES.SPECIAL] = special_intent
+	
 	for display_type: int in INTENT_DISPLAY_TYPE_TO_INTENT:
 		var intent_icon: TextureRect = INTENT_DISPLAY_TYPE_TO_INTENT[display_type]
 		intent_icon.tooltip_text = ""
@@ -58,7 +62,8 @@ func init(_enemy_data: EnemyData):
 	# apply initial effects
 	for status_effect_object_id in enemy_data.enemy_initial_status_effects.keys():
 		var charge_amount: int = enemy_data.enemy_initial_status_effects[status_effect_object_id]
-		add_status_effect_charges(status_effect_object_id, charge_amount)
+		var custom_values: Dictionary = enemy_data.enemy_initial_status_custom_values.get(status_effect_object_id, {})
+		add_new_status_effect(status_effect_object_id, charge_amount, 0, custom_values)
 	
 	name_label.text = enemy_data.enemy_name
 	
@@ -71,6 +76,8 @@ func init(_enemy_data: EnemyData):
 	debuffing_intent.texture = FileLoader.load_texture("sprites/intents/enemy_intent_debuffing.png")
 	buffing_intent.texture = FileLoader.load_texture("sprites/intents/enemy_intent_buffing.png")
 	summoning_intent.texture = FileLoader.load_texture("sprites/intents/enemy_intent_summoning.png")
+	if INTENT_DISPLAY_TYPE_TO_INTENT.has(EnemyIntentData.INTENT_DISPLAY_TYPES.SPECIAL):
+		INTENT_DISPLAY_TYPE_TO_INTENT[EnemyIntentData.INTENT_DISPLAY_TYPES.SPECIAL].texture = FileLoader.load_texture("sprites/intents/enemy_intent_special.png")
 	
 func get_animation_data() -> AnimationData:
 	var animation_data: AnimationData = Global.get_animation_data(enemy_data.enemy_animation_id)
@@ -97,8 +104,7 @@ func damage(_damage: int, bypass_block: bool = false) -> Array[int]:
 			enemy_data.enemy_block = 0
 			Signals.combatant_block_broken.emit(self)
 	
-	block.visible = enemy_data.enemy_block > 0
-	block_amount.text = str(enemy_data.enemy_block)
+	block.update_block(enemy_data.enemy_block)
 	
 	if bypassed_damage <= 0:
 		return [0,0,0]
@@ -130,11 +136,8 @@ func damage(_damage: int, bypass_block: bool = false) -> Array[int]:
 	return [bypassed_damage, bypassed_damage_capped, overkill_damage]
 
 func set_block(amount: int) -> void:
-	enemy_data.enemy_block = amount
-	enemy_data.enemy_block = max(0, enemy_data.enemy_block)
-	
-	block.visible = enemy_data.enemy_block > 0
-	block_amount.text = str(enemy_data.enemy_block)
+	enemy_data.enemy_block = max(0, amount)
+	block.update_block(enemy_data.enemy_block)
 
 func get_block() -> int:
 	return enemy_data.enemy_block
@@ -174,6 +177,12 @@ func get_combatant_health_max() -> int:
 	return enemy_data.enemy_health_max
 
 #endregion
+
+## Forcefully sets the enemy's intent to a specific intent state ID.
+func force_set_enemy_intent(new_intent_id: String) -> void:
+	enemy_data.force_set_intent_state(new_intent_id)
+	update_enemy_intent()
+	Signals.enemy_intent_changed.emit()
 
 ## Changes the enemy's intent to the next intent in the random walk.
 func cycle_enemy_intent():
@@ -293,22 +302,34 @@ func _on_single_intent_mouse_entered(display_type: int, intent_icon: Control) ->
 		return
 		
 	var bbcode: String = ""
+	var codex_text: String = current_enemy_intent.get_intent_codex_bbcode(display_type)
+	codex_text = TextParser.parse(codex_text)
 	
 	match display_type:
 		EnemyIntentData.INTENT_DISPLAY_TYPES.ATTACKING:
-			bbcode += "[color=red]意图攻击[/color]\n准备在时钟周期结束时造成 "
-			if enemy_intent_number_of_attacks > 1:
-				bbcode += str(enemy_intent_attack_damage) + " x " + str(enemy_intent_number_of_attacks) + " 点伤害"
-			else:
-				bbcode += str(enemy_intent_attack_damage) + " 点伤害"
+			bbcode += "[color=red]意图攻击[/color]"
+			if codex_text != "":
+				bbcode += "\n" + codex_text
 		EnemyIntentData.INTENT_DISPLAY_TYPES.BLOCKING:
-			bbcode += "[color=orange]意图防御[/color]\n准备在时钟周期结束时获得防火墙"
+			bbcode += "[color=cyan]意图防御[/color]"
+			if codex_text != "":
+				bbcode += "\n" + codex_text
 		EnemyIntentData.INTENT_DISPLAY_TYPES.DEBUFFING:
-			bbcode += "[color=purple]意图减益[/color]\n准备在时钟周期结束时施加负面状态"
+			bbcode += "[color=purple]意图减益[/color]"
+			if codex_text != "":
+				bbcode += "\n" + codex_text
 		EnemyIntentData.INTENT_DISPLAY_TYPES.BUFFING:
-			bbcode += "[color=green]意图增益[/color]\n准备在时钟周期结束时强化自身或友军"
+			bbcode += "[color=green]意图增益[/color]"
+			if codex_text != "":
+				bbcode += "\n" + codex_text
 		EnemyIntentData.INTENT_DISPLAY_TYPES.SUMMONING:
-			bbcode += "[color=white]意图召唤[/color]\n准备在时钟周期结束时呼叫增援"
+			bbcode += "[color=white]意图召唤[/color]"
+			if codex_text != "":
+				bbcode += "\n" + codex_text
+		EnemyIntentData.INTENT_DISPLAY_TYPES.SPECIAL:
+			bbcode += "[color=cyan]特殊机制[/color]"
+			if codex_text != "":
+				bbcode += "\n" + codex_text
 		
 	if bbcode != "":
 		HandManager.tooltip.display_tooltip(bbcode, true)

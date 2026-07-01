@@ -178,3 +178,38 @@ static func add_cards_white() -> void:
 		}
 	]
 	Global.register_rod(card_curse_exception)
+
+	# --- Status Cards ---
+	# Dazed (垃圾数据) - Unplayable, Ethereal, exhausts when drawn or at end of turn
+	var card_status_dazed: CardData = CardData.new("card_status_dazed")
+	card_status_dazed.card_name = "垃圾数据"
+	card_status_dazed.card_color_id = "color_white"
+	card_status_dazed.card_texture_path = "sprites/card/status/card_dazed.png"
+	card_status_dazed.card_description = "无法被打出。回合结束时被消耗。"
+	card_status_dazed.card_type = CardData.CARD_TYPES.STATUS
+	card_status_dazed.card_rarity = CardData.CARD_RARITIES.GENERATED
+	card_status_dazed.card_is_playable = false
+	card_status_dazed.card_end_of_turn_destination = HandManager.EXHAUST_PILE
+	Global.register_rod(card_status_dazed)
+
+	# Burn (过载发热) - Unplayable, deals 2 damage to player at end of turn
+	var card_status_burn: CardData = CardData.new("card_status_burn")
+	card_status_burn.card_name = "过载发热"
+	card_status_burn.card_color_id = "color_white"
+	card_status_burn.card_texture_path = "sprites/card/status/card_burn.png"
+	card_status_burn.card_description = "无法被打出。在你的回合结束时，受到 [damage] 点伤害。"
+	card_status_burn.card_type = CardData.CARD_TYPES.STATUS
+	card_status_burn.card_rarity = CardData.CARD_RARITIES.GENERATED
+	card_status_burn.card_is_playable = false
+	card_status_burn.card_values = { "damage": 2 }
+	
+	# Action for end of turn burn damage
+	card_status_burn.card_end_of_turn_actions = [
+		{
+			Scripts.ACTION_DIRECT_DAMAGE: {
+				"damage": 2,
+				"target_override": BaseAction.TARGET_OVERRIDES.PLAYER
+			}
+		}
+	]
+	Global.register_rod(card_status_burn)

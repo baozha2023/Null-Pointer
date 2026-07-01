@@ -103,6 +103,18 @@ func add_artifacts() -> void:
 
 	Global.register_rod(artifact_heal_on_combat_ended)
 
+	var artifact_auto_restore: ArtifactData = ArtifactData.new("artifact_auto_restore")
+	artifact_auto_restore.artifact_name = "自适应修复外设"
+	artifact_auto_restore.artifact_texture_path = "sprites/artifacts/artifact_auto_restore.png"
+	artifact_auto_restore.artifact_description = "每回合开始时，完整度上限增加层数，并完全恢复。"
+	artifact_auto_restore.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.EVENT
+	
+	artifact_auto_restore.artifact_counter = 5
+	artifact_auto_restore.artifact_counter_max = 5
+	artifact_auto_restore.artifact_script_path = "res://scripts/artifacts/ArtifactAutoRestore.gd"
+	
+	Global.register_rod(artifact_auto_restore)
+
 	var artifact_full_heal: ArtifactData = ArtifactData.new("artifact_full_heal")
 	artifact_full_heal.artifact_name = "完全治疗外设插件"
 	artifact_full_heal.artifact_texture_path = "sprites/artifacts/artifact_full_heal.png"
@@ -277,8 +289,32 @@ func add_artifacts() -> void:
 	artifact_see_top_of_draw_pile.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.COMMON
 	artifact_see_top_of_draw_pile.artifact_color_id = "color_blue"
 	artifact_see_top_of_draw_pile.artifact_texture_path = "sprites/artifacts/artifact_see_top_of_draw_pile.png"
-
+	artifact_see_top_of_draw_pile.artifact_right_click_actions = [
+		{
+			Scripts.ACTION_EMIT_CUSTOM_SIGNAL: {
+				"custom_signal_object_id": "custom_signal_open_see_top_ui",
+				"custom_signal_value": 0
+			}
+		}
+	]
 	Global.register_rod(artifact_see_top_of_draw_pile)
+
+	var artifact_forge: ArtifactData = ArtifactData.new("artifact_forge")
+	artifact_forge.artifact_name = "锻造台外设"
+	artifact_forge.artifact_description = "解锁锻造台，提供高级的代码编译和改造功能"
+	artifact_forge.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.EVENT	
+	artifact_forge.artifact_color_id = "color_blue"
+	artifact_forge.artifact_texture_path = "sprites/artifacts/artifact_forge.png"
+	artifact_forge.artifact_right_click_actions = [
+		{
+			Scripts.ACTION_EMIT_CUSTOM_SIGNAL: {
+				"custom_signal_object_id": "custom_signal_open_forge_ui",
+				"custom_signal_value": 0
+			}
+		}
+	]
+	Global.register_rod(artifact_forge)
+
 
 	# Makes an attack card top deck when obtained
 	var artifact_top_deck_attack_card: ArtifactData = ArtifactData.new("artifact_top_deck_attack_card")
@@ -866,9 +902,30 @@ func add_rest_actions() -> void:
 
 #region Status Effects
 func add_status_effects() -> void:
+	var status_effect_damage_threshold: StatusEffectData = StatusEffectData.new("status_effect_damage_threshold")
+	status_effect_damage_threshold.status_effect_name = "过载阈值"
+	status_effect_damage_threshold.status_effect_description = "累积受到的伤害。若累积量达到阈值，将触发系统过热或重置。"
+	status_effect_damage_threshold.status_effect_tooltip = "累积受到的伤害。若累积量达到阈值，将触发系统过热或重置。\n当前已累计受到 [color=yellow][secondary_charges]/[charge_amount][/color] 点伤害。"
+	status_effect_damage_threshold.status_effect_texture_path = "sprites/status_effects/icon_damage_threshold.png" 
+	status_effect_damage_threshold.status_effect_decay_rate = 0
+	status_effect_damage_threshold.status_effect_type = StatusEffectData.STATUS_EFFECT_TYPES.NEUTRAL
+	status_effect_damage_threshold.status_effect_interceptor_ids = ["interceptor_damage_threshold"]
+	Global.register_rod(status_effect_damage_threshold)
+
+	var status_effect_curiosity: StatusEffectData = StatusEffectData.new("status_effect_curiosity")
+	status_effect_curiosity.status_effect_name = "内存监听"
+	status_effect_curiosity.status_effect_description = "当玩家运行脚本时，自身获得相应增益。"
+	status_effect_curiosity.status_effect_tooltip = "每当玩家运行 [color=yellow][curiosity_trigger_threshold][/color] 张 [color=yellow][curiosity_trigger_card_types][/color] 时，自身获得 [color=yellow][curiosity_reaction_amount][/color] 层 [status_icon:[curiosity_reaction_status_id]]。\n当前已运行：[color=yellow][curiosity_current_counter] / [curiosity_trigger_threshold][/color] 张"
+	status_effect_curiosity.status_effect_texture_path = "sprites/status_effects/icon_curiosity.png"
+	status_effect_curiosity.status_effect_decay_rate = 0
+	status_effect_curiosity.status_effect_type = StatusEffectData.STATUS_EFFECT_TYPES.BUFF
+	status_effect_curiosity.status_effect_interceptor_ids = ["interceptor_card_play_reaction"]
+	Global.register_rod(status_effect_curiosity)
+
 	var status_effect_overshield: StatusEffectData = StatusEffectData.new("status_effect_overshield")
 	status_effect_overshield.status_effect_name = "过载防火墙"
-	status_effect_overshield.status_effect_description = "抵挡等同于层数的伤害，可跨时钟周期存在。每个周期自然衰减 5 层。"
+	status_effect_overshield.status_effect_description = "抵挡等同于层数的伤害，可跨时钟周期存在。"
+	status_effect_overshield.status_effect_tooltip = "抵挡 [color=yellow][charge_amount][/color] 点伤害，可跨时钟周期存在。"
 	status_effect_overshield.status_effect_texture_path = "sprites/status_effects/icon_overshield.png"
 	status_effect_overshield.status_effect_decay_rate = -5
 	status_effect_overshield.status_effect_decay_type = StatusEffectData.STATUS_EFFECT_DECAY_TYPES.LINEAR
@@ -913,13 +970,17 @@ func add_status_effects() -> void:
 	var status_effect_pointy: StatusEffectData = StatusEffectData.new("status_effect_pointy")
 	status_effect_pointy.status_effect_name = "反伤模块"
 	status_effect_pointy.status_effect_description = "受到攻击时，对攻击者造成等同于层数的伤害。"
+	status_effect_pointy.status_effect_tooltip = "受到攻击时，对攻击者造成 [color=yellow][charge_amount][/color] 点伤害。"
 	status_effect_pointy.status_effect_texture_path = "sprites/status_effects/icon_pointy.png"
-	status_effect_pointy.status_effect_decay_rate = 0
+	status_effect_pointy.status_effect_decay_rate = -1
 	status_effect_pointy.status_effect_decay_type = StatusEffectData.STATUS_EFFECT_DECAY_TYPES.LINEAR
 	status_effect_pointy.status_effect_type = StatusEffectData.STATUS_EFFECT_TYPES.BUFF
 	status_effect_pointy.status_effect_interceptor_ids = ["interceptor_pointy"]
 	status_effect_pointy.status_effect_healthbar_reserve_type = StatusEffectData.STATUS_EFFECT_HEALTHBAR_RESERVE_TYPES.ZERO
-	status_effect_pointy.status_effect_action_process_times = []
+	status_effect_pointy.status_effect_action_process_times = [
+		StatusEffectData.STATUS_EFFECT_PROCESS_TIMES.POST_DISCARD_PLAYER_END_TURN,
+		StatusEffectData.STATUS_EFFECT_PROCESS_TIMES.POST_ENEMY_INTENT,
+	]
 
 	Global.register_rod(status_effect_pointy)
 
@@ -927,6 +988,7 @@ func add_status_effects() -> void:
 	var status_effect_pollen: StatusEffectData = StatusEffectData.new("status_effect_pollen")
 	status_effect_pollen.status_effect_name = "数据污染"
 	status_effect_pollen.status_effect_description = "每时钟周期触发时，失去等同于层数的完整度，并读取等同于副层数个脚本。"
+	status_effect_pollen.status_effect_tooltip = "每时钟周期触发时，失去 [color=yellow][charge_amount][/color] 点完整度，并读取 [color=yellow][secondary_charges][/color] 个脚本。"
 	status_effect_pollen.status_effect_texture_path = "sprites/status_effects/icon_pollen.png"
 	status_effect_pollen.status_effect_decay_rate = 0
 	status_effect_pollen.status_effect_priority = 10
@@ -966,6 +1028,7 @@ func add_status_effects() -> void:
 	var status_effect_corrosion: StatusEffectData = StatusEffectData.new("status_effect_corrosion")
 	status_effect_corrosion.status_effect_name = "底层腐蚀"
 	status_effect_corrosion.status_effect_description = "每时钟周期结束时，失去等同于层数的完整度（无视防火墙）。"
+	status_effect_corrosion.status_effect_tooltip = "每时钟周期结束时，失去 [color=yellow][charge_amount][/color] 点完整度（无视防火墙）。"
 	status_effect_corrosion.status_effect_texture_path = "sprites/status_effects/icon_corrosion.png"
 	status_effect_corrosion.status_effect_decay_rate = -2
 	# status_effect_corrosion.status_effect_decay_type = StatusEffectData.STATUS_EFFECT_DECAY_TYPES.HALF_LIFE_ROUND_UP # uncomment to change to half life decay
@@ -998,6 +1061,7 @@ func add_status_effects() -> void:
 	var status_effect_critical: StatusEffectData = StatusEffectData.new("status_effect_critical")
 	status_effect_critical.status_effect_name = "临界"
 	status_effect_critical.status_effect_description = "每时钟周期开始时，获得等同于层数的内核过热。"
+	status_effect_critical.status_effect_tooltip = "每时钟周期开始时，获得 [color=yellow][charge_amount][/color] 层内核过热。"
 	status_effect_critical.status_effect_texture_path = "sprites/status_effects/icon_critical.png"
 	status_effect_critical.status_effect_decay_type = StatusEffectData.STATUS_EFFECT_DECAY_TYPES.LINEAR
 	status_effect_critical.status_effect_type = StatusEffectData.STATUS_EFFECT_TYPES.BUFF
@@ -1027,6 +1091,7 @@ func add_status_effects() -> void:
 	var status_effect_overheat: StatusEffectData = StatusEffectData.new("status_effect_overheat")
 	status_effect_overheat.status_effect_name = "内核过热"
 	status_effect_overheat.status_effect_description = "当层数达到或超过 10 层时触发爆裂，对全场所有单位造成 10 点伤害，随后层数减半。"
+	status_effect_overheat.status_effect_tooltip = "当层数达到或超过 10 层时触发爆裂，对全场所有单位造成 10 点伤害，随后层数减半。当前层数：[color=yellow][charge_amount][/color]/10。"
 	status_effect_overheat.status_effect_texture_path = "sprites/status_effects/icon_overheat.png"
 	status_effect_overheat.status_effect_decay_type = StatusEffectData.STATUS_EFFECT_DECAY_TYPES.HALF_LIFE_ROUND_UP
 	status_effect_overheat.status_effect_type = StatusEffectData.STATUS_EFFECT_TYPES.BUFF
@@ -1061,6 +1126,7 @@ func add_status_effects() -> void:
 	var status_effect_feedback_loop: StatusEffectData = StatusEffectData.new("status_effect_feedback_loop")
 	status_effect_feedback_loop.status_effect_name = "反馈循环"
 	status_effect_feedback_loop.status_effect_description = "每当内核过热触发爆裂时，获得等同于层数的算力。"
+	status_effect_feedback_loop.status_effect_tooltip = "每当内核过热触发爆裂时，获得 [color=yellow][charge_amount][/color] 点算力。"
 	status_effect_feedback_loop.status_effect_texture_path = "sprites/status_effects/icon_feedback_loop.png"
 	status_effect_feedback_loop.status_effect_script_path = "res://scripts/status_effects/StatusEffectFeedbackLoop.gd"
 	status_effect_feedback_loop.status_effect_decay_rate = 0
@@ -1076,6 +1142,7 @@ func add_status_effects() -> void:
 	var status_effect_bomb: StatusEffectData = StatusEffectData.new("status_effect_bomb")
 	status_effect_bomb.status_effect_name = "逻辑炸弹"
 	status_effect_bomb.status_effect_description = "倒计时结束时，对所有敌人造成等同于副层数的伤害。"
+	status_effect_bomb.status_effect_tooltip = "倒计时结束时，对所有敌人造成 [color=yellow][secondary_charges][/color] 点伤害。剩余倒计时：[color=yellow][charge_amount][/color]。"
 	status_effect_bomb.status_effect_texture_path = "sprites/status_effects/icon_bomb.png"
 	status_effect_bomb.status_effect_script_path = "res://scripts/status_effects/StatusEffectBomb.gd"
 	status_effect_bomb.status_effect_decay_rate = -1
@@ -1121,6 +1188,7 @@ func add_status_effects() -> void:
 	var status_effect_damage_increase: StatusEffectData = StatusEffectData.new("status_effect_damage_increase")
 	status_effect_damage_increase.status_effect_name = "算力增幅"
 	status_effect_damage_increase.status_effect_description = "造成的攻击伤害增加等同于层数的数值。"
+	status_effect_damage_increase.status_effect_tooltip = "造成的攻击伤害增加 [color=yellow][charge_amount][/color] 点。"
 	status_effect_damage_increase.status_effect_texture_path = "sprites/status_effects/icon_damage_increase.png"
 	status_effect_damage_increase.status_effect_decay_rate = 0
 	status_effect_damage_increase.status_effect_type = StatusEffectData.STATUS_EFFECT_TYPES.BUFF
@@ -1133,6 +1201,7 @@ func add_status_effects() -> void:
 	var status_effect_weaken: StatusEffectData = StatusEffectData.new("status_effect_weaken")
 	status_effect_weaken.status_effect_name = "输出降级"
 	status_effect_weaken.status_effect_description = "造成的攻击伤害降低 25%。"
+	status_effect_weaken.status_effect_tooltip = "造成的攻击伤害降低 25%。剩余 [color=yellow][charge_amount][/color] 个时钟周期。"
 	status_effect_weaken.status_effect_texture_path = "sprites/status_effects/icon_weaken.png"
 	status_effect_weaken.status_effect_decay_rate = -1
 	status_effect_weaken.status_effect_type = StatusEffectData.STATUS_EFFECT_TYPES.DEBUFF
@@ -1149,6 +1218,7 @@ func add_status_effects() -> void:
 	var status_effect_vulnerable: StatusEffectData = StatusEffectData.new("status_effect_vulnerable")
 	status_effect_vulnerable.status_effect_name = "漏洞暴露"
 	status_effect_vulnerable.status_effect_description = "受到的攻击伤害增加 50%。"
+	status_effect_vulnerable.status_effect_tooltip = "受到的攻击伤害增加 50%。剩余 [color=yellow][charge_amount][/color] 个时钟周期。"
 	status_effect_vulnerable.status_effect_texture_path = "sprites/status_effects/icon_vulnerable.png"
 	status_effect_vulnerable.status_effect_decay_rate = -1
 	status_effect_vulnerable.status_effect_type = StatusEffectData.STATUS_EFFECT_TYPES.DEBUFF
@@ -1165,6 +1235,7 @@ func add_status_effects() -> void:
 	var status_effect_block_on_turn_end: StatusEffectData = StatusEffectData.new("status_effect_block_on_turn_end")
 	status_effect_block_on_turn_end.status_effect_name = "周期防御"
 	status_effect_block_on_turn_end.status_effect_description = "时钟周期结束时，获得等同于层数的防火墙。"
+	status_effect_block_on_turn_end.status_effect_tooltip = "时钟周期结束时，获得 [color=yellow][charge_amount][/color] 点防火墙。"
 	status_effect_block_on_turn_end.status_effect_texture_path = "sprites/status_effects/icon_block_on_turn_end.png"
 	status_effect_block_on_turn_end.status_effect_decay_rate = 0
 	status_effect_block_on_turn_end.status_effect_type = StatusEffectData.STATUS_EFFECT_TYPES.BUFF
@@ -1199,6 +1270,7 @@ func add_status_effects() -> void:
 	var status_effect_energy_next_turn: StatusEffectData = StatusEffectData.new("status_effect_energy_next_turn")
 	status_effect_energy_next_turn.status_effect_name = "算力预分配"
 	status_effect_energy_next_turn.status_effect_description = "下个时钟周期开始时，额外获得等同于层数的算力。"
+	status_effect_energy_next_turn.status_effect_tooltip = "下个时钟周期开始时，额外获得 [color=yellow][charge_amount][/color] 点算力。"
 	status_effect_energy_next_turn.status_effect_texture_path = "sprites/status_effects/icon_energy_next_turn.png"
 	status_effect_energy_next_turn.status_effect_decay_type = StatusEffectData.STATUS_EFFECT_DECAY_TYPES.ZERO_OUT
 	status_effect_energy_next_turn.status_effect_type = StatusEffectData.STATUS_EFFECT_TYPES.BUFF
@@ -1226,6 +1298,7 @@ func add_status_effects() -> void:
 	var status_effect_increase_turn_draw: StatusEffectData = StatusEffectData.new("status_effect_increase_turn_draw")
 	status_effect_increase_turn_draw.status_effect_name = "扩容内存队列"
 	status_effect_increase_turn_draw.status_effect_description = "每个时钟周期开始时，额外抽取等同于层数的脚本。"
+	status_effect_increase_turn_draw.status_effect_tooltip = "每个时钟周期开始时，额外抽取 [color=yellow][charge_amount][/color] 个脚本。"
 	status_effect_increase_turn_draw.status_effect_texture_path = "sprites/status_effects/icon_increase_turn_draw.png"
 	status_effect_increase_turn_draw.status_effect_decay_rate = 0
 	status_effect_increase_turn_draw.status_effect_allows_multiples = false
@@ -1265,6 +1338,7 @@ func add_status_effects() -> void:
 	var status_effect_cap_damage: StatusEffectData = StatusEffectData.new("status_effect_cap_damage")
 	status_effect_cap_damage.status_effect_name = "硬件承伤上限"
 	status_effect_cap_damage.status_effect_description = "单次受到的完整度扣除（无视防火墙阻挡）最多不会超过等同于副层数的点数。"
+	status_effect_cap_damage.status_effect_tooltip = "单次受到的完整度扣除（无视防火墙阻挡）最多不会超过 [color=yellow][secondary_charges][/color] 点。剩余生效次数：[color=yellow][charge_amount][/color]。"
 	status_effect_cap_damage.status_effect_texture_path = "sprites/status_effects/icon_cap_damage.png"
 	status_effect_cap_damage.status_effect_decay_rate = -1
 	status_effect_cap_damage.status_effect_allows_multiples = false
@@ -1357,6 +1431,7 @@ func add_status_effects() -> void:
 	var status_effect_block_on_special_discard: StatusEffectData = StatusEffectData.new("status_effect_block_on_special_discard")
 	status_effect_block_on_special_discard.status_effect_name = "缓存回收"
 	status_effect_block_on_special_discard.status_effect_description = "被其他效果强制丢弃进入回收站时，获得等同于层数的防火墙。"
+	status_effect_block_on_special_discard.status_effect_tooltip = "被其他效果强制丢弃进入回收站时，获得 [color=yellow][charge_amount][/color] 点防火墙。"
 	status_effect_block_on_special_discard.status_effect_texture_path = "sprites/status_effects/icon_block_on_special_discard.png"
 	status_effect_block_on_special_discard.status_effect_decay_rate = 0
 	status_effect_block_on_special_discard.status_effect_type = StatusEffectData.STATUS_EFFECT_TYPES.BUFF
@@ -1392,6 +1467,21 @@ func add_dialogue() -> void:
 
 #region Action Interceptors
 func add_action_interceptors() -> void:
+	# boss mechanics
+	var interceptor_damage_threshold: ActionInterceptorData = ActionInterceptorData.new("interceptor_damage_threshold")
+	interceptor_damage_threshold.action_interceptor_priority = 0
+	interceptor_damage_threshold.action_interceptor_modifies_parent = false
+	interceptor_damage_threshold.action_interceptor_script_path = Scripts.INTERCEPTOR_DAMAGE_THRESHOLD
+	interceptor_damage_threshold.action_intercepted_action_paths = [Scripts.ACTION_ATTACK, Scripts.ACTION_DIRECT_DAMAGE]
+	Global.register_rod(interceptor_damage_threshold)
+
+	var interceptor_card_play_reaction: ActionInterceptorData = ActionInterceptorData.new("interceptor_card_play_reaction")
+	interceptor_card_play_reaction.action_interceptor_priority = 0
+	interceptor_card_play_reaction.action_interceptor_modifies_parent = false
+	interceptor_card_play_reaction.action_interceptor_script_path = Scripts.INTERCEPTOR_CARD_PLAY_REACTION
+	interceptor_card_play_reaction.action_intercepted_action_paths = [Scripts.ACTION_CARD_PLAY]
+	Global.register_rod(interceptor_card_play_reaction)
+
 	# increases damage done by attackers
 	var interceptor_damage_increase: ActionInterceptorData = ActionInterceptorData.new("interceptor_damage_increase")
 	interceptor_damage_increase.action_interceptor_priority = 10000
@@ -1761,7 +1851,7 @@ func add_characters() -> void:
 		"card_basic_block_green",
 		"card_basic_block_green",
 		"card_basic_block_green",
-    	"card_energy_next_turn"
+        "card_energy_next_turn"
 	]
 
 	# green character animations
@@ -1844,8 +1934,8 @@ func add_characters() -> void:
 	character_blue.character_name = "渗透专家"
 	character_blue.character_description = "一名游走于暗网与内核之间的白帽黑客。他不是在破坏，而是在渗透——窃取情报、混淆视听、将敌人的算力玩弄于股掌之间。在他的字典里，'防御'永远是过时的概念。"
 	character_blue.character_color_id = "color_{0}".format([character_color])
-	character_blue.character_icon_texture_path = "external/sprites/characters/character_{0}/character_{0}_icon.png".format([character_color])
-	character_blue.character_background_texture_path = "external/sprites/characters/character_{0}/character_{0}_poster.png".format([character_color])
+	character_blue.character_icon_texture_path = "sprites/characters/character_{0}/character_{0}_idle.png".format([character_color])
+	character_blue.character_background_texture_path = "sprites/characters/character_{0}/character_{0}_poster.png".format([character_color])
 	character_blue.character_starting_health = 75
 	character_blue.character_starting_artifact_ids = ["artifact_see_top_of_draw_pile"]
 	character_blue.character_starting_card_draft_card_pack_ids = ["card_pack_{0}".format([character_color])]
@@ -1863,11 +1953,29 @@ func add_characters() -> void:
 		"card_energy_next_turn",
 	]
 
-	# 暂时没有动画资源图片，全部使用默认单帧
+	# 动画资源接入
 	var animation_character_blue: AnimationData = AnimationData.new("animation_character_{0}".format([character_color]))
 	character_blue.character_animation_id = animation_character_blue.object_id
 	animation_character_blue.add_combatant_animations(
-		["external/sprites/characters/character_{0}/character_{0}.png".format([character_color])],
+		[
+			"sprites/characters/character_{0}/character_{0}_idle.png".format([character_color])
+		],
+		[
+			"sprites/characters/character_{0}/attack/character_{0}_attack_1.png".format([character_color]),
+			"sprites/characters/character_{0}/attack/character_{0}_attack_2.png".format([character_color]),
+			"sprites/characters/character_{0}/attack/character_{0}_attack_3.png".format([character_color]),
+			"sprites/characters/character_{0}/attack/character_{0}_attack_4.png".format([character_color]),
+			"sprites/characters/character_{0}/attack/character_{0}_attack_5.png".format([character_color]),
+			"sprites/characters/character_{0}/attack/character_{0}_attack_6.png".format([character_color]),
+		],
+		[
+			"sprites/characters/character_{0}/death/character_{0}_death_1.png".format([character_color]),
+			"sprites/characters/character_{0}/death/character_{0}_death_2.png".format([character_color]),
+			"sprites/characters/character_{0}/death/character_{0}_death_3.png".format([character_color]),
+			"sprites/characters/character_{0}/death/character_{0}_death_4.png".format([character_color]),
+			"sprites/characters/character_{0}/death/character_{0}_death_5.png".format([character_color]),
+			"sprites/characters/character_{0}/death/character_{0}_death_6.png".format([character_color]),
+		]
 	)
 
 	Global.register_rod(animation_character_blue)
@@ -1998,6 +2106,12 @@ func add_custom_signals() -> void:
 	custom_signal_overheated.custom_signal_is_stat = true
 	custom_signal_overheated.custom_signal_stat_name = "CUSTOM_STAT_OVERHEATED"
 	Global.register_rod(custom_signal_overheated)
+
+	var custom_signal_open_see_top_ui: CustomSignalData = CustomSignalData.new("custom_signal_open_see_top_ui")
+	Global.register_rod(custom_signal_open_see_top_ui)
+
+	var custom_signal_open_forge_ui: CustomSignalData = CustomSignalData.new("custom_signal_open_forge_ui")
+	Global.register_rod(custom_signal_open_forge_ui)
 
 #endregion
 
@@ -2158,13 +2272,13 @@ func add_card_basics() -> void:
 		card_basic_attack.card_name = "基础攻击"
 		card_basic_attack.card_color_id = "color_{0}".format([colors[i]])
 		card_basic_attack.card_description = "造成 [damage] 点伤害。"
-		card_basic_attack.card_texture_path = "sprites/card/green/card_basic_attack_green.png" if colors[i] == "green" else ("sprites/card/red/card_basic_attack_red.png" if colors[i] == "red" else "external/sprites/cards/{0}/card_basic_attack_{0}.png".format([colors[i]]))
+		card_basic_attack.card_texture_path = "sprites/card/{0}/card_basic_attack_{0}.png".format([colors[i]])
 		card_basic_attack.card_hint = "这是最基础的攻击指令。虽然伤害不高，但在游戏前期是主要输出手段。"
 		card_basic_attack.card_type = CardData.CARD_TYPES.ATTACK
 		card_basic_attack.card_rarity = CardData.CARD_RARITIES.BASIC
 		card_basic_attack.card_keyword_object_ids = []
 		card_basic_attack.card_values = { "damage": 7, "number_of_attacks": 1 }
-		card_basic_attack.card_upgrade_value_improvements = { "damage": 3, "number_of_attacks": 1 }
+		card_basic_attack.card_upgrade_value_improvements = { "damage": 3 }
 		card_basic_attack.card_play_actions = [
 			{
 				Scripts.ACTION_ATTACK_GENERATOR: { "time_delay": 0.0, "actions_on_lethal": [] },
@@ -2179,7 +2293,7 @@ func add_card_basics() -> void:
 		card_basic_block.card_name = "基础防火墙"
 		card_basic_block.card_color_id = "color_{0}".format([colors[i]])
 		card_basic_block.card_description = "获得 [block] 点防火墙"
-		card_basic_block.card_texture_path = "sprites/card/green/card_basic_block_green.png" if colors[i] == "green" else ("sprites/card/red/card_basic_block_red.png" if colors[i] == "red" else "external/sprites/cards/{0}/card_basic_block_{0}.png".format([colors[i]]))
+		card_basic_block.card_texture_path = "sprites/card/{0}/card_basic_block_{0}.png".format([colors[i]])
 		card_basic_block.card_hint = "这是最基础的防御指令。保持健康状态是走得更远的关键，不要忽略防御。"
 		card_basic_block.card_type = CardData.CARD_TYPES.SKILL
 		card_basic_block.card_rarity = CardData.CARD_RARITIES.BASIC

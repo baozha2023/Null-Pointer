@@ -56,7 +56,7 @@ func _on_mouse_entered() -> void:
 		# Replace dynamic values like [decorator_value_block] with actual values from card_values
 		if card_data != null:
 			for key in card_data.card_values:
-				formatted_desc = formatted_desc.replace("[" + key + "]", str(card_data.card_values[key]))
+				formatted_desc = formatted_desc.replace("[" + key + "]", TextParser.format_value(key, card_data.card_values[key]))
 				
 		HandManager.tooltip.display_decorator_tooltip(decorator_data.card_decorator_name, formatted_desc)
 		

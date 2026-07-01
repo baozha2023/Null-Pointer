@@ -210,8 +210,33 @@ func add_test_artifacts() -> void:
 	artifact_see_top_of_draw_pile.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.COMMON
 	artifact_see_top_of_draw_pile.artifact_color_id = "color_blue"
 	artifact_see_top_of_draw_pile.artifact_texture_path = "sprites/artifacts/artifact_see_top_of_draw_pile.png"
-	
+	artifact_see_top_of_draw_pile.artifact_right_click_actions = [
+		{
+			Scripts.ACTION_EMIT_CUSTOM_SIGNAL: {
+				"custom_signal_object_id": "custom_signal_open_see_top_ui",
+				"custom_signal_value": 0
+			}
+		}
+	]
+
 	Global.register_rod(artifact_see_top_of_draw_pile)
+
+	var artifact_forge: ArtifactData = ArtifactData.new("artifact_forge")
+	artifact_forge.artifact_name = "锻造台外设"
+	artifact_forge.artifact_description = "解锁锻造台，提供高级的代码编译和改造功能"
+	artifact_forge.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.COMMON
+	artifact_forge.artifact_color_id = "color_blue"
+	artifact_forge.artifact_texture_path = "sprites/artifacts/artifact_forge.png"
+	artifact_forge.artifact_right_click_actions = [
+		{
+			Scripts.ACTION_EMIT_CUSTOM_SIGNAL: {
+				"custom_signal_object_id": "custom_signal_open_forge_ui",
+				"custom_signal_value": 0
+			}
+		}
+	]
+
+	Global.register_rod(artifact_forge)
 	
 	# Makes an attack card top deck when obtained
 	var artifact_top_deck_attack_card: ArtifactData = ArtifactData.new("artifact_top_deck_attack_card")
@@ -2365,6 +2390,11 @@ func add_test_custom_signals() -> void:
 	custom_signal_special_discard.custom_signal_stat_name = "CUSTOM_STAT_SPECIAL_DISCARD"
 	Global.register_rod(custom_signal_special_discard)
 
+	var custom_signal_open_see_top_ui: CustomSignalData = CustomSignalData.new("custom_signal_open_see_top_ui")
+	Global.register_rod(custom_signal_open_see_top_ui)
+
+	var custom_signal_open_forge_ui: CustomSignalData = CustomSignalData.new("custom_signal_open_forge_ui")
+	Global.register_rod(custom_signal_open_forge_ui)
 
 #endregion
 
@@ -2762,6 +2792,9 @@ func add_test_cards_to_player_deck() -> void:
 	Global.player_data.player_deck.append(Global.get_card_data_from_prototype("card_damage_increase"))
 	Global.player_data.player_deck.append(Global.get_card_data_from_prototype("card_preserve_block"))
 	Global.player_data.player_deck.append(Global.get_card_data_from_prototype("card_custom_block"))
+	Global.player_data.player_deck.append(Global.get_card_data_from_prototype("card_forge_inject"))
+	Global.player_data.player_deck.append(Global.get_card_data_from_prototype("card_forge_inject"))
+	Global.player_data.player_deck.append(Global.get_card_data_from_prototype("card_forge_compile"))
 
 ## Adds test cards to game
 func add_test_cards() -> void:
@@ -2853,7 +2886,9 @@ func add_test_cards() -> void:
 	card_duplicate_plays.card_keyword_object_ids = []
 	card_duplicate_plays.card_values = {"status_charge_amount": 1, "status_secondary_charge_amount": 0, "status_effect_object_id": "status_effect_duplicate_card_plays"}
 	card_duplicate_plays.card_upgrade_value_improvements = {"status_charge_amount": 3}
-	card_duplicate_plays.card_play_actions = [{Scripts.ACTION_APPLY_STATUS: {"time_delay": 0.5, "target_override": BaseAction.TARGET_OVERRIDES.PARENT}}]
+	card_duplicate_plays.card_play_actions = [
+		{Scripts.ACTION_APPLY_STATUS: {"time_delay": 0.5, "target_override": BaseAction.TARGET_OVERRIDES.PARENT}}
+	]
 	
 	Global.register_rod(card_duplicate_plays)
 	

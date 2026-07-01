@@ -43,6 +43,10 @@ func update_artifact_counter() -> void:
 func _on_right_button_up() -> void:
 	artifact_script.right_click_artifact()
 
+func _gui_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.double_click:
+		artifact_script.right_click_artifact()
+
 
 func _on_mouse_entered() -> void:
 	UIHover.scale_up(self)

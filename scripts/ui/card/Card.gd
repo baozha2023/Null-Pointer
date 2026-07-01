@@ -253,7 +253,7 @@ func get_card_description(selected_target: BaseCombatant = null) -> String:
 		if typeof(non_intercepted_value) == TYPE_FLOAT or typeof(non_intercepted_value) == TYPE_INT:
 			val_int = int(non_intercepted_value)
 			non_intercepted_value = abs(val_int)
-		modified_description_bb_code = modified_description_bb_code.replace("["+key_name+"]", str(non_intercepted_value))
+		modified_description_bb_code = modified_description_bb_code.replace("["+key_name+"]", TextParser.format_value(key_name, non_intercepted_value))
 		
 		var icons_str: String = ""
 		if val_int <= 0:

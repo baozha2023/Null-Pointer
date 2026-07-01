@@ -48,10 +48,10 @@ static func add_enemies() -> void:
 	enemy_act_2_scanner.enemy_name = "扫描兵"
 	enemy_act_2_scanner.enemy_texture_path = "sprites/enemies/act2/enemy_act_2_scanner.png"
 	var scanner_vuln_actions_1: Array[Dictionary] = [
-		{Scripts.ACTION_APPLY_STATUS: {"status_effect_object_id": "status_effect_vulnerable", "status_charge_amount": 2, "target_override": BaseAction.TARGET_OVERRIDES.PLAYER}},
+		{Scripts.ACTION_APPLY_STATUS: {"status_effect_object_id": "status_effect_vulnerable", "status_charge_amount": 2, "time_delay": EnemyData.ENEMY_ATTACK_DELAY, "target_override": BaseAction.TARGET_OVERRIDES.PLAYER}},
 	]
 	var scanner_vuln_actions_2: Array[Dictionary] = [
-		{Scripts.ACTION_APPLY_STATUS: {"status_effect_object_id": "status_effect_vulnerable", "status_charge_amount": 3, "target_override": BaseAction.TARGET_OVERRIDES.PLAYER}},
+		{Scripts.ACTION_APPLY_STATUS: {"status_effect_object_id": "status_effect_vulnerable", "status_charge_amount": 3, "time_delay": EnemyData.ENEMY_ATTACK_DELAY, "target_override": BaseAction.TARGET_OVERRIDES.PLAYER}},
 	]
 	enemy_act_2_scanner.add_intent_state(
 		[
@@ -83,10 +83,10 @@ static func add_enemies() -> void:
 	enemy_act_2_warden.enemy_name = "监守者"
 	enemy_act_2_warden.enemy_texture_path = "sprites/enemies/act2/enemy_act_2_warden.png"
 	var warden_weaken_actions_1: Array[Dictionary] = [
-		{Scripts.ACTION_APPLY_STATUS: {"status_effect_object_id": "status_effect_weaken", "status_charge_amount": 2, "target_override": BaseAction.TARGET_OVERRIDES.PLAYER}},
+		{Scripts.ACTION_APPLY_STATUS: {"status_effect_object_id": "status_effect_weaken", "status_charge_amount": 2, "time_delay": EnemyData.ENEMY_ATTACK_DELAY, "target_override": BaseAction.TARGET_OVERRIDES.PLAYER}},
 	]
 	var warden_weaken_actions_2: Array[Dictionary] = [
-		{Scripts.ACTION_APPLY_STATUS: {"status_effect_object_id": "status_effect_weaken", "status_charge_amount": 3, "target_override": BaseAction.TARGET_OVERRIDES.PLAYER}},
+		{Scripts.ACTION_APPLY_STATUS: {"status_effect_object_id": "status_effect_weaken", "status_charge_amount": 3, "time_delay": EnemyData.ENEMY_ATTACK_DELAY, "target_override": BaseAction.TARGET_OVERRIDES.PLAYER}},
 	]
 	enemy_act_2_warden.add_intent_state(
 		[
@@ -119,7 +119,7 @@ static func add_enemies() -> void:
 	enemy_act_2_trojan.enemy_texture_path = "sprites/enemies/act2/enemy_act_2_trojan.png"
 	enemy_act_2_trojan.enemy_actions_on_death = [
 		{
-			Scripts.ACTION_APPLY_STATUS: {"status_charge_amount": 8, "status_effect_object_id": "status_effect_corrosion", "target_override": BaseAction.TARGET_OVERRIDES.PLAYER},
+			Scripts.ACTION_APPLY_STATUS: {"status_charge_amount": 8, "status_effect_object_id": "status_effect_corrosion", "time_delay": EnemyData.ENEMY_ATTACK_DELAY, "target_override": BaseAction.TARGET_OVERRIDES.PLAYER},
 		},
 	]
 	enemy_act_2_trojan.add_intent_state(
@@ -158,10 +158,10 @@ static func add_enemies() -> void:
 	enemy_act_2_miniboss_1.enemy_name = "风暴王"
 	enemy_act_2_miniboss_1.enemy_texture_path = "sprites/enemies/act2/enemy_act_2_miniboss_1.png"
 	var storm_overheat_actions_1: Array[Dictionary] = [
-		{Scripts.ACTION_APPLY_STATUS: {"status_effect_object_id": "status_effect_overheat", "status_charge_amount": 3, "target_override": BaseAction.TARGET_OVERRIDES.PLAYER}},
+		{Scripts.ACTION_APPLY_STATUS: {"status_effect_object_id": "status_effect_overheat", "status_charge_amount": 3, "time_delay": EnemyData.ENEMY_ATTACK_DELAY, "target_override": BaseAction.TARGET_OVERRIDES.PLAYER}},
 	]
 	var storm_overheat_actions_2: Array[Dictionary] = [
-		{Scripts.ACTION_APPLY_STATUS: {"status_effect_object_id": "status_effect_overheat", "status_charge_amount": 4, "target_override": BaseAction.TARGET_OVERRIDES.PLAYER}},
+		{Scripts.ACTION_APPLY_STATUS: {"status_effect_object_id": "status_effect_overheat", "status_charge_amount": 4, "time_delay": EnemyData.ENEMY_ATTACK_DELAY, "target_override": BaseAction.TARGET_OVERRIDES.PLAYER}},
 	]
 	enemy_act_2_miniboss_1.add_intent_state(
 		[
@@ -195,10 +195,10 @@ static func add_enemies() -> void:
 	enemy_act_2_miniboss_2.enemy_name = "验证者"
 	enemy_act_2_miniboss_2.enemy_texture_path = "sprites/enemies/act2/enemy_act_2_miniboss_2.png"
 	var auth_vuln_actions_1: Array[Dictionary] = [
-		{Scripts.ACTION_APPLY_STATUS: {"status_effect_object_id": "status_effect_vulnerable", "status_charge_amount": 3, "target_override": BaseAction.TARGET_OVERRIDES.PLAYER}},
+		{Scripts.ACTION_APPLY_STATUS: {"status_effect_object_id": "status_effect_vulnerable", "status_charge_amount": 3, "time_delay": EnemyData.ENEMY_ATTACK_DELAY, "target_override": BaseAction.TARGET_OVERRIDES.PLAYER}},
 	]
 	var auth_vuln_actions_2: Array[Dictionary] = [
-		{Scripts.ACTION_APPLY_STATUS: {"status_effect_object_id": "status_effect_vulnerable", "status_charge_amount": 4, "target_override": BaseAction.TARGET_OVERRIDES.PLAYER}},
+		{Scripts.ACTION_APPLY_STATUS: {"status_effect_object_id": "status_effect_vulnerable", "status_charge_amount": 4, "time_delay": EnemyData.ENEMY_ATTACK_DELAY, "target_override": BaseAction.TARGET_OVERRIDES.PLAYER}},
 	]
 	enemy_act_2_miniboss_2.add_intent_state(
 		[
@@ -248,36 +248,100 @@ static func add_enemies() -> void:
 			Scripts.ACTION_SUMMON_ENEMIES: {"number_of_spawns": 2, "spawn_slots": [1, 2], "time_delay": 0.5, "random_enemy_object_ids": ["enemy_act_2_firewall", "enemy_act_2_firewall"], "target_override": BaseAction.TARGET_OVERRIDES.PARENT},
 		},
 	]
+	var boss_2_summon_actions_d5: Array[Dictionary] = [
+		{
+			Scripts.ACTION_SUMMON_ENEMIES: {"number_of_spawns": 2, "spawn_slots": [1, 2], "time_delay": 0.5, "random_enemy_object_ids": ["enemy_act_2_firewall", "enemy_act_2_firewall"], "target_override": BaseAction.TARGET_OVERRIDES.PARENT},
+		},
+		{
+			Scripts.ACTION_APPLY_STATUS: {"status_effect_object_id": "status_effect_pointy", "status_charge_amount": 3, "time_delay": EnemyData.ENEMY_ATTACK_DELAY, "target_override": BaseAction.TARGET_OVERRIDES.ALL_ENEMIES}
+		}
+	]
+
+	# 防御：加护盾 + 给自己上尖刺
+	var boss_2_fortify_actions: Array[Dictionary] = [
+		{Scripts.ACTION_APPLY_STATUS: {"status_effect_object_id": "status_effect_pointy", "status_charge_amount": 4, "time_delay": EnemyData.ENEMY_ATTACK_DELAY, "target_override": BaseAction.TARGET_OVERRIDES.PARENT}},
+	]
+	var boss_2_fortify_actions_d3: Array[Dictionary] = [
+		{Scripts.ACTION_APPLY_STATUS: {"status_effect_object_id": "status_effect_pointy", "status_charge_amount": 5, "time_delay": EnemyData.ENEMY_ATTACK_DELAY, "target_override": BaseAction.TARGET_OVERRIDES.PARENT}},
+	]
+
+	# 扫描：易伤 + 虚弱
+	var boss_2_scan_actions: Array[Dictionary] = [
+		{Scripts.ACTION_APPLY_STATUS: {"status_effect_object_id": "status_effect_vulnerable", "status_charge_amount": 2, "time_delay": 0.0, "target_override": BaseAction.TARGET_OVERRIDES.PLAYER}},
+		{Scripts.ACTION_APPLY_STATUS: {"status_effect_object_id": "status_effect_weaken", "status_charge_amount": 2, "time_delay": EnemyData.ENEMY_ATTACK_DELAY, "target_override": BaseAction.TARGET_OVERRIDES.PLAYER}},
+	]
+	var boss_2_scan_actions_d3: Array[Dictionary] = [
+		{Scripts.ACTION_APPLY_STATUS: {"status_effect_object_id": "status_effect_vulnerable", "status_charge_amount": 2, "time_delay": 0.0, "target_override": BaseAction.TARGET_OVERRIDES.PLAYER}},
+		{Scripts.ACTION_APPLY_STATUS: {"status_effect_object_id": "status_effect_weaken", "status_charge_amount": 2, "time_delay": EnemyData.ENEMY_ATTACK_DELAY, "target_override": BaseAction.TARGET_OVERRIDES.PLAYER}},
+		{Scripts.ACTION_CREATE_CARDS: {"created_card_object_id": "card_status_dazed", "number_of_cards": 1, "time_delay": EnemyData.ENEMY_ATTACK_DELAY, "action_data": [{Scripts.ACTION_ADD_CARDS_TO_DRAW: {"shuffle_cards": true}}]}}
+	]
+	var boss_2_scan_actions_d5: Array[Dictionary] = [
+		{Scripts.ACTION_APPLY_STATUS: {"status_effect_object_id": "status_effect_vulnerable", "status_charge_amount": 3, "time_delay": 0.0, "target_override": BaseAction.TARGET_OVERRIDES.PLAYER}},
+		{Scripts.ACTION_APPLY_STATUS: {"status_effect_object_id": "status_effect_weaken", "status_charge_amount": 3, "time_delay": EnemyData.ENEMY_ATTACK_DELAY, "target_override": BaseAction.TARGET_OVERRIDES.PLAYER}},
+		{Scripts.ACTION_CREATE_CARDS: {"created_card_object_id": "card_status_burn", "number_of_cards": 1, "time_delay": EnemyData.ENEMY_ATTACK_DELAY, "action_data": [{Scripts.ACTION_ADD_CARDS_TO_DRAW: {"shuffle_cards": true}}]}}
+	]
+	
+	# 污染：轻微伤害 + 洗入垃圾数据
+	var boss_2_pollute_actions: Array[Dictionary] = [
+		{Scripts.ACTION_CREATE_CARDS: {"created_card_object_id": "card_status_dazed", "number_of_cards": 1, "time_delay": EnemyData.ENEMY_ATTACK_DELAY, "action_data": [{Scripts.ACTION_ADD_CARDS_TO_DRAW: {"shuffle_cards": true}}]}}
+	]
+	var boss_2_pollute_actions_d3: Array[Dictionary] = [
+		{Scripts.ACTION_CREATE_CARDS: {"created_card_object_id": "card_status_dazed", "number_of_cards": 2, "time_delay": EnemyData.ENEMY_ATTACK_DELAY, "action_data": [{Scripts.ACTION_ADD_CARDS_TO_DRAW: {"shuffle_cards": true}}]}}
+	]
+
 	enemy_act_2_boss_1.add_intent_state(
 		[
 			EnemyIntentData.new("intent_summon", DIFFICULTY_STARTING, 0, 0, "", 0, "", {"intent_fortify": 1}, boss_2_summon_actions),
+			EnemyIntentData.new("intent_summon", 5, 0, 0, "", 0, "", {"intent_fortify": 1}, boss_2_summon_actions_d5, [EnemyIntentData.INTENT_DISPLAY_TYPES.BUFFING]),
 		],
 	)
 
-	# 防御：加护盾 + 给自己上尖刺（如果尖刺已耗尽）
-	var boss_2_fortify_actions: Array[Dictionary] = [
-		{Scripts.ACTION_APPLY_STATUS: {"status_effect_object_id": "status_effect_pointy", "status_charge_amount": 4, "target_override": BaseAction.TARGET_OVERRIDES.PARENT}},
-	]
 	enemy_act_2_boss_1.add_intent_state(
 		[
-			EnemyIntentData.new("intent_fortify", DIFFICULTY_STARTING, 0, 0, "", 12, "", {"intent_breach": 1}, boss_2_fortify_actions),
-			EnemyIntentData.new("intent_fortify", DIFFICULTY_BOSS_ENEMIES_HARDER, 0, 0, "", 15, "", {"intent_breach": 1}, boss_2_fortify_actions),
+			EnemyIntentData.new("intent_fortify", DIFFICULTY_STARTING, 0, 0, "", 12, "", {"intent_scan": 1}, boss_2_fortify_actions),
+			EnemyIntentData.new("intent_fortify", 3, 0, 0, "", 15, "", {"intent_scan": 1}, boss_2_fortify_actions_d3),
 		],
 	)
 
-	# 攻击：脆弱 + 多段伤害
-	var boss_2_breach_actions_1: Array[Dictionary] = [
-		{Scripts.ACTION_APPLY_STATUS: {"status_effect_object_id": "status_effect_vulnerable", "status_charge_amount": 2, "target_override": BaseAction.TARGET_OVERRIDES.PLAYER}},
-	]
-	var boss_2_breach_actions_2: Array[Dictionary] = [
-		{Scripts.ACTION_APPLY_STATUS: {"status_effect_object_id": "status_effect_vulnerable", "status_charge_amount": 3, "target_override": BaseAction.TARGET_OVERRIDES.PLAYER}},
-	]
 	enemy_act_2_boss_1.add_intent_state(
 		[
-			EnemyIntentData.new("intent_breach", DIFFICULTY_STARTING, 4, 3, "", 0, "", {"intent_fortify": 1}, boss_2_breach_actions_1),
-			EnemyIntentData.new("intent_breach", DIFFICULTY_BOSS_ENEMIES_HARDER, 6, 3, "", 0, "", {"intent_fortify": 1}, boss_2_breach_actions_2),
+			EnemyIntentData.new("intent_scan", DIFFICULTY_STARTING, 0, 0, "", 0, "", {"intent_breach": 1}, boss_2_scan_actions, [EnemyIntentData.INTENT_DISPLAY_TYPES.DEBUFFING]),
+			EnemyIntentData.new("intent_scan", 3, 0, 0, "", 0, "", {"intent_breach": 1}, boss_2_scan_actions_d3, [EnemyIntentData.INTENT_DISPLAY_TYPES.DEBUFFING]),
+			EnemyIntentData.new("intent_scan", 5, 0, 0, "", 0, "", {"intent_breach": 1}, boss_2_scan_actions_d5, [EnemyIntentData.INTENT_DISPLAY_TYPES.DEBUFFING]),
 		],
 	)
+	
+	enemy_act_2_boss_1.add_intent_state(
+		[
+			EnemyIntentData.new("intent_breach", DIFFICULTY_STARTING, 4, 3, "", 0, "", {"intent_pollute": 1}),
+			EnemyIntentData.new("intent_breach", 3, 6, 3, "", 0, "", {"intent_pollute": 1}),
+			EnemyIntentData.new("intent_breach", 5, 7, 3, "", 0, "", {"intent_pollute": 1}),
+		],
+	)
+	
+	enemy_act_2_boss_1.add_intent_state(
+		[
+			EnemyIntentData.new("intent_pollute", DIFFICULTY_STARTING, 6, 1, "", 0, "", {"intent_fortify": 1}, boss_2_pollute_actions, [], "向抽牌堆洗入 1 张垃圾数据"),
+			EnemyIntentData.new("intent_pollute", 3, 6, 1, "", 0, "", {"intent_fortify": 1}, boss_2_pollute_actions_d3, [], "向抽牌堆洗入 2 张垃圾数据"),
+		],
+	)
+
+	enemy_act_2_boss_1.enemy_difficulty_to_enemy_modfiers = {
+		"3": {
+			"enemy_initial_status_effects": {"status_effect_damage_threshold": 60},
+			"meta": {
+				"damage_threshold_target_intent": "intent_breach",
+				"damage_threshold_increase_amount": 30
+			}
+		},
+		"5": {
+			"enemy_initial_status_effects": {"status_effect_damage_threshold": 45},
+			"meta": {
+				"damage_threshold_target_intent": "intent_breach",
+				"damage_threshold_increase_amount": 20
+			}
+		}
+	}
 
 
 
@@ -453,6 +517,11 @@ static func add_act() -> void:
 	act_2.act_next_act_ids = ["act_3"]
 	act_2.act_action_script_path = Scripts.ACTION_GENERATE_ACT
 	act_2.act_map_floor_templates = ActData.default_floor_templates()
+	
+	act_2.act_music_ambient_file_path = "res://sounds/bgm/bgm_act_2.mp3"
+	act_2.act_music_combat_file_path = "res://sounds/bgm/bgm_act_2.mp3"
+	act_2.act_music_miniboss_file_path = "res://sounds/bgm/bgm_act_2.mp3"
+	act_2.act_music_boss_file_path = "res://sounds/bgm/bgm_boss.mp3"
 	
 	act_2.act_easy_combat_event_pool_object_id = "event_pool_act_2_easy"
 	act_2.act_hard_combat_event_pool_object_id = "event_pool_act_2_hard"

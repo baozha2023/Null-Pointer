@@ -76,6 +76,7 @@ const ACTION_BLOCK_BY_STATUS: String = "res://scripts/actions/combatant_actions/
 
 # enemy actions
 const ACTION_CYCLE_ENEMY_INTENT: String = "res://scripts/actions/combatant_actions/enemy_actions/ActionCycleEnemyIntent.gd"
+const ACTION_CHANGE_ENEMY_INTENT_STATE: String = "res://scripts/actions/combatant_actions/enemy_actions/ActionChangeEnemyIntentState.gd"
 const ACTION_SUMMON_ENEMIES: String = "res://scripts/actions/combatant_actions/enemy_actions/ActionSummonEnemies.gd"
 
 # reward actions
@@ -111,6 +112,15 @@ const ACTION_DISCARD_CARDS: String = "res://scripts/actions/card_actions/cardset
 const ACTION_DECORATE_CARDS: String = "res://scripts/actions/card_actions/cardset_actions/ActionDecorateCards.gd"
 const ACTION_EXHAUST_CARDS: String = "res://scripts/actions/card_actions/cardset_actions/ActionExhaustCards.gd"
 const ACTION_BANISH_CARDS: String = "res://scripts/actions/card_actions/cardset_actions/ActionBanishCards.gd"
+
+# option actions
+const ACTION_PICK_OPTIONS: String = "res://scripts/actions/option_actions/ActionPickOptions.gd"
+
+# forge actions
+const ACTION_ADD_TO_FORGE: String = "res://scripts/actions/forge_actions/ActionAddToForge.gd"
+const ACTION_TAKE_FROM_FORGE: String = "res://scripts/actions/forge_actions/ActionTakeFromForge.gd"
+
+
 const ACTION_MOVE_CARDS_TO_LIMBO: String = "res://scripts/actions/card_actions/cardset_actions/ActionMoveCardsToLimbo.gd"
 const ACTION_ADD_CARDS_TO_HAND: String = "res://scripts/actions/card_actions/cardset_actions/ActionAddCardsToHand.gd"
 const ACTION_IMPROVE_CARD_PROPERTIES: String = "res://scripts/actions/card_actions/cardset_actions/ActionImproveCardProperties.gd"
@@ -228,6 +238,10 @@ const INTERCEPTOR_PRESERVE_ENERGY: String = "res://scripts/action_interceptors/I
 const INTERCEPTOR_PRESERVE_BLOCK: String = "res://scripts/action_interceptors/InterceptorPreserveBlock.gd"
 const INTERCEPTOR_TEMP_PRESERVE_BLOCK: String = "res://scripts/action_interceptors/InterceptorTempPreserveBlock.gd"
 const INTERCEPTOR_PRESERVE_OVERSHIELD: String = "res://scripts/action_interceptors/status_effect_decay_interceptors/InterceptorPreserveOvershield.gd"
+
+# boss mechanic interceptors
+const INTERCEPTOR_DAMAGE_THRESHOLD: String = "res://scripts/action_interceptors/InterceptorDamageThreshold.gd"
+const INTERCEPTOR_CARD_PLAY_REACTION: String = "res://scripts/action_interceptors/InterceptorCardPlayReaction.gd"
 #endregion
 
 #region Run Modifiers

@@ -34,6 +34,9 @@ enum ENEMY_TYPES {STANDARD, MINIBOSS, BOSS}
 ## Maps status effect ids to charge count at start of combat.
 @export var enemy_initial_status_effects: Dictionary[String, int] = {}
 
+## Maps status effect ids to a dictionary of custom values at start of combat.
+@export var enemy_initial_status_custom_values: Dictionary = {}
+
 ## Time in seconds between each enemy attack.
 const ENEMY_ATTACK_DELAY: float = 0.5
 
@@ -96,7 +99,18 @@ func apply_enemy_difficulty_modifiers():
 		var difficulty_as_string: String = str(difficulty_level)
 		var enemy_difficulty_modifiers: Dictionary = enemy_difficulty_to_enemy_modfiers.get(difficulty_as_string, {})
 		for property_name: String in enemy_difficulty_modifiers:
-			set(property_name, enemy_difficulty_modifiers[property_name])
+			if property_name == "enemy_initial_status_custom_values":
+				var custom_vals: Dictionary = enemy_difficulty_modifiers[property_name]
+				for status_id in custom_vals:
+					if not enemy_initial_status_custom_values.has(status_id):
+						enemy_initial_status_custom_values[status_id] = {}
+					enemy_initial_status_custom_values[status_id].merge(custom_vals[status_id], true)
+			elif property_name == "enemy_initial_status_effects":
+				var status_effects: Dictionary = enemy_difficulty_modifiers[property_name]
+				for status_id in status_effects:
+					enemy_initial_status_effects[status_id] = status_effects[status_id]
+			else:
+				set(property_name, enemy_difficulty_modifiers[property_name])
 	
 	for enemy_intent_data: EnemyIntentData in enemy_intents.values():
 		if enemy_intent_data.enemy_intent_difficulty_level > player_run_difficulty_level:
@@ -138,7 +152,15 @@ func cycle_next_intent_state() -> void:
 	# randomly get next intent. Requires a typecast
 	var weights: Dictionary[Variant, int] = {}
 	weights.assign(current_intent_state.enemy_intent_next_intent_weights)
+	
 	enemy_intent_current_id = Random.get_weighted_selection(rng_enemy_attack_patterns, weights)
+
+## Forcefully sets the enemy's intent to a specific intent state ID. Used for phase shifting.
+func force_set_intent_state(new_intent_id: String) -> void:
+	if not enemy_intents.has(new_intent_id):
+		DebugLogger.log_error("EnemyData: Attempted to force set intent to non-existent intent ID: {0}".format([new_intent_id]))
+		return
+	enemy_intent_current_id = new_intent_id
 
 ## Gets the enemy's current attack intent, after being overridden.
 func get_current_intent() -> EnemyIntentData:

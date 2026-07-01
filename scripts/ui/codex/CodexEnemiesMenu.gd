@@ -8,6 +8,14 @@ extends BaseMenu
 @onready var codex_enemy_intents: Control = %CodexEnemyIntents
 # visibility toggle for enemy intents
 @onready var codex_enemy_intents_toggle_button: Button = %CodexEnemyIntentsToggleButton
+@onready var codex_enemy_initial_toggle_button: Button = %CodexEnemyInitialToggleButton
+@onready var codex_enemy_deathrattle_toggle_button: Button = %CodexEnemyDeathrattleToggleButton
+@onready var codex_enemy_initial: Control = %CodexEnemyInitial
+@onready var codex_enemy_deathrattle: Control = %CodexEnemyDeathrattle
+@onready var codex_enemy_details_container: MarginContainer = %CodexEnemyDetailsContainer
+@onready var codex_enemy_initial_container: Container = %CodexEnemyInitialContainer
+@onready var codex_enemy_deathrattle_container: VBoxContainer = %CodexEnemyDeathrattleContainer
+
 # list of enemy intents
 @onready var codex_enemy_intents_container: VBoxContainer = %CodexEnemyIntentsContainer
 
@@ -30,7 +38,9 @@ var current_anim_timer: float = 0.0
 @onready var codex_enemy_die_button: Button = %CodexEnemyDieButton
 
 func _ready() -> void:
-	codex_enemy_intents_toggle_button.toggled.connect(_on_enemy_intent_toggle)
+	codex_enemy_intents_toggle_button.toggled.connect(_on_info_panel_toggled.bind(codex_enemy_intents_toggle_button))
+	codex_enemy_initial_toggle_button.toggled.connect(_on_info_panel_toggled.bind(codex_enemy_initial_toggle_button))
+	codex_enemy_deathrattle_toggle_button.toggled.connect(_on_info_panel_toggled.bind(codex_enemy_deathrattle_toggle_button))
 	set_process(false)
 	
 	codex_enemy_idle_button.pressed.connect(_on_play_anim.bind(AnimationData.ANIMATION_IDLE))
@@ -46,6 +56,8 @@ func clear_menu() -> void:
 	super()
 	clear_codex_enemies()
 	clear_codex_enemy_intents()
+	clear_codex_enemy_initial()
+	clear_codex_enemy_deathrattle()
 	act_difficulties.clear()
 	current_enemy_data = null
 	current_act_id = ""
@@ -56,6 +68,14 @@ func clear_codex_enemies() -> void:
 
 func clear_codex_enemy_intents() -> void:
 	for child: Node in codex_enemy_intents_container.get_children():
+		child.queue_free()
+
+func clear_codex_enemy_deathrattle() -> void:
+	for child: Node in codex_enemy_deathrattle_container.get_children():
+		child.queue_free()
+
+func clear_codex_enemy_initial() -> void:
+	for child: Node in codex_enemy_initial_container.get_children():
 		child.queue_free()
 
 
@@ -127,6 +147,11 @@ func _get_difficulty_health(enemy_data: EnemyData, difficulty: int) -> Dictionar
 ## Populates info for a given enemy, and a list of intents
 func populate_codex_enemy(enemy_data: EnemyData) -> void:
 	stop_animation()
+	codex_enemy_intents_toggle_button.set_pressed_no_signal(false)
+	codex_enemy_initial_toggle_button.set_pressed_no_signal(false)
+	codex_enemy_deathrattle_toggle_button.set_pressed_no_signal(false)
+	_update_details_visibility()
+	
 	var difficulty: int = act_difficulties.get(current_act_id, 0)
 	codex_enemy_name_label.text = enemy_data.enemy_name
 	codex_enemy_texture.texture = FileLoader.load_texture(enemy_data.enemy_texture_path)
@@ -134,6 +159,8 @@ func populate_codex_enemy(enemy_data: EnemyData) -> void:
 	var hp: Dictionary = _get_difficulty_health(enemy_data, difficulty)
 	codex_enemy_health_label.text = "完整度: {0}-{1}".format([hp["lower"], hp["upper"]])
 	populate_codex_enemy_intents(enemy_data, difficulty)
+	populate_codex_enemy_initial(enemy_data, difficulty)
+	populate_codex_enemy_deathrattle(enemy_data)
 
 ## Populates a list of intents for a given enemy at a given difficulty.
 ## Shows the highest-difficulty version of each intent ≤ the requested difficulty.
@@ -155,7 +182,114 @@ func populate_codex_enemy_intents(enemy_data: EnemyData, difficulty: int = 0) ->
 	for intent_data: EnemyIntentData in best_intents.values():
 		var codex_enemy_intent: CodexEnemyIntent = Scenes.CODEX_ENEMY_INTENT.instantiate()
 		codex_enemy_intents_container.add_child(codex_enemy_intent)
-		codex_enemy_intent.init(enemy_data, intent_data)
+		codex_enemy_intent.init(enemy_data, intent_data, best_intents)
+
+func populate_codex_enemy_initial(enemy_data: EnemyData, difficulty: int = 0) -> void:
+	clear_codex_enemy_initial()
+	
+	if enemy_data.enemy_block == 0 and enemy_data.enemy_initial_status_effects.is_empty():
+		var empty_label = Label.new()
+		empty_label.text = "无"
+		codex_enemy_initial_container.add_child(empty_label)
+		return
+	
+	if enemy_data.enemy_block > 0:
+		var tooltip: String = "[color=orange]防火墙[/color]\n吸收伤害。"
+		
+		var block_wrapper = Control.new()
+		block_wrapper.custom_minimum_size = Vector2(32, 32)
+		var block_ui = load("res://scenes/combatants/BlockIndicator.tscn").instantiate()
+		block_ui.position = Vector2(16, 16)
+		block_ui.update_block(enemy_data.enemy_block)
+		block_wrapper.add_child(block_ui)
+		
+		var bg_rect = ColorRect.new()
+		bg_rect.color = Color(0, 0, 0, 0)
+		bg_rect.set_anchors_preset(Control.PRESET_FULL_RECT)
+		bg_rect.mouse_entered.connect(func(): if HandManager.tooltip != null: HandManager.tooltip.display_tooltip(tooltip, true))
+		bg_rect.mouse_exited.connect(func(): if HandManager.tooltip != null: HandManager.tooltip.hide_tooltip())
+		block_wrapper.add_child(bg_rect)
+		
+		codex_enemy_initial_container.add_child(block_wrapper)
+		
+	for status_id: String in enemy_data.enemy_initial_status_effects:
+		var amount: int = enemy_data.enemy_initial_status_effects[status_id]
+		var status_data: StatusEffectData = Global.get_status_effect_data(status_id)
+		if status_data == null: continue
+		var bbcode: String = "[color=orange]" + status_data.status_effect_name + "[/color]"
+		if status_data.status_effect_description != "": bbcode += "\n" + status_data.status_effect_description
+		if status_data.status_effect_decay_rate != 0: bbcode += "\n每时钟周期衰减 " + str(abs(status_data.status_effect_decay_rate)) + " 层。"
+		
+		var status_ui = Scenes.STATUS_EFFECT.instantiate()
+		status_ui.set_script(null)
+		status_ui.texture = FileLoader.load_texture(status_data.get_status_effect_texture_path(amount))
+		status_ui.get_node("StatusChargeLabel").text = str(amount)
+		status_ui.get_node("StatusSecondaryChargeLabel").text = ""
+		
+		status_ui.mouse_entered.connect(func(): if HandManager.tooltip != null: HandManager.tooltip.display_tooltip(bbcode, true))
+		status_ui.mouse_exited.connect(func(): if HandManager.tooltip != null: HandManager.tooltip.hide_tooltip())
+		
+		codex_enemy_initial_container.add_child(status_ui)
+
+func populate_codex_enemy_deathrattle(enemy_data: EnemyData) -> void:
+	clear_codex_enemy_deathrattle()
+	if enemy_data.enemy_actions_on_death.is_empty():
+		var empty_label = Label.new()
+		empty_label.text = "无"
+		codex_enemy_deathrattle_container.add_child(empty_label)
+	else:
+		for action_dict in enemy_data.enemy_actions_on_death:
+			var ui_node = _parse_action_to_ui(action_dict)
+			codex_enemy_deathrattle_container.add_child(ui_node)
+
+func _parse_action_to_ui(action_dict: Dictionary) -> Control:
+	var container = HBoxContainer.new()
+	container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	var script_path = action_dict.keys()[0]
+	var data = action_dict[script_path]
+	
+	var label = Label.new()
+	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	
+	if script_path == Scripts.ACTION_APPLY_STATUS:
+		var target = data.get("target_override", BaseAction.TARGET_OVERRIDES.SELECTED_TARGETS)
+		var status_id = data.get("status_effect_object_id", "")
+		var amount = data.get("status_charge_amount", 1)
+		
+		label.text = "对 [" + _translate_target(target) + "]: "
+		container.add_child(label)
+		
+		var status_data: StatusEffectData = Global.get_status_effect_data(status_id)
+		if status_data != null:
+			var status_ui = Scenes.STATUS_EFFECT.instantiate()
+			status_ui.set_script(null)
+			status_ui.texture = FileLoader.load_texture(status_data.get_status_effect_texture_path(amount))
+			status_ui.get_node("StatusChargeLabel").text = str(amount)
+			status_ui.get_node("StatusSecondaryChargeLabel").text = ""
+			
+			var bbcode: String = "[color=orange]" + status_data.status_effect_name + "[/color]"
+			if status_data.status_effect_description != "": bbcode += "\n" + status_data.status_effect_description
+			if status_data.status_effect_decay_rate != 0: bbcode += "\n每时钟周期衰减 " + str(abs(status_data.status_effect_decay_rate)) + " 层。"
+			
+			status_ui.mouse_entered.connect(func(): if HandManager.tooltip != null: HandManager.tooltip.display_tooltip(bbcode, true))
+			status_ui.mouse_exited.connect(func(): if HandManager.tooltip != null: HandManager.tooltip.hide_tooltip())
+			
+			container.add_child(status_ui)
+	else:
+		label.text = "执行: " + str(action_dict)
+		container.add_child(label)
+		
+	return container
+
+func _translate_target(target: int) -> String:
+	match target:
+		BaseAction.TARGET_OVERRIDES.PLAYER: return "玩家"
+		BaseAction.TARGET_OVERRIDES.ALL_COMBATANTS: return "所有角色"
+		BaseAction.TARGET_OVERRIDES.ALL_ENEMIES: return "所有敌人"
+		BaseAction.TARGET_OVERRIDES.LEFTMOST_ENEMY: return "最左侧敌人"
+		BaseAction.TARGET_OVERRIDES.RANDOM_ENEMY: return "随机敌人"
+		BaseAction.TARGET_OVERRIDES.RANDOM_COMBATANT: return "随机角色"
+		_: return "目标"
 
 func _on_codex_enemy_button_up(enemy_data: EnemyData) -> void:
 	current_enemy_data = enemy_data
@@ -169,8 +303,24 @@ func _get_act_id_for_enemy(enemy_id: String) -> String:
 			return act_data.object_id
 	return ""
 
-func _on_enemy_intent_toggle(toggle: bool) -> void:
-	codex_enemy_intents.visible = toggle
+func _on_info_panel_toggled(toggled_on: bool, pressed_button: Button) -> void:
+	if toggled_on:
+		if pressed_button != codex_enemy_intents_toggle_button:
+			codex_enemy_intents_toggle_button.set_pressed_no_signal(false)
+		if pressed_button != codex_enemy_initial_toggle_button:
+			codex_enemy_initial_toggle_button.set_pressed_no_signal(false)
+		if pressed_button != codex_enemy_deathrattle_toggle_button:
+			codex_enemy_deathrattle_toggle_button.set_pressed_no_signal(false)
+			
+	_update_details_visibility()
+
+func _update_details_visibility() -> void:
+	codex_enemy_intents.visible = codex_enemy_intents_toggle_button.button_pressed
+	codex_enemy_initial.visible = codex_enemy_initial_toggle_button.button_pressed
+	codex_enemy_deathrattle.visible = codex_enemy_deathrattle_toggle_button.button_pressed
+	
+	if codex_enemy_details_container != null:
+		codex_enemy_details_container.visible = codex_enemy_intents.visible or codex_enemy_initial.visible or codex_enemy_deathrattle.visible
 
 func _codex_act_sort(act_data_1: ActData, act_data_2: ActData) -> bool:
 	if act_data_1.act_codex_number == act_data_2.act_codex_number:

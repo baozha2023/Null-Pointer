@@ -7,6 +7,7 @@ extends Control
 @onready var title_label: Label = $TitleLabel
 @onready var draw_button: Button = $DrawButton
 @onready var clear_drawing_button: Button = $ClearDrawingButton
+@onready var auto_boss_button: Button = $AutoBossButton
 
 @onready var map_button = %MapButton
 
@@ -47,6 +48,8 @@ func _ready():
 	back_button.button_up.connect(_on_back_button_up)
 	draw_button.button_up.connect(_on_draw_button_up)
 	clear_drawing_button.button_up.connect(_on_clear_drawing_button_up)
+	if auto_boss_button != null:
+		auto_boss_button.button_up.connect(_on_auto_boss_button_up)
 	
 	Signals.combat_started.connect(_on_combat_started)
 	Signals.combat_ended.connect(_on_combat_ended)
@@ -160,6 +163,85 @@ func _on_map_location_button_up(map_location: MapLocation):
 		if Global.get_next_locations().has(map_location.location_data):
 			# visit the location
 			ActionGenerator.generate_visition_location(map_location.location_data.location_id)
+			
+func _on_auto_boss_button_up():
+	if not can_travel:
+		return
+	can_travel = false
+	
+	# Find path to boss using randomized DFS
+	var current_loc_id = Global.player_data.player_location_id
+	var current_loc = Global.get_location_data(current_loc_id)
+	
+	if current_loc == null:
+		can_travel = true
+		return
+		
+	var path: Array = []
+	var stack: Array = [[current_loc, []]]
+	while stack.size() > 0:
+		var curr = stack.pop_back()
+		var loc: LocationData = curr[0]
+		var cur_path: Array = curr[1].duplicate()
+		cur_path.append(loc)
+		if loc.location_type == LocationData.LOCATION_TYPES.BOSS:
+			path = cur_path
+			break
+		
+		# Shuffle neighbors
+		var neighbors = loc.location_next_location_ids.duplicate()
+		neighbors.shuffle()
+		for neighbor_id in neighbors:
+			var n_loc = Global.get_location_data(neighbor_id)
+			if n_loc != null:
+				stack.append([n_loc, cur_path])
+	
+	if path.size() <= 1:
+		can_travel = true
+		return
+		
+	# Animate the path
+	var offset = Vector2(32, 32)
+	for i in range(1, path.size()):
+		var loc_data: LocationData = path[i]
+		loc_data.location_visited = true
+		
+		var prev_loc: LocationData = path[i-1]
+		var start_pos = prev_loc.location_position + offset
+		var end_pos = loc_data.location_position + offset
+		
+		# Find and update the line
+		for child in location_container.get_children():
+			if child is Line2D and child.get_point_count() == 2:
+				if child.get_point_position(0).is_equal_approx(start_pos) and child.get_point_position(1).is_equal_approx(end_pos):
+					child.default_color = Color(0.2, 1.0, 0.5, 1.0)
+					child.width = 8.0
+					break
+		
+		# Find the instantiated MapLocation node
+		var target_map_node: MapLocation = null
+		for child in location_container.get_children():
+			if child is MapLocation and child.location_data == loc_data:
+				target_map_node = child
+				break
+		
+		if target_map_node != null:
+			target_map_node.init(loc_data)
+			target_map_node.flash_location()
+			
+			var tween = get_tree().create_tween()
+			var target_scroll = target_map_node.position.y - scroll_container.size.y / 2.0
+			target_scroll = clamp(target_scroll, 0, location_container.size.y - scroll_container.size.y)
+			tween.tween_property(scroll_container, "scroll_vertical", target_scroll, 0.2)
+		
+		if i < path.size() - 1:
+			await get_tree().create_timer(0.3).timeout
+		else:
+			await get_tree().create_timer(0.6).timeout # longer wait before boss
+			
+	# Trigger Boss Visit
+	var boss_loc = path.back()
+	ActionGenerator.generate_visition_location(boss_loc.location_id)
 	
 func _on_map_location_selected(location_data: LocationData):
 	# disable travel mode

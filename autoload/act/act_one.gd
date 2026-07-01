@@ -71,35 +71,191 @@ static func add_enemies() -> void:
 
 	Global.register_rod(enemy_act_1_miniboss_2)
 
-	# 初始化守护者 — Boss，召唤堆栈碎片和指针残骸
+	# INITIALIZE CORE GUARDIAN PROGRAM - Overheat Engine Boss
 	var enemy_act_1_boss_1: EnemyData = EnemyData.new("enemy_act_1_boss_1")
+	enemy_act_1_boss_1.enemy_name = "核心守护程序"
 	enemy_act_1_boss_1.add_health_bounds(200, 200)
 	enemy_act_1_boss_1.add_health_bounds(250, 250, DIFFICULTY_BOSS_ENEMIES_HARDER)
 	enemy_act_1_boss_1.add_health_bounds(280, 280, 5)
 	enemy_act_1_boss_1.enemy_type = EnemyData.ENEMY_TYPES.BOSS
-	enemy_act_1_boss_1.enemy_name = "守护兽"
 	enemy_act_1_boss_1.enemy_texture_path = "sprites/enemies/act1/boss_guardian.png"
+	
+	# Initial status effects: threshold starts at 40
+	enemy_act_1_boss_1.enemy_initial_status_effects["status_effect_damage_threshold"] = 40
+	# Curiosity - memory monitor (gain 1 str per card play if configured for skill/power)
+	enemy_act_1_boss_1.enemy_initial_status_effects["status_effect_curiosity"] = 1
+	enemy_act_1_boss_1.enemy_initial_status_custom_values["status_effect_curiosity"] = {
+		"curiosity_trigger_card_types": [CardData.CARD_TYPES.SKILL],
+		"curiosity_reaction_status_id": "status_effect_damage_increase",
+		"curiosity_reaction_amount": 1,
+		"curiosity_trigger_threshold": 6,
+		"curiosity_current_counter": 0
+	}
+	enemy_act_1_boss_1.enemy_initial_status_custom_values["status_effect_damage_threshold"] = {
+		"damage_threshold_increase_amount": 20,
+		"damage_threshold_target_intent": "intent_overheat"
+	}
+	
+	# Phase 1: Suppression (Attack and deck pollution)
 	enemy_act_1_boss_1.add_intent_state(
 		[
-			EnemyIntentData.new(EnemyIntentData.INTENT_INITIAL, DIFFICULTY_STARTING, 0, 0, "", 0, "", {"intent_summon": 1}),
-		],
+			EnemyIntentData.new(EnemyIntentData.INTENT_INITIAL, DIFFICULTY_STARTING, 0, 0, "", 0, "", {"intent_suppress": 1}),
+		]
 	)
-	var enemy_act_1_boss_1_summon_actions: Array[Dictionary] = [
+	var boss_1_pollute_actions: Array[Dictionary] = [
 		{
-			Scripts.ACTION_SUMMON_ENEMIES: {"number_of_spawns": 2, "spawn_slots": [1, 2], "time_delay": 0.5, "random_enemy_object_ids": ["enemy_minion_1", "enemy_minion_2"], "target_override": BaseAction.TARGET_OVERRIDES.PARENT},
+			Scripts.ACTION_CREATE_CARDS: {
+				"created_card_object_id": "card_status_burn",
+				"number_of_cards": 1,
+				"time_delay": EnemyData.ENEMY_ATTACK_DELAY,
+				"action_data": [
+					{
+						Scripts.ACTION_ADD_CARDS_TO_DRAW: {
+							"shuffle_cards": true
+						}
+					}
+				]
+			}
+		}
+	]
+	var boss_1_pollute_actions_d3: Array[Dictionary] = [
+		{
+			Scripts.ACTION_CREATE_CARDS: {
+				"created_card_object_id": "card_status_burn",
+				"number_of_cards": 1,
+				"time_delay": EnemyData.ENEMY_ATTACK_DELAY,
+				"action_data": [
+					{
+						Scripts.ACTION_ADD_CARDS_TO_DRAW: {
+							"shuffle_cards": true
+						}
+					}
+				]
+			}
 		},
+		{
+			Scripts.ACTION_CREATE_CARDS: {
+				"created_card_object_id": "card_status_dazed",
+				"number_of_cards": 1,
+				"time_delay": EnemyData.ENEMY_ATTACK_DELAY,
+				"action_data": [
+					{
+						Scripts.ACTION_ADD_CARDS_TO_DRAW: {
+							"shuffle_cards": true
+						}
+					}
+				]
+			}
+		}
+	]
+	
+	var boss_1_repair_actions_d3: Array[Dictionary] = [
+		{
+			Scripts.ACTION_APPLY_STATUS: {
+				"status_effect_object_id": "status_effect_overshield",
+				"status_charge_amount": 10,
+				"target_override": BaseAction.TARGET_OVERRIDES.PARENT,
+				"time_delay": EnemyData.ENEMY_ATTACK_DELAY
+			}
+		}
 	]
 	enemy_act_1_boss_1.add_intent_state(
 		[
-			EnemyIntentData.new("intent_summon", DIFFICULTY_STARTING, 0, 0, "", 0, "", {"intent_attack": 1}, enemy_act_1_boss_1_summon_actions),
-		],
+			EnemyIntentData.new("intent_suppress", DIFFICULTY_STARTING, 3, 2, "", 5, "", {"intent_pollute": 1}),
+			EnemyIntentData.new("intent_suppress", DIFFICULTY_BOSS_ENEMIES_HARDER, 4, 2, "", 5, "", {"intent_pollute": 1}),
+		]
 	)
 	enemy_act_1_boss_1.add_intent_state(
 		[
-			EnemyIntentData.new("intent_attack", DIFFICULTY_STARTING, 3, 2, "", 7, "", {"intent_attack": 1}),
-			EnemyIntentData.new("intent_attack", DIFFICULTY_BOSS_ENEMIES_HARDER, 5, 2, "", 7, "", {"intent_attack": 1}),
-		],
+			EnemyIntentData.new("intent_pollute", DIFFICULTY_STARTING, 5, 1, "", 10, "", {"intent_suppress": 1}, boss_1_pollute_actions, [], "向抽牌堆洗入 1 张过载发热"),
+			EnemyIntentData.new("intent_pollute", 3, 5, 1, "", 10, "", {"intent_repair": 1}, boss_1_pollute_actions_d3, [], "向抽牌堆洗入发热与垃圾数据"),
+		]
 	)
+	enemy_act_1_boss_1.add_intent_state(
+		[
+			EnemyIntentData.new("intent_repair", 3, 0, 0, "", 0, "", {"intent_suppress": 1}, boss_1_repair_actions_d3, [], "张开过载防火墙"),
+		]
+	)
+	
+	# Phase 2: Overheat (Stun -> System Reset)
+	var boss_1_stun_actions: Array[Dictionary] = [
+		{
+			Scripts.ACTION_APPLY_STATUS: {
+				"status_effect_object_id": "status_effect_vulnerable",
+				"status_charge_amount": 2,
+				"target_override": BaseAction.TARGET_OVERRIDES.PARENT,
+				"time_delay": EnemyData.ENEMY_ATTACK_DELAY
+			}
+		}
+	]
+	var boss_1_stun_actions_d5: Array[Dictionary] = [
+		{
+			Scripts.ACTION_APPLY_STATUS: {
+				"status_effect_object_id": "status_effect_vulnerable",
+				"status_charge_amount": 2,
+				"target_override": BaseAction.TARGET_OVERRIDES.PARENT,
+				"time_delay": 0.0
+			}
+		},
+		{
+			Scripts.ACTION_APPLY_STATUS: {
+				"status_effect_object_id": "status_effect_overshield",
+				"status_charge_amount": 15,
+				"target_override": BaseAction.TARGET_OVERRIDES.PARENT,
+				"time_delay": EnemyData.ENEMY_ATTACK_DELAY
+			}
+		}
+	]
+	
+	var boss_1_system_reset_actions_d5: Array[Dictionary] = [
+		{
+			Scripts.ACTION_CREATE_CARDS: {
+				"created_card_object_id": "card_status_burn",
+				"number_of_cards": 2,
+				"time_delay": EnemyData.ENEMY_ATTACK_DELAY,
+				"action_data": [
+					{
+						Scripts.ACTION_ADD_CARDS_TO_DRAW: {
+							"shuffle_cards": true
+						}
+					}
+				]
+			}
+		}
+	]
+	enemy_act_1_boss_1.add_intent_state(
+		[
+			EnemyIntentData.new("intent_overheat", DIFFICULTY_STARTING, 0, 0, "", 0, "", {"intent_system_reset": 1}, boss_1_stun_actions, [EnemyIntentData.INTENT_DISPLAY_TYPES.DEBUFFING]),
+			EnemyIntentData.new("intent_overheat", 5, 0, 0, "", 0, "", {"intent_system_reset": 1}, boss_1_stun_actions_d5, [EnemyIntentData.INTENT_DISPLAY_TYPES.DEBUFFING, EnemyIntentData.INTENT_DISPLAY_TYPES.BUFFING], "系统重置并激活高阶防火墙"),
+		]
+	)
+	enemy_act_1_boss_1.add_intent_state(
+		[
+			EnemyIntentData.new("intent_system_reset", DIFFICULTY_STARTING, 25, 1, "", 0, "", {"intent_suppress": 1}),
+			EnemyIntentData.new("intent_system_reset", DIFFICULTY_BOSS_ENEMIES_HARDER, 30, 1, "", 0, "", {"intent_suppress": 1}),
+			EnemyIntentData.new("intent_system_reset", 5, 35, 1, "", 0, "", {"intent_suppress": 1}, boss_1_system_reset_actions_d5, [], "向抽牌堆洗入 2 张过载发热"),
+		]
+	)
+	
+	enemy_act_1_boss_1.enemy_difficulty_to_enemy_modfiers = {
+		"3": {
+			"enemy_initial_status_effects": {"status_effect_damage_threshold": 50},
+			"enemy_initial_status_custom_values": {
+				"status_effect_damage_threshold": { "damage_threshold_increase_amount": 25 },
+				"status_effect_curiosity": { "curiosity_trigger_threshold": 5 }
+			}
+		},
+		"5": {
+			"enemy_initial_status_effects": {"status_effect_damage_threshold": 50},
+			"enemy_initial_status_custom_values": {
+				"status_effect_damage_threshold": { "damage_threshold_increase_amount": 25 },
+				"status_effect_curiosity": {
+					"curiosity_trigger_card_types": [CardData.CARD_TYPES.SKILL, CardData.CARD_TYPES.ATTACK],
+					"curiosity_trigger_threshold": 4
+				}
+			}
+		}
+	}
 
 	var _enemy_act_1_boss_1_anim: AnimationData = enemy_act_1_boss_1.add_standard_animations(
 		["sprites/enemies/act1/boss_guardian.png"],
@@ -341,6 +497,11 @@ static func add_act() -> void:
 	act_1.act_next_act_ids = ["act_2"]
 	act_1.act_action_script_path = Scripts.ACTION_GENERATE_ACT
 	act_1.act_map_floor_templates = ActData.default_floor_templates()
+	
+	act_1.act_music_ambient_file_path = "res://sounds/bgm/bgm_act_1.mp3"
+	act_1.act_music_combat_file_path = "res://sounds/bgm/bgm_act_1.mp3"
+	act_1.act_music_miniboss_file_path = "res://sounds/bgm/bgm_act_1.mp3"
+	act_1.act_music_boss_file_path = "res://sounds/bgm/bgm_boss.mp3"
 	
 	act_1.act_easy_combat_event_pool_object_id = "event_pool_act_1_easy"
 	act_1.act_hard_combat_event_pool_object_id = "event_pool_act_1_hard"

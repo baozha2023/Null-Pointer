@@ -24,7 +24,7 @@ var MISSING_TEXTURE: Texture2D = preload("res://sprites/missing_texture.png")
 var MISSING_AUDIO: AudioStream = preload("res://sounds/missing_audio.wav")
 
 
-const SAVE_DIR_PATH: String = EXTERNAL_DIR_PATH + "saves/" # file path of the save directory
+var SAVE_DIR_PATH: String = EXTERNAL_DIR_PATH + "saves/" # file path of the save directory
 const SAVE_FILE_NAME: String = "save.json" # filename of the current run's save
 
 var USER_SETTINGS_DIR_PATH: String = EXTERNAL_DIR_PATH # you may wish to change this to OS.get_user_data_dir()
@@ -68,10 +68,21 @@ func _ready():
 		# debug build uses project directory
 		_EXTERNAL_FILE_PREFIX = "res://"
 		DebugLogger.log_line("Debug Base Directory: " + _EXTERNAL_FILE_PREFIX, Color.LIGHT_BLUE)
+	elif OS.has_feature("mobile") or OS.has_feature("web"):
+		_EXTERNAL_FILE_PREFIX = "res://"
+		DebugLogger.log_line("Mobile/Web Base Directory: " + _EXTERNAL_FILE_PREFIX, Color.LIGHT_BLUE)
 	else:
 		# release build uses exe folder for user ease of access
-		_EXTERNAL_FILE_PREFIX = OS.get_executable_path().get_base_dir() + "/"
+		if OS.has_feature("macos"):
+			_EXTERNAL_FILE_PREFIX = OS.get_executable_path().get_base_dir().path_join("../../..").simplify_path() + "/"
+		else:
+			_EXTERNAL_FILE_PREFIX = OS.get_executable_path().get_base_dir() + "/"
 		DebugLogger.log_line("Build Base Directory: " + _EXTERNAL_FILE_PREFIX, Color.LIGHT_BLUE)
+		
+	if OS.has_feature("mobile") or OS.has_feature("web") or OS.has_feature("macos"):
+		SAVE_DIR_PATH = "user://saves/"
+		USER_SETTINGS_DIR_PATH = "user://"
+		PROFILE_DIR_PATH = "user://"
 		
 	if not AUTOSAVING_ENABLED:
 		DebugLogger.log_line("FileLoader: Autosaving disabled", Color.RED)
@@ -80,6 +91,8 @@ func _ready():
 ## Debug will start with res:// while exported builds will use the game's file directory.
 ## Methods where is_absolute = true will instead use an absolute file path and skip this method.
 func _get_modified_filepath(partial_filepath: String) -> String:
+	if partial_filepath.begins_with("res://") or partial_filepath.begins_with("user://"):
+		return partial_filepath
 	return _EXTERNAL_FILE_PREFIX + partial_filepath
 
 func get_files_in_directory(partial_dir_path: String):
@@ -101,6 +114,12 @@ func load_audio(audio_partial_path, is_absolute: bool = false, audio_loops: bool
 	if self._cached_audio.has(full_path):
 		return self._cached_audio[full_path]
 	else:
+		if full_path.begins_with("res://") and ResourceLoader.exists(full_path):
+			var audio = load(full_path)
+			if audio != null:
+				self._cached_audio[full_path] = audio
+				return audio
+				
 		if FileAccess.file_exists(full_path):
 			var audio: AudioStream = null
 			if full_path.ends_with(".wav"):
@@ -124,7 +143,7 @@ func load_audio(audio_partial_path, is_absolute: bool = false, audio_loops: bool
 				return MISSING_AUDIO	# return a debug audio
 		else:
 			# Fallback: check internal packed resources
-			var internal_path: String = "res://" + audio_partial_path
+			var internal_path: String = audio_partial_path if audio_partial_path.begins_with("res://") else "res://" + audio_partial_path
 			if ResourceLoader.exists(internal_path):
 				var audio = load(internal_path)
 				if audio != null:
@@ -162,7 +181,7 @@ func load_texture(image_partial_path, is_absolute: bool = false) -> Texture2D:
 			return texture
 		else:
 			# Fallback: check internal packed resources
-			var internal_path: String = "res://" + image_partial_path
+			var internal_path: String = image_partial_path if image_partial_path.begins_with("res://") else "res://" + image_partial_path
 			if ResourceLoader.exists(internal_path):
 				var texture = load(internal_path)
 				if texture != null:

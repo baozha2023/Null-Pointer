@@ -88,7 +88,7 @@ static func add_cards_green() -> void:
 	card_chloroplast.card_energy_cost = 3
 	card_chloroplast.card_requires_target = false
 	card_chloroplast.card_end_of_turn_destination = HandManager.EXHAUST_PILE
-	card_chloroplast.card_values = { "damage": 35, "exhaust_damage": 10 }
+	card_chloroplast.card_values = { "damage": 35, "exhaust_damage": 10, "impact_vfx_animation_id": "animation_vfx_impact_default" }
 	card_chloroplast.card_upgrade_value_improvements = { "damage": 10 }
 	card_chloroplast.card_play_actions = [
 		{
@@ -122,7 +122,7 @@ static func add_cards_green() -> void:
 	card_clippers.card_type = CardData.CARD_TYPES.ATTACK
 	card_clippers.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_clippers.card_keyword_object_ids = []
-	card_clippers.card_values = { "damage": 5, "number_of_attacks": 2, "health_amount": -5, "status_effect_object_id": "status_effect_damage_increase", "status_charge_amount": 2 }
+	card_clippers.card_values = { "damage": 5, "number_of_attacks": 2, "health_amount": -5, "status_effect_object_id": "status_effect_damage_increase", "status_charge_amount": 2, "impact_vfx_animation_id": "animation_vfx_impact_default" }
 	card_clippers.card_upgrade_value_improvements = { "damage": 2 }
 	card_clippers.card_play_actions = [
 		{
@@ -225,6 +225,11 @@ static func add_cards_green() -> void:
 				},
 			},
 		},
+		{
+			Scripts.ACTION_REMOVE_CARDS_FROM_DECK: {
+				"pick_played_card": true
+			}
+		}
 	]
 
 	Global.register_rod(card_fruit)
@@ -293,16 +298,16 @@ static func add_cards_green() -> void:
 	card_moss.card_upgrade_value_improvements = { "status_charge_amount": 4 }
 	card_moss.card_play_actions = [
 		{
+			Scripts.ACTION_APPLY_STATUS: {
+				"status_effect_object_id": "status_effect_overshield",
+				"target_override": BaseAction.TARGET_OVERRIDES.PLAYER,
+			},
+		},
+		{
 			Scripts.ACTION_ATTACK_GENERATOR: {
 				"target_override": BaseAction.TARGET_OVERRIDES.SELECTED_TARGETS,
 				"forced_interceptor_ids": ["interceptor_damage_from_overshield"],
 				"time_delay": 0.3,
-			},
-		},
-		{
-			Scripts.ACTION_APPLY_STATUS: {
-				"status_effect_object_id": "status_effect_overshield",
-				"target_override": BaseAction.TARGET_OVERRIDES.PLAYER,
 			},
 		},
 	]
@@ -378,7 +383,7 @@ static func add_cards_green() -> void:
 	card_reap.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_reap.card_energy_cost = 2
 	card_reap.card_requires_target = true
-	card_reap.card_values = { "damage": 10 }
+	card_reap.card_values = { "damage": 10, "impact_vfx_animation_id": "animation_vfx_impact_default" }
 	card_reap.card_upgrade_value_improvements = { "damage": 4 }
 	card_reap.card_play_actions = [
 		{
@@ -410,7 +415,7 @@ static func add_cards_green() -> void:
 	card_wildflower.card_type = CardData.CARD_TYPES.ATTACK
 	card_wildflower.card_rarity = CardData.CARD_RARITIES.UNCOMMON
 	card_wildflower.card_requires_target = true
-	card_wildflower.card_values = { "damage": 15, "number_of_attacks": 1 }
+	card_wildflower.card_values = { "damage": 15, "number_of_attacks": 1, "impact_vfx_animation_id": "animation_vfx_impact_default" }
 	card_wildflower.card_upgrade_value_improvements = { "damage": 5 }
 	card_wildflower.card_play_actions = [
 		{
@@ -544,7 +549,7 @@ static func add_cards_green() -> void:
 	card_vines.card_type = CardData.CARD_TYPES.ATTACK
 	card_vines.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_vines.card_requires_target = false
-	card_vines.card_values = { "damage": 5, "number_of_attacks": 2, "self_damage": 2 }
+	card_vines.card_values = { "damage": 5, "number_of_attacks": 2, "self_damage": 2, "impact_vfx_animation_id": "animation_vfx_impact_default" }
 	card_vines.card_upgrade_value_improvements = { "damage": 5 }
 	card_vines.card_play_actions = [
 		{
@@ -571,7 +576,7 @@ static func add_cards_green() -> void:
 	card_conclusion.card_requires_target = true
 	card_conclusion.card_is_retained = true
 	card_conclusion.card_play_destination = HandManager.EXHAUST_PILE
-	card_conclusion.card_values = { "damage": 12, "number_of_attacks": 1, "damage_growth": 4, "card_value_improvements": { "damage": 4 } }
+	card_conclusion.card_values = { "damage": 12, "number_of_attacks": 1, "damage_growth": 4, "card_value_improvements": { "damage": 4 }, "impact_vfx_animation_id": "animation_vfx_impact_default" }
 	card_conclusion.card_first_upgrade_property_changes = {
 		"card_description": "造成 [damage] 点伤害。保留时，每回合结束后每个未使用的 [energy_icon] 使本脚本伤害永久增加 [damage_growth] 点。",
 		"card_value_improvements": { "damage": 6 },
@@ -713,7 +718,7 @@ static func add_cards_green() -> void:
 	card_big_boom.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_big_boom.card_requires_target = false
 	card_big_boom.card_energy_cost = 2
-	card_big_boom.card_values = { "damage": 12, "status_charge_amount": 5, "time_delay": 0.2 }
+	card_big_boom.card_values = { "damage": 12, "status_charge_amount": 5, "time_delay": 0.2, "impact_vfx_animation_id": "animation_vfx_impact_default" }
 	card_big_boom.card_upgrade_value_improvements = { "damage": 14 }
 	card_big_boom.card_play_actions = [
 		{
@@ -855,17 +860,13 @@ static func add_cards_green() -> void:
 		"number_of_attacks": 1,
 		"number_of_cards": 3,
 		"created_card_object_id": "card_waste",
+		"impact_vfx_animation_id": "animation_vfx_impact_default",
 	}
 	card_fusion_cannon.card_upgrade_value_improvements = { "damage": 2 }
 	card_fusion_cannon.card_first_upgrade_property_changes = {
 		"card_description": "将 [number_of_cards] 个冗余数据加入坏道区，然后坏道区中每有 1 个冗余数据，造成 [damage] 点伤害。",
 	}
 	card_fusion_cannon.card_play_actions = [
-		{
-			Scripts.ACTION_CREATE_CARDS: {
-				"action_data": [{ Scripts.ACTION_EXHAUST_CARDS: { } }],
-			},
-		},
 		{
 			Scripts.ACTION_PICK_CARDS: {
 				"min_card_amount": 99,
@@ -893,6 +894,11 @@ static func add_cards_green() -> void:
 				],
 			},
 		},
+		{
+			Scripts.ACTION_CREATE_CARDS: {
+				"action_data": [{ Scripts.ACTION_EXHAUST_CARDS: { } }],
+			},
+		},
 	]
 
 	Global.register_rod(card_fusion_cannon)
@@ -902,7 +908,7 @@ static func add_cards_green() -> void:
 	card_meltdown.card_name = "熔毁"
 	card_meltdown.card_color_id = "color_{0}".format([color])
 	card_meltdown.card_texture_path = "sprites/card/green/card_meltdown.png"
-	card_meltdown.card_description = "获得 [status_charge_amount] 层内核过热。获得等同于内核过热层数的防火墙。"
+	card_meltdown.card_description = "获得等同于内核过热层数的防火墙。获得 [status_charge_amount] 层内核过热。"
 	card_meltdown.card_type = CardData.CARD_TYPES.SKILL
 	card_meltdown.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_meltdown.card_requires_target = false
@@ -1004,7 +1010,7 @@ static func add_cards_green() -> void:
 	card_waste.card_play_destination = HandManager.EXHAUST_PILE
 	card_waste.card_energy_cost = 1
 	card_waste.card_upgrade_amount_max = 0 # cannot be upgraded
-	card_waste.card_values = { "damage": 3, "status_charge_amount": 2 }
+	card_waste.card_values = { "damage": 3, "status_charge_amount": 2, "impact_vfx_animation_id": "animation_vfx_impact_default" }
 	card_waste.card_end_of_turn_actions = [
 		{
 			Scripts.ACTION_APPLY_STATUS: {

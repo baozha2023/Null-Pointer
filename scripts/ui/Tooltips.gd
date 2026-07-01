@@ -81,7 +81,7 @@ func display_tooltip(tooltip_bbcode: String,
 	hide_tooltip()
 	visible = true
 	
-	tooltip_bbcode = tooltip_bbcode.replace("[energy_icon]", "[img width=24]res://sprites/ui/icon_energy.png[/img]")
+	tooltip_bbcode = TextParser.parse(tooltip_bbcode)
 	tooltip_label.parse_bbcode(tooltip_bbcode)
 	tooltip_label.visible = true
 	panel_container.visible = true
@@ -210,3 +210,6 @@ func _process(_delta: float) -> void:
 			
 		global_position.x = clamp(global_position.x, 0, max(0, screen_size.x - tooltip_size.x - 10))
 		global_position.y = clamp(global_position.y, 0, max(0, screen_size.y - tooltip_size.y - 10))
+
+## Globally formats a metadata variable (like card types array or status ID) into a localized string representation.
+

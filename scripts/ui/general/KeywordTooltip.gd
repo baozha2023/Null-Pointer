@@ -32,7 +32,7 @@ func init(keyword_object_id: String) -> void:
 		
 		# append keyword text
 		keyword_bbcode = "{0}\n{1}".format([keyword_bbcode, keyword_data.keyword_text_bb_code])
-		keyword_bbcode = keyword_bbcode.replace("[energy_icon]", "[img width=24]res://sprites/ui/icon_energy.png[/img]")
+		keyword_bbcode = TextParser.parse(keyword_bbcode)
 		
 		# force the font to a certain size
 		keyword_bbcode = "[font_size={0}]{1}[/font_size]".format([FONT_SIZE, keyword_bbcode])
@@ -44,7 +44,7 @@ func init(keyword_object_id: String) -> void:
 func init_custom(title: String, text: String) -> void:
 	var keyword_bbcode: String = "[color=orange]" + title + "[/color]"
 	keyword_bbcode = "{0}\n{1}".format([keyword_bbcode, text])
-	keyword_bbcode = keyword_bbcode.replace("[energy_icon]", "[img width=24]res://sprites/ui/icon_energy.png[/img]")
+	keyword_bbcode = TextParser.parse(keyword_bbcode)
 	keyword_bbcode = "[font_size={0}]{1}[/font_size]".format([FONT_SIZE, keyword_bbcode])
 	keyword_rich_text_label.set_bbcode(keyword_bbcode)
 	keyword_rich_text_label.set_deferred("fit_content", true)
@@ -59,7 +59,7 @@ func init_status_effect(status_effect_object_id: String) -> void:
 			keyword_bbcode = "[img width={0}]{1}[/img] {2}".format([EMBEDDED_IMAGE_SIZE, status_effect_data.status_effect_texture_path, keyword_bbcode])
 		
 		keyword_bbcode = "{0}\n{1}".format([keyword_bbcode, status_effect_data.status_effect_description])
-		keyword_bbcode = keyword_bbcode.replace("[energy_icon]", "[img width=24]res://sprites/ui/icon_energy.png[/img]")
+		keyword_bbcode = TextParser.parse(keyword_bbcode)
 		keyword_bbcode = "[font_size={0}]{1}[/font_size]".format([FONT_SIZE, keyword_bbcode])
 		keyword_rich_text_label.set_bbcode(keyword_bbcode)
 		keyword_rich_text_label.set_deferred("fit_content", true)

@@ -7,8 +7,12 @@ extends BaseMenu
 
 @onready var new_run_button: Button = $VBoxContainer/NewRunButton
 
+const LOBBY_BGM: AudioStream = preload("res://sounds/bgm/bgm_lobby.mp3")
+
 func _ready():
 	super()
+	visibility_changed.connect(_on_visibility_changed)
+	SoundManager.play_music(LOBBY_BGM, 1.0)
 	continue_button.button_up.connect(_on_continue_button_up)
 	forfeit_run_button.button_up.connect(_on_forfeit_run_button_up)
 	exit_game_button.button_up.connect(_on_exit_game_button_up)
@@ -16,6 +20,10 @@ func _ready():
 	Signals.run_ended.connect(_on_run_ended)
 	
 	update_continue_button_visibility()
+
+func _on_visibility_changed():
+	if visible:
+		SoundManager.play_music(LOBBY_BGM, 1.0)
 
 func _on_continue_button_up():
 	FileLoader.autoload()

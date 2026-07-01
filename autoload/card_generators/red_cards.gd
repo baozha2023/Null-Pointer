@@ -953,6 +953,11 @@ static func add_cards_red() -> void:
 				],
 			},
 		},
+		{
+			Scripts.ACTION_REMOVE_CARDS_FROM_DECK: {
+				"pick_played_card": true
+			}
+		}
 	]
 	Global.register_rod(card_compile_opt)
 

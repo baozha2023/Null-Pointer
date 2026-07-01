@@ -82,8 +82,8 @@ func damage(_damage: int, bypass_block: bool = false) -> Array[int]:
 			player_data.player_block = 0
 			Signals.combatant_block_broken.emit(self)
 	
-	block.visible = player_data.player_block > 0
-	block_amount.text = str(player_data.player_block)
+	block.update_block(player_data.player_block)
+
 	
 	if bypassed_damage <= 0:
 		return [0,0,0]
@@ -99,11 +99,8 @@ func damage(_damage: int, bypass_block: bool = false) -> Array[int]:
 	return [bypassed_damage, bypassed_damage_capped, overkill_damage]
 
 func set_block(amount: int) -> void:
-	Global.player_data.player_block = amount
-	Global.player_data.player_block = max(0, Global.player_data.player_block)
-	
-	block.visible = Global.player_data.player_block > 0
-	block_amount.text = str(Global.player_data.player_block)
+	Global.player_data.player_block = max(0, amount)
+	block.update_block(Global.player_data.player_block)
 
 func get_block() -> int:
 	return 	Global.player_data.player_block

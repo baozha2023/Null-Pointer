@@ -63,12 +63,14 @@
 [ext_resource type="Script" uid="uid://d2fxhtmdfmtdf" path="res://scripts/ui/general/KeywordContainer.gd" id="42_wtekq"]
 [ext_resource type="Script" uid="uid://c5i0sjwlko88l" path="res://addons/label_font_auto_sizer/rich_label_auto_sizer.gd" id="43_gs3rm"]
 [ext_resource type="Script" uid="uid://b2jf7xdselhk" path="res://scripts/ui/codex/CodexGlossaryMenu.gd" id="99_glossary"]
+[ext_resource type="PackedScene" uid="uid://dxuwyfplappcu" path="res://scenes/ui/OptionSelectionOverlay.tscn" id="99_optsel"]
 [ext_resource type="Script" uid="uid://vh16q48jrisi" path="res://scripts/ui/components/AutoResizingGridContainer.gd" id="auto_resize_grid"]
 [ext_resource type="Texture2D" uid="uid://djt1sc74fp60x" path="res://sprites/btn_common_hover.png" id="btn_common_hover"]
 [ext_resource type="Texture2D" uid="uid://dab6flcgmdgpn" path="res://sprites/btn_common_normal.png" id="btn_common_normal"]
 [ext_resource type="Texture2D" uid="uid://bkrlkjojwbv77" path="res://sprites/btn_common_pressed.png" id="btn_common_pressed"]
 [ext_resource type="Script" uid="uid://rt6p3v5dh3cs" path="res://scripts/ui/codex/CodexCardDetailPanel.gd" id="codex_card_detail_panel"]
 [ext_resource type="Texture2D" uid="uid://bi6lu6igtqj20" path="res://sprites/ui/btn_deck_icon.png" id="deck_icon"]
+[ext_resource type="PackedScene" uid="uid://cx6g8tforge31" path="res://scenes/ui/ForgeOverlay.tscn" id="forge_overlay_scene"]
 [ext_resource type="Texture2D" uid="uid://cr6a63jqnlrsl" path="res://sprites/ui/btn_map_icon.png" id="map_icon"]
 [ext_resource type="Texture2D" uid="uid://qf8rdrmsdx7m" path="res://sprites/ui/btn_pause_icon.png" id="pause_icon"]
 
@@ -868,9 +870,6 @@ offset_left = 344.0
 offset_top = 264.0
 offset_right = 696.0
 offset_bottom = 336.0
-max_value = 1.0
-step = 0.1
-rounded = false
 
 [node name="MusicVolumeSlider" parent="TitleScreen/SettingsMenu" unique_id=931721845 instance=ExtResource("18_plfau")]
 unique_name_in_owner = true
@@ -879,9 +878,6 @@ offset_left = 344.0
 offset_top = 352.0
 offset_right = 696.0
 offset_bottom = 424.0
-max_value = 1.0
-step = 0.1
-rounded = false
 
 [node name="EffectsVolumeSlider" parent="TitleScreen/SettingsMenu" unique_id=344737561 instance=ExtResource("18_plfau")]
 unique_name_in_owner = true
@@ -890,9 +886,6 @@ offset_left = 344.0
 offset_top = 440.0
 offset_right = 696.0
 offset_bottom = 512.0
-max_value = 1.0
-step = 0.1
-rounded = false
 
 [node name="CodexMenu" type="Control" parent="TitleScreen" unique_id=184224315 node_paths=PackedStringArray("navigation_button_to_menu", "navigation_button_to_sub_menu", "default_sub_menu")]
 visible = false
@@ -1407,6 +1400,18 @@ layout_mode = 2
 toggle_mode = true
 text = "意图"
 
+[node name="CodexEnemyInitialToggleButton" type="Button" parent="TitleScreen/CodexMenu/VSplitContainer/CodexContentDisplay/CodexEnemiesMenu/MarginContainer/HSplitContainer/HSplitContainer/EnemyInfo/CodexEnemyAnimButtons" unique_id=336820221]
+unique_name_in_owner = true
+layout_mode = 2
+toggle_mode = true
+text = "初始"
+
+[node name="CodexEnemyDeathrattleToggleButton" type="Button" parent="TitleScreen/CodexMenu/VSplitContainer/CodexContentDisplay/CodexEnemiesMenu/MarginContainer/HSplitContainer/HSplitContainer/EnemyInfo/CodexEnemyAnimButtons" unique_id=1756652972]
+unique_name_in_owner = true
+layout_mode = 2
+toggle_mode = true
+text = "亡语"
+
 [node name="CodexEnemyIdleButton" type="Button" parent="TitleScreen/CodexMenu/VSplitContainer/CodexContentDisplay/CodexEnemiesMenu/MarginContainer/HSplitContainer/HSplitContainer/EnemyInfo/CodexEnemyAnimButtons" unique_id=987654322]
 unique_name_in_owner = true
 layout_mode = 2
@@ -1422,12 +1427,17 @@ unique_name_in_owner = true
 layout_mode = 2
 text = "死亡"
 
-[node name="CodexEnemyIntents" type="Control" parent="TitleScreen/CodexMenu/VSplitContainer/CodexContentDisplay/CodexEnemiesMenu/MarginContainer/HSplitContainer/HSplitContainer" unique_id=1189076230]
+[node name="CodexEnemyDetailsContainer" type="MarginContainer" parent="TitleScreen/CodexMenu/VSplitContainer/CodexContentDisplay/CodexEnemiesMenu/MarginContainer/HSplitContainer/HSplitContainer" unique_id=89674724]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
 
-[node name="ScrollContainer" type="ScrollContainer" parent="TitleScreen/CodexMenu/VSplitContainer/CodexContentDisplay/CodexEnemiesMenu/MarginContainer/HSplitContainer/HSplitContainer/CodexEnemyIntents" unique_id=2061093803]
+[node name="CodexEnemyIntents" type="Control" parent="TitleScreen/CodexMenu/VSplitContainer/CodexContentDisplay/CodexEnemiesMenu/MarginContainer/HSplitContainer/HSplitContainer/CodexEnemyDetailsContainer" unique_id=1189076230]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="TitleScreen/CodexMenu/VSplitContainer/CodexContentDisplay/CodexEnemiesMenu/MarginContainer/HSplitContainer/HSplitContainer/CodexEnemyDetailsContainer/CodexEnemyIntents" unique_id=2061093803]
 layout_mode = 1
 anchors_preset = -1
 anchor_right = 1.0
@@ -1436,13 +1446,55 @@ offset_bottom = 0.400024
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="CodexEnemyIntentsContainer" type="VBoxContainer" parent="TitleScreen/CodexMenu/VSplitContainer/CodexContentDisplay/CodexEnemiesMenu/MarginContainer/HSplitContainer/HSplitContainer/CodexEnemyIntents/ScrollContainer" unique_id=1300482252]
+[node name="CodexEnemyIntentsContainer" type="VBoxContainer" parent="TitleScreen/CodexMenu/VSplitContainer/CodexContentDisplay/CodexEnemiesMenu/MarginContainer/HSplitContainer/HSplitContainer/CodexEnemyDetailsContainer/CodexEnemyIntents/ScrollContainer" unique_id=1300482252]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="CodexEnemyIntent" parent="TitleScreen/CodexMenu/VSplitContainer/CodexContentDisplay/CodexEnemiesMenu/MarginContainer/HSplitContainer/HSplitContainer/CodexEnemyIntents/ScrollContainer/CodexEnemyIntentsContainer" unique_id=1990704091 instance=ExtResource("24_gs3rm")]
+[node name="CodexEnemyIntent" parent="TitleScreen/CodexMenu/VSplitContainer/CodexContentDisplay/CodexEnemiesMenu/MarginContainer/HSplitContainer/HSplitContainer/CodexEnemyDetailsContainer/CodexEnemyIntents/ScrollContainer/CodexEnemyIntentsContainer" unique_id=1990704091 instance=ExtResource("24_gs3rm")]
 layout_mode = 2
+
+[node name="CodexEnemyInitial" type="Control" parent="TitleScreen/CodexMenu/VSplitContainer/CodexContentDisplay/CodexEnemiesMenu/MarginContainer/HSplitContainer/HSplitContainer/CodexEnemyDetailsContainer" unique_id=1649740387]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="TitleScreen/CodexMenu/VSplitContainer/CodexContentDisplay/CodexEnemiesMenu/MarginContainer/HSplitContainer/HSplitContainer/CodexEnemyDetailsContainer/CodexEnemyInitial" unique_id=1011242261]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 0.9
+offset_bottom = 0.400024
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="CodexEnemyInitialContainer" type="HFlowContainer" parent="TitleScreen/CodexMenu/VSplitContainer/CodexContentDisplay/CodexEnemiesMenu/MarginContainer/HSplitContainer/HSplitContainer/CodexEnemyDetailsContainer/CodexEnemyInitial/ScrollContainer" unique_id=1836892887]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/h_separation = 8
+theme_override_constants/v_separation = 8
+
+[node name="CodexEnemyDeathrattle" type="Control" parent="TitleScreen/CodexMenu/VSplitContainer/CodexContentDisplay/CodexEnemiesMenu/MarginContainer/HSplitContainer/HSplitContainer/CodexEnemyDetailsContainer" unique_id=451933053]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="TitleScreen/CodexMenu/VSplitContainer/CodexContentDisplay/CodexEnemiesMenu/MarginContainer/HSplitContainer/HSplitContainer/CodexEnemyDetailsContainer/CodexEnemyDeathrattle" unique_id=613060513]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 0.9
+offset_bottom = 0.400024
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="CodexEnemyDeathrattleContainer" type="VBoxContainer" parent="TitleScreen/CodexMenu/VSplitContainer/CodexContentDisplay/CodexEnemiesMenu/MarginContainer/HSplitContainer/HSplitContainer/CodexEnemyDetailsContainer/CodexEnemyDeathrattle/ScrollContainer" unique_id=1675561943]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
 
 [node name="CodexGlossaryMenu" type="Control" parent="TitleScreen/CodexMenu/VSplitContainer/CodexContentDisplay" unique_id=203692062]
 visible = false
@@ -2142,6 +2194,18 @@ offset_bottom = 58.0
 theme_override_font_sizes/font_size = 18
 text = "5"
 horizontal_alignment = 1
+
+[node name="ForgeButton" type="TextureButton" parent="RunScreen/Combat" unique_id=445566780]
+unique_name_in_owner = true
+visible = false
+layout_mode = 0
+offset_left = 23.0
+offset_top = 442.0
+offset_right = 73.0
+offset_bottom = 492.0
+texture_normal = ExtResource("3_8ax2e")
+ignore_texture_size = true
+stretch_mode = 0
 
 [node name="DrawPile" type="TextureButton" parent="RunScreen/Combat" unique_id=320277565]
 unique_name_in_owner = true
@@ -2845,6 +2909,10 @@ theme_override_constants/h_separation = 20
 theme_override_constants/v_separation = 20
 columns = 4
 
+[node name="OptionSelectionOverlay" parent="RunScreen" unique_id=1233169154 instance=ExtResource("99_optsel")]
+visible = false
+layout_mode = 0
+
 [node name="CardDraftSelectionOverlay" type="Control" parent="RunScreen" unique_id=302868452]
 unique_name_in_owner = true
 process_mode = 1
@@ -2887,6 +2955,7 @@ text = "跳过"
 
 [node name="CardUpgradeOverlay" parent="RunScreen" unique_id=273723737 instance=ExtResource("11_upgrade")]
 unique_name_in_owner = true
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -2948,6 +3017,14 @@ grow_horizontal = 2
 theme_override_font_sizes/font_size = 28
 text = "章节"
 horizontal_alignment = 1
+
+[node name="AutoBossButton" type="Button" parent="RunScreen/Map" unique_id=2026063001]
+layout_mode = 0
+offset_left = 760.0
+offset_top = 32.0
+offset_right = 864.0
+offset_bottom = 63.0
+text = "一键boss"
 
 [node name="DrawButton" type="Button" parent="RunScreen/Map" unique_id=2010392651]
 layout_mode = 0
@@ -3060,6 +3137,14 @@ theme_override_styles/pressed = SubResource("StyleBoxTexture_btn_common_pressed"
 theme_override_styles/hover = SubResource("StyleBoxTexture_btn_common_hover")
 text = "放弃本轮"
 
+[node name="ForgeOverlay" parent="RunScreen" unique_id=1305490746 instance=ExtResource("forge_overlay_scene")]
+unique_name_in_owner = true
+visible = false
+z_index = 20
+anchors_preset = 0
+offset_right = 1200.0
+offset_bottom = 700.0
+
 [node name="Tooptips" type="Control" parent="." unique_id=1044105944]
 unique_name_in_owner = true
 z_index = 1000
@@ -3147,10 +3232,10 @@ metadata/_edit_use_anchors_ = true
 [node name="EnergyTooltipPos" type="ReferenceRect" parent="Tooptips/TooltipPositions" unique_id=1639367285]
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 0.0075
-anchor_top = 0.6342857
-anchor_right = 0.2341667
-anchor_bottom = 0.7142857
+anchor_left = 0.0025
+anchor_top = 0.56285715
+anchor_right = 0.22916669
+anchor_bottom = 0.64285713
 mouse_filter = 2
 border_width = 5.0
 metadata/_edit_use_anchors_ = true

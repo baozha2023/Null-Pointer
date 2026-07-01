@@ -2,7 +2,6 @@
 
 [ext_resource type="Script" uid="uid://d4l5y1jvle1mq" path="res://scripts/combatants/Enemy.gd" id="1_10iyf"]
 [ext_resource type="AnimationLibrary" uid="uid://dvbwuh87t2tha" path="res://animations/Combatant.res" id="2_11ric"]
-[ext_resource type="Texture2D" uid="uid://d33u8m744fh03" path="res://icon.svg" id="2_x4bdi"]
 [ext_resource type="PackedScene" uid="uid://b0qk0vn81d0kp" path="res://scenes/combatants/LayeredHealthBar.tscn" id="3_nimvv"]
 [ext_resource type="AnimationLibrary" uid="uid://8a2mcc4gqn5k" path="res://animations/Enemy.res" id="3_vx4nw"]
 [ext_resource type="Texture2D" uid="uid://dw4k1k81ap581" path="res://sprites/missing_texture.png" id="4_gu0s6"]
@@ -12,6 +11,7 @@
 [ext_resource type="Texture2D" uid="uid://coiehbsiht83q" path="res://sprites/intents/enemy_intent_debuffing.png" id="8_gu0s6"]
 [ext_resource type="Texture2D" uid="uid://cvpwsdtfglfr0" path="res://sprites/intents/enemy_intent_buffing.png" id="9_7in10"]
 [ext_resource type="Texture2D" uid="uid://cpgx50bqopa8m" path="res://sprites/intents/enemy_intent_summoning.png" id="10_mxi1b"]
+[ext_resource type="PackedScene" uid="uid://bblblockind01" path="res://scenes/combatants/BlockIndicator.tscn" id="shield_scn"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_7in10"]
 atlas = ExtResource("4_gu0s6")
@@ -165,23 +165,9 @@ text = "15"
 [node name="FadeContainer" type="Node2D" parent="Visible" unique_id=704318186]
 position = Vector2(1, -136)
 
-[node name="Block" type="Sprite2D" parent="Visible" unique_id=1802455981]
-visible = false
-self_modulate = Color(0.188235, 0.188235, 0.188235, 1)
-position = Vector2(-67, 40)
-scale = Vector2(0.25, 0.25)
-texture = ExtResource("2_x4bdi")
-metadata/_edit_group_ = true
-
-[node name="BlockAmount" type="Label" parent="Visible/Block" unique_id=724369886]
-offset_left = -64.0
-offset_top = -64.0
-offset_right = 64.0
-offset_bottom = 64.0
-theme_override_font_sizes/font_size = 48
-text = "999"
-horizontal_alignment = 1
-vertical_alignment = 1
+[node name="Block" parent="Visible" unique_id=1432771270 instance=ExtResource("shield_scn")]
+position = Vector2(-65, 78)
+scale = Vector2(0.4, 0.4)
 
 [node name="StatusContainer" type="GridContainer" parent="Visible" unique_id=622018222]
 layout_mode = 0

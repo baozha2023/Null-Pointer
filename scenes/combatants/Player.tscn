@@ -3,10 +3,11 @@
 [ext_resource type="Script" uid="uid://bu5jx208ipx8i" path="res://scripts/combatants/Player.gd" id="1_hkgmy"]
 [ext_resource type="AnimationLibrary" uid="uid://c6xlbg8p1y2er" path="res://animations/Player.res" id="2_6d0fj"]
 [ext_resource type="AnimationLibrary" uid="uid://dvbwuh87t2tha" path="res://animations/Combatant.res" id="2_p0uf2"]
-[ext_resource type="Texture2D" uid="uid://d33u8m744fh03" path="res://icon.svg" id="2_snepv"]
 [ext_resource type="PackedScene" uid="uid://b0qk0vn81d0kp" path="res://scenes/combatants/LayeredHealthBar.tscn" id="3_ef7si"]
 [ext_resource type="Texture2D" uid="uid://dw4k1k81ap581" path="res://sprites/missing_texture.png" id="4_m3o5b"]
+[ext_resource type="Texture2D" uid="uid://d33u8m744fh03" path="res://icon.svg" id="6_2s8kq"]
 [ext_resource type="PackedScene" uid="uid://d3ay0q2ywlmkj" path="res://scenes/combatants/SpeechBubble.tscn" id="6_jg3sr"]
+[ext_resource type="PackedScene" uid="uid://bblblockind01" path="res://scenes/combatants/BlockIndicator.tscn" id="shield_scn"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_7in10"]
 atlas = ExtResource("4_m3o5b")
@@ -91,48 +92,35 @@ offset_bottom = -104.0
 
 [node name="TextureRect" type="TextureRect" parent="Visible/IncomingDamage" unique_id=1670663658]
 layout_mode = 0
-offset_left = 80.0
-offset_top = 5.0
-offset_right = 128.0
-offset_bottom = 53.0
-texture = ExtResource("2_snepv")
+offset_left = 79.0
+offset_top = -4.0
+offset_right = 127.0
+offset_bottom = 44.0
+texture = ExtResource("6_2s8kq")
 expand_mode = 1
 
 [node name="IncomingDamageAmount" type="Label" parent="Visible/IncomingDamage" unique_id=366869573]
 layout_mode = 0
-offset_left = 133.0
-offset_top = 15.0
-offset_right = 166.0
-offset_bottom = 48.0
-theme_override_font_sizes/font_size = 18
+offset_left = 130.0
+offset_top = 5.0
+offset_right = 163.0
+offset_bottom = 38.0
+theme_override_font_sizes/font_size = 20
 text = "15"
 
 [node name="FadeContainer" type="Node2D" parent="Visible" unique_id=1501128475]
 position = Vector2(0, -160)
 
-[node name="Block" type="Sprite2D" parent="Visible" unique_id=1667680985]
-visible = false
-self_modulate = Color(0.188235, 0.188235, 0.188235, 1)
-position = Vector2(64, 48)
-scale = Vector2(0.25, 0.25)
-texture = ExtResource("2_snepv")
-
-[node name="BlockAmount" type="Label" parent="Visible/Block" unique_id=1752157568]
-offset_left = -64.0
-offset_top = -64.0
-offset_right = 64.0
-offset_bottom = 64.0
-theme_override_font_sizes/font_size = 48
-text = "999"
-horizontal_alignment = 1
-vertical_alignment = 1
+[node name="Block" parent="Visible" unique_id=1793949554 instance=ExtResource("shield_scn")]
+position = Vector2(-67, 78)
+scale = Vector2(0.4, 0.4)
 
 [node name="StatusContainer" type="GridContainer" parent="Visible" unique_id=1540858454]
 layout_mode = 0
-offset_left = -80.0
-offset_top = 80.0
-offset_right = -40.0
-offset_bottom = 120.0
+offset_left = -81.0
+offset_top = 103.0
+offset_right = -41.0
+offset_bottom = 143.0
 columns = 6
 
 [node name="SpeechBubble" parent="Visible" unique_id=863155305 instance=ExtResource("6_jg3sr")]

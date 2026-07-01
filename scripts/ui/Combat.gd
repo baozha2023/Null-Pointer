@@ -16,6 +16,7 @@ extends Control
 @onready var deck_button: TextureButton = %DeckButton
 @onready var draw_pile_button: TextureButton = %DrawPile
 @onready var draw_top_pile_button: TextureButton = %DrawTopPile
+@onready var forge_button: TextureButton = %ForgeButton
 @onready var discard_pile_button: TextureButton = %DiscardPile
 @onready var exhaust_pile_button: TextureButton = %ExhaustPile
 
@@ -69,6 +70,7 @@ func _ready():
 	deck_button.button_up.connect(_on_deck_button_up)
 	draw_pile_button.button_up.connect(_on_draw_pile_button_up)
 	draw_top_pile_button.button_up.connect(_on_draw_top_pile_button_up)
+	forge_button.button_up.connect(_on_forge_button_up)
 	discard_pile_button.button_up.connect(_on_discard_pile_button_up)
 	exhaust_pile_button.button_up.connect(_on_exhaust_pile_button_up)
 	
@@ -92,6 +94,10 @@ func _ready():
 	HandManager.card_destination_to_ui_elements[HandManager.DRAW_PILE] = draw_pile_button
 	HandManager.card_destination_to_ui_elements[HandManager.DISCARD_PILE] = discard_pile_button
 	HandManager.card_destination_to_ui_elements[HandManager.EXHAUST_PILE] = exhaust_pile_button
+
+	# right-click artifact custom signals
+	Signals.get_custom_signal("custom_signal_open_see_top_ui").custom_signal.connect(_on_custom_signal_open_see_top_ui)
+	Signals.get_custom_signal("custom_signal_open_forge_ui").custom_signal.connect(_on_custom_signal_open_forge_ui)
 
 func _on_map_location_selected(location_data: LocationData):
 	# determine what to do when the player visits a new location
@@ -152,6 +158,7 @@ func set_combat_display_visibility(display_visibility: bool) -> void:
 	energy.visible = display_visibility
 	draw_pile_button.visible = display_visibility
 	draw_top_pile_button.visible = display_visibility and _has_see_top_artifact()
+	forge_button.visible = display_visibility and _has_forge_artifact()
 	discard_pile_button.visible = display_visibility
 	exhaust_pile_button.visible = display_visibility
 	end_turn_button.visible = display_visibility
@@ -191,10 +198,18 @@ func _on_draw_pile_button_up():
 	card_selection_overlay.view_draw_pile()
 func _on_draw_top_pile_button_up():
 	card_selection_overlay.view_draw_top()
+func _on_forge_button_up():
+	%ForgeOverlay.show_overlay()
 func _on_discard_pile_button_up():
 	card_selection_overlay.view_discard()
 func _on_exhaust_pile_button_up():
 	card_selection_overlay.view_exhaust()
+
+func _on_custom_signal_open_see_top_ui(_signal_id: String, _values: Dictionary[String, Variant]) -> void:
+	card_selection_overlay.view_draw_top()
+
+func _on_custom_signal_open_forge_ui(_signal_id: String, _values: Dictionary[String, Variant]) -> void:
+	%ForgeOverlay.show_overlay()
 
 ### Turn Handling
 
@@ -594,11 +609,15 @@ func start_turn_animation() -> void:
 func _has_see_top_artifact() -> bool:
 	return Global.player_data.get_player_artifacts_with_artifact_id("artifact_see_top_of_draw_pile").size() > 0
 
+func _has_forge_artifact() -> bool:
+	return Global.player_data.get_player_artifacts_with_artifact_id("artifact_forge").size() > 0
+
 func _get_pile_buttons() -> Array[TextureButton]:
-	return [draw_top_pile_button, energy, draw_pile_button, discard_pile_button, exhaust_pile_button]
+	return [draw_top_pile_button, forge_button, energy, draw_pile_button, discard_pile_button, exhaust_pile_button]
 
 func _set_pile_icons() -> void:
 	draw_top_pile_button.texture_normal = FileLoader.load_texture("sprites/ui/icon_draw_top.png")
+	forge_button.texture_normal = FileLoader.load_texture("sprites/ui/icon_forge.png")
 	draw_pile_button.texture_normal = FileLoader.load_texture("sprites/ui/icon_draw_pile.png")
 	discard_pile_button.texture_normal = FileLoader.load_texture("sprites/ui/icon_discard_pile.png")
 	exhaust_pile_button.texture_normal = FileLoader.load_texture("sprites/ui/icon_exhaust_pile.png")

@@ -171,7 +171,11 @@ static func add_cards_blue() -> void:
 	card_inject_attack.card_values = {"damage": 5, "bonus_damage": 3, "number_of_attacks": 1, "status_charge_amount": 1, "status_effect_object_id": "status_effect_vulnerable", "impact_vfx_animation_id": "animation_vfx_impact_default"}
 	card_inject_attack.card_upgrade_value_improvements = {"damage": 2, "bonus_damage": 2, "status_charge_amount": 1}
 	card_inject_attack.card_play_actions = [
-		{Scripts.ACTION_ATTACK_GENERATOR: {}},
+		{
+			Scripts.ACTION_APPLY_STATUS: {
+				"status_effect_object_id": "status_effect_vulnerable",
+			},
+		},
 		{
 			Scripts.ACTION_VALIDATOR: {
 				"validator_data": [
@@ -190,11 +194,7 @@ static func add_cards_blue() -> void:
 				]
 			}
 		},
-		{
-			Scripts.ACTION_APPLY_STATUS: {
-				"status_effect_object_id": "status_effect_vulnerable",
-			},
-		},
+		{Scripts.ACTION_ATTACK_GENERATOR: {}},
 	]
 
 	Global.register_rod(card_inject_attack)
@@ -268,6 +268,7 @@ static func add_cards_blue() -> void:
 	card_sql_injection.card_values = {"damage": 6, "number_of_attacks": 2, "impact_vfx_animation_id": "animation_vfx_impact_default"}
 	card_sql_injection.card_upgrade_value_improvements = {"damage": 2}
 	card_sql_injection.card_play_actions = [
+		{Scripts.ACTION_ATTACK_GENERATOR: {}},
 		{
 			Scripts.ACTION_VALIDATOR: {
 				"validator_data": [
@@ -286,7 +287,6 @@ static func add_cards_blue() -> void:
 				],
 			},
 		},
-		{Scripts.ACTION_ATTACK_GENERATOR: {}},
 	]
 
 	Global.register_rod(card_sql_injection)
@@ -403,6 +403,7 @@ static func add_cards_blue() -> void:
 	card_zero_day.card_values = {"damage": 18, "number_of_attacks": 1, "impact_vfx_animation_id": "animation_vfx_impact_default"}
 	card_zero_day.card_upgrade_value_improvements = {"damage": 5}
 	card_zero_day.card_play_actions = [
+		{Scripts.ACTION_ATTACK_GENERATOR: {}},
 		{
 			Scripts.ACTION_VALIDATOR: {
 				"validator_data": [
@@ -421,7 +422,6 @@ static func add_cards_blue() -> void:
 				],
 			},
 		},
-		{Scripts.ACTION_ATTACK_GENERATOR: {}},
 	]
 
 	Global.register_rod(card_zero_day)
@@ -494,13 +494,13 @@ static func add_cards_blue() -> void:
 	card_logic_bomb.card_values = {"damage": 8, "number_of_attacks": 1, "bomb_amount": 3, "impact_vfx_animation_id": "animation_vfx_impact_default"}
 	card_logic_bomb.card_upgrade_value_improvements = {"damage": 4, "bomb_amount": 2}
 	card_logic_bomb.card_play_actions = [
-		{Scripts.ACTION_ATTACK_GENERATOR: {}},
 		{
 			Scripts.ACTION_APPLY_STATUS: {
 				"status_effect_object_id": "status_effect_bomb",
 				"custom_key_names": {"status_charge_amount": "bomb_amount"},
 			},
 		},
+		{Scripts.ACTION_ATTACK_GENERATOR: {}},
 	]
 
 	Global.register_rod(card_logic_bomb)
@@ -519,7 +519,7 @@ static func add_cards_blue() -> void:
 	card_darknet_protocol.card_energy_cost_variable_upper_bound = -1
 	card_darknet_protocol.card_play_destination = HandManager.EXHAUST_PILE
 	card_darknet_protocol.card_end_of_turn_destination = HandManager.EXHAUST_PILE
-	card_darknet_protocol.card_values = {"status_charge_amount": 0, "status_effect_object_id": "status_effect_damage_increase", "multiplier_offset": 0}
+	card_darknet_protocol.card_values = {"status_charge_amount": 1, "status_effect_object_id": "status_effect_damage_increase", "multiplier_offset": 0}
 	card_darknet_protocol.card_upgrade_value_improvements = {"multiplier_offset": 1}
 	card_darknet_protocol.card_first_upgrade_property_changes = {
 		"card_end_of_turn_destination": HandManager.DISCARD_PILE,

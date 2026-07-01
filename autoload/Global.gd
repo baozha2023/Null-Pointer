@@ -43,6 +43,7 @@ extends Node
 	["CardData", CardData, "_id_to_card_data", ["cards/"]],
 	["ArtifactData", ArtifactData, "_id_to_artifact_data", ["artifacts/"]],
 	["PlayerData", PlayerData, "_id_to_player_data", ["player/"]],
+	["OptionData", OptionData, "_id_to_option_data", ["options/"]],
 ]
 
 ## 核心类映射表。这些查找表可以自动化地在整个应用程序中加载、保存和映射数据，
@@ -173,6 +174,10 @@ func _ready():
 	### 加载存档进度和用户本地设置
 	FileLoader.load_profile()
 	FileLoader.load_user_settings()
+	
+	var master_vol: float = user_settings_data.settings_audio_master_volume
+	SoundManager.set_music_volume(user_settings_data.settings_audio_music_volume * master_vol)
+	SoundManager.set_sound_volume(user_settings_data.settings_audio_effects_volume * master_vol)
 	
 	### 生成生产环境数据（真实游戏内容）
 	GlobalProdDataGenerator.generate_production_data()
@@ -476,6 +481,15 @@ func get_player_event_data() -> EventData:
 func get_event_pool_data(event_pool_object_id: String) -> EventPoolData:
 	return _id_to_event_pool_data.get(event_pool_object_id, null)
 #endregion
+
+var _id_to_option_data: Dictionary = {}
+var act_scene_paths: Dictionary = {}
+
+func get_option_data(object_id: String) -> OptionData:
+	if _id_to_option_data.has(object_id):
+		return _id_to_option_data.get(object_id)
+	DebugLogger.log_error("Failed to fetch OptionData for id " + object_id)
+	return null
 
 #region Dialogue
 func get_dialogue_data(dialogue_object_id: String) -> DialogueData:

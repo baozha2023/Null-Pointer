@@ -7,6 +7,8 @@ class_name StatusEffectData
 @export var status_effect_name: String = ""
 ## Text description of what the status does
 @export var status_effect_description: String = ""
+## Dynamic tooltip text. If empty, uses status_effect_description.
+@export var status_effect_tooltip: String = ""
 ## Script inheriting from BaseStatusEffect determining behavior of the status.
 ## Used for logical component of status.
 @export var status_effect_script_path: String = "res://scripts/status_effects/BaseStatusEffect.gd"

@@ -13,7 +13,7 @@ class_name UserSettingsData
 
 ## Volume
 @export var settings_audio_master_volume: float = 1.0
-@export var settings_audio_music_volume: float = 1.0
+@export var settings_audio_music_volume: float = 0.2
 @export var settings_audio_effects_volume: float = 1.0
 
 @export var settings_audio_mute_on_window_lose_focus: bool = false

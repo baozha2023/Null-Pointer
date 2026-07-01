@@ -416,7 +416,10 @@ func _play_card(card_play_request: CardPlayRequest) -> void:
 	# generate dummy card play action and intercept it
 	# this allows some interceptors to access a card play as it's happening
 	var generated_action: BaseAction = ActionGenerator.generate_card_play(card_play_request)
-	var _action_interceptor_processors: Array[ActionInterceptorProcessor] = generated_action._intercept_action([null])
+	
+	var intercept_targets: Array[BaseCombatant] = [null]
+	intercept_targets.append_array(Global.get_alive_enemies())
+	var _action_interceptor_processors: Array[ActionInterceptorProcessor] = generated_action._intercept_action(intercept_targets)
 	
 	# find out where the card came from before it's played
 	var card_origin_pile: String = get_card_pile_location_name(card_play_request.card_data)

@@ -36,8 +36,19 @@ func _on_mouse_entered() -> void:
 	var status_effect_data: StatusEffectData = status_effect_script.status_effect_data
 	var bbcode: String = "[color=orange]" + status_effect_data.status_effect_name + "[/color]"
 	
-	if status_effect_data.status_effect_description != "":
-		bbcode += "\n" + status_effect_data.status_effect_description
+	var tooltip_text: String = status_effect_data.status_effect_tooltip
+	if tooltip_text == "":
+		tooltip_text = status_effect_data.status_effect_description
+		
+	if tooltip_text != "":
+		var context: Dictionary = status_effect_script.status_custom_values.duplicate()
+		context["charge_amount"] = status_effect_script.status_charges
+		context["secondary_charges"] = status_effect_script.status_secondary_charges
+		if not context.has("curiosity_current_counter"):
+			context["curiosity_current_counter"] = 0
+			
+		var parsed_text: String = TextParser.parse(tooltip_text, context)
+		bbcode += "\n" + parsed_text
 		
 	if status_effect_data.status_effect_decay_rate != 0:
 		bbcode += "\n每时钟周期衰减 " + str(abs(status_effect_data.status_effect_decay_rate)) + " 层。"
