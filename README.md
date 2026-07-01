@@ -1,97 +1,55 @@
-# Slay The Robot
+# Null Pointer
 
-Slay the Robot is a comprehensive framework for Godot 4 which enables and streamlines the creation of roguelike deckbuilders similar to Slay the Spire.
+《Null Pointer》是一款基于 Godot 4 引擎开发、深受《杀戮尖塔》（Slay the Spire）启发的 Roguelike 牌组构建（Deckbuilder）游戏。玩家将扮演一名“蓝屏骇客”，在充满未知与代码漏洞的赛博空间中，利用手上的卡牌（代码）击溃无尽的敌人（防火墙与杀毒软件）。
 
-## 📚 Getting Started
+## 🎮 如何运行游戏
 
-A [primer wiki](https://github.com/DesirePathGames/Slay-The-Robot/wiki) (WIP) has been provided in the project. There's also a quick and dirty "[translation spreadsheet](https://docs.google.com/spreadsheets/d/1J3o8d5gMbzAwjXUZgvvEui8mhHdSobRWEZeRn1sFmvs/edit?usp=sharing)" to see how the framework compares to Slay the Spire, with technical notes included.
+本项目开源了所有的客户端逻辑与数据架构。
+1. 下载并安装 [Godot 4.6](https://godotengine.org/download/archive/4.6-stable/)。
+2. 将本项目导入 Godot 编辑器。
+3. 游戏的默认主场景为 `res://scenes/Root.tscn`，直接按 `F5` 即可运行体验。
 
-# Features
+---
 
-*Some of the core features include but are not limited to:*
+# ✨ 游戏核心特色与架构
 
-## 🃏 Cards, Cards, and More Cards
+本项目不仅是一款完整的游戏，其底层还拥有着极为强悍、完全解耦的架构设计。
 
-Cards have a massive and robust data-driven API, allowing you or users to create cards from simple JSON payloads. Almost every card in Slay the Spire is possible with this framework, many even possible without having to touch a single line of code, just by using the existing actions and card properties provided in the default framework. **Note**: JSON files are not included with the project by default and game data is generated from code. Uncomment the export line in Global._ready() and run it, then it will export the game data to JSON to be loaded on subsequent runs.
+## 🃏 海量的赛博骇客卡牌
+游戏拥有稳健的数据驱动 API，所有的卡牌（如逻辑炸弹、肉鸡集群、零日漏洞等）完全由纯数据生成。玩家不仅可以体验到深度设计的核心卡池，由于其极高的数据扩展性，游戏中随时会发生意想不到的代码连锁反应。
 
-A card decorator system is included which works similar to StS 2's enchantment system. This lets you modify cards with all sorts of ad hoc effects.
+游戏包含完善的**卡牌修饰器（Decorator）系统**（类似附魔系统），可以在对局中动态地为你的卡牌注入各式各样的“后门”或“漏洞”附加效果。
 
-## 🗂️ Content Packs
+## 🗂️ 动态内容包 (Content Packs)
+游戏内所有的卡牌、遗物（Artifacts）和消耗品都通过“内容包”的逻辑进行管理。这意味着随着游戏进程的推进，特定的内容池会被平滑地注入到你的战利品或商店中，保持极高的数据扩展性且保证了纯净的底层逻辑。
 
-Got too many cards? Nonsense! Use card packs to query and organize even thousands of cards in a performant manner. Add a new red card to the game? The red card pack will instantly add it to the red deck and they'll start showing up. Want to suddenly start being able to draft green cards during a run? Simply add a green card pack to the player and it'll automatically sort out the rest. This keeps your data clean and extensible and saves the tedium of having to manually maintain large lists of things. The same goes for relics ("artifacts" in StR) and consumables which are also organized by packs.
+## ⚔️ 万物皆 Action 的战斗系统
+游戏中所有交互（攻击、抽牌、在商店购买物品、增加/衰减状态效果）均由一套可复用的“动作（Action）”脚本驱动。游戏允许在底层实现动作的深度嵌套，甚至包含简单的 for 循环、随机选择和 if/else 判断，为极端复杂的卡牌结算提供了稳定的环境。
 
-## ⚔️ Action System
+## 📜 动作拦截器与动态解析 (Interceptors & TextParser)
+《Null Pointer》的底层拥有强大的**动作拦截器（Action Interceptors）**机制。任何动作在执行前，都会被你身上的遗物或敌人的状态效果动态“劫持”并篡改。阻止抽牌、伤害增幅、护盾保留等机制，全都是通过拦截器完成的。
 
-A system of reusable action scripts drives everything. From attacking and drawing cards, to buying things from a shop, to more technical things like generating the world, ending your turn, or incrementing/decaying a status effect all pipe through this system in an orderly and consistent fashion. There's even actions that make or modify other actions, allowing for deep nested behavior such as rudimentary for-loops, random choice, and if/else logic.
+为了追求极致的解耦，游戏中所有的 UI 富文本（包括敌人的意图、卡牌的动态伤害、状态图标等）全盘由全局单例 `TextParser` 接管。**UI 界面与底层战斗运算共享同一套数据流**——如果一张卡牌显示它将造成 5 点伤害，那么它在底层就一定会精确造成 5 点伤害，绝不存在显示与实际不符的 Bug。
 
-A value hierarchy ensures you have total control over where data is pulled. Restrict action parameters to a single action, or provide them to your cards so all actions inherit from them. Or even assign custom values to the player themself and pull data from there.
+## 💬 丰富的随机事件流
+不仅包含硬核的卡牌战斗，游戏内置了由状态机驱动的事件对话系统。随机事件池将决定你在下一个节点是遭遇“数据备份”的馈赠，还是落入危险的“蜜罐陷阱”。
 
-Actions can be assigned timers to ensure they take exactly as long as you need them to. Both synchronous and asynchronous actions are also supported. Maybe you want a card that torrents the entirety of Bee Movie, plays it, and makes the player sit through to the end before they can play another card. Hey, I'm not here to judge your impeccable taste.
+## 🎵🎞️ 视听表现与特效
+游戏内置了完整的音频管理系统，为每个章节（Act 1、Act 2、Act 3 及 Boss）配备了专属的 BGM 和打击音效。完善的粒子特效和战斗浮动数字（Combat Floats）提供了极其扎实的打击反馈。
 
-## 📜 Interceptors
+## 🏃 进阶难度与定制对局
+游戏默认提供 3 个章节的分支路线地图生成，并包含了类似“进阶等级”的难度修饰器机制，甚至包含无尽模式的扩展可能。玩家还能在每局开始前，在艰难的“对局初始选项”中做出抉择。
 
-Data driven behavior not enough? Want to attach scripts to other scripts, setting off crazy chains that mess with the game's own internal systems through status effects and relics? Actions can be dynamically modified by action interceptors right before they run, creating complex and consistent interactions with minimal code.
+## 🎲 绝对的确定性随机数 (Deterministic RNG)
+为了保证策略游戏的严谨性，游戏采用了基于种子的**确定性随机数（Deterministic RNG）轨道**。洗牌、事件触发、随机伤害等操作被分配到了互不干扰的独立随机数轨道中。这也意味着——依靠 SL 大法（存档重开）是无法改变既定命运的。
 
-Prevent the player from drawing cards, make shops more expensive, preserve your block between turns, make it so attacks hit harder, expand the amount of cards you can have in your hand? All easily possible with interceptors by writing short scripts and specifying what actions they affect and how.
+## 💾 自动存档与无缝读档
+游戏拥有完善的基于 JSON 的自动存档管理，它会默默记录你单局游戏的进度、每个角色的总胜率以及各种极客状态钩子。所有的复杂嵌套对象都能稳定地被序列化。
 
-The same technology that modifies actions is integrated into the UI via interception previews. This means enemy intent, card descriptions, and card play validation all use the exact same logical pipelines as the actions they represent. So if a card or enemy says it will do 5 damage, then it will do 5 damage. This makes life much easier for you and the player by avoiding two separate calculation systems.
+## ⚙️ 天生支持 Mod
+由于其底层优秀的序列化设计，《Null Pointer》天生支持极高自由度的 Mod。玩家只需编写 JSON 和放入图片资源，甚至自己注入新的 GDScript 脚本，即可完全覆盖游戏内的行为，极大地延长了游戏的生命力。
 
-## 🤔 Validators 
+---
 
-Validators drive conditional logic across the UI and game logic. Want to restrict a card to being only played under certain conditions? How about glow if there's 3 enemies? Perhaps have some additional effect when played if you have 7+ cards in hand? Maybe it only plays when the [International Space Station's urine tank is full](https://github.com/Stovoy/pISSStreamGodot)? Easy.
-
-## 💬 Events and Dialogue
-
-Both combat and non combat events are supported. A simple but powerful state machine driven dialogue system ensures you can write whatever events you need. Event pools control exactly what kind of events can show up and when.
-
-## 📖 Codex
-
-A sample codex shows all content to the player. Cards, consumables, artifacts, and enemies are displayed.
-
-## 🎵🎞️ Audio, VFX, and Animation Support
-
-An audio system has been included via [addon](https://github.com/nathanhoad/godot_sound_manager) and hooked into the action, event, and fileloading systems. Master, music, and sfx volume sliders included and synced with user configs.
-
-Animations can be generated easily and hooked into enemy attack patterns and cards.
-
-## 🏃 Acts, Ascensions, and Custom Runs
-
-A 3-Act structure is provided by default, with a custom run modifier for endless mode. Branching acts are also supported. Run modifiers and "ascensions" are handled by the same tech, making it easy to add more.
-
-A system for run start options is also provided. Want to choose between losing all your money to gain a rare card, or maybe gain a random common relic? Decisions decisions...
-
-## 🎲 Deterministic RNG
-
-Random number generation is extremely important to card games and great care has been taken to ensure deterministic behavior. Automatically generate "tracks" of RNG and inject them into your actions with ease. Things like shuffling your deck, events, random card damage, and much more have all been sorted into non competing buckets so the same behavior happens every time. This ensures that no matter how hard you save scum, you'll still lose.
-
-## 🧮 Stat Hooks and Run History
-
-StatsHandler keeps track of everything, storing it on a current turn, total in combat, and per run basis that can be easily queried to provide cards or artifacts with conditional effects. You or users can even provide custom stats and hooks through CustomSignalData.
-
-Run history and aggregate wins/losses are also stored in the player's profile, with flags for fine tuning what gets stored.
-
-## 💾 Saving and Loading
-
-The framework handles all the scary data handling work for you, automatically. Simply extend from SerializableData and add @export to a variable, and you can save and load even complex nested objects with ease in human readable JSON.
-
-The game manages autosaves for player data all on its own, and keeps track of wins and losses in total and for each character.
-
-## ⚙️ Mod Support
-
-The same technology that streamlines saving and loading also makes mod support a breeze. Data, assets, and scripts (including your own!) can be loaded from external files.
-
-Simply create a mod_info.json file, specify which folders to load from and what data types it represents, and it will automatically load them if enabled in mod_list.json. Scripts may also be trivially loaded in, allowing users to inject new behavior into the game or override existing scripts.
-
-An example mod has been provided to see this technology in action.
-
-## ⚖️ Permissive License
-
-Under the MIT License you're free to use this framework for anything and it's yours to do as you please, from hobby to commercial.
-
-# ☕ Donate
-
-Was this framework useful to you? Consider [buying me a coffee](https://buymeacoffee.com/desirepathgames).
-
-# Requirements
-
-Slay the Robot is written in Godot 4.6 via GDScript, which can be downloaded from the official site [here](https://godotengine.org/download/archive/4.6-stable/).
+## ⚖️ 开源协议
+本项目采用 GNU GPL v3 开源协议。你可以自由修改并分发本游戏的内容，欢迎任何赛博漫游者加入并扩建这片代码废墟。
