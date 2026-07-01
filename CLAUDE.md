@@ -134,11 +134,11 @@ All game behavior flows through Actions. Inheritance chain: `BaseAction` → `Ba
 
 **Card Play Flow**: Click a hand card → `HandManager` creates `CardPlayRequest` (with card data, targets, costs) → enqueued in `card_play_queue` → `_perform_card_plays()` pops each request → `ActionGenerator.generate_card_play()` builds the action tree → actions execute through `ActionHandler` → `card_play_finished` signal fires → resolve next card or end turn.
 
-**Card Description Templating** (`scripts/ui/card/Card.gd`): Card descriptions support dynamic value substitution via `[key_name]` placeholders, looked up through the standard Value Hierarchy (including interceptor-mapped values, which get color-coded green/red for buffs/nerfs). Two special placeholder suffixes exist:
-- `[key_name_energy_icons]` — replaced with N energy-icon sprites matching the integer value of `key_name`
-- `[variable_energy_icons]` — replaced with energy icons matching the player's currently-consumable energy (respects `card_energy_cost_variable_upper_bound` and `multiplier_offset` for X-cost cards)
-
-The `ENERGY_ICON_KEYWORD` constant (`[energy_icon]`) is used for single inline energy icons in non-templated text, replaced via bbcode `[img]` tags with the card's color tint.
+**TextParser & Templating** (`autoload/TextParser.gd`): All rich text in the game (card descriptions, tooltips, enemy intents, forge actions) is passed through `TextParser.parse(text, context_dictionary)` before display. It supports dynamic value substitution via `[key_name]` placeholders, looked up from the provided context dictionary or the Value Hierarchy. Special macros exist:
+- `[status_icon:status_id]` / `[status_name:status_id]` — dynamically replaced with the status effect's icon and localized name.
+- `[key_name_energy_icons]` — replaced with N energy-icon sprites matching the integer value of `key_name` from the context.
+- `[variable_energy_icons]` — replaced with energy icons matching the player's currently-consumable energy (respects `card_energy_cost_variable_upper_bound` and `multiplier_offset` for X-cost cards).
+- `[energy_icon]` — a standalone macro for a single energy icon.
 
 **Card Keywords** (`KeywordData`, `KeywordContainer`, `KeywordTooltip`): Card keyword metadata (e.g., "保留", "物理删除", "虚无") is displayed as keyword chips when hovering over a card — no longer embedded in `CardData.get_card_description()`. `KeywordData.keyword_prefix` (e.g., `[前置] `, `[后置] `) indicates when a keyword triggers (before or after an action), displayed as a prefix on the keyword tooltip. The `keyword_unplayable` keyword auto-appends to cards where `card_is_playable = false`. `[energy_icon]` placeholders in keyword text are replaced at display time.
 
