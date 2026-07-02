@@ -479,3 +479,13 @@ func does_card_retain() -> bool:
 func does_card_banish() -> bool:
 	return card_play_destination == HandManager.BANISH_PILE
 #endregion
+
+## Returns whether this card has been encountered by the player
+func is_discovered() -> bool:
+	if card_rarity == CARD_RARITIES.BASIC:
+		return true
+	if ProfileData.UNLOCK_ALL_CARDS_IN_CODEX:
+		return true
+	if Global.profile_data == null:
+		return false
+	return Global.profile_data.profile_discovered_cards.has(object_id)

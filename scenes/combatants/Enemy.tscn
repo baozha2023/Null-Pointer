@@ -165,7 +165,7 @@ text = "15"
 [node name="FadeContainer" type="Node2D" parent="Visible" unique_id=704318186]
 position = Vector2(1, -136)
 
-[node name="Block" parent="Visible" unique_id=1432771270 instance=ExtResource("shield_scn")]
+[node name="Block" parent="Visible/CombatantCenter" unique_id=1432771270 instance=ExtResource("shield_scn")]
 position = Vector2(-65, 78)
 scale = Vector2(0.4, 0.4)
 

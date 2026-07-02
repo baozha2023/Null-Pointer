@@ -10,7 +10,7 @@ static func add_cards_white() -> void:
 	card_energy_next_turn.card_name = "下时钟周期算力"
 	card_energy_next_turn.card_color_id = "color_{0}".format([color])
 	card_energy_next_turn.card_texture_path = "sprites/card/white/card_energy_next_turn.png"
-	card_energy_next_turn.card_description = "获得 [status_charge_amount] 层算力预分配。"
+	card_energy_next_turn.card_description = "获得 [status_charge_amount] 层 [status_icon:status_effect_energy_next_turn]。"
 	card_energy_next_turn.card_hint = "为下个周期预留算力，适合为消耗大的强力脚本做铺垫。"
 	card_energy_next_turn.card_type = CardData.CARD_TYPES.SKILL
 	card_energy_next_turn.card_rarity = CardData.CARD_RARITIES.UNCOMMON

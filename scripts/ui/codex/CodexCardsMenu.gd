@@ -108,7 +108,7 @@ func _populate_codex_cards(card_pack_data: CardPackData = null) -> void:
 	# generate data to make cards
 	for card_object_id: String in card_object_ids:
 		var card_data: CardData = Global.get_card_data(card_object_id)
-		card_args.append([card_data, 0, false, true])
+		card_args.append([card_data, 0, false, true, true])
 	
 	if len(card_args) > 1:
 		card_args.sort_custom(_codex_card_custom_sort)

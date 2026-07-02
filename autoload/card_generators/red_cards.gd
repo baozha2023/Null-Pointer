@@ -82,32 +82,31 @@ static func add_cards_red() -> void:
 	card_stack_overflow.card_name = "栈溢出"
 	card_stack_overflow.card_color_id = "color_{0}".format([color])
 	card_stack_overflow.card_texture_path = "sprites/card/red/card_stack_overflow.png"
-	card_stack_overflow.card_description = "造成 [damage] 点伤害。当前线程中每有一个脚本额外造成 [damage_per_card] 点伤害。自身获得 1 层输出降级。"
+	card_stack_overflow.card_description = "造成 [damage] 点伤害。当前线程中每有一个脚本额外造成 [additional_damage] 点伤害。自身获得 1 层 [status_icon:status_effect_weaken]。"
 	card_stack_overflow.card_type = CardData.CARD_TYPES.ATTACK
 	card_stack_overflow.card_rarity = CardData.CARD_RARITIES.UNCOMMON
 	card_stack_overflow.card_requires_target = true
 	card_stack_overflow.card_energy_cost = 2
-	card_stack_overflow.card_values = {"damage": 6, "damage_per_card": 2, "number_of_attacks": 1, "impact_vfx_animation_id": "animation_vfx_impact_default",}
+	card_stack_overflow.card_values = {"damage": 6, "additional_damage": 2, "number_of_attacks": 1, "impact_vfx_animation_id": "animation_vfx_impact_default",}
 	card_stack_overflow.card_upgrade_value_improvements = {"damage": 3}
 	card_stack_overflow.card_first_upgrade_property_changes = {"card_energy_cost": 1}
 	card_stack_overflow.card_play_actions = [
-		{
-			Scripts.ACTION_VARIABLE_COMBAT_STATS_MODIFIER: {
-				"combat_stat_name": "cards_in_hand",
-				"action_data": [
-					{Scripts.ACTION_ATTACK_GENERATOR: {"damage": card_stack_overflow.card_values["damage_per_card"]}},
-				],
-				"multiplied_values": ["damage"],
-				"multiplied_values_bases": {"damage": card_stack_overflow.card_values["damage"]},
-			},
-		},
-		# 副作用：自身受损——栈过载会短暂降低处理能力
 		{
 			Scripts.ACTION_APPLY_STATUS: {
 				"status_effect_object_id": "status_effect_weaken",
 				"status_charge_amount": 1,
 				"target_override": BaseAction.TARGET_OVERRIDES.PLAYER,
 				"time_delay": 0.2,
+			},
+		},
+		{
+			Scripts.ACTION_VARIABLE_COMBAT_STATS_MODIFIER: {
+				"combat_stat_name": "cards_in_hand",
+				"multiplied_values": ["additional_damage"],
+				"multiplied_values_bases": {"additional_damage": 0},
+				"action_data": [
+					{Scripts.ACTION_ATTACK_GENERATOR: {}}
+				],
 			},
 		},
 	]
@@ -172,23 +171,21 @@ static func add_cards_red() -> void:
 		{Scripts.VALIDATOR_ENEMY_ATTACKING: {"invert_validation": true}},
 	]
 	card_binary_search.card_play_actions = [
-		{Scripts.ACTION_ATTACK_GENERATOR: {}},
 		{
 			Scripts.ACTION_VALIDATOR: {
 				"validator_data": [
 					{Scripts.VALIDATOR_ENEMY_ATTACKING: {"invert_validation": true}},
 				],
 				"passed_action_data": [
-					{
-						Scripts.ACTION_DIRECT_DAMAGE: {
-							"custom_key_names": {"damage": "bonus_damage"},
-							"bypass_block": false,
-							"time_delay": 0.3,
-						},
-					},
+					{Scripts.ACTION_ATTACK_GENERATOR: {
+						"custom_key_names": {"additional_damage": "bonus_damage"}
+					}}
 				],
-			},
-		},
+				"failed_action_data": [
+					{Scripts.ACTION_ATTACK_GENERATOR: {}}
+				]
+			}
+		}
 	]
 	Global.register_rod(card_binary_search)
 
@@ -243,7 +240,7 @@ static func add_cards_red() -> void:
 	card_xor_cipher.card_name = "异或操作"
 	card_xor_cipher.card_color_id = "color_{0}".format([color])
 	card_xor_cipher.card_texture_path = "sprites/card/red/card_xor_cipher.png"
-	card_xor_cipher.card_description = "造成 [damage] 点伤害并对目标施加 [status_charge_amount] 层漏洞暴露。"
+	card_xor_cipher.card_description = "造成 [damage] 点伤害并对目标施加 [status_charge_amount] 层 [status_icon:status_effect_vulnerable]。"
 	card_xor_cipher.card_type = CardData.CARD_TYPES.ATTACK
 	card_xor_cipher.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_xor_cipher.card_requires_target = true
@@ -373,7 +370,7 @@ static func add_cards_red() -> void:
 	card_code_review.card_name = "代码审查"
 	card_code_review.card_color_id = "color_{0}".format([color])
 	card_code_review.card_texture_path = "sprites/card/red/card_code_review.png"
-	card_code_review.card_description = "读取 [draw_count] 个脚本，对随机敌人施加 [status_charge_amount] 层漏洞暴露。"
+	card_code_review.card_description = "读取 [draw_count] 个脚本，对随机敌人施加 [status_charge_amount] 层 [status_icon:status_effect_vulnerable]。"
 	card_code_review.card_type = CardData.CARD_TYPES.SKILL
 	card_code_review.card_rarity = CardData.CARD_RARITIES.UNCOMMON
 	card_code_review.card_requires_target = false
@@ -503,7 +500,7 @@ static func add_cards_red() -> void:
 	card_greedy_algo.card_name = "贪心算法"
 	card_greedy_algo.card_color_id = "color_{0}".format([color])
 	card_greedy_algo.card_texture_path = "sprites/card/red/card_greedy_algo.png"
-	card_greedy_algo.card_description = "获得 [energy_amount] 点算力，对目标施加 [status_charge_amount] 层漏洞暴露。自身获得 [status_charge_amount] 层漏洞暴露。"
+	card_greedy_algo.card_description = "获得 [energy_amount] 点算力，对目标施加 [status_charge_amount] 层 [status_icon:status_effect_vulnerable]。自身获得 [status_charge_amount] 层 [status_icon:status_effect_vulnerable]。"
 	card_greedy_algo.card_type = CardData.CARD_TYPES.SKILL
 	card_greedy_algo.card_rarity = CardData.CARD_RARITIES.UNCOMMON
 	card_greedy_algo.card_requires_target = true
@@ -534,7 +531,7 @@ static func add_cards_red() -> void:
 	card_dp_cache.card_name = "动态规划"
 	card_dp_cache.card_color_id = "color_{0}".format([color])
 	card_dp_cache.card_texture_path = "sprites/card/red/card_dp_cache.png"
-	card_dp_cache.card_description = "获得 [block] 点防火墙和 [status_charge_amount] 层缓存防御。"
+	card_dp_cache.card_description = "获得 [block] 点防火墙和 [status_charge_amount] 层 [status_icon:status_effect_temp_preserve_block]。"
 	card_dp_cache.card_type = CardData.CARD_TYPES.SKILL
 	card_dp_cache.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_dp_cache.card_requires_target = false
@@ -568,7 +565,7 @@ static func add_cards_red() -> void:
 	card_ci_pipeline.card_name = "持续集成"
 	card_ci_pipeline.card_color_id = "color_{0}".format([color])
 	card_ci_pipeline.card_texture_path = "sprites/card/red/card_ci_pipeline.png"
-	card_ci_pipeline.card_description = "获得 [status_charge_amount] 层算力增幅。获得 [draw_count] 层扩容内存队列。"
+	card_ci_pipeline.card_description = "获得 [status_charge_amount] 层 [status_icon:status_effect_damage_increase]。获得 [draw_count] 层 [status_icon:status_effect_increase_turn_draw]。消耗品。"
 	card_ci_pipeline.card_type = CardData.CARD_TYPES.POWER
 	card_ci_pipeline.card_rarity = CardData.CARD_RARITIES.RARE
 	card_ci_pipeline.card_requires_target = false
@@ -605,7 +602,7 @@ static func add_cards_red() -> void:
 	card_fork.card_name = "分叉仓库"
 	card_fork.card_color_id = "color_{0}".format([color])
 	card_fork.card_texture_path = "sprites/card/red/card_fork.png"
-	card_fork.card_description = "获得 [status_charge_amount] 层多线程攻击。"
+	card_fork.card_description = "获得 [status_charge_amount] 层 [status_icon:status_effect_duplicate_attacks]。消耗品。"
 	card_fork.card_type = CardData.CARD_TYPES.POWER
 	card_fork.card_rarity = CardData.CARD_RARITIES.UNCOMMON
 	card_fork.card_requires_target = false
@@ -629,7 +626,7 @@ static func add_cards_red() -> void:
 	card_circuit_breaker.card_name = "熔断机制"
 	card_circuit_breaker.card_color_id = "color_{0}".format([color])
 	card_circuit_breaker.card_texture_path = "sprites/card/red/card_circuit_breaker.png"
-	card_circuit_breaker.card_description = "战斗开始时获得 [block] 点防火墙和 [status_charge_amount] 层反伤模块。打牌时再次触发。"
+	card_circuit_breaker.card_description = "战斗开始时获得 [block] 点防火墙和 [status_charge_amount] 层 [status_icon:status_effect_pointy]。打牌时再次触发。消耗品。"
 	card_circuit_breaker.card_type = CardData.CARD_TYPES.POWER
 	card_circuit_breaker.card_rarity = CardData.CARD_RARITIES.RARE
 	card_circuit_breaker.card_requires_target = false
@@ -674,7 +671,7 @@ static func add_cards_red() -> void:
 	card_type_cast.card_name = "类型检查"
 	card_type_cast.card_color_id = "color_{0}".format([color])
 	card_type_cast.card_texture_path = "sprites/card/red/card_type_cast.png"
-	card_type_cast.card_description = "造成 [damage] 点伤害。不受输出降级影响。"
+	card_type_cast.card_description = "造成 [damage] 点伤害。不受 [status_icon:status_effect_weaken] 影响。"
 	card_type_cast.card_type = CardData.CARD_TYPES.ATTACK
 	card_type_cast.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_type_cast.card_requires_target = true
@@ -696,7 +693,7 @@ static func add_cards_red() -> void:
 	card_connection_pool.card_name = "连接池"
 	card_connection_pool.card_color_id = "color_{0}".format([color])
 	card_connection_pool.card_texture_path = "sprites/card/red/card_connection_pool.png"
-	card_connection_pool.card_description = "获得 [block] 点防火墙和 [status_charge_amount] 层算力增幅。"
+	card_connection_pool.card_description = "获得 [block] 点防火墙和 [status_charge_amount] 层 [status_icon:status_effect_damage_increase]。消耗品。"
 	card_connection_pool.card_type = CardData.CARD_TYPES.POWER
 	card_connection_pool.card_rarity = CardData.CARD_RARITIES.UNCOMMON
 	card_connection_pool.card_requires_target = false
@@ -761,7 +758,7 @@ static func add_cards_red() -> void:
 	card_deadlock.card_name = "死锁检测"
 	card_deadlock.card_color_id = "color_{0}".format([color])
 	card_deadlock.card_texture_path = "sprites/card/red/card_deadlock.png"
-	card_deadlock.card_description = "获得 [block] 点防火墙。对随机敌人施加 [vuln_amount] 层漏洞暴露。对随机敌人施加 [weak_amount] 层输出降级。"
+	card_deadlock.card_description = "获得 [block] 点防火墙。对随机敌人施加 [vuln_amount] 层 [status_icon:status_effect_vulnerable]。对随机敌人施加 [weak_amount] 层 [status_icon:status_effect_weaken]。"
 	card_deadlock.card_type = CardData.CARD_TYPES.SKILL
 	card_deadlock.card_rarity = CardData.CARD_RARITIES.RARE
 	card_deadlock.card_requires_target = false
@@ -916,7 +913,7 @@ static func add_cards_red() -> void:
 	card_compile_opt.card_name = "编译优化"
 	card_compile_opt.card_color_id = "color_{0}".format([color])
 	card_compile_opt.card_texture_path = "sprites/card/red/card_compile_opt.png"
-	card_compile_opt.card_description = "永久减少当前线程中 [card_amount] 个脚本的耗能 [cost_reduction] 点（最低为 0）。"
+	card_compile_opt.card_description = "永久减少当前线程中 [card_amount] 个脚本的耗能 [cost_reduction] 点（最低为 0）。消耗品。"
 	card_compile_opt.card_type = CardData.CARD_TYPES.SKILL
 	card_compile_opt.card_rarity = CardData.CARD_RARITIES.RARE
 	card_compile_opt.card_requires_target = false
@@ -966,23 +963,23 @@ static func add_cards_red() -> void:
 	card_buffer_overflow.card_name = "缓冲区溢出"
 	card_buffer_overflow.card_color_id = "color_{0}".format([color])
 	card_buffer_overflow.card_texture_path = "sprites/card/red/card_buffer_overflow.png"
-	card_buffer_overflow.card_description = "造成 [damage] 点伤害。目标每有一层漏洞暴露，额外造成 [bonus_damage] 点伤害。"
+	card_buffer_overflow.card_description = "造成 [damage] 点伤害。目标每有一层 [status_icon:status_effect_vulnerable]，额外造成 [additional_damage] 点伤害。"
 	card_buffer_overflow.card_type = CardData.CARD_TYPES.ATTACK
 	card_buffer_overflow.card_rarity = CardData.CARD_RARITIES.UNCOMMON
 	card_buffer_overflow.card_requires_target = true
 	card_buffer_overflow.card_energy_cost = 1
-	card_buffer_overflow.card_values = {"damage": 5, "bonus_damage": 3, "number_of_attacks": 1, "impact_vfx_animation_id": "animation_vfx_impact_default"}
-	card_buffer_overflow.card_upgrade_value_improvements = {"damage": 2, "bonus_damage": 1}
+	card_buffer_overflow.card_values = {"damage": 5, "additional_damage": 3, "number_of_attacks": 1, "impact_vfx_animation_id": "animation_vfx_impact_default"}
+	card_buffer_overflow.card_upgrade_value_improvements = {"damage": 2, "additional_damage": 1}
 	card_buffer_overflow.card_play_actions = [
 		{
 			Scripts.ACTION_VARIABLE_COMBAT_STATS_MODIFIER: {
 				"combat_stat_name": "target_status_effect_charges",
 				"stat_variable_name": "status_effect_vulnerable",
+				"multiplied_values": ["additional_damage"],
+				"multiplied_values_bases": {"additional_damage": 0},
 				"action_data": [
-					{Scripts.ACTION_ATTACK_GENERATOR: {"damage": card_buffer_overflow.card_values["bonus_damage"]}},
+					{Scripts.ACTION_ATTACK_GENERATOR: {}}
 				],
-				"multiplied_values": ["damage"],
-				"multiplied_values_bases": {"damage": card_buffer_overflow.card_values["damage"]},
 			},
 		},
 	]

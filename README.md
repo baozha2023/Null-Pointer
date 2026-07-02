@@ -1,6 +1,6 @@
 # Null Pointer
 
-《Null Pointer》是一款基于 Godot 4 引擎开发、深受《杀戮尖塔》（Slay the Spire）启发的 Roguelike 牌组构建（Deckbuilder）游戏。玩家将扮演一名“蓝屏骇客”，在充满未知与代码漏洞的赛博空间中，利用手上的卡牌（代码）击溃无尽的敌人（防火墙与杀毒软件）。
+《Null Pointer》是一款基于 Godot 4 引擎开发、深受《杀戮尖塔》（Slay the Spire）启发的 Roguelike 牌组构建（Deckbuilder）游戏。
 
 ## 🎮 如何运行游戏
 

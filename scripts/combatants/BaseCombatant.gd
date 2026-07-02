@@ -2,8 +2,8 @@
 extends Control
 class_name BaseCombatant
 
-@onready var block: BlockIndicator = $Visible/Block
-@onready var block_amount: Label = $Visible/Block/BaseSprite/BlockAmount
+@onready var block: BlockIndicator = $Visible/CombatantCenter/Block
+@onready var block_amount: Label = $Visible/CombatantCenter/Block/BaseSprite/BlockAmount
 
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
 
@@ -36,6 +36,8 @@ func _ready():
 	animated_sprite_2d.animation_finished.connect(_on_animation_finished)
 	
 	selection_button.button_up.connect(_on_selection_button_up)
+	selection_button.mouse_entered.connect(func(): UIHover.scale_up($Visible/CombatantCenter))
+	selection_button.mouse_exited.connect(func(): UIHover.scale_down($Visible/CombatantCenter))
 
 func _on_selection_button_up():
 	breakpoint

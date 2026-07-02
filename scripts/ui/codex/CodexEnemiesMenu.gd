@@ -217,8 +217,7 @@ func populate_codex_enemy_initial(enemy_data: EnemyData, difficulty: int = 0) ->
 		var status_data: StatusEffectData = Global.get_status_effect_data(status_id)
 		if status_data == null: continue
 		var bbcode: String = "[color=orange]" + status_data.status_effect_name + "[/color]"
-		if status_data.status_effect_description != "": bbcode += "\n" + status_data.status_effect_description
-		if status_data.status_effect_decay_rate != 0: bbcode += "\n每时钟周期衰减 " + str(abs(status_data.status_effect_decay_rate)) + " 层。"
+		if status_data.get_full_description() != "": bbcode += "\n" + status_data.get_full_description()
 		
 		var status_ui = Scenes.STATUS_EFFECT.instantiate()
 		status_ui.set_script(null)
@@ -268,8 +267,7 @@ func _parse_action_to_ui(action_dict: Dictionary) -> Control:
 			status_ui.get_node("StatusSecondaryChargeLabel").text = ""
 			
 			var bbcode: String = "[color=orange]" + status_data.status_effect_name + "[/color]"
-			if status_data.status_effect_description != "": bbcode += "\n" + status_data.status_effect_description
-			if status_data.status_effect_decay_rate != 0: bbcode += "\n每时钟周期衰减 " + str(abs(status_data.status_effect_decay_rate)) + " 层。"
+			if status_data.get_full_description() != "": bbcode += "\n" + status_data.get_full_description()
 			
 			status_ui.mouse_entered.connect(func(): if HandManager.tooltip != null: HandManager.tooltip.display_tooltip(bbcode, true))
 			status_ui.mouse_exited.connect(func(): if HandManager.tooltip != null: HandManager.tooltip.hide_tooltip())

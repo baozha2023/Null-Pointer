@@ -11,16 +11,16 @@ static func add_hover_scale(ctrl: Control, hover_scale: float = DEFAULT_HOVER_SC
 	ctrl.mouse_exited.connect(_on_exit.bind(ctrl, duration))
 
 ## 手动调用：放大
-static func scale_up(ctrl: Control, hover_scale: float = DEFAULT_HOVER_SCALE, duration: float = DEFAULT_DURATION) -> void:
-	# 设置中心点为控件中心，使其向四周放大
-	ctrl.pivot_offset = ctrl.size / 2.0
-	var t := ctrl.create_tween()
-	t.tween_property(ctrl, "scale", Vector2(hover_scale, hover_scale), duration)
+static func scale_up(node: CanvasItem, hover_scale: float = DEFAULT_HOVER_SCALE, duration: float = DEFAULT_DURATION) -> void:
+	if node is Control:
+		node.pivot_offset = node.size / 2.0
+	var t := node.create_tween()
+	t.tween_property(node, "scale", Vector2(hover_scale, hover_scale), duration)
 
 ## 手动调用：恢复
-static func scale_down(ctrl: Control, duration: float = DEFAULT_DURATION) -> void:
-	var t := ctrl.create_tween()
-	t.tween_property(ctrl, "scale", Vector2(1.0, 1.0), duration)
+static func scale_down(node: CanvasItem, duration: float = DEFAULT_DURATION) -> void:
+	var t := node.create_tween()
+	t.tween_property(node, "scale", Vector2(1.0, 1.0), duration)
 
 
 static func _on_enter(ctrl: Control, hover_scale: float, duration: float) -> void:

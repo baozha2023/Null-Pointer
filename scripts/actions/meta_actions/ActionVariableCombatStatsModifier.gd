@@ -39,6 +39,10 @@ func perform_action():
 			var turn_stat_type: int = action_interceptor_processor.get_shadowed_action_values("turn_stat_type", 0)
 			stat_value = combat_stats_data.get_history_enum_stat(stat_enum, turn_stat_type)
 		
+		var stat_divisor: int = action_interceptor_processor.get_shadowed_action_values("stat_divisor", 1)
+		if stat_divisor > 1:
+			stat_value = int(stat_value / stat_divisor)
+		
 		# creates a duplicate of the child action data, then modifies any keys with a multiple of the card play's input energy
 		for action in action_data.duplicate(true):
 			for action_script_path in action:

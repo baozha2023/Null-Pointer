@@ -119,6 +119,7 @@ const ACTION_PICK_OPTIONS: String = "res://scripts/actions/option_actions/Action
 # forge actions
 const ACTION_ADD_TO_FORGE: String = "res://scripts/actions/forge_actions/ActionAddToForge.gd"
 const ACTION_TAKE_FROM_FORGE: String = "res://scripts/actions/forge_actions/ActionTakeFromForge.gd"
+const ACTION_CONSUME_FORGE_LOAD: String = "res://scripts/actions/forge_actions/ActionConsumeForgeLoad.gd"
 
 
 const ACTION_MOVE_CARDS_TO_LIMBO: String = "res://scripts/actions/card_actions/cardset_actions/ActionMoveCardsToLimbo.gd"
@@ -180,6 +181,7 @@ const VALIDATOR_RUN_STATS: String = "res://scripts/validators/ValidatorRunStats.
 const VALIDATOR_IN_COMBAT: String = "res://scripts/validators/ValidatorInCombat.gd"
 const VALIDATOR_PLAYER_TURN: String = "res://scripts/validators/ValidatorPlayerTurn.gd"
 const VALIDATOR_TURN_COUNT: String = "res://scripts/validators/ValidatorTurnCount.gd"
+const VALIDATOR_FORGE_LOAD: String = "res://scripts/validators/ValidatorForgeLoad.gd"
 
 # enemy validators
 const VALIDATOR_ENEMY_TYPE: String = "res://scripts/validators/ValidatorEnemyType.gd"
@@ -190,6 +192,7 @@ const VALIDATOR_TARGET_STATUS_EFFECT_CHARGES: String = "res://scripts/validators
 const VALIDATOR_TARGET_HEALTH: String = "res://scripts/validators/ValidatorTargetHealth.gd"
 
 # player validators
+const VALIDATOR_PLAYER_STATUS_EFFECT_CHARGES: String = "res://scripts/validators/ValidatorPlayerStatusEffectCharges.gd"
 const VALIDATOR_HAS_ARTIFACT: String = "res://scripts/validators/ValidatorHasArtifact.gd"
 const VALIDATOR_LOCATION_TYPE: String = "res://scripts/validators/ValidatorLocationType.gd"
 const VALIDATOR_MONEY: String = "res://scripts/validators/ValidatorMoney.gd"

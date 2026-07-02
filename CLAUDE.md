@@ -38,7 +38,7 @@ Slay The Robot is a **roguelike deckbuilder framework** for **Godot 4.6** (GDScr
 |---|---|
 | `autoload/` | 14 singleton scripts (see loading order below) — global state, factories, managers |
 | `autoload/act/` | Per-act content generators (`act_one.gd`, `act_two.gd`, `act_three.gd`) + `global_enemies.gd` (shared enemies) |
-| `autoload/card_generators/` | Per-color card set generators (`blue_cards.gd`, `green_cards.gd`, `red_cards.gd`) |
+| `autoload/card_generators/` | Per-color card set generators (`blue_cards.gd`, `green_cards.gd`, `red_cards.gd`, `orange_cards.gd`, `white_cards.gd`) |
 | `autoload/event_generators/` | Global event and dialogue generators (`global_dialogues.gd`) |
 | `data/` | Data layer — `SerializableData` base class, prototype templates, readonly config, mutable runtime state, filters |
 | `data/prototype/` | Read-only template data (`CardData`, `EnemyData`, etc.) — cloned via `.get_prototype(true)` for mutable runtime copies |

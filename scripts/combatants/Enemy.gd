@@ -71,13 +71,13 @@ func init(_enemy_data: EnemyData):
 	layered_health_bar.init(enemy_data.enemy_health, enemy_data.enemy_health_max)
 	
 	# Dynamic Mod Support
-	attacking_intent.texture = FileLoader.load_texture("sprites/intents/enemy_intent_attacking.png")
-	blocking_intent.texture = FileLoader.load_texture("sprites/intents/enemy_intent_blocking.png")
-	debuffing_intent.texture = FileLoader.load_texture("sprites/intents/enemy_intent_debuffing.png")
-	buffing_intent.texture = FileLoader.load_texture("sprites/intents/enemy_intent_buffing.png")
-	summoning_intent.texture = FileLoader.load_texture("sprites/intents/enemy_intent_summoning.png")
+	attacking_intent.texture = preload("res://sprites/intents/enemy_intent_attacking.png")
+	blocking_intent.texture = preload("res://sprites/intents/enemy_intent_blocking.png")
+	debuffing_intent.texture = preload("res://sprites/intents/enemy_intent_debuffing.png")
+	buffing_intent.texture = preload("res://sprites/intents/enemy_intent_buffing.png")
+	summoning_intent.texture = preload("res://sprites/intents/enemy_intent_summoning.png")
 	if INTENT_DISPLAY_TYPE_TO_INTENT.has(EnemyIntentData.INTENT_DISPLAY_TYPES.SPECIAL):
-		INTENT_DISPLAY_TYPE_TO_INTENT[EnemyIntentData.INTENT_DISPLAY_TYPES.SPECIAL].texture = FileLoader.load_texture("sprites/intents/enemy_intent_special.png")
+		INTENT_DISPLAY_TYPE_TO_INTENT[EnemyIntentData.INTENT_DISPLAY_TYPES.SPECIAL].texture = preload("res://sprites/missing_texture.png")
 	
 func get_animation_data() -> AnimationData:
 	var animation_data: AnimationData = Global.get_animation_data(enemy_data.enemy_animation_id)

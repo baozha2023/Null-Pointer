@@ -181,13 +181,13 @@ func _ready():
 	
 	### 生成生产环境数据（真实游戏内容）
 	GlobalProdDataGenerator.generate_production_data()
-	ProfileData.ENABLE_ALL_DIFFICULTIES = true
 	
 	### 生成测试环境数据（用于开发调试）
 	#GlobalTestDataGenerator.generate_test_data()
 	
 	### 测试专用标识/作弊开关
-	#ProfileData.ENABLE_ALL_DIFFICULTIES = true
+	ProfileData.ENABLE_ALL_DIFFICULTIES = true
+	ProfileData.UNLOCK_ALL_CARDS_IN_CODEX = true
 	StatsHandler.TRACK_RUN_HISTORY = true
 	
 	### Mod 支持和外部文件加载
@@ -737,3 +737,22 @@ func validate(validators: Array[Dictionary], card_data: CardData = null, action:
 	
 	return true
 #endregion
+
+var _profile_save_timer: float = 0.0
+
+func _process(delta: float) -> void:
+	if _profile_save_timer > 0.0:
+		_profile_save_timer -= delta
+		if _profile_save_timer <= 0.0:
+			FileLoader.save_profile()
+
+## Marks a card as discovered in the profile
+func discover_card(card_id: String) -> void:
+	if profile_data == null:
+		return
+	if not profile_data.profile_discovered_cards.has(card_id):
+		profile_data.profile_discovered_cards[card_id] = true
+		
+		# Time-based debounce: wait 3 seconds before saving to disk
+		# If another card is discovered within 3s, the timer resets
+		_profile_save_timer = 3.0

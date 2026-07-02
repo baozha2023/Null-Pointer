@@ -42,15 +42,32 @@ func _populate_glossary() -> void:
 					type_text = "[color=gray]【中性】[/color]"
 			
 			var description: String = type_text
-			
-			if status_data.status_effect_description != "":
-				description += " " + status_data.status_effect_description
-			
-			# Add decay info
-			if status_data.status_effect_decay_rate != 0:
-				description += " 每时钟周期衰减 " + str(abs(status_data.status_effect_decay_rate)) + " 层。"
+			if status_data.get_full_description() != "":
+				description += " " + status_data.get_full_description()
 			
 			_add_glossary_entry(status_data.status_effect_name, description, status_data.status_effect_texture_path)
+	
+	# Separator
+	_add_separator()
+	
+	# Section: Card Rarities
+	_add_section_header("脚本稀有度")
+	_add_glossary_entry("内置", "角色初始自带的基础脚本。")
+	_add_glossary_entry("开源", "最常见的脚本，主要通过战斗后的战利品获取。")
+	_add_glossary_entry("闭源", "较为少见的进阶脚本，机制相对复杂。")
+	_add_glossary_entry("零日", "极其罕见且强大的核心脚本。")
+	_add_glossary_entry("动态生成", "无法在常规奖励中获得，仅由其他脚本或特定状态生成的衍生脚本。")
+	
+	# Separator
+	_add_separator()
+	
+	# Section: Card Types
+	_add_section_header("脚本类型")
+	_add_glossary_entry("攻击脚本", "以造成直接伤害为主的脚本。")
+	_add_glossary_entry("辅助脚本", "侧重于提供防御（防火墙）、过牌（数据流）或其他功能性效果的脚本。")
+	_add_glossary_entry("守护进程", "打出后将进入特殊区域（或消耗掉），为整场战斗提供持续的被动效果或属性增益。")
+	_add_glossary_entry("状态码", "战斗中产生的临时废弃脚本，通常不可打出且会污染手牌。")
+	_add_glossary_entry("病毒", "会被加入并留在牌库中的负面脚本，往往附带惩罚机制（如抽到时受到伤害），需要通过休息站或特定手段才能移除。")
 
 func _add_section_header(text: String) -> void:
 	var label: RichTextLabel = RichTextLabel.new()

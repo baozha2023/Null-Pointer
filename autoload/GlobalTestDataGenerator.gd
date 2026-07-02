@@ -225,7 +225,9 @@ func add_test_artifacts() -> void:
 	artifact_forge.artifact_name = "锻造台外设"
 	artifact_forge.artifact_description = "解锁锻造台，提供高级的代码编译和改造功能"
 	artifact_forge.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.COMMON
-	artifact_forge.artifact_color_id = "color_blue"
+	artifact_forge.artifact_color_id = "color_orange"
+	artifact_forge.artifact_script_path = "res://scripts/artifacts/ArtifactForge.gd"
+	artifact_forge.artifact_counter_max = 999
 	artifact_forge.artifact_texture_path = "sprites/artifacts/artifact_forge.png"
 	artifact_forge.artifact_right_click_actions = [
 		{
@@ -366,7 +368,6 @@ func add_test_artifacts() -> void:
 	artifact_boss_white.artifact_name = "外设插件：白色动态生成"
 	artifact_boss_white.artifact_description = "测试用白色动态生成外设插件。"
 	artifact_boss_white.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.BOSS
-	artifact_boss_white.artifact_color_id = "color_white"
 	artifact_boss_white.artifact_texture_path = "sprites/artifacts/artifact_boss_white.png"
 	
 	Global.register_rod(artifact_boss_white)
@@ -375,7 +376,6 @@ func add_test_artifacts() -> void:
 	artifact_shop_white.artifact_name = "外设插件：白色暗网节点"
 	artifact_shop_white.artifact_description = "测试用白色暗网节点外设插件。"
 	artifact_shop_white.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.SHOP
-	artifact_shop_white.artifact_color_id = "color_white"
 	artifact_shop_white.artifact_texture_path = "sprites/artifacts/artifact_shop_white.png"
 	
 	Global.register_rod(artifact_shop_white)
@@ -1073,7 +1073,7 @@ func add_test_status_effects() -> void:
 	status_effect_negate_debuff.status_effect_name = "减益免疫"
 	status_effect_negate_debuff.status_effect_texture_path = "external/sprites/status_effects/status_effect_yellow.png"
 	status_effect_negate_debuff.status_effect_decay_rate = 0
-	status_effect_negate_debuff.status_effect_type = StatusEffectData.STATUS_EFFECT_TYPES.NEUTRAL
+	status_effect_negate_debuff.status_effect_type = StatusEffectData.STATUS_EFFECT_TYPES.BUFF
 	status_effect_negate_debuff.status_effect_interceptor_ids = ["interceptor_negate_debuff"]
 	
 	Global.register_rod(status_effect_negate_debuff)
@@ -1729,7 +1729,7 @@ func add_test_colors() -> void:
 func add_test_keywords() -> void:
 	var keyword_block: KeywordData = KeywordData.new("keyword_block")
 	keyword_block.keyword_name = "防火墙"
-	keyword_block.keyword_text_bb_code = "抵消等量的伤害。"
+	keyword_block.keyword_text_bb_code = "抵消等量的伤害。在时钟周期结束时消失。"
 	Global.register_rod(keyword_block)
 	
 	var keyword_discard: KeywordData = KeywordData.new("keyword_discard")
@@ -1988,17 +1988,13 @@ func add_test_characters() -> void:
 	character_orange.character_icon_texture_path = "external/sprites/characters/character_{0}/character_{0}_icon.png".format([character_color])
 
 	character_orange.character_starting_health = 70
-	character_orange.character_starting_artifact_ids = ["artifact_increase_attack_on_rest", "artifact_see_top_of_draw_pile"]
+	character_orange.character_starting_artifact_ids = ["artifact_forge", "artifact_increase_attack_on_rest", "artifact_see_top_of_draw_pile"]
 	character_orange.character_starting_card_draft_card_pack_ids = ["card_pack_{0}".format([character_color])]
 	character_orange.character_starting_artifact_pack_ids = ["artifact_pack_white", "artifact_pack_{0}".format([character_color])]
 	character_orange.character_starting_consumable_pack_ids = ["consumable_pack_white", "consumable_pack_{0}".format([character_color])]
 	character_orange.character_starting_card_object_ids = [
-		"card_attack_basic", "card_attack_basic", "card_attack_basic",
-		"card_restart_combat",
-		"card_block_basic", "card_block_basic", "card_block_basic",
-		"card_retain_hand", "card_play_from_discard", "card_draw", "card_energy_on_draw",
-		"card_improving_block", "card_attack_improve_on_lethal", "card_play_random_cards_from_hand", "card_bomb",
-		"card_add_to_draw_from_discard", "card_add_to_draw_from_discard", "card_banish_attack",
+		"card_short_circuit_strike", "card_structural_defense", "card_punch_hole_instruction",
+		"card_heavy_framework", "card_defense_script", "card_chain_ballistics", "card_weakness_mark"
 	]
 	
 	Global.register_rod(character_orange)
@@ -2839,7 +2835,7 @@ func add_test_cards() -> void:
 	card_attack_corrosion.card_name = "腐蚀"
 	card_attack_corrosion.card_color_id = "color_green"
 	card_attack_corrosion.card_texture_path = "external/sprites/cards/green/card_green.png"
-	card_attack_corrosion.card_description = "造成 [damage] 点伤害并附加 [status_charge_amount] 层腐蚀"
+	card_attack_corrosion.card_description = "造成 [damage] 点伤害并附加 [status_charge_amount] 层 [status_icon:status_effect_corrosion]"
 	card_attack_corrosion.card_type = CardData.CARD_TYPES.ATTACK
 	card_attack_corrosion.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_attack_corrosion.card_keyword_object_ids = ["keyword_corrosion"]
@@ -2968,7 +2964,7 @@ func add_test_cards() -> void:
 	card_weaken_enemies.card_name = "削弱敌人"
 	card_weaken_enemies.card_color_id = "color_red"
 	card_weaken_enemies.card_texture_path = "external/sprites/cards/red/card_red.png"
-	card_weaken_enemies.card_description = "对所有敌人附加 [status_charge_amount] 层虚弱"
+	card_weaken_enemies.card_description = "对所有敌人附加 [status_charge_amount] 层 [status_icon:status_effect_weakness]"
 	card_weaken_enemies.card_type = CardData.CARD_TYPES.SKILL
 	card_weaken_enemies.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_weaken_enemies.card_requires_target = false
@@ -2989,7 +2985,7 @@ func add_test_cards() -> void:
 	card_vulnerable_enemies.card_name = "易伤敌人"
 	card_vulnerable_enemies.card_color_id = "color_red"
 	card_vulnerable_enemies.card_texture_path = "external/sprites/cards/red/card_red.png"
-	card_vulnerable_enemies.card_description = "对所有敌人附加 [status_charge_amount] 层易伤"
+	card_vulnerable_enemies.card_description = "对所有敌人附加 [status_charge_amount] 层 [status_icon:status_effect_vulnerable]"
 	card_vulnerable_enemies.card_type = CardData.CARD_TYPES.SKILL
 	card_vulnerable_enemies.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_vulnerable_enemies.card_requires_target = false
@@ -4048,7 +4044,7 @@ func add_test_cards() -> void:
 	card_generate_shoves.card_name = "推击之舞"
 	card_generate_shoves.card_color_id = "color_green"
 	card_generate_shoves.card_texture_path = "external/sprites/cards/green/card_green.png"
-	card_generate_shoves.card_description = "生成 [number_of_cards] 张完全合规的推送脚本并加入当前线程"
+	card_generate_shoves.card_description = "生成 [number_of_cards] 张完全合规的 [推击] 并加入当前线程"
 	card_generate_shoves.card_type = CardData.CARD_TYPES.SKILL
 	card_generate_shoves.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_generate_shoves.card_requires_target = false

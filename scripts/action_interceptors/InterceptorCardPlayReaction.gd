@@ -18,10 +18,9 @@ func process_action_interception(action_interceptor_processor: ActionInterceptor
 		return ACTION_ACCEPTENCES.CONTINUE
 	var card_data: CardData = card_play_request.card_data
 		
-	# Check if the card triggers curiosity
-	if not target_combatant is Enemy:
-		return ACTION_ACCEPTENCES.CONTINUE
-		
+	# The status effect can be placed on ANY combatant (Player or Enemy)
+	# Whoever holds the status will gain the buff when the player plays a card.
+
 	var statuses: Array = target_combatant.status_id_to_status_effects.get(CURIOSITY_STATUS_EFFECT_ID, [])
 	if len(statuses) == 0:
 		return ACTION_ACCEPTENCES.CONTINUE

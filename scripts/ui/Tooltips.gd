@@ -8,8 +8,8 @@ class_name Tooltip
 @onready var pause_button: TextureButton = %PauseButton
 @onready var map_button: TextureButton = %MapButton
 
-@onready var money_label: Label = %MoneyLabel
-@onready var health_label: Label = %HealthLabel
+@onready var money_container = %MoneyContainer
+@onready var health_container = %HealthContainer
 
 @onready var energy: TextureButton = %Energy
 @onready var deck_button: TextureButton = %DeckButton
@@ -38,16 +38,16 @@ func _ready() -> void:
 	# pre-set tooltips
 	# [component, bbcode, if it follows mouse, lock x position, lock y position, offset component used for placement]
 	var component_tooltip_data: Array[Array] = [
-		[pause_button, "[color=orange]挂起[/color]\n停止进程", true, false, true, $TooltipPositions/TopLeftTooltipPos],
-		[map_button, "[color=orange]网络拓扑[/color]\n打开当前章节的网络拓扑", true, false, true, $TooltipPositions/TopLeftTooltipPos],
-		[deck_button, "[color=orange]脚本库[/color]\n当前拥有的所有脚本列表。在节点跳转间保留", true, false, true, $TooltipPositions/TopLeftTooltipPos],
+		[pause_button, "[color=orange]挂起[/color]\n停止进程", true, false, false, null],
+		[map_button, "[color=orange]网络拓扑[/color]\n打开当前章节的网络拓扑", true, false, false, null],
+		[deck_button, "[color=orange]脚本库[/color]\n当前拥有的所有脚本列表。在节点跳转间保存", true, false, false, null],
 		
-		[health_label, "[color=orange]完整度[/color]\n完整度归零时，系统崩溃", true, false, true, $TooltipPositions/HealthTooltipPos],
-		[money_label, "[color=orange]数据币[/color]\n你当前拥有的数据币数量", true, false, true, $TooltipPositions/MoneyTooltipPos],
+		[health_container, "[color=orange]完整度[/color]\n完整度归零时，系统崩溃。", true, false, false, null],
+		[money_container, "[color=orange]数据币[/color]\n你当前拥有的数据币数量。", true, false, false, null],
 		
-		[draw_top_pile_button, "[color=orange]预读取缓存[/color]\n按实际顺序预览内存队列顶部的脚本", false, false, false, $TooltipPositions/EnergyTooltipPos],
-		[energy, "[color=orange]算力[/color]\n用于调用脚本", false, false, false, $TooltipPositions/EnergyTooltipPos],
-		[draw_pile_button, "[color=orange]内存队列[/color]\n这些脚本将被加载到线程中", false, false, false, $TooltipPositions/EnergyTooltipPos],
+		[draw_top_pile_button, "[color=orange]预读取缓存[/color]\n按实际顺序预览内存队列顶部的脚本", true, false, false, null],
+		[energy, "[color=orange]算力[/color]\n用于调用脚本", true, false, false, null],
+		[draw_pile_button, "[color=orange]内存队列[/color]\n这些脚本将被加载到线程中", true, false, false, null],
 		
 		[exhaust_pile_button, "[color=orange]坏道区[/color]\n这些脚本已从当前时钟周期中物理删除", false, false, false, $TooltipPositions/ExhaustTooltipPos],
 		[discard_pile_button, "[color=orange]回收站[/color]\n这些脚本将会被重新分配入内存队列", false, false, false, $TooltipPositions/DiscardTooltipPos],
@@ -191,25 +191,32 @@ func hide_tooltip() -> void:
 
 func _process(_delta: float) -> void:
 	if follow_mouse:
-		if lock_x:
-			global_position.x = offset_x
-		else:
-			global_position.x = get_global_mouse_position().x
-		if lock_y:
-			global_position.y = offset_y
-		else:
-			global_position.y = get_global_mouse_position().y
-		
-		# Clamp to screen bounds
-		var screen_size: Vector2 = DisplayServer.window_get_size()
+		var screen_size: Vector2 = get_viewport_rect().size
 		var tooltip_size: Vector2 = Vector2.ZERO
 		if panel_container.visible:
 			tooltip_size = panel_container.size
 		elif keyword_container.visible:
 			tooltip_size = keyword_container.size
 			
-		global_position.x = clamp(global_position.x, 0, max(0, screen_size.x - tooltip_size.x - 10))
-		global_position.y = clamp(global_position.y, 0, max(0, screen_size.y - tooltip_size.y - 10))
+		var target_x: float = offset_x if lock_x else get_global_mouse_position().x
+		var target_y: float = offset_y if lock_y else get_global_mouse_position().y
+		
+		if not lock_x:
+			var cursor_offset_x = 15.0
+			if target_x + cursor_offset_x + tooltip_size.x > screen_size.x:
+				target_x = target_x - tooltip_size.x - cursor_offset_x
+			else:
+				target_x += cursor_offset_x
+				
+		if not lock_y:
+			var cursor_offset_y = 15.0
+			if target_y + cursor_offset_y + tooltip_size.y > screen_size.y:
+				target_y = target_y - tooltip_size.y - cursor_offset_y
+			else:
+				target_y += cursor_offset_y
+				
+		global_position.x = clamp(target_x, 0, max(0, screen_size.x - tooltip_size.x))
+		global_position.y = clamp(target_y, 0, max(0, screen_size.y - tooltip_size.y))
 
 ## Globally formats a metadata variable (like card types array or status ID) into a localized string representation.
 

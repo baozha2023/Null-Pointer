@@ -22,6 +22,8 @@ func perform_action():
 		var impact_vfx_animation_id: String = action_interceptor_processor.get_shadowed_action_values("impact_vfx_animation_id", "")
 		
 		var damage: int = action_interceptor_processor.get_shadowed_action_values("damage", 0)
+		var additional_damage: int = action_interceptor_processor.get_shadowed_action_values("additional_damage", 0)
+		damage += additional_damage
 		var delay: float = action_interceptor_processor.get_shadowed_action_values("time_delay", 0.25)
 		var number_of_attacks: int = action_interceptor_processor.get_shadowed_action_values("number_of_attacks", 1)
 		var merge_attacks: bool = action_interceptor_processor.get_shadowed_action_values("merge_attacks", false)	# this will take all attacks and merge them into a single attack with combined damage

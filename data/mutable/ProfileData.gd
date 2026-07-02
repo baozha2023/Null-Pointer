@@ -31,6 +31,12 @@ class_name ProfileData
 ## for any character, regardless of highest beaten difficulty.
 static var ENABLE_ALL_DIFFICULTIES: bool = false
 
+## Setting this to true will reveal all cards in the codex regardless of whether they have been discovered.
+static var UNLOCK_ALL_CARDS_IN_CODEX: bool = false
+
+## Tracks which cards the player has discovered (encountered) in the game.
+@export var profile_discovered_cards: Dictionary = {}
+
 ## The highest difficulty each character beat a run at. Defaults to 0.
 ## NOTE: This will prevent the player from selecting certain difficulties, if ENABLE_ALL_DIFFICULTIES = false
 @export var profile_character_id_to_highest_difficulty: Dictionary[String, int] = {}

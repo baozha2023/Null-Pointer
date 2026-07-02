@@ -1,6 +1,8 @@
 # maintains combat UI
 extends Control
 
+@onready var money_container = $%MoneyContainer
+@onready var health_container = $%HealthContainer
 @onready var money_label: Label = $%MoneyLabel
 @onready var health_label: Label = $%HealthLabel
 
@@ -36,6 +38,10 @@ extends Control
 var end_turn_object: CombatEndTurn = null
 
 func _ready():
+	money_label.add_theme_color_override("font_color", Color("ffd700"))
+	health_label.add_theme_color_override("font_color", Color("ff4444"))
+	UIHover.add_hover_scale(money_container)
+	UIHover.add_hover_scale(health_container)
 	Signals.player_money_changed.connect(_on_player_money_changed)
 	Signals.player_health_changed.connect(_on_player_health_changed)
 	
@@ -157,8 +163,8 @@ func _update_background() -> void:
 func set_combat_display_visibility(display_visibility: bool) -> void:
 	energy.visible = display_visibility
 	draw_pile_button.visible = display_visibility
-	draw_top_pile_button.visible = display_visibility and _has_see_top_artifact()
-	forge_button.visible = display_visibility and _has_forge_artifact()
+	draw_top_pile_button.visible = false # display_visibility and _has_see_top_artifact()
+	forge_button.visible = false # display_visibility and _has_forge_artifact()
 	discard_pile_button.visible = display_visibility
 	exhaust_pile_button.visible = display_visibility
 	end_turn_button.visible = display_visibility
@@ -185,7 +191,7 @@ func _on_card_queue_refunded():
 	update_combat_display()
 
 func _on_player_money_changed(_delta: int = 0):
-	money_label.text = "$%s" % Global.player_data.player_money
+	money_label.text = str(Global.player_data.player_money)
 
 func _on_player_health_changed():
 	health_label.text = "%s / %s" % [Global.player_data.player_health, Global.player_data.player_health_max]
@@ -616,8 +622,8 @@ func _get_pile_buttons() -> Array[TextureButton]:
 	return [draw_top_pile_button, forge_button, energy, draw_pile_button, discard_pile_button, exhaust_pile_button]
 
 func _set_pile_icons() -> void:
-	draw_top_pile_button.texture_normal = FileLoader.load_texture("sprites/ui/icon_draw_top.png")
-	forge_button.texture_normal = FileLoader.load_texture("sprites/ui/icon_forge.png")
-	draw_pile_button.texture_normal = FileLoader.load_texture("sprites/ui/icon_draw_pile.png")
-	discard_pile_button.texture_normal = FileLoader.load_texture("sprites/ui/icon_discard_pile.png")
-	exhaust_pile_button.texture_normal = FileLoader.load_texture("sprites/ui/icon_exhaust_pile.png")
+	draw_top_pile_button.texture_normal = preload("res://sprites/ui/icon_draw_top.png")
+	forge_button.texture_normal = preload("res://sprites/ui/icon_ui_forge.png")
+	draw_pile_button.texture_normal = preload("res://sprites/ui/icon_draw_pile.png")
+	discard_pile_button.texture_normal = preload("res://sprites/ui/icon_discard_pile.png")
+	exhaust_pile_button.texture_normal = preload("res://sprites/ui/icon_exhaust_pile.png")

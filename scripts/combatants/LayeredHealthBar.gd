@@ -27,7 +27,7 @@ func _ready():
 	
 	# Dynamic Mod Support
 	if "texture" in self:
-		set("texture", FileLoader.load_texture("sprites/health_bar_frame.PNG"))
+		set("texture", preload("res://sprites/health_bar_frame.PNG"))
 
 func init(health: int, health_max: int) -> void:
 	new_health = health

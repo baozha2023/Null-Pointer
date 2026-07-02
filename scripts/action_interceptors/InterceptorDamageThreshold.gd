@@ -53,16 +53,20 @@ func process_action_interception(action_interceptor_processor: ActionInterceptor
 				
 			target_combatant.add_status_effect_charges(DAMAGE_THRESHOLD_STATUS_EFFECT_ID, threshold_increase, 0)
 			
-			# Trigger the intent change
-			var action_data: Array[Dictionary] = [
-				{
+			var action_data: Array[Dictionary] = []
+			if next_intent_id != "":
+				action_data.append({
 					Scripts.ACTION_CHANGE_ENEMY_INTENT_STATE: {
 						"new_intent_id": next_intent_id,
 						"target_override": BaseAction.TARGET_OVERRIDES.PARENT
 					}
-				},
-				# Also apply a stun/visual effect or clear debuffs here if needed
-			]
+				})
+			
+			if len(statuses) > 0:
+				var custom_values: Dictionary = statuses[0].status_effect_script.status_custom_values
+				if custom_values.has("damage_threshold_actions"):
+					action_data.append_array(custom_values.get("damage_threshold_actions", []))
+
 			var generated_actions: Array[BaseAction] = ActionGenerator.create_actions(target_combatant, null, [target_combatant], action_data, null)
 			ActionHandler.add_actions(generated_actions)
 			

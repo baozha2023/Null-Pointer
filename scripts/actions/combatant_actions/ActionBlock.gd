@@ -11,8 +11,10 @@ func perform_action():
 			return
 
 		var block_amount: int = action_interceptor_processor.get_shadowed_action_values("block", 0)
-		target.add_block(block_amount)
+		var additional_block_amount: int = action_interceptor_processor.get_shadowed_action_values("additional_block", 0)
+		target.add_block(block_amount + additional_block_amount)
 
 func _to_string():
 	var block: int = get_action_value("block", 0)
-	return "Block Action: " + str(block)
+	var additional_block: int = get_action_value("additional_block", 0)
+	return "Block Action: " + str(block + additional_block)

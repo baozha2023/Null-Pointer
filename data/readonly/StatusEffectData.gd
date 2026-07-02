@@ -19,6 +19,7 @@ class_name StatusEffectData
 ## Display texture path for the status.
 ## See: get_status_effect_texture_path()
 @export var status_effect_texture_path: String = ""
+
 ## Optional texture for if the status is negative
 @export var status_effect_negative_charges_texture_path: String = ""
 ## If the status should be displayed to the player.
@@ -150,3 +151,25 @@ func get_status_effect_texture_path(charge_count: int) -> String:
 	if charge_count < 0 and status_effect_negative_charges_texture_path != "":
 		return status_effect_negative_charges_texture_path
 	return status_effect_texture_path
+
+func get_decay_text() -> String:
+	match status_effect_decay_type:
+		STATUS_EFFECT_DECAY_TYPES.LINEAR:
+			if status_effect_decay_rate != 0:
+				var verb = "衰减 " if status_effect_decay_rate < 0 else "增加 "
+				return "每时钟周期" + verb + str(abs(status_effect_decay_rate)) + " 层。"
+		STATUS_EFFECT_DECAY_TYPES.ZERO_OUT:
+			return "在时钟周期结束时清空层数。"
+		STATUS_EFFECT_DECAY_TYPES.HALF_LIFE_ROUND_UP, STATUS_EFFECT_DECAY_TYPES.HALF_LIFE_ROUND_DOWN:
+			return "每时钟周期层数减半。"
+	return ""
+
+func get_full_description() -> String:
+	var desc = status_effect_description
+	var decay_text = get_decay_text()
+	if decay_text != "":
+		if desc != "":
+			desc += " " + decay_text.strip_edges()
+		else:
+			desc = decay_text.strip_edges()
+	return desc

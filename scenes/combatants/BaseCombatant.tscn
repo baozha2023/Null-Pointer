@@ -108,15 +108,17 @@ text = "15"
 [node name="FadeContainer" type="Node2D" parent="Visible" unique_id=1116273955]
 position = Vector2(64, -96)
 
-[node name="Block" type="Sprite2D" parent="Visible" unique_id=176878287]
+[node name="Block" type="Sprite2D" parent="Visible/CombatantCenter" unique_id=176878287]
 visible = false
 self_modulate = Color(0.188235, 0.188235, 0.188235, 1)
-position = Vector2(-16, 118)
+position = Vector2(-80, 70)
 scale = Vector2(0.25, 0.25)
 texture = ExtResource("2_nc4eu")
 metadata/_edit_group_ = true
 
-[node name="BlockAmount" type="Label" parent="Visible/Block" unique_id=1538525232]
+[node name="BaseSprite" type="Node2D" parent="Visible/CombatantCenter/Block"]
+
+[node name="BlockAmount" type="Label" parent="Visible/CombatantCenter/Block/BaseSprite" unique_id=1538525232]
 offset_left = -64.0
 offset_top = -64.0
 offset_right = 64.0

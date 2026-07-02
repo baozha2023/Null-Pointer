@@ -10,6 +10,8 @@ const CARD_TWEEN_TIME: float = 0.2
 ## During hand related card pick actions, invalid cards will appear transparent.
 const INVALID_CARD_ALPHA: float = 0.3
 
+var targeting_arrow: TargetingArrow = null
+
 # General Nodes
 @onready var player: BaseCombatant = $%Player
 @onready var combat = $%Combat
@@ -190,7 +192,7 @@ func update_hand_card_hover(hovered_card: Card = null) -> void:
 		if card_in_hand == null:
 			continue
 
-		if hovered_card == card_in_hand:
+		if hovered_card == card_in_hand or current_selected_card == card_in_hand:
 			# hovered card
 			card_in_hand.position.y = CARD_HOVERED_HEIGHT
 			card_in_hand.z_index = 50
@@ -242,6 +244,7 @@ func _on_card_selected(card: Card):
 func _on_card_right_clicked(card: Card):
 	current_selected_card = null
 	_unprompt_target()
+	update_hand_card_hover()
 	if ActionHandler.actions_being_performed:
 		return # cannot right click while actions happening
 	if hand_disabled:
@@ -256,6 +259,7 @@ func _on_card_right_clicked(card: Card):
 func _on_background_button_up():
 	current_selected_card = null
 	_unprompt_target()
+	update_hand_card_hover()
 
 
 func _on_enemy_clicked(enemy: Enemy):
@@ -275,14 +279,27 @@ func _on_enemy_clicked(enemy: Enemy):
 func _on_enemy_hovered(enemy: Enemy):
 	if current_selected_card != null:
 		current_selected_card.update_card_display(enemy)
+		if is_instance_valid(targeting_arrow) and targeting_arrow.visible:
+			targeting_arrow.target_enemy = enemy
 
 
 func _prompt_target(_card: Card):
 	select_target_label.visible = true
-
+	
+	if not is_instance_valid(targeting_arrow):
+		targeting_arrow = preload("res://scenes/ui/TargetingArrow.tscn").instantiate()
+		add_child(targeting_arrow)
+	
+	targeting_arrow.visible = true
+	targeting_arrow.start_node = _card
+	
+	targeting_arrow.target_enemy = null
 
 func _unprompt_target():
 	select_target_label.visible = false
+	if is_instance_valid(targeting_arrow):
+		targeting_arrow.visible = false
+		targeting_arrow.target_enemy = null
 
 
 func _perform_card_right_click_actions(card: Card) -> void:

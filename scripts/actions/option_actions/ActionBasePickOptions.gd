@@ -32,7 +32,7 @@ func are_enough_options_picked() -> bool:
 	return len(picked_options) >= min_amount
 
 func get_option_pick_text() -> String:
-	return get_action_value("pick_text", "Choose an Option")
+	return get_action_value("pick_text", "请选择一个选项")
 
 func is_quick_pick() -> bool:
 	return get_action_value("is_quick_pick", false)

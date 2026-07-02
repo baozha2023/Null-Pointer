@@ -446,6 +446,9 @@ func test_serialization() -> void:
 func save_game(file_dir: String = SAVE_DIR_PATH, file_name: String = SAVE_FILE_NAME) -> void:
 	var player_dict: Dictionary = Global.player_data.get_serializable_properties_to_json_patch()
 	save_json(file_dir, file_name, player_dict)
+	
+	# Checkpoint saving: also explicitly save the profile when the game is saved
+	save_profile()
 
 ## Takes json file and converts it back into player data
 ## start_game automatically continues the run rather than simply load into memory. false used to load
@@ -520,5 +523,6 @@ func load_profile() -> void:
 		save_profile()
 
 func save_profile() -> void:
+	Global._profile_save_timer = 0.0 # Clear any pending time-based saves
 	var dict_repr: Dictionary = Global.profile_data.get_serializable_properties(true)
 	save_json(PROFILE_DIR_PATH, PROFILE_FILE_NAME, dict_repr)

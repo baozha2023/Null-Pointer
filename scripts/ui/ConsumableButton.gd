@@ -5,9 +5,12 @@ class_name ConsumableButton
 
 var consumable_slot_index: int = 0	# which consumable slot this button corresponds to
 
+const EMPTY_TEXTURE = preload("res://sprites/ui/icon_ui_consumable_empty.png")
+
 signal consumable_slot_button_up(slot_index: int)
 
 func _ready():
+	UIHover.add_hover_scale(self)
 	button_up.connect(_on_button_up)
 
 func init(_consumable_slot_index: int):
@@ -21,10 +24,12 @@ func init(_consumable_slot_index: int):
 			tooltip_text += "\n" + consumable_data.consumable_description
 		# texture
 		texture_normal = FileLoader.load_texture(consumable_data.consumable_texture_path)
+		self_modulate.a = 1.0
 	else:
 		# empty consumable slot
 		self_modulate.a = 0.3
 		tooltip_text = ""
+		texture_normal = EMPTY_TEXTURE
 	
 
 

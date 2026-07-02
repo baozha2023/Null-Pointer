@@ -163,7 +163,7 @@ static func add_cards_blue() -> void:
 	card_inject_attack.card_name = "注入攻击"
 	card_inject_attack.card_color_id = "color_{0}".format([color])
 	card_inject_attack.card_texture_path = "sprites/card/blue/card_inject_attack.png"
-	card_inject_attack.card_description = "造成 [damage] 点伤害。若目标有漏洞暴露，额外造成 [bonus_damage] 点伤害。然后施加 [status_charge_amount] 层漏洞暴露。"
+	card_inject_attack.card_description = "造成 [damage] 点伤害。若目标有 [status_icon:status_effect_vulnerable]，额外造成 [bonus_damage] 点伤害。然后施加 [status_charge_amount] 层 [status_icon:status_effect_vulnerable]。"
 	card_inject_attack.card_type = CardData.CARD_TYPES.ATTACK
 	card_inject_attack.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_inject_attack.card_requires_target = true
@@ -185,16 +185,16 @@ static func add_cards_blue() -> void:
 						"status_effect_charge_comparison_value": 1,
 					}},
 				],
-				"action_data": [
-					{
-						Scripts.ACTION_ATTACK_GENERATOR: {
-							"custom_key_names": {"damage": "bonus_damage"}
-						}
-					}
+				"passed_action_data": [
+					{Scripts.ACTION_ATTACK_GENERATOR: {
+						"custom_key_names": {"additional_damage": "bonus_damage"}
+					}}
+				],
+				"failed_action_data": [
+					{Scripts.ACTION_ATTACK_GENERATOR: {}}
 				]
 			}
-		},
-		{Scripts.ACTION_ATTACK_GENERATOR: {}},
+		}
 	]
 
 	Global.register_rod(card_inject_attack)
@@ -204,7 +204,7 @@ static func add_cards_blue() -> void:
 	card_trojan_plant.card_name = "木马植入"
 	card_trojan_plant.card_color_id = "color_{0}".format([color])
 	card_trojan_plant.card_texture_path = "sprites/card/blue/card_trojan_plant.png"
-	card_trojan_plant.card_description = "施加 [status_charge_amount] 层漏洞暴露。"
+	card_trojan_plant.card_description = "施加 [status_charge_amount] 层 [status_icon:status_effect_vulnerable]。"
 	card_trojan_plant.card_type = CardData.CARD_TYPES.SKILL
 	card_trojan_plant.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_trojan_plant.card_requires_target = true
@@ -226,7 +226,7 @@ static func add_cards_blue() -> void:
 	card_penetration_test.card_name = "渗透测试"
 	card_penetration_test.card_color_id = "color_{0}".format([color])
 	card_penetration_test.card_texture_path = "sprites/card/blue/card_penetration_test.png"
-	card_penetration_test.card_description = "施加 [status_charge_amount] 层漏洞暴露，然后造成等同于漏洞暴露层数的伤害。"
+	card_penetration_test.card_description = "施加 [status_charge_amount] 层 [status_icon:status_effect_vulnerable]，然后造成等同于 [status_icon:status_effect_vulnerable] 层数的伤害。"
 	card_penetration_test.card_type = CardData.CARD_TYPES.ATTACK
 	card_penetration_test.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_penetration_test.card_requires_target = true
@@ -265,10 +265,9 @@ static func add_cards_blue() -> void:
 	card_sql_injection.card_rarity = CardData.CARD_RARITIES.UNCOMMON
 	card_sql_injection.card_requires_target = true
 	card_sql_injection.card_energy_cost = 2
-	card_sql_injection.card_values = {"damage": 6, "number_of_attacks": 2, "impact_vfx_animation_id": "animation_vfx_impact_default"}
-	card_sql_injection.card_upgrade_value_improvements = {"damage": 2}
+	card_sql_injection.card_values = {"damage": 6, "number_of_attacks": 2, "bonus_attacks": 3, "impact_vfx_animation_id": "animation_vfx_impact_default"}
+	card_sql_injection.card_upgrade_value_improvements = {"damage": 2, "bonus_attacks": 0}
 	card_sql_injection.card_play_actions = [
-		{Scripts.ACTION_ATTACK_GENERATOR: {}},
 		{
 			Scripts.ACTION_VALIDATOR: {
 				"validator_data": [
@@ -279,14 +278,15 @@ static func add_cards_blue() -> void:
 					}},
 				],
 				"passed_action_data": [
-					{Scripts.ACTION_IMPROVE_CARD_VALUES: {
-						"pick_played_card": true,
-						"modify_parent_card": false,
-						"card_value_improvements": {"number_of_attacks": 1},
-					}},
+					{Scripts.ACTION_ATTACK_GENERATOR: {
+						"custom_key_names": {"number_of_attacks": "bonus_attacks"}
+					}}
 				],
-			},
-		},
+				"failed_action_data": [
+					{Scripts.ACTION_ATTACK_GENERATOR: {}}
+				]
+			}
+		}
 	]
 
 	Global.register_rod(card_sql_injection)
@@ -296,7 +296,7 @@ static func add_cards_blue() -> void:
 	card_denial_of_service.card_name = "拒绝服务"
 	card_denial_of_service.card_color_id = "color_{0}".format([color])
 	card_denial_of_service.card_texture_path = "sprites/card/blue/card_denial_of_service.png"
-	card_denial_of_service.card_description = "施加 [vulnerable_amount] 层漏洞暴露和 [weaken_amount] 层输出降级。"
+	card_denial_of_service.card_description = "施加 [vulnerable_amount] 层 [status_icon:status_effect_vulnerable] 和 [weaken_amount] 层 [status_icon:status_effect_weaken]。"
 	card_denial_of_service.card_type = CardData.CARD_TYPES.SKILL
 	card_denial_of_service.card_rarity = CardData.CARD_RARITIES.UNCOMMON
 	card_denial_of_service.card_requires_target = true
@@ -349,7 +349,7 @@ static func add_cards_blue() -> void:
 	card_exploit_token.card_name = "漏洞注入"
 	card_exploit_token.card_color_id = "color_{0}".format([color])
 	card_exploit_token.card_texture_path = "sprites/card/blue/card_exploit_token.png"
-	card_exploit_token.card_description = "施加 [status_charge_amount] 层漏洞暴露。物理删除。"
+	card_exploit_token.card_description = "施加 [status_charge_amount] 层 [status_icon:status_effect_vulnerable]。物理删除。"
 	card_exploit_token.card_type = CardData.CARD_TYPES.SKILL
 	card_exploit_token.card_rarity = CardData.CARD_RARITIES.GENERATED
 	card_exploit_token.card_requires_target = true
@@ -371,7 +371,7 @@ static func add_cards_blue() -> void:
 	card_worm_virus.card_name = "蠕虫病毒"
 	card_worm_virus.card_color_id = "color_{0}".format([color])
 	card_worm_virus.card_texture_path = "sprites/card/blue/card_worm_virus.png"
-	card_worm_virus.card_description = "战斗开始时，对所有敌人施加 [status_charge_amount] 层漏洞暴露。"
+	card_worm_virus.card_description = "战斗开始时，对所有敌人施加 [status_charge_amount] 层 [status_icon:status_effect_vulnerable]。"
 	card_worm_virus.card_type = CardData.CARD_TYPES.POWER
 	card_worm_virus.card_rarity = CardData.CARD_RARITIES.RARE
 	card_worm_virus.card_requires_target = false
@@ -400,10 +400,9 @@ static func add_cards_blue() -> void:
 	card_zero_day.card_rarity = CardData.CARD_RARITIES.RARE
 	card_zero_day.card_requires_target = true
 	card_zero_day.card_energy_cost = 2
-	card_zero_day.card_values = {"damage": 18, "number_of_attacks": 1, "impact_vfx_animation_id": "animation_vfx_impact_default"}
-	card_zero_day.card_upgrade_value_improvements = {"damage": 5}
+	card_zero_day.card_values = {"damage": 18, "bonus_damage": 18, "number_of_attacks": 1, "impact_vfx_animation_id": "animation_vfx_impact_default"}
+	card_zero_day.card_upgrade_value_improvements = {"damage": 5, "bonus_damage": 5}
 	card_zero_day.card_play_actions = [
-		{Scripts.ACTION_ATTACK_GENERATOR: {}},
 		{
 			Scripts.ACTION_VALIDATOR: {
 				"validator_data": [
@@ -414,14 +413,15 @@ static func add_cards_blue() -> void:
 					}},
 				],
 				"passed_action_data": [
-					{Scripts.ACTION_IMPROVE_CARD_VALUES: {
-						"pick_played_card": true,
-						"modify_parent_card": false,
-						"card_value_improvements": {"damage": 20},
-					}},
+					{Scripts.ACTION_ATTACK_GENERATOR: {
+						"custom_key_names": {"additional_damage": "bonus_damage"}
+					}}
 				],
-			},
-		},
+				"failed_action_data": [
+					{Scripts.ACTION_ATTACK_GENERATOR: {}}
+				]
+			}
+		}
 	]
 
 	Global.register_rod(card_zero_day)
@@ -485,7 +485,7 @@ static func add_cards_blue() -> void:
 	card_logic_bomb.card_name = "逻辑炸弹"
 	card_logic_bomb.card_color_id = "color_{0}".format([color])
 	card_logic_bomb.card_texture_path = "sprites/card/blue/card_logic_bomb.png"
-	card_logic_bomb.card_description = "造成 [damage] 点伤害。施加 [bomb_amount] 层逻辑炸弹。物理删除。"
+	card_logic_bomb.card_description = "造成 [damage] 点伤害。施加 [bomb_amount] 层 [status_icon:status_effect_bomb]。物理删除。"
 	card_logic_bomb.card_type = CardData.CARD_TYPES.ATTACK
 	card_logic_bomb.card_rarity = CardData.CARD_RARITIES.UNCOMMON
 	card_logic_bomb.card_requires_target = true
@@ -510,7 +510,7 @@ static func add_cards_blue() -> void:
 	card_darknet_protocol.card_name = "暗网协议"
 	card_darknet_protocol.card_color_id = "color_{0}".format([color])
 	card_darknet_protocol.card_texture_path = "sprites/card/blue/card_darknet_protocol.png"
-	card_darknet_protocol.card_description = "获得等同于消耗 [energy_icon] 数量的算力增幅层数。物理删除，易失。"
+	card_darknet_protocol.card_description = "获得等同于消耗 [energy_icon] 数量的 [status_icon:status_effect_damage_increase] 层数。物理删除，易失。"
 	card_darknet_protocol.card_type = CardData.CARD_TYPES.SKILL
 	card_darknet_protocol.card_rarity = CardData.CARD_RARITIES.RARE
 	card_darknet_protocol.card_requires_target = false
@@ -523,7 +523,7 @@ static func add_cards_blue() -> void:
 	card_darknet_protocol.card_upgrade_value_improvements = {"multiplier_offset": 1}
 	card_darknet_protocol.card_first_upgrade_property_changes = {
 		"card_end_of_turn_destination": HandManager.DISCARD_PILE,
-		"card_description": "获得等同于消耗 [energy_icon] 数量的算力增幅层数。物理删除。",
+		"card_description": "获得等同于消耗 [energy_icon] 数量的 [status_icon:status_effect_damage_increase] 层数。物理删除。",
 	}
 	card_darknet_protocol.card_play_actions = [
 		{
@@ -549,7 +549,7 @@ static func add_cards_blue() -> void:
 	card_security_audit.card_name = "安全审计"
 	card_security_audit.card_color_id = "color_{0}".format([color])
 	card_security_audit.card_texture_path = "sprites/card/blue/card_security_audit.png"
-	card_security_audit.card_description = "施加等同于当前线程中脚本数量的漏洞暴露层数。物理删除。"
+	card_security_audit.card_description = "施加等同于当前线程中脚本数量的 [status_icon:status_effect_vulnerable] 层数。物理删除。"
 	card_security_audit.card_type = CardData.CARD_TYPES.SKILL
 	card_security_audit.card_rarity = CardData.CARD_RARITIES.UNCOMMON
 	card_security_audit.card_requires_target = true
@@ -586,7 +586,7 @@ static func add_cards_blue() -> void:
 	card_broadcast_storm.card_name = "广播风暴"
 	card_broadcast_storm.card_color_id = "color_{0}".format([color])
 	card_broadcast_storm.card_texture_path = "sprites/card/blue/card_broadcast_storm.png"
-	card_broadcast_storm.card_description = "对所有敌人造成 [damage] 点伤害。施加 [status_charge_amount] 层漏洞暴露。"
+	card_broadcast_storm.card_description = "对所有敌人造成 [damage] 点伤害。施加 [status_charge_amount] 层 [status_icon:status_effect_vulnerable]。"
 	card_broadcast_storm.card_type = CardData.CARD_TYPES.ATTACK
 	card_broadcast_storm.card_rarity = CardData.CARD_RARITIES.UNCOMMON
 	card_broadcast_storm.card_requires_target = false
@@ -637,7 +637,7 @@ static func add_cards_blue() -> void:
 	card_honeypot.card_name = "蜜罐陷阱"
 	card_honeypot.card_color_id = "color_{0}".format([color])
 	card_honeypot.card_texture_path = "sprites/card/blue/card_honeypot.png"
-	card_honeypot.card_description = "获得 [block] 点防火墙。对所有敌人施加 [status_charge_amount] 层输出降级。"
+	card_honeypot.card_description = "获得 [block] 点防火墙。对所有敌人施加 [status_charge_amount] 层 [status_icon:status_effect_weaken]。"
 	card_honeypot.card_type = CardData.CARD_TYPES.SKILL
 	card_honeypot.card_rarity = CardData.CARD_RARITIES.UNCOMMON
 	card_honeypot.card_requires_target = false
@@ -665,7 +665,7 @@ static func add_cards_blue() -> void:
 	card_payload_delivery.card_name = "载荷投递"
 	card_payload_delivery.card_color_id = "color_{0}".format([color])
 	card_payload_delivery.card_texture_path = "sprites/card/blue/card_payload_delivery.png"
-	card_payload_delivery.card_description = "造成 [number_of_attacks] 次 [damage] 点伤害。目标每有 1 层漏洞暴露，次数加 1。读取 [draw_count] 个脚本。"
+	card_payload_delivery.card_description = "造成 [number_of_attacks] 次 [damage] 点伤害。目标每有 1 层 [status_icon:status_effect_vulnerable]，次数加 1。读取 [draw_count] 个脚本。"
 	card_payload_delivery.card_type = CardData.CARD_TYPES.ATTACK
 	card_payload_delivery.card_rarity = CardData.CARD_RARITIES.UNCOMMON
 	card_payload_delivery.card_requires_target = true

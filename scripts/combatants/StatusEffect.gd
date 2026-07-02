@@ -50,8 +50,9 @@ func _on_mouse_entered() -> void:
 		var parsed_text: String = TextParser.parse(tooltip_text, context)
 		bbcode += "\n" + parsed_text
 		
-	if status_effect_data.status_effect_decay_rate != 0:
-		bbcode += "\n每时钟周期衰减 " + str(abs(status_effect_data.status_effect_decay_rate)) + " 层。"
+	var decay_text = status_effect_data.get_decay_text()
+	if decay_text != "":
+		bbcode += " " + decay_text
 		
 	if HandManager.tooltip != null:
 		HandManager.tooltip.display_tooltip(bbcode, true)
