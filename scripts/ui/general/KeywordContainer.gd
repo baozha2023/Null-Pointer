@@ -49,20 +49,16 @@ func populate_card_keywords(card_data: CardData) -> void:
 		card_data.card_remove_from_deck_actions,
 		card_data.card_transform_in_deck_actions,
 	]
+	var card_created_card_object_ids: Array[String] = []
 	for action_list in all_action_lists:
 		for action in action_list:
-			if action.has(Scripts.ACTION_APPLY_STATUS):
-				var status_id = action[Scripts.ACTION_APPLY_STATUS].get("status_effect_object_id", "")
-				if status_id == "":
-					status_id = card_data.card_values.get("status_effect_object_id", "")
-				if status_id != "" and not card_status_effect_object_ids.has(status_id):
-					card_status_effect_object_ids.append(status_id)
-			if action.has(Scripts.ACTION_BLOCK_TO_STATUS):
-				var status_id = action[Scripts.ACTION_BLOCK_TO_STATUS].get("status_effect_object_id", "")
-				if status_id == "":
-					status_id = card_data.card_values.get("status_effect_object_id", "")
-				if status_id != "" and not card_status_effect_object_ids.has(status_id):
-					card_status_effect_object_ids.append(status_id)
+			_parse_action_recursively(action, card_data, card_status_effect_object_ids, card_created_card_object_ids)
+			
+	# Extract explicitly mentioned cards from the description (e.g. [card_name:card_waste])
+	for m in TextParser.card_name_regex.search_all(card_data.card_description):
+		var card_id = m.get_string(1)
+		if not card_created_card_object_ids.has(card_id):
+			card_created_card_object_ids.append(card_id)
 	
 	clear_tooltips()
 	
@@ -75,14 +71,23 @@ func populate_card_keywords(card_data: CardData) -> void:
 	
 	if Global.user_settings_data.settings_enable_card_status_effects:
 		for status_id in card_status_effect_object_ids:
-			var keyword_tooltip = Scenes.KEYWORD_TOOLTIP.instantiate()
-			add_child(keyword_tooltip)
-			keyword_tooltip.init_status_effect(status_id)
+			var status_data: StatusEffectData = Global.get_status_effect_data(status_id)
+			if status_data != null and status_data.status_effect_is_visible:
+				var keyword_tooltip = Scenes.KEYWORD_TOOLTIP.instantiate()
+				add_child(keyword_tooltip)
+				keyword_tooltip.init_status_effect(status_id)
+				
+		for created_card_id in card_created_card_object_ids:
+			var created_card_data: CardData = Global.get_card_data(created_card_id)
+			if created_card_data != null:
+				var keyword_tooltip = Scenes.KEYWORD_TOOLTIP.instantiate()
+				add_child(keyword_tooltip)
+				keyword_tooltip.init_card(created_card_id)
 	
 	if Global.user_settings_data.settings_enable_card_hints and card_data.card_hint != "":
 		var keyword_tooltip = Scenes.KEYWORD_TOOLTIP.instantiate()
 		add_child(keyword_tooltip)
-		keyword_tooltip.init_custom("小tips", card_data.card_hint)
+		keyword_tooltip.init_custom("小tips", card_data.card_hint, card_data.card_values)
 
 func populate_keywords(keyword_object_ids: Array[String]) -> void:
 	clear_tooltips()
@@ -93,21 +98,43 @@ func populate_keywords(keyword_object_ids: Array[String]) -> void:
 		keyword_tooltip.init(keyword_object_id)
 
 func _get_all_recursive_child_keywords(keyword_object_ids: Array[String]) -> Array[String]:
-	# searches (BFS) all child keywords and returns the full list
-	# this is typically a shallow search but ensures all keywords are properly listed 
 	var all_child_keywords: Array[String] = keyword_object_ids.duplicate()
-	var i: int = 0
-	while i < len(all_child_keywords):
-		var keyword_object_id: String = all_child_keywords[i]
+	for keyword_object_id in keyword_object_ids:
 		var keyword_data: KeywordData = Global.get_keyword_data(keyword_object_id)
-		if keyword_data == null:
-			DebugLogger.log_error("EnemyContainer._get_all_recursive_child_keywords(): No keyword of id {0} found".format([keyword_object_id]))
-		else:
-			for child_keyword_object_id in keyword_data.keyword_child_keyword_object_ids:
-				if not all_child_keywords.has(child_keyword_object_id):
-					all_child_keywords.append(child_keyword_object_id)
-		i += 1
+		if keyword_data != null:
+			var recursive_children: Array[String] = _get_all_recursive_child_keywords(keyword_data.keyword_child_keyword_object_ids)
+			for child in recursive_children:
+				if not all_child_keywords.has(child):
+					all_child_keywords.append(child)
+					
 	return all_child_keywords
+
+func _parse_action_recursively(action: Dictionary, card_data: CardData, status_ids: Array[String], card_ids: Array[String]) -> void:
+	for action_key in action.keys():
+		var action_params = action[action_key]
+		if typeof(action_params) != TYPE_DICTIONARY:
+			continue
+			
+		if action_key == Scripts.ACTION_APPLY_STATUS or action_key == Scripts.ACTION_BLOCK_TO_STATUS:
+			var status_id = action_params.get("status_effect_object_id", "")
+			if status_id == "":
+				status_id = card_data.card_values.get("status_effect_object_id", "")
+			if status_id != "" and not status_ids.has(status_id):
+				status_ids.append(status_id)
+				
+		if action_key == Scripts.ACTION_CREATE_CARDS:
+			var created_card_id = action_params.get("created_card_object_id", "")
+			if created_card_id == "":
+				created_card_id = card_data.card_values.get("created_card_object_id", "")
+			if created_card_id != "" and not card_ids.has(created_card_id):
+				card_ids.append(created_card_id)
+				
+		if action_params.has("action_data"):
+			var nested_actions = action_params["action_data"]
+			if typeof(nested_actions) == TYPE_ARRAY:
+				for nested_action in nested_actions:
+					if typeof(nested_action) == TYPE_DICTIONARY:
+						_parse_action_recursively(nested_action, card_data, status_ids, card_ids)
 
 func clear_tooltips() -> void:
 	for child in get_children():

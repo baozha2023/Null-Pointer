@@ -95,7 +95,7 @@ func add_artifacts() -> void:
 	artifact_negate_money_gain.artifact_name = "算力外设插件"
 	artifact_negate_money_gain.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.COMMON
 	artifact_negate_money_gain.artifact_texture_path = "sprites/artifacts/artifact_negate_money_gain.png"
-	artifact_negate_money_gain.artifact_description = "每时钟周期获得 {0}。无法再获得数据币".format([Card.ENERGY_ICON_KEYWORD])
+	artifact_negate_money_gain.artifact_description = "每时钟周期获得 {0}。无法再获得数据币".format([TextParser.ENERGY_ICON_KEYWORD])
 	artifact_negate_money_gain.artifact_add_actions = [
 		{
 			Scripts.ACTION_ADD_ENERGY: {
@@ -177,7 +177,7 @@ func add_artifacts() -> void:
 
 	var artifact_energy_on_combat_start: ArtifactData = ArtifactData.new("artifact_energy_on_combat_start")
 	artifact_energy_on_combat_start.artifact_name = "初始算力外设插件"
-	artifact_energy_on_combat_start.artifact_description = "首时钟周期获得 {0}。".format([Card.ENERGY_ICON_KEYWORD])
+	artifact_energy_on_combat_start.artifact_description = "首时钟周期获得 {0}。".format([TextParser.ENERGY_ICON_KEYWORD])
 	artifact_energy_on_combat_start.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.UNCOMMON
 	artifact_energy_on_combat_start.artifact_texture_path = "sprites/artifacts/artifact_energy_on_combat_start.png"
 	artifact_energy_on_combat_start.artifact_first_turn_actions = [{ Scripts.ACTION_ADD_ENERGY: { "energy_amount": 1 } }]
@@ -246,7 +246,7 @@ func add_artifacts() -> void:
 	artifact_block_on_attacks.artifact_counter_reset_on_combat_end = 0
 	artifact_block_on_attacks.artifact_max_counter_actions = [
 		{
-			Scripts.ACTION_BLOCK: { "block": 5, "target_override": BaseAction.TARGET_OVERRIDES.PLAYER },
+			Scripts.ACTION_BLOCK: { "block": 5, "target_override": BaseAction.TARGET_OVERRIDES.PLAYER, "audio_path": AudioConstants.SFX_GROUP_SHIELD_UP },
 		},
 	]
 
@@ -438,6 +438,7 @@ func add_artifacts() -> void:
 			Scripts.ACTION_BLOCK: {
 				"target_override": BaseAction.TARGET_OVERRIDES.PLAYER,
 				"block": 4,
+				"audio_path": AudioConstants.SFX_GROUP_SHIELD_UP,
 			},
 		},
 	]
@@ -447,7 +448,7 @@ func add_artifacts() -> void:
 	# 热修复补丁：攻击充能 → 抽牌 + 回能
 	var artifact_hotfix_patch: ArtifactData = ArtifactData.new("artifact_hotfix_patch")
 	artifact_hotfix_patch.artifact_name = "热修复补丁"
-	artifact_hotfix_patch.artifact_description = "每打出 3 次攻击，加载 1 个脚本并获得 {0}。".format([Card.ENERGY_ICON_KEYWORD])
+	artifact_hotfix_patch.artifact_description = "每打出 3 次攻击，加载 1 个脚本并获得 {0}。".format([TextParser.ENERGY_ICON_KEYWORD])
 	artifact_hotfix_patch.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.RARE
 	artifact_hotfix_patch.artifact_texture_path = "sprites/artifacts/artifact_hotfix_patch.png"
 	artifact_hotfix_patch.artifact_script_path = "res://scripts/artifacts/ArtifactHotfixPatch.gd"
@@ -518,6 +519,7 @@ func add_consumables() -> void:
 		{
 			Scripts.ACTION_BLOCK: {
 				"target_override": BaseAction.TARGET_OVERRIDES.PLAYER,
+				"audio_path": AudioConstants.SFX_GROUP_SHIELD_UP,
 			},
 		},
 	]
@@ -1174,10 +1176,10 @@ func add_status_effects() -> void:
 	# uses unique status logic
 	var status_effect_bomb: StatusEffectData = StatusEffectData.new("status_effect_bomb")
 	status_effect_bomb.status_effect_name = "逻辑炸弹"
-	status_effect_bomb.status_effect_description = "当主层数衰减至 0 时，对所有敌人造成等同于副层数的伤害。"
-	status_effect_bomb.status_effect_tooltip = "当主层数衰减至 0 时，对所有敌人造成 [color=yellow][secondary_charges][/color] 点伤害。剩余主层数：[color=yellow][charge_amount][/color] 层。"
+	status_effect_bomb.status_effect_description = "当主层数衰减至 0 时，对非自己的其他目标造成等同于副层数的伤害。"
+	status_effect_bomb.status_effect_tooltip = "当主层数衰减至 0 时，对非自己的其他目标造成 [color=yellow][secondary_charges][/color] 点伤害。剩余主层数：[color=yellow][charge_amount][/color] 层。"
 	status_effect_bomb.status_effect_texture_path = "sprites/status_effects/icon_bomb.png"
-	status_effect_bomb.status_effect_script_path = "res://scripts/status_effects/StatusEffectBomb.gd"
+	status_effect_bomb.status_effect_script_path = "res://scripts/status_effects/StatusEffectTimedStatus.gd"
 	status_effect_bomb.status_effect_decay_rate = -1
 	status_effect_bomb.status_effect_allows_multiples = true
 	status_effect_bomb.status_effect_secondary_charge_collision_strategy = StatusEffectData.STATUS_EFFECT_SECONDARY_CHARGE_COLLISION_STRATEGIES.KEEP
@@ -1282,6 +1284,7 @@ func add_status_effects() -> void:
 				"target_override": BaseAction.TARGET_OVERRIDES.PARENT,
 				"custom_key_names": { "block": "invoking_status_effect_charges" },
 				"time_delay": 0.5,
+				"audio_path": AudioConstants.SFX_GROUP_SHIELD_UP,
 			},
 		},
 	]
@@ -1291,6 +1294,7 @@ func add_status_effects() -> void:
 				"target_override": BaseAction.TARGET_OVERRIDES.PARENT,
 				"custom_key_names": { "block": "invoking_status_effect_charges" },
 				"time_delay": 0.5,
+				"audio_path": AudioConstants.SFX_GROUP_SHIELD_UP,
 			},
 		},
 	]
@@ -1324,6 +1328,34 @@ func add_status_effects() -> void:
 	status_effect_energy_next_turn.status_effect_interceptor_ids = []
 
 	Global.register_rod(status_effect_energy_next_turn)
+
+	# gain energy at the start of each turn
+	# doesn't use an interceptor
+	var status_effect_bonus_energy_per_turn: StatusEffectData = StatusEffectData.new("status_effect_bonus_energy_per_turn")
+	status_effect_bonus_energy_per_turn.status_effect_name = "算力提升"
+	status_effect_bonus_energy_per_turn.status_effect_description = "每个时钟周期开始时，额外获得等同于层数的算力。"
+	status_effect_bonus_energy_per_turn.status_effect_tooltip = "每个时钟周期开始时，额外获得 [color=yellow][charge_amount][/color] 点算力。"
+	status_effect_bonus_energy_per_turn.status_effect_texture_path = "sprites/status_effects/icon_bonus_energy_per_turn.png"
+	status_effect_bonus_energy_per_turn.status_effect_is_visible = true
+	status_effect_bonus_energy_per_turn.status_effect_decay_rate = 0
+	status_effect_bonus_energy_per_turn.status_effect_type = StatusEffectData.STATUS_EFFECT_TYPES.BUFF
+	status_effect_bonus_energy_per_turn.status_effect_action_process_times = [
+		StatusEffectData.STATUS_EFFECT_PROCESS_TIMES.POST_DRAW_PLAYER_START_TURN,
+		StatusEffectData.STATUS_EFFECT_PROCESS_TIMES.POST_ENEMY_INTENT,
+	]
+	status_effect_bonus_energy_per_turn.status_effect_player_process_actions = [
+		{
+			Scripts.ACTION_ADD_ENERGY: {
+				"target_override": BaseAction.TARGET_OVERRIDES.PARENT,
+				"custom_key_names": { "energy_amount": "invoking_status_effect_charges" },
+				"time_delay": 0.5,
+			},
+		},
+	]
+	status_effect_bonus_energy_per_turn.status_effect_enemy_process_actions = []
+	status_effect_bonus_energy_per_turn.status_effect_interceptor_ids = []
+
+	Global.register_rod(status_effect_bonus_energy_per_turn)
 
 	# draws extra cards next turn
 	# uses an interceptor
@@ -1878,27 +1910,7 @@ func add_keywords() -> void:
 
 #region VFX Animations
 func add_combat_vfx_animations() -> void:
-	var animation_vfx_impact_default: AnimationData = AnimationData.new("animation_vfx_impact_default")
-	animation_vfx_impact_default.add_vfx_animations(
-		[
-			"external/sprites/animated_effects/impact_default/vfx_impact_default_01.png",
-			"external/sprites/animated_effects/impact_default/vfx_impact_default_02.png",
-			"external/sprites/animated_effects/impact_default/vfx_impact_default_03.png",
-			"external/sprites/animated_effects/impact_default/vfx_impact_default_04.png",
-			"external/sprites/animated_effects/impact_default/vfx_impact_default_05.png",
-			"external/sprites/animated_effects/impact_default/vfx_impact_default_06.png",
-			"external/sprites/animated_effects/impact_default/vfx_impact_default_07.png",
-			"external/sprites/animated_effects/impact_default/vfx_impact_default_08.png",
-			"external/sprites/animated_effects/impact_default/vfx_impact_default_09.png",
-			"external/sprites/animated_effects/impact_default/vfx_impact_default_10.png",
-			"external/sprites/animated_effects/impact_default/vfx_impact_default_11.png",
-			"external/sprites/animated_effects/impact_default/vfx_impact_default_12.png",
-			"external/sprites/animated_effects/impact_default/vfx_impact_default_13.png",
-			"external/sprites/animated_effects/impact_default/vfx_impact_default_14.png",
-		],
-		25,
-	)
-	Global.register_rod(animation_vfx_impact_default)
+	CombatVFXAnimations.register_all()
 #endregion
 
 #region Characters
@@ -2020,12 +2032,12 @@ func add_characters() -> void:
 	character_blue.character_starting_artifact_pack_ids = ["artifact_pack_white", "artifact_pack_{0}".format([character_color])]
 	character_blue.character_starting_consumable_pack_ids = ["consumable_pack_white", "consumable_pack_{0}".format([character_color])]
 	character_blue.character_starting_card_object_ids = [
+		"card_exploit_token",
+		"card_exploit_token",
 		"card_basic_attack_blue",
 		"card_basic_attack_blue",
-		"card_basic_attack_blue",
-		"card_basic_attack_blue",
-		"card_basic_block_blue",
-		"card_basic_block_blue",
+		"card_privilege_escalation",
+		"card_privilege_escalation",
 		"card_basic_block_blue",
 		"card_basic_block_blue",
     	"card_energy_next_turn"
@@ -2304,6 +2316,7 @@ func add_card_decorators() -> void:
 				# convert the decorator's block into actual block
 				"custom_key_names": { "block": "decorator_value_block" },
 				"time_delay": 0.5,
+				"audio_path": AudioConstants.SFX_GROUP_SHIELD_UP,
 				"target_override": BaseAction.TARGET_OVERRIDES.PARENT,
 			},
 		},
@@ -2403,8 +2416,7 @@ func add_card_basics() -> void:
 		card_basic_attack.card_upgrade_value_improvements = { "damage": 3 }
 		card_basic_attack.card_play_actions = [
 			{
-				Scripts.ACTION_ATTACK_GENERATOR: { "time_delay": 0.0, "actions_on_lethal": [] },
-				Scripts.ACTION_PLAY_SOUND: { "audio_path": AudioConstants.SFX_SLASH },
+				Scripts.ACTION_ATTACK_GENERATOR: { "time_delay": 0.0, "audio_path": AudioConstants.SFX_GROUP_SWORD_SLASH, "actions_on_lethal": [] },
 			},
 		]
 
@@ -2428,6 +2440,7 @@ func add_card_basics() -> void:
 				Scripts.ACTION_BLOCK: {
 					"time_delay": 0.2,
 					"target_override": BaseAction.TARGET_OVERRIDES.PARENT,
+					"audio_path": AudioConstants.SFX_GROUP_SHIELD_UP,
 				},
 			},
 		]

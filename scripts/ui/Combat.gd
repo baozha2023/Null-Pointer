@@ -328,7 +328,7 @@ func perform_enemy_turn():
 					"number_of_attacks": intent_number_of_attacks,
 					"impact_vfx_animation_id": intent_attack_impact_animation_id,
 					"time_delay": EnemyData.ENEMY_ATTACK_DELAY,
-					"audio_path": intent_audio_path
+					"audio_path": [intent_audio_path] if intent_audio_path != "" else []
 					}
 				})
 			
@@ -356,7 +356,7 @@ func perform_enemy_turn():
 			
 			# play intent sound if one exists and no attacks
 			if enemy_intent.enemy_intent_audio_path != "" and intent_number_of_attacks == 0:
-				ActionGenerator.generate_sound_action(enemy_intent.enemy_intent_audio_path, false)
+				ActionGenerator.generate_sound_action([enemy_intent.enemy_intent_audio_path], false)
 			
 			# perform them and wait
 			var enemy_attack_actions: Array = ActionGenerator.create_actions(enemy, null, [player], enemy_actions_data, null)

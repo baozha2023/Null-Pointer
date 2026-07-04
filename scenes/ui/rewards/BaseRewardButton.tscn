@@ -4,9 +4,9 @@
 [ext_resource type="Script" uid="uid://cdbs7aby3q3x8" path="res://scripts/ui/rewards/BaseRewardButton.gd" id="2_fjsnl"]
 
 [node name="BaseRewardButton" type="Button"]
+custom_minimum_size = Vector2(0, 50)
 offset_right = 112.0
-offset_bottom = 31.0
+offset_bottom = 50.0
 text = "奖励 1"
-icon = ExtResource("1_8q1fk")
 expand_icon = true
 script = ExtResource("2_fjsnl")

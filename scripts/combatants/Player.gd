@@ -115,6 +115,8 @@ func add_block(amount: int) -> void:
 ## Adds health and max health to the combatant
 func add_health(health_amount: int, health_amount_max: int) -> void:
 	Global.player_data.add_health(health_amount, health_amount_max)
+	if health_amount > 0:
+		create_health_text(health_amount)
 
 ## Heals the combatant by a given percentage between 0.0 and 1.0.
 func heal_percentage(health_percent: float):

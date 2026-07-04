@@ -28,7 +28,7 @@ func perform_action():
 		var number_of_attacks: int = action_interceptor_processor.get_shadowed_action_values("number_of_attacks", 1)
 		var merge_attacks: bool = action_interceptor_processor.get_shadowed_action_values("merge_attacks", false)	# this will take all attacks and merge them into a single attack with combined damage
 		var target_override: int = action_interceptor_processor.get_shadowed_action_values("target_override", BaseAction.TARGET_OVERRIDES.SELECTED_TARGETS)
-		var audio_path: String = action_interceptor_processor.get_shadowed_action_values("audio_path", "") # sound that plays for every attack
+		var audio_path_val: Array = action_interceptor_processor.get_shadowed_action_values("audio_path", []) # sound that plays for every attack
 		
 		var actions_on_lethal: Array[Dictionary] = []
 		actions_on_lethal.assign(action_interceptor_processor.get_shadowed_action_values("actions_on_lethal", []))
@@ -55,13 +55,13 @@ func perform_action():
 				"time_delay": delay,
 				"target_override": target_override,
 				"actions_on_lethal": actions_on_lethal,
-				"audio_path": audio_path,
+				"audio_path": audio_path_val,
 				"attack_anim_name": per_attack_animation_name,
 				}}]
 			# add sounds per attack if one exists
 			# this will play before 
-			if audio_path != "":
-				action_data.append({Scripts.ACTION_PLAY_SOUND: {"audio_path": audio_path}})
+			if typeof(audio_path_val) == TYPE_ARRAY and audio_path_val.size() > 0:
+				action_data.append({Scripts.ACTION_PLAY_SOUND: {"audio_path": audio_path_val}})
 			# add animations per attack
 			# if defined, attack_animation_name should be ANIMATION_NONE
 			if per_attack_animation_name != AnimationData.ANIMATION_NONE:

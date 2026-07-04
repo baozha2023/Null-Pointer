@@ -32,7 +32,7 @@ func init(keyword_object_id: String) -> void:
 		
 		# append keyword text
 		keyword_bbcode = "{0}\n{1}".format([keyword_bbcode, keyword_data.keyword_text_bb_code])
-		keyword_bbcode = TextParser.parse(keyword_bbcode)
+		keyword_bbcode = TextParser.parse(keyword_bbcode, {}, FONT_SIZE)
 		
 		# force the font to a certain size
 		keyword_bbcode = "[font_size={0}]{1}[/font_size]".format([FONT_SIZE, keyword_bbcode])
@@ -41,10 +41,10 @@ func init(keyword_object_id: String) -> void:
 		# this must be called deferred to force the rich text to not get clipped
 		keyword_rich_text_label.set_deferred("fit_content", true)
 
-func init_custom(title: String, text: String) -> void:
+func init_custom(title: String, text: String, values: Dictionary = {}) -> void:
 	var keyword_bbcode: String = "[color=orange]" + title + "[/color]"
 	keyword_bbcode = "{0}\n{1}".format([keyword_bbcode, text])
-	keyword_bbcode = TextParser.parse(keyword_bbcode)
+	keyword_bbcode = TextParser.parse(keyword_bbcode, values, FONT_SIZE)
 	keyword_bbcode = "[font_size={0}]{1}[/font_size]".format([FONT_SIZE, keyword_bbcode])
 	keyword_rich_text_label.set_bbcode(keyword_bbcode)
 	keyword_rich_text_label.set_deferred("fit_content", true)
@@ -59,7 +59,26 @@ func init_status_effect(status_effect_object_id: String) -> void:
 			keyword_bbcode = "[img width={0}]{1}[/img] {2}".format([EMBEDDED_IMAGE_SIZE, status_effect_data.status_effect_texture_path, keyword_bbcode])
 		
 		keyword_bbcode = "{0}\n{1}".format([keyword_bbcode, status_effect_data.status_effect_description])
-		keyword_bbcode = TextParser.parse(keyword_bbcode)
+		keyword_bbcode = TextParser.parse(keyword_bbcode, {}, FONT_SIZE)
 		keyword_bbcode = "[font_size={0}]{1}[/font_size]".format([FONT_SIZE, keyword_bbcode])
+		keyword_rich_text_label.set_bbcode(keyword_bbcode)
+		keyword_rich_text_label.set_deferred("fit_content", true)
+
+func init_card(card_object_id: String) -> void:
+	var card_data: CardData = Global.get_card_data(card_object_id)
+	if card_data == null:
+		DebugLogger.log_error("KeywordTooltip.init_card(): No card of id \"{0}\" found".format([card_object_id]))
+	else:
+		var color_hex = "#ffffff"
+		var color_data = Global._id_to_color_data.get(card_data.card_color_id, null)
+		if color_data:
+			color_hex = "#" + color_data.color.to_html(false)
+		
+		var keyword_bbcode: String = "[color=%s]%s[/color]" % [color_hex, card_data.card_name]
+		
+		var parsed_desc = TextParser.parse(card_data.card_description, card_data.card_values, FONT_SIZE)
+		keyword_bbcode = "{0}\n{1}".format([keyword_bbcode, parsed_desc])
+		keyword_bbcode = "[font_size={0}]{1}[/font_size]".format([FONT_SIZE, keyword_bbcode])
+		
 		keyword_rich_text_label.set_bbcode(keyword_bbcode)
 		keyword_rich_text_label.set_deferred("fit_content", true)

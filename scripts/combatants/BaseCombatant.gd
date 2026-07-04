@@ -205,6 +205,11 @@ func create_damage_text(damage_amount: int) -> void:
 	fade_container.add_child(text_fade)
 	text_fade.init(str(damage_amount))
 
+func create_health_text(health_amount: int) -> void:
+	var text_fade: TextFade = Scenes.TEXT_FADE.instantiate()
+	fade_container.add_child(text_fade)
+	text_fade.init("+" + str(health_amount), Color.GREEN)
+
 func create_block_fade() -> void:
 	if block and block.base_sprite and block.base_sprite.texture:
 		create_image_fade(block.base_sprite.texture)

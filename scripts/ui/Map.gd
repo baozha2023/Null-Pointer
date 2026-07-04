@@ -50,6 +50,7 @@ func _ready():
 	clear_drawing_button.button_up.connect(_on_clear_drawing_button_up)
 	if auto_boss_button != null:
 		auto_boss_button.button_up.connect(_on_auto_boss_button_up)
+		auto_boss_button.visible = ProfileData.ENABLE_ONE_CLICK_BOSS
 	
 	Signals.combat_started.connect(_on_combat_started)
 	Signals.combat_ended.connect(_on_combat_ended)

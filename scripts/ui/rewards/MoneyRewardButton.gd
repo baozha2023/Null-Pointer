@@ -13,5 +13,6 @@ func init(_action_on_click: BaseAction, _reward_group: int) -> void:
 	elif money_amount < original_amount:
 		arrow = " ↓"
 		
-	text = "数据币 %s%s" % [money_amount, arrow]
+	$HBoxContainer/TextLabel.text = "%s%s" % [money_amount, arrow]
+	$HBoxContainer/IconRect.texture = preload("res://sprites/ui/icon_ui_money.png")
 

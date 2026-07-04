@@ -20,6 +20,7 @@ const INTENT_NAME_ZH: Dictionary[String, String] = {
 	"intent_suppress": "压制",
 	"intent_pollute": "代码污染",
 	"intent_system_reset": "系统重置",
+	"intent_repair": "自我修复",
 	## 第二章敌人意图
 	"intent_scan": "扫描",
 	"intent_debuff": "削弱",
@@ -40,6 +41,7 @@ const INTENT_NAME_ZH: Dictionary[String, String] = {
 	"intent_overload": "超载",
 	"intent_system_crash": "系统崩溃",
 	"intent_emergency": "紧急防护",
+	"intent_vent": "泄压",
 }
 
 func _init(intent_object_id: String = "", difficulty_level: int = 0, intent_attack_damage: int = 1, intent_number_of_attacks: int = 1, intent_attack_impact_animation_id: String = "", intent_block: int = 0, intent_audio_path: String = "",

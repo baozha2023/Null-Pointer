@@ -11,6 +11,7 @@
 [ext_resource type="Texture2D" uid="uid://coiehbsiht83q" path="res://sprites/intents/enemy_intent_debuffing.png" id="8_gu0s6"]
 [ext_resource type="Texture2D" uid="uid://cvpwsdtfglfr0" path="res://sprites/intents/enemy_intent_buffing.png" id="9_7in10"]
 [ext_resource type="Texture2D" uid="uid://cpgx50bqopa8m" path="res://sprites/intents/enemy_intent_summoning.png" id="10_mxi1b"]
+[ext_resource type="Texture2D" uid="uid://dpcyhrku2ep8a" path="res://sprites/intents/enemy_intent_special.png" id="11_special"]
 [ext_resource type="PackedScene" uid="uid://bblblockind01" path="res://scenes/combatants/BlockIndicator.tscn" id="shield_scn"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_7in10"]
@@ -102,6 +103,10 @@ offset_bottom = 64.0
 [node name="ImageFadeContainer" type="Node2D" parent="Visible/CombatantCenter" unique_id=825700959]
 unique_name_in_owner = true
 
+[node name="Block" parent="Visible/CombatantCenter" unique_id=1432771270 instance=ExtResource("shield_scn")]
+position = Vector2(-65, 78)
+scale = Vector2(0.4, 0.4)
+
 [node name="Intent" type="HBoxContainer" parent="Visible" unique_id=785213509]
 layout_mode = 0
 offset_left = -99.0
@@ -156,6 +161,15 @@ texture = ExtResource("10_mxi1b")
 expand_mode = 1
 stretch_mode = 5
 
+[node name="SpecialIntent" type="TextureRect" parent="Visible/Intent" unique_id=2000111222]
+visible = false
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+tooltip_text = "敌人本时钟周期意图特殊行动"
+texture = ExtResource("11_special")
+expand_mode = 1
+stretch_mode = 5
+
 [node name="IntentAmount" type="Label" parent="Visible/Intent" unique_id=12370422]
 visible = false
 layout_mode = 2
@@ -164,10 +178,6 @@ text = "15"
 
 [node name="FadeContainer" type="Node2D" parent="Visible" unique_id=704318186]
 position = Vector2(1, -136)
-
-[node name="Block" parent="Visible/CombatantCenter" unique_id=1432771270 instance=ExtResource("shield_scn")]
-position = Vector2(-65, 78)
-scale = Vector2(0.4, 0.4)
 
 [node name="StatusContainer" type="GridContainer" parent="Visible" unique_id=622018222]
 layout_mode = 0

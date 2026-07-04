@@ -174,6 +174,11 @@ func _on_card_unhovered(card: Card) -> void:
 func _on_codex_card_clicked(card: Card) -> void:
 	var now: int = Time.get_ticks_msec()
 	if card == _last_clicked_card and (now - _last_click_time) < DOUBLE_CLICK_THRESHOLD_MS:
+		# 卡牌未解锁时禁用双击查看详情，并提醒用户
+		if not card.card_data.is_discovered():
+			UIMessage.show_message("该卡牌还未解锁")
+			_last_clicked_card = null
+			return
 		codex_card_detail_panel.show_card_detail(card.card_data)
 		_last_clicked_card = null
 	else:

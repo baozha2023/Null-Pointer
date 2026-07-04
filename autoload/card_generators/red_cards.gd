@@ -13,7 +13,7 @@ static func add_cards_red() -> void:
 	card_commit.card_name = "代码提交"
 	card_commit.card_color_id = "color_{0}".format([color])
 	card_commit.card_texture_path = "sprites/card/red/card_commit.png"
-	card_commit.card_description = "造成 [damage] 点伤害。打出后，所有代码提交的伤害永久提升 [damage_growth] 点。"
+	card_commit.card_description = "造成 [damage] 点伤害。打出后，所有[card_name:card_commit]的伤害永久提升 [damage_growth] 点。"
 	card_commit.card_type = CardData.CARD_TYPES.ATTACK
 	card_commit.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_commit.card_requires_target = true
@@ -23,7 +23,7 @@ static func add_cards_red() -> void:
 		"damage": 7,
 		"number_of_attacks": 1,
 		"damage_growth": 1,
-		"impact_vfx_animation_id": "animation_vfx_impact_default",
+		"impact_vfx_animation_id": "animation_vfx_magic_red",
 	}
 	card_commit.card_upgrade_value_improvements = {"damage": 3, "damage_growth": 1}
 	card_commit.card_draw_actions = [
@@ -43,7 +43,7 @@ static func add_cards_red() -> void:
 	]
 	card_commit.card_play_actions = [
 		{
-			Scripts.ACTION_ATTACK_GENERATOR: {},
+			Scripts.ACTION_ATTACK_GENERATOR: { "audio_path": AudioConstants.SFX_GROUP_BLUNT_SMASH, },
 		},
 		{
 			Scripts.ACTION_PICK_CARDS: {
@@ -87,7 +87,7 @@ static func add_cards_red() -> void:
 	card_stack_overflow.card_rarity = CardData.CARD_RARITIES.UNCOMMON
 	card_stack_overflow.card_requires_target = true
 	card_stack_overflow.card_energy_cost = 2
-	card_stack_overflow.card_values = {"damage": 6, "additional_damage": 2, "number_of_attacks": 1, "impact_vfx_animation_id": "animation_vfx_impact_default",}
+	card_stack_overflow.card_values = {"damage": 6, "additional_damage": 2, "number_of_attacks": 1, "impact_vfx_animation_id": "animation_vfx_magic_red",}
 	card_stack_overflow.card_upgrade_value_improvements = {"damage": 3}
 	card_stack_overflow.card_first_upgrade_property_changes = {"card_energy_cost": 1}
 	card_stack_overflow.card_play_actions = [
@@ -105,7 +105,7 @@ static func add_cards_red() -> void:
 				"multiplied_values": ["additional_damage"],
 				"multiplied_values_bases": {"additional_damage": 0},
 				"action_data": [
-					{Scripts.ACTION_ATTACK_GENERATOR: {}}
+					{Scripts.ACTION_ATTACK_GENERATOR: { "audio_path": AudioConstants.SFX_GROUP_BLUNT_SMASH, }}
 				],
 			},
 		},
@@ -125,7 +125,7 @@ static func add_cards_red() -> void:
 	card_recursion.card_values = {
 		"damage": 4,
 		"number_of_attacks": 4,
-		"impact_vfx_animation_id": "animation_vfx_impact_default",
+		"impact_vfx_animation_id": "animation_vfx_magic_red",
 		"time_delay": 0.15,
 	}
 	card_recursion.card_upgrade_value_improvements = {"number_of_attacks": 2}
@@ -147,7 +147,7 @@ static func add_cards_red() -> void:
 	}
 	card_recursion.card_play_actions = [
 		{
-			Scripts.ACTION_ATTACK_GENERATOR: {
+			Scripts.ACTION_ATTACK_GENERATOR: { "audio_path": AudioConstants.SFX_GROUP_BLUNT_SMASH,
 				"time_delay": 0.15,
 				"actions_on_lethal": [],
 			},
@@ -165,7 +165,7 @@ static func add_cards_red() -> void:
 	card_binary_search.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_binary_search.card_requires_target = true
 	card_binary_search.card_energy_cost = 1
-	card_binary_search.card_values = {"damage": 7, "bonus_damage": 5, "number_of_attacks": 1, "impact_vfx_animation_id": "animation_vfx_impact_default",}
+	card_binary_search.card_values = {"damage": 7, "bonus_damage": 5, "number_of_attacks": 1, "impact_vfx_animation_id": "animation_vfx_slash_red",}
 	card_binary_search.card_upgrade_value_improvements = {"damage": 3, "bonus_damage": 3}
 	card_binary_search.card_glow_validators = [
 		{Scripts.VALIDATOR_ENEMY_ATTACKING: {"invert_validation": true}},
@@ -177,12 +177,12 @@ static func add_cards_red() -> void:
 					{Scripts.VALIDATOR_ENEMY_ATTACKING: {"invert_validation": true}},
 				],
 				"passed_action_data": [
-					{Scripts.ACTION_ATTACK_GENERATOR: {
+					{Scripts.ACTION_ATTACK_GENERATOR: { "audio_path": AudioConstants.SFX_GROUP_BLUNT_SMASH,
 						"custom_key_names": {"additional_damage": "bonus_damage"}
 					}}
 				],
 				"failed_action_data": [
-					{Scripts.ACTION_ATTACK_GENERATOR: {}}
+					{Scripts.ACTION_ATTACK_GENERATOR: { "audio_path": AudioConstants.SFX_GROUP_BLUNT_SMASH, }}
 				]
 			}
 		}
@@ -199,7 +199,7 @@ static func add_cards_red() -> void:
 	card_unit_test.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_unit_test.card_requires_target = true
 	card_unit_test.card_energy_cost = 1
-	card_unit_test.card_values = {"damage": 7, "execution_damage": 12, "threshold_percent": 50, "number_of_attacks": 1, "impact_vfx_animation_id": "animation_vfx_impact_default",}
+	card_unit_test.card_values = {"damage": 7, "execution_damage": 12, "threshold_percent": 50, "number_of_attacks": 1, "impact_vfx_animation_id": "animation_vfx_magic_red",}
 	card_unit_test.card_upgrade_value_improvements = {"damage": 3, "execution_damage": 4}
 	card_unit_test.card_first_upgrade_value_changes = {"threshold_percent": 60}
 	card_unit_test.card_first_upgrade_property_changes = {"card_description": "造成 [damage] 点伤害。如果目标完整度低于 [threshold_percent]%，造成 [execution_damage] 点伤害。"}
@@ -245,10 +245,10 @@ static func add_cards_red() -> void:
 	card_xor_cipher.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_xor_cipher.card_requires_target = true
 	card_xor_cipher.card_energy_cost = 1
-	card_xor_cipher.card_values = {"damage": 5, "status_charge_amount": 2, "number_of_attacks": 1, "impact_vfx_animation_id": "animation_vfx_impact_default",}
+	card_xor_cipher.card_values = {"damage": 5, "status_charge_amount": 2, "number_of_attacks": 1, "impact_vfx_animation_id": "animation_vfx_magic_red",}
 	card_xor_cipher.card_upgrade_value_improvements = {"damage": 3, "status_charge_amount": 1}
 	card_xor_cipher.card_play_actions = [
-		{Scripts.ACTION_ATTACK_GENERATOR: {}},
+		{Scripts.ACTION_ATTACK_GENERATOR: { "audio_path": AudioConstants.SFX_GROUP_BLUNT_SMASH, }},
 		{
 			Scripts.ACTION_APPLY_STATUS: {
 				"status_effect_object_id": "status_effect_vulnerable",
@@ -269,7 +269,7 @@ static func add_cards_red() -> void:
 	card_production_deploy.card_requires_target = true
 	card_production_deploy.card_energy_cost = 2
 	card_production_deploy.card_play_destination = HandManager.EXHAUST_PILE
-	card_production_deploy.card_values = {"damage": 10, "number_of_attacks": 2, "impact_vfx_animation_id": "animation_vfx_impact_default", "time_delay": 0.3,}
+	card_production_deploy.card_values = {"damage": 10, "number_of_attacks": 2, "impact_vfx_animation_id": "animation_vfx_slash_red", "time_delay": 0.3,}
 	card_production_deploy.card_upgrade_value_improvements = {"damage": 4}
 	card_production_deploy.card_first_upgrade_property_changes = {
 		"card_energy_cost": 1,
@@ -290,7 +290,7 @@ static func add_cards_red() -> void:
 	}
 	card_production_deploy.card_play_actions = [
 		{
-			Scripts.ACTION_ATTACK_GENERATOR: {
+			Scripts.ACTION_ATTACK_GENERATOR: { "audio_path": AudioConstants.SFX_GROUP_BLUNT_SMASH,
 				"time_delay": 0.3,
 				"actions_on_lethal": [],
 			},
@@ -408,6 +408,7 @@ static func add_cards_red() -> void:
 		{
 			Scripts.ACTION_BLOCK: {
 				"target_override": BaseAction.TARGET_OVERRIDES.PARENT,
+				"audio_path": AudioConstants.SFX_GROUP_SHIELD_UP,
 				"time_delay": 0.2,
 			},
 		},
@@ -421,6 +422,7 @@ static func add_cards_red() -> void:
 						Scripts.ACTION_BLOCK: {
 							"custom_key_names": {"block": "block_bonus"},
 							"target_override": BaseAction.TARGET_OVERRIDES.PARENT,
+							"audio_path": AudioConstants.SFX_GROUP_SHIELD_UP,
 							"time_delay": 0.2,
 						},
 					},
@@ -543,6 +545,7 @@ static func add_cards_red() -> void:
 		{
 			Scripts.ACTION_BLOCK: {
 				"target_override": BaseAction.TARGET_OVERRIDES.PARENT,
+				"audio_path": AudioConstants.SFX_GROUP_SHIELD_UP,
 				"time_delay": 0.2,
 			},
 		},
@@ -638,6 +641,7 @@ static func add_cards_red() -> void:
 		{
 			Scripts.ACTION_BLOCK: {
 				"target_override": BaseAction.TARGET_OVERRIDES.PARENT,
+				"audio_path": AudioConstants.SFX_GROUP_SHIELD_UP,
 				"time_delay": 0.0,
 			},
 		},
@@ -653,6 +657,7 @@ static func add_cards_red() -> void:
 		{
 			Scripts.ACTION_BLOCK: {
 				"target_override": BaseAction.TARGET_OVERRIDES.PARENT,
+				"audio_path": AudioConstants.SFX_GROUP_SHIELD_UP,
 				"time_delay": 0.2,
 			},
 		},
@@ -676,11 +681,11 @@ static func add_cards_red() -> void:
 	card_type_cast.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_type_cast.card_requires_target = true
 	card_type_cast.card_energy_cost = 1
-	card_type_cast.card_values = {"damage": 8, "number_of_attacks": 1, "impact_vfx_animation_id": "animation_vfx_impact_default", "ignored_interceptor_ids": ["interceptor_weaken"]}
+	card_type_cast.card_values = {"damage": 8, "number_of_attacks": 1, "impact_vfx_animation_id": "animation_vfx_magic_red", "ignored_interceptor_ids": ["interceptor_weaken"]}
 	card_type_cast.card_upgrade_value_improvements = {"damage": 4}
 	card_type_cast.card_play_actions = [
 		{
-			Scripts.ACTION_ATTACK_GENERATOR: {
+			Scripts.ACTION_ATTACK_GENERATOR: { "audio_path": AudioConstants.SFX_GROUP_BLUNT_SMASH,
 				"time_delay": 0.0,
 				"actions_on_lethal": [],
 			},
@@ -706,6 +711,7 @@ static func add_cards_red() -> void:
 		{
 			Scripts.ACTION_BLOCK: {
 				"target_override": BaseAction.TARGET_OVERRIDES.PARENT,
+				"audio_path": AudioConstants.SFX_GROUP_SHIELD_UP,
 				"time_delay": 0.2,
 			},
 		},
@@ -770,6 +776,7 @@ static func add_cards_red() -> void:
 		{
 			Scripts.ACTION_BLOCK: {
 				"target_override": BaseAction.TARGET_OVERRIDES.PARENT,
+				"audio_path": AudioConstants.SFX_GROUP_SHIELD_UP,
 				"time_delay": 0.2,
 			},
 		},
@@ -825,12 +832,12 @@ static func add_cards_red() -> void:
 	card_memory_leak.card_name = "内存泄漏"
 	card_memory_leak.card_color_id = "color_{0}".format([color])
 	card_memory_leak.card_texture_path = "sprites/card/red/card_memory_leak.png"
-	card_memory_leak.card_description = "造成 [damage] 点伤害。时钟周期结束时若仍在当前线程，对随机敌人造成 [damage] 点伤害并永久提升所有内存泄漏 [damage_growth] 点伤害。"
+	card_memory_leak.card_description = "造成 [damage] 点伤害。时钟周期结束时若仍在当前线程，对随机敌人造成 [damage] 点伤害并永久提升所有[card_name:card_memory_leak] [damage_growth] 点伤害。"
 	card_memory_leak.card_type = CardData.CARD_TYPES.ATTACK
 	card_memory_leak.card_rarity = CardData.CARD_RARITIES.UNCOMMON
 	card_memory_leak.card_requires_target = true
 	card_memory_leak.card_energy_cost = 2
-	card_memory_leak.card_values = {"damage": 5, "damage_growth": 3, "number_of_attacks": 1, "impact_vfx_animation_id": "animation_vfx_impact_default",}
+	card_memory_leak.card_values = {"damage": 5, "damage_growth": 3, "number_of_attacks": 1, "impact_vfx_animation_id": "animation_vfx_magic_red",}
 	card_memory_leak.card_upgrade_value_improvements = {"damage": 3}
 	card_memory_leak.card_first_upgrade_property_changes = {"card_energy_cost": 1}
 	card_memory_leak.card_end_of_turn_actions = [
@@ -873,7 +880,7 @@ static func add_cards_red() -> void:
 		},
 	]
 	card_memory_leak.card_play_actions = [
-		{Scripts.ACTION_ATTACK_GENERATOR: {}},
+		{Scripts.ACTION_ATTACK_GENERATOR: { "audio_path": AudioConstants.SFX_GROUP_BLUNT_SMASH, }},
 	]
 	Global.register_rod(card_memory_leak)
 
@@ -887,12 +894,12 @@ static func add_cards_red() -> void:
 	card_concurrent_attack.card_rarity = CardData.CARD_RARITIES.RARE
 	card_concurrent_attack.card_requires_target = true
 	card_concurrent_attack.card_energy_cost = 3
-	card_concurrent_attack.card_values = {"damage": 7, "number_of_attacks": 3, "aoe_damage": 5, "impact_vfx_animation_id": "animation_vfx_impact_default",}
+	card_concurrent_attack.card_values = {"damage": 7, "number_of_attacks": 3, "aoe_damage": 5, "impact_vfx_animation_id": "animation_vfx_magic_red",}
 	card_concurrent_attack.card_upgrade_value_improvements = {"damage": 2, "aoe_damage": 2}
 	card_concurrent_attack.card_first_upgrade_property_changes = {"card_energy_cost": 2}
 	card_concurrent_attack.card_play_actions = [
 		{
-			Scripts.ACTION_ATTACK_GENERATOR: {
+			Scripts.ACTION_ATTACK_GENERATOR: { "audio_path": AudioConstants.SFX_GROUP_BLUNT_SMASH,
 				"time_delay": 0.12,
 				"actions_on_lethal": [],
 			},
@@ -968,7 +975,7 @@ static func add_cards_red() -> void:
 	card_buffer_overflow.card_rarity = CardData.CARD_RARITIES.UNCOMMON
 	card_buffer_overflow.card_requires_target = true
 	card_buffer_overflow.card_energy_cost = 1
-	card_buffer_overflow.card_values = {"damage": 5, "additional_damage": 3, "number_of_attacks": 1, "impact_vfx_animation_id": "animation_vfx_impact_default"}
+	card_buffer_overflow.card_values = {"damage": 5, "additional_damage": 3, "number_of_attacks": 1, "impact_vfx_animation_id": "animation_vfx_magic_red"}
 	card_buffer_overflow.card_upgrade_value_improvements = {"damage": 2, "additional_damage": 1}
 	card_buffer_overflow.card_play_actions = [
 		{
@@ -978,7 +985,7 @@ static func add_cards_red() -> void:
 				"multiplied_values": ["additional_damage"],
 				"multiplied_values_bases": {"additional_damage": 0},
 				"action_data": [
-					{Scripts.ACTION_ATTACK_GENERATOR: {}}
+					{Scripts.ACTION_ATTACK_GENERATOR: { "audio_path": AudioConstants.SFX_GROUP_BLUNT_SMASH, }}
 				],
 			},
 		},
@@ -995,11 +1002,11 @@ static func add_cards_red() -> void:
 	card_null_pointer.card_rarity = CardData.CARD_RARITIES.RARE
 	card_null_pointer.card_requires_target = false
 	card_null_pointer.card_energy_cost = 2
-	card_null_pointer.card_values = {"damage": 4, "number_of_attacks": 8, "impact_vfx_animation_id": "animation_vfx_impact_default", "time_delay": 0.15}
+	card_null_pointer.card_values = {"damage": 4, "number_of_attacks": 8, "impact_vfx_animation_id": "animation_vfx_magic_red", "time_delay": 0.15}
 	card_null_pointer.card_upgrade_value_improvements = {"number_of_attacks": 2}
 	card_null_pointer.card_play_actions = [
 		{
-			Scripts.ACTION_ATTACK_GENERATOR: {
+			Scripts.ACTION_ATTACK_GENERATOR: { "audio_path": AudioConstants.SFX_GROUP_BLUNT_SMASH,
 				"target_override": BaseAction.TARGET_OVERRIDES.RANDOM_COMBATANT,
 				"time_delay": 0.15,
 			},
@@ -1030,7 +1037,7 @@ static func add_cards_red() -> void:
 		},
 	]
 	card_thread_sync.card_play_actions = [
-		{Scripts.ACTION_BLOCK: {"target_override": BaseAction.TARGET_OVERRIDES.PARENT}},
+		{Scripts.ACTION_BLOCK: {"target_override": BaseAction.TARGET_OVERRIDES.PARENT, "audio_path": AudioConstants.SFX_GROUP_SHIELD_UP}},
 		{Scripts.ACTION_DRAW_GENERATOR: {}},
 	]
 	Global.register_rod(card_thread_sync)
@@ -1048,7 +1055,7 @@ static func add_cards_red() -> void:
 	card_kernel_panic.card_is_retained = true
 	card_kernel_panic.card_keyword_object_ids = ["keyword_retain"]
 	card_kernel_panic.card_play_destination = HandManager.EXHAUST_PILE
-	card_kernel_panic.card_values = {"damage": 20, "health_amount": 10, "damage_taken": 10, "number_of_attacks": 1, "impact_vfx_animation_id": "animation_vfx_impact_default"}
+	card_kernel_panic.card_values = {"damage": 20, "health_amount": 10, "damage_taken": 10, "number_of_attacks": 1, "impact_vfx_animation_id": "animation_vfx_magic_red"}
 	card_kernel_panic.card_upgrade_value_improvements = {"damage": 8, "health_amount": 4}
 	card_kernel_panic.card_play_validators = [
 		{
@@ -1061,7 +1068,7 @@ static func add_cards_red() -> void:
 		},
 	]
 	card_kernel_panic.card_play_actions = [
-		{Scripts.ACTION_ATTACK_GENERATOR: {}},
+		{Scripts.ACTION_ATTACK_GENERATOR: { "audio_path": AudioConstants.SFX_GROUP_BLUNT_SMASH, }},
 		{Scripts.ACTION_ADD_HEALTH: {"target_override": BaseAction.TARGET_OVERRIDES.PARENT}},
 	]
 	Global.register_rod(card_kernel_panic)
@@ -1071,15 +1078,15 @@ static func add_cards_red() -> void:
 	card_agile_development.card_name = "敏捷开发"
 	card_agile_development.card_color_id = "color_{0}".format([color])
 	card_agile_development.card_texture_path = "sprites/card/red/card_agile_development.png"
-	card_agile_development.card_description = "造成 [damage] 点伤害。读取 [draw_count] 个脚本。将一张[运行时注入]添加至当前线程中。"
+	card_agile_development.card_description = "造成 [damage] 点伤害。读取 [draw_count] 个脚本。将一张[card_name:card_runtime_injection]添加至当前线程中。"
 	card_agile_development.card_type = CardData.CARD_TYPES.ATTACK
 	card_agile_development.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_agile_development.card_requires_target = true
 	card_agile_development.card_energy_cost = 2
-	card_agile_development.card_values = {"damage": 6, "draw_count": 1, "number_of_attacks": 1, "impact_vfx_animation_id": "animation_vfx_impact_default"}
+	card_agile_development.card_values = {"damage": 6, "draw_count": 1, "number_of_attacks": 1, "impact_vfx_animation_id": "animation_vfx_magic_red"}
 	card_agile_development.card_upgrade_value_improvements = {"damage": 3}
 	card_agile_development.card_play_actions = [
-		{Scripts.ACTION_ATTACK_GENERATOR: {}},
+		{Scripts.ACTION_ATTACK_GENERATOR: { "audio_path": AudioConstants.SFX_GROUP_BLUNT_SMASH, }},
 		{Scripts.ACTION_DRAW_GENERATOR: {}},
 		{
 			Scripts.ACTION_CREATE_CARDS: {
@@ -1098,7 +1105,7 @@ static func add_cards_red() -> void:
 	card_dependency_injection.card_name = "依赖注入"
 	card_dependency_injection.card_color_id = "color_{0}".format([color])
 	card_dependency_injection.card_texture_path = "sprites/card/red/card_dependency_injection.png"
-	card_dependency_injection.card_description = "物理删除当前线程中的一个脚本，将一张[运行时注入]添加至当前线程中。"
+	card_dependency_injection.card_description = "物理删除当前线程中的一个脚本，将一张[card_name:card_runtime_injection]添加至当前线程中。"
 	card_dependency_injection.card_type = CardData.CARD_TYPES.SKILL
 	card_dependency_injection.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_dependency_injection.card_requires_target = false
@@ -1146,7 +1153,7 @@ static func add_cards_red() -> void:
 	card_runtime_injection.card_values = {"block": 5, "energy_amount": 1}
 	card_runtime_injection.card_upgrade_value_improvements = {"block": 3}
 	card_runtime_injection.card_play_actions = [
-		{Scripts.ACTION_BLOCK: {"target_override": BaseAction.TARGET_OVERRIDES.PARENT}},
+		{Scripts.ACTION_BLOCK: {"target_override": BaseAction.TARGET_OVERRIDES.PARENT, "audio_path": AudioConstants.SFX_GROUP_SHIELD_UP}},
 		{Scripts.ACTION_ADD_ENERGY: {}},
 	]
 	Global.register_rod(card_runtime_injection)

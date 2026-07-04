@@ -186,8 +186,9 @@ func _ready():
 	#GlobalTestDataGenerator.generate_test_data()
 	
 	### 测试专用标识/作弊开关
-	ProfileData.ENABLE_ALL_DIFFICULTIES = true
-	ProfileData.UNLOCK_ALL_CARDS_IN_CODEX = true
+	ProfileData.ENABLE_ALL_DIFFICULTIES = false
+	ProfileData.UNLOCK_ALL_CARDS_IN_CODEX = false
+	ProfileData.ENABLE_ONE_CLICK_BOSS = false
 	StatsHandler.TRACK_RUN_HISTORY = true
 	
 	### Mod 支持和外部文件加载

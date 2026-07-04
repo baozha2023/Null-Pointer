@@ -14,6 +14,21 @@ func _ready():
 	Signals.run_ended.connect(_on_run_ended)
 	
 	skip_button.button_up.connect(_on_skip_button_up)
+	
+	var tex_normal = preload("res://sprites/btn_common_normal.png")
+	var tex_hover = preload("res://sprites/btn_common_hover.png")
+	var tex_pressed = preload("res://sprites/btn_common_pressed.png")
+	
+	var style_normal = StyleBoxTexture.new()
+	style_normal.texture = tex_normal
+	var style_hover = StyleBoxTexture.new()
+	style_hover.texture = tex_hover
+	var style_pressed = StyleBoxTexture.new()
+	style_pressed.texture = tex_pressed
+	
+	skip_button.add_theme_stylebox_override("normal", style_normal)
+	skip_button.add_theme_stylebox_override("hover", style_hover)
+	skip_button.add_theme_stylebox_override("pressed", style_pressed)
 
 func _on_card_pick_requested(card_pick_action: ActionBasePickCards):
 	if card_pick_action != null:
@@ -44,11 +59,11 @@ func clear_cards():
 	for child in card_container.get_children():
 		child.queue_free()
 
-func _on_card_hovered(_card: Card):
-	pass
+func _on_card_hovered(card: Card):
+	UIHover.scale_up(card)
 
-func _on_card_unhovered(_card: Card):
-	pass
+func _on_card_unhovered(card: Card):
+	UIHover.scale_down(card)
 
 func _on_card_selected(card: Card):
 	if current_card_pick_action != null:

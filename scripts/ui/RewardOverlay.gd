@@ -19,9 +19,24 @@ var reward_data: Dictionary = {
 		#}
 }
 
+var style_normal: StyleBoxTexture
+var style_hover: StyleBoxTexture
+var style_pressed: StyleBoxTexture
+
 func _ready():
 	Signals.combat_started.connect(_on_combat_started)
 	Signals.combat_ended.connect(_on_combat_ended)
+	
+	style_normal = StyleBoxTexture.new()
+	style_normal.texture = preload("res://sprites/btn_common_normal.png")
+	style_hover = StyleBoxTexture.new()
+	style_hover.texture = preload("res://sprites/btn_common_hover.png")
+	style_pressed = StyleBoxTexture.new()
+	style_pressed.texture = preload("res://sprites/btn_common_pressed.png")
+	
+	continue_button.add_theme_stylebox_override("normal", style_normal)
+	continue_button.add_theme_stylebox_override("hover", style_hover)
+	continue_button.add_theme_stylebox_override("pressed", style_pressed)
 	
 	Signals.map_location_selected.connect(_on_map_location_selected)
 	Signals.chest_opened.connect(_on_chest_opened)
@@ -109,6 +124,12 @@ func populate_reward_display() -> void:
 			reward_container.add_child(artifact_reward_button)
 			# make reward group mutually exclusive
 			artifact_reward_button.button_up.connect(_on_reward_group_selected.bind(reward_group))
+	
+	for child in reward_container.get_children():
+		if child is Button:
+			child.add_theme_stylebox_override("normal", style_normal)
+			child.add_theme_stylebox_override("hover", style_hover)
+			child.add_theme_stylebox_override("pressed", style_pressed)
 	
 	# clear reward data
 	clear_rewards()

@@ -14,9 +14,9 @@ func perform_action():
 			return
 		
 		# play audio instantly if one is provided
-		var audio_path: String = action_interceptor_processor.get_shadowed_action_values("audio_path", "") # sound that plays for every attack
-		if audio_path != "":
-			ActionGenerator.generate_sound_action(audio_path)
+		var audio_path_val: Array = action_interceptor_processor.get_shadowed_action_values("audio_path", []) # sound that plays for every attack
+		if typeof(audio_path_val) == TYPE_ARRAY and audio_path_val.size() > 0:
+			ActionGenerator.generate_sound_action(audio_path_val)
 		
 		# get damage parameters
 		var damage: int = action_interceptor_processor.get_shadowed_action_values("damage", 0)

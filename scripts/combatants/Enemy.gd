@@ -9,6 +9,7 @@ class_name Enemy
 @onready var debuffing_intent: TextureRect = $Visible/Intent/DebuffingIntent
 @onready var buffing_intent: TextureRect = $Visible/Intent/BuffingIntent
 @onready var summoning_intent: TextureRect = $Visible/Intent/SummoningIntent
+@onready var special_intent: TextureRect = $Visible/Intent/SpecialIntent
 
 # maps the EnemyIntentData.enemy_intent_display_type to the texture to display
 @onready var INTENT_DISPLAY_TYPE_TO_INTENT: Dictionary[int, TextureRect] = {
@@ -17,6 +18,7 @@ class_name Enemy
 	EnemyIntentData.INTENT_DISPLAY_TYPES.DEBUFFING: debuffing_intent,
 	EnemyIntentData.INTENT_DISPLAY_TYPES.BUFFING: buffing_intent,
 	EnemyIntentData.INTENT_DISPLAY_TYPES.SUMMONING: summoning_intent,
+	EnemyIntentData.INTENT_DISPLAY_TYPES.SPECIAL: special_intent,
 }
 
 @onready var enemy_intent_amount_label: Label = $Visible/Intent/IntentAmount
@@ -45,10 +47,6 @@ func init(_enemy_data: EnemyData):
 	enemy_intent_amount_label.mouse_entered.connect(_on_single_intent_mouse_entered.bind(EnemyIntentData.INTENT_DISPLAY_TYPES.ATTACKING, enemy_intent_amount_label))
 	enemy_intent_amount_label.mouse_exited.connect(_on_intent_mouse_exited.bind(enemy_intent_amount_label))
 	
-	var special_intent: TextureRect = summoning_intent.duplicate()
-	enemy_intent.add_child(special_intent)
-	INTENT_DISPLAY_TYPE_TO_INTENT[EnemyIntentData.INTENT_DISPLAY_TYPES.SPECIAL] = special_intent
-	
 	for display_type: int in INTENT_DISPLAY_TYPE_TO_INTENT:
 		var intent_icon: TextureRect = INTENT_DISPLAY_TYPE_TO_INTENT[display_type]
 		intent_icon.tooltip_text = ""
@@ -76,8 +74,7 @@ func init(_enemy_data: EnemyData):
 	debuffing_intent.texture = preload("res://sprites/intents/enemy_intent_debuffing.png")
 	buffing_intent.texture = preload("res://sprites/intents/enemy_intent_buffing.png")
 	summoning_intent.texture = preload("res://sprites/intents/enemy_intent_summoning.png")
-	if INTENT_DISPLAY_TYPE_TO_INTENT.has(EnemyIntentData.INTENT_DISPLAY_TYPES.SPECIAL):
-		INTENT_DISPLAY_TYPE_TO_INTENT[EnemyIntentData.INTENT_DISPLAY_TYPES.SPECIAL].texture = preload("res://sprites/missing_texture.png")
+	special_intent.texture = preload("res://sprites/intents/enemy_intent_special.png")
 	
 func get_animation_data() -> AnimationData:
 	var animation_data: AnimationData = Global.get_animation_data(enemy_data.enemy_animation_id)
@@ -155,6 +152,8 @@ func heal_percentage(percent: float):
 
 func add_health(health_amount: int, health_amount_max: int = 0) -> void:
 	set_health(enemy_data.enemy_health + health_amount, enemy_data.enemy_health_max + health_amount_max)
+	if health_amount > 0:
+		create_health_text(health_amount)
 
 func set_health(health_amount: int, health_amount_max: int = enemy_data.enemy_health_max) -> void:
 	var is_damaged: bool = health_amount < enemy_data.enemy_health

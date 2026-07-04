@@ -64,7 +64,7 @@ func add_test_artifacts() -> void:
 	var artifact_negate_money_gain: ArtifactData = ArtifactData.new("artifact_negate_money_gain")
 	artifact_negate_money_gain.artifact_name = "外设插件：数据币禁止"
 	artifact_negate_money_gain.artifact_texture_path = "sprites/artifacts/artifact_negate_money_gain.png"
-	artifact_negate_money_gain.artifact_description = "每时钟周期获得 {0}。无法再获得数据币".format([Card.ENERGY_ICON_KEYWORD])
+	artifact_negate_money_gain.artifact_description = "每时钟周期获得 {0}。无法再获得数据币".format([TextParser.ENERGY_ICON_KEYWORD])
 	artifact_negate_money_gain.artifact_add_actions = [{Scripts.ACTION_ADD_ENERGY:{
 		"target_overrides": BaseAction.TARGET_OVERRIDES.PLAYER,
 		"energy_amount_max": 1,
@@ -948,6 +948,33 @@ func add_test_status_effects() -> void:
 	status_effect_corrosion.status_effect_enemy_process_actions = status_effect_corrosion.status_effect_player_process_actions.duplicate()
 	
 	Global.register_rod(status_effect_corrosion)
+	
+	# gain energy at the start of each turn
+	# doesn't use an interceptor
+	var status_effect_bonus_energy_per_turn: StatusEffectData = StatusEffectData.new("status_effect_bonus_energy_per_turn")
+	status_effect_bonus_energy_per_turn.status_effect_name = "算力提升"
+	status_effect_bonus_energy_per_turn.status_effect_description = "每个时钟周期开始时，额外获得等同于层数的算力。"
+	status_effect_bonus_energy_per_turn.status_effect_tooltip = "每个时钟周期开始时，额外获得 [color=yellow][charge_amount][/color] 点算力。"
+	status_effect_bonus_energy_per_turn.status_effect_is_visible = false
+	status_effect_bonus_energy_per_turn.status_effect_decay_rate = 0
+	status_effect_bonus_energy_per_turn.status_effect_type = StatusEffectData.STATUS_EFFECT_TYPES.NEUTRAL
+	status_effect_bonus_energy_per_turn.status_effect_action_process_times = [
+		StatusEffectData.STATUS_EFFECT_PROCESS_TIMES.POST_DRAW_PLAYER_START_TURN,
+		StatusEffectData.STATUS_EFFECT_PROCESS_TIMES.POST_ENEMY_INTENT,
+	]
+	status_effect_bonus_energy_per_turn.status_effect_player_process_actions = [
+		{
+			Scripts.ACTION_ADD_ENERGY: {
+				"target_override": BaseAction.TARGET_OVERRIDES.PARENT,
+				"custom_key_names": { "energy_amount": "invoking_status_effect_charges" },
+				"time_delay": 0.5,
+			},
+		},
+	]
+	status_effect_bonus_energy_per_turn.status_effect_enemy_process_actions = []
+	status_effect_bonus_energy_per_turn.status_effect_interceptor_ids = []
+
+	Global.register_rod(status_effect_bonus_energy_per_turn)
 	
 	# bomb effect that counts down and damages all enemies
 	# uses timer status effect
@@ -2807,7 +2834,7 @@ func add_test_cards() -> void:
 	card_attack_basic.card_values = {"damage": 20, "number_of_attacks": 1, "impact_vfx_animation_id": "animation_vfx_impact_default"}
 	card_attack_basic.card_upgrade_value_improvements = {"damage": 1, "number_of_attacks": 1}
 	card_attack_basic.card_play_actions = [{
-	Scripts.ACTION_ATTACK_GENERATOR: {"time_delay": 0.0, "actions_on_lethal": []}
+	Scripts.ACTION_ATTACK_GENERATOR: { "audio_path": AudioConstants.SFX_GROUP_SWORD_SLASH, "time_delay": 0.0, "actions_on_lethal": []}
 	}]
 	
 	Global.register_rod(card_attack_basic)
@@ -2825,7 +2852,7 @@ func add_test_cards() -> void:
 	card_attack_rng.card_values = {"damage": 10, "number_of_attacks": 1, "damage_random": 5, "impact_vfx_animation_id": "animation_vfx_impact_default"}
 	card_attack_rng.card_upgrade_value_improvements = {"damage_random": 5}
 	card_attack_rng.card_play_actions = [{
-	Scripts.ACTION_ATTACK_GENERATOR: {"time_delay": 0.0, "actions_on_lethal": []}
+	Scripts.ACTION_ATTACK_GENERATOR: { "audio_path": AudioConstants.SFX_GROUP_SWORD_SLASH, "time_delay": 0.0, "actions_on_lethal": []}
 	}]
 	
 	Global.register_rod(card_attack_rng)
@@ -2846,7 +2873,7 @@ func add_test_cards() -> void:
 	Scripts.ACTION_APPLY_STATUS: {"time_delay": 0.5}
 	},
 	{
-	Scripts.ACTION_ATTACK_GENERATOR: {"time_delay": 0.0, "actions_on_lethal": []}
+	Scripts.ACTION_ATTACK_GENERATOR: { "audio_path": AudioConstants.SFX_GROUP_SWORD_SLASH, "time_delay": 0.0, "actions_on_lethal": []}
 	}
 	]
 	
@@ -2954,7 +2981,7 @@ func add_test_cards() -> void:
 	card_attack_ignore_damage_increase.card_values = {"damage": 1, "number_of_attacks": 10, "impact_vfx_animation_id": "animation_vfx_impact_default", "time_delay": 0.1, "ignored_interceptor_ids": ["interceptor_damage_increase"]}
 	card_attack_ignore_damage_increase.card_upgrade_value_improvements = {"number_of_attacks": 5}
 	card_attack_ignore_damage_increase.card_play_actions = [{
-	Scripts.ACTION_ATTACK_GENERATOR: {"time_delay": 0.1, "actions_on_lethal": []}
+	Scripts.ACTION_ATTACK_GENERATOR: { "audio_path": AudioConstants.SFX_GROUP_SWORD_SLASH, "time_delay": 0.1, "actions_on_lethal": []}
 	}]
 	
 	Global.register_rod(card_attack_ignore_damage_increase)
@@ -3058,7 +3085,7 @@ func add_test_cards() -> void:
 	card_attack_block_end_of_turn.card_upgrade_value_improvements = {"damage": 3, "block": 3}
 	card_attack_block_end_of_turn.card_play_actions = [
 	{
-	Scripts.ACTION_ATTACK_GENERATOR: {"time_delay": 0.0, "actions_on_lethal": []}
+	Scripts.ACTION_ATTACK_GENERATOR: { "audio_path": AudioConstants.SFX_GROUP_SWORD_SLASH, "time_delay": 0.0, "actions_on_lethal": []}
 	}
 	]
 	card_attack_block_end_of_turn.card_end_of_turn_actions = [
@@ -3086,7 +3113,7 @@ func add_test_cards() -> void:
 	card_attack_all.card_values = {"damage": 8, "number_of_attacks": 1, "impact_vfx_animation_id": "animation_vfx_impact_default", "target_override": BaseAction.TARGET_OVERRIDES.ALL_ENEMIES}
 	card_attack_all.card_upgrade_value_improvements = {"number_of_attacks": 1}
 	card_attack_all.card_play_actions = [{
-	Scripts.ACTION_ATTACK_GENERATOR: {"time_delay": 0.3, "actions_on_lethal": []}
+	Scripts.ACTION_ATTACK_GENERATOR: { "audio_path": AudioConstants.SFX_GROUP_SWORD_SLASH, "time_delay": 0.3, "actions_on_lethal": []}
 	}]
 	
 	Global.register_rod(card_attack_all)
@@ -3379,7 +3406,7 @@ func add_test_cards() -> void:
 	card_attack_with_conditional_draw.card_upgrade_value_improvements = {"damage": 5}
 	card_attack_with_conditional_draw.card_play_actions = [
 	{
-	Scripts.ACTION_ATTACK_GENERATOR: {
+	Scripts.ACTION_ATTACK_GENERATOR: { "audio_path": AudioConstants.SFX_GROUP_SWORD_SLASH, 
 		"time_delay": 0.0,
 		"actions_on_lethal": []
 		}
@@ -3433,7 +3460,7 @@ func add_test_cards() -> void:
 	]
 	card_attack_with_conditional_block.card_play_actions = [
 	{
-	Scripts.ACTION_ATTACK_GENERATOR: {
+	Scripts.ACTION_ATTACK_GENERATOR: { "audio_path": AudioConstants.SFX_GROUP_SWORD_SLASH, 
 		"time_delay": 0.0,
 		"actions_on_lethal": []
 		}
@@ -3478,7 +3505,7 @@ func add_test_cards() -> void:
 		"action_data":
 		[
 			{
-			Scripts.ACTION_ATTACK_GENERATOR: {
+			Scripts.ACTION_ATTACK_GENERATOR: { "audio_path": AudioConstants.SFX_GROUP_SWORD_SLASH, 
 				"time_delay": 0.0,
 				"merge_attacks": true,
 				"actions_on_lethal": []
@@ -3510,7 +3537,7 @@ func add_test_cards() -> void:
 	card_attack_number_of_cards_played.card_first_upgrade_property_changes = {"card_energy_cost": 1}
 	card_attack_number_of_cards_played.card_play_actions = [
 		{
-		Scripts.ACTION_ATTACK_GENERATOR: {
+		Scripts.ACTION_ATTACK_GENERATOR: { "audio_path": AudioConstants.SFX_GROUP_SWORD_SLASH, 
 			"time_delay": 0.0,
 			"merge_attacks": true,
 			"actions_on_lethal": []
@@ -3726,7 +3753,7 @@ func add_test_cards() -> void:
 		}
 	},
 	# attack. Happens before improvements
-	{Scripts.ACTION_ATTACK_GENERATOR: {}}
+	{Scripts.ACTION_ATTACK_GENERATOR: { "audio_path": AudioConstants.SFX_GROUP_SWORD_SLASH, }}
 	]
 	
 	Global.register_rod(card_law)
@@ -3793,7 +3820,7 @@ func add_test_cards() -> void:
 		"action_data": [
 			{Scripts.ACTION_VARIABLE_CARDSET_MODIFIER: {
 				"multiplied_values": ["number_of_attacks"],
-				"action_data": [{Scripts.ACTION_ATTACK_GENERATOR: {
+				"action_data": [{Scripts.ACTION_ATTACK_GENERATOR: { "audio_path": AudioConstants.SFX_GROUP_SWORD_SLASH, 
 					"number_of_attacks": 1,
 					"impact_vfx_animation_id": "animation_vfx_impact_default",
 					"time_delay": 0.5,
@@ -3974,7 +4001,7 @@ func add_test_cards() -> void:
 		"transform_into_card_object_id": "card_right_click_transform_mode_b",
 		}
 	card_right_click_transform_mode_a.card_upgrade_value_improvements = {"damage": 4}
-	card_right_click_transform_mode_a.card_play_actions = [{Scripts.ACTION_ATTACK_GENERATOR: {}}]
+	card_right_click_transform_mode_a.card_play_actions = [{Scripts.ACTION_ATTACK_GENERATOR: { "audio_path": AudioConstants.SFX_GROUP_SWORD_SLASH, }}]
 	card_right_click_transform_mode_a.card_right_click_actions = [{Scripts.ACTION_TRANSFORM_CARDS: {}}]
 	
 	Global.register_rod(card_right_click_transform_mode_a)
@@ -4074,7 +4101,7 @@ func add_test_cards() -> void:
 	card_shove.card_values = {"damage": 4, "number_of_attacks": 1, "impact_vfx_animation_id": "animation_vfx_impact_default"}
 	card_shove.card_upgrade_value_improvements = {"damage": 3}
 	card_shove.card_play_actions = [{
-	Scripts.ACTION_ATTACK_GENERATOR: {"time_delay": 0.0, "actions_on_lethal": []}
+	Scripts.ACTION_ATTACK_GENERATOR: { "audio_path": AudioConstants.SFX_GROUP_SWORD_SLASH, "time_delay": 0.0, "actions_on_lethal": []}
 	}]
 	
 	Global.register_rod(card_shove)
@@ -4188,7 +4215,7 @@ func add_test_cards() -> void:
 		Scripts.ACTION_CYCLE_ENEMY_INTENT: {"time_delay": 0.0}
 		},
 		{
-		Scripts.ACTION_ATTACK_GENERATOR: {"time_delay": 0.0, "actions_on_lethal": []}
+		Scripts.ACTION_ATTACK_GENERATOR: { "audio_path": AudioConstants.SFX_GROUP_SWORD_SLASH, "time_delay": 0.0, "actions_on_lethal": []}
 		}
 	]
 	
@@ -4245,7 +4272,7 @@ func add_test_cards() -> void:
 	card_attack_lower_cost_on_discard.card_upgrade_value_improvements = {"damage": 10}
 	card_attack_lower_cost_on_discard.card_play_actions = [
 		{
-		Scripts.ACTION_ATTACK_GENERATOR: {"time_delay": 0.0, "actions_on_lethal": []}
+		Scripts.ACTION_ATTACK_GENERATOR: { "audio_path": AudioConstants.SFX_GROUP_SWORD_SLASH, "time_delay": 0.0, "actions_on_lethal": []}
 		}
 	]
 	card_attack_lower_cost_on_discard.add_card_decorator("card_decorator_dynamic_cost_modifier", {
@@ -4265,7 +4292,7 @@ func add_test_cards() -> void:
 	card_attack_increase_cost_on_damage_taken.card_color_id = "color_green"
 	card_attack_increase_cost_on_damage_taken.card_texture_path = "external/sprites/cards/green/card_green.png"
 	card_attack_increase_cost_on_damage_taken.card_energy_cost = 0
-	card_attack_increase_cost_on_damage_taken.card_description = "造成 [damage] 点伤害。本场战斗中每受到一次伤害，费用增加 1 点 {0}".format([Card.ENERGY_ICON_KEYWORD])
+	card_attack_increase_cost_on_damage_taken.card_description = "造成 [damage] 点伤害。本场战斗中每受到一次伤害，费用增加 1 点 {0}".format([TextParser.ENERGY_ICON_KEYWORD])
 	card_attack_increase_cost_on_damage_taken.card_type = CardData.CARD_TYPES.ATTACK
 	card_attack_increase_cost_on_damage_taken.card_rarity = CardData.CARD_RARITIES.UNCOMMON
 	card_attack_increase_cost_on_damage_taken.card_requires_target = true
@@ -4273,7 +4300,7 @@ func add_test_cards() -> void:
 	card_attack_increase_cost_on_damage_taken.card_upgrade_value_improvements = {"damage": 10}
 	card_attack_increase_cost_on_damage_taken.card_play_actions = [
 		{
-		Scripts.ACTION_ATTACK_GENERATOR: {"time_delay": 0.0, "actions_on_lethal": []}
+		Scripts.ACTION_ATTACK_GENERATOR: { "audio_path": AudioConstants.SFX_GROUP_SWORD_SLASH, "time_delay": 0.0, "actions_on_lethal": []}
 		}
 	]
 	card_attack_increase_cost_on_damage_taken.add_card_decorator("card_decorator_dynamic_cost_modifier", {
@@ -4336,7 +4363,7 @@ func add_test_cards() -> void:
 	card_attack_in_center_of_hand.card_upgrade_value_improvements = {"damage": 5}
 	card_attack_in_center_of_hand.card_play_actions = [
 		{
-		Scripts.ACTION_ATTACK_GENERATOR: {"time_delay": 0.0, "actions_on_lethal": []}
+		Scripts.ACTION_ATTACK_GENERATOR: { "audio_path": AudioConstants.SFX_GROUP_SWORD_SLASH, "time_delay": 0.0, "actions_on_lethal": []}
 		}
 	]
 	card_attack_in_center_of_hand.card_play_validators = [
@@ -4365,7 +4392,7 @@ func add_test_cards() -> void:
 	card_requires_adjacency.card_upgrade_value_improvements = {"damage": 5}
 	card_requires_adjacency.card_play_actions = [
 		{
-		Scripts.ACTION_ATTACK_GENERATOR: {"time_delay": 0.0}
+		Scripts.ACTION_ATTACK_GENERATOR: { "audio_path": AudioConstants.SFX_GROUP_SWORD_SLASH, "time_delay": 0.0}
 		}
 	]
 	card_requires_adjacency.card_play_validators = [
@@ -4884,7 +4911,7 @@ func add_test_cards() -> void:
 	card_quest_reward.card_values = {"damage": 20, "number_of_attacks": 1,  "impact_vfx_animation_id": "animation_vfx_impact_default"}
 	card_quest_reward.card_upgrade_value_improvements = {"damage": 5}
 	card_quest_reward.card_play_actions = [{
-	Scripts.ACTION_ATTACK_GENERATOR: {"time_delay": 0.0}
+	Scripts.ACTION_ATTACK_GENERATOR: { "audio_path": AudioConstants.SFX_GROUP_SWORD_SLASH, "time_delay": 0.0}
 	}]
 	Global.register_rod(card_quest_reward)
 	

@@ -35,8 +35,8 @@ static func add_cards_orange() -> void:
 	card_structural_defense.card_values = {"block": 3, "forge_block": 5}
 	card_structural_defense.card_upgrade_value_improvements = {"block": 2, "forge_block": 2}
 	card_structural_defense.card_play_actions = [
-		{Scripts.ACTION_BLOCK: {"target_override": BaseAction.TARGET_OVERRIDES.PLAYER}},
-		{Scripts.ACTION_ADD_TO_FORGE: {"forge_action_data": {Scripts.ACTION_BLOCK: {"block": "forge_block", "target_override": BaseAction.TARGET_OVERRIDES.PLAYER}}, "forge_action_load": 1}}
+		{Scripts.ACTION_BLOCK: {"target_override": BaseAction.TARGET_OVERRIDES.PLAYER, "audio_path": AudioConstants.SFX_GROUP_SHIELD_UP}},
+		{Scripts.ACTION_ADD_TO_FORGE: {"forge_action_data": {Scripts.ACTION_BLOCK: {"block": "forge_block", "target_override": BaseAction.TARGET_OVERRIDES.PLAYER, "audio_path": AudioConstants.SFX_GROUP_SHIELD_UP}}, "forge_action_load": 1}}
 	]
 	Global.register_rod(card_structural_defense)
 
@@ -71,8 +71,8 @@ static func add_cards_orange() -> void:
 	card_heavy_framework.card_values = {"block": 6, "forge_block": 4}
 	card_heavy_framework.card_upgrade_value_improvements = {"block": 2, "forge_block": 2}
 	card_heavy_framework.card_play_actions = [
-		{Scripts.ACTION_BLOCK: {"target_override": BaseAction.TARGET_OVERRIDES.PLAYER}},
-		{Scripts.ACTION_ADD_TO_FORGE: {"forge_action_data": {Scripts.ACTION_BLOCK: {"block": "forge_block", "target_override": BaseAction.TARGET_OVERRIDES.PLAYER}}, "forge_action_load": 1}}
+		{Scripts.ACTION_BLOCK: {"target_override": BaseAction.TARGET_OVERRIDES.PLAYER, "audio_path": AudioConstants.SFX_GROUP_SHIELD_UP}},
+		{Scripts.ACTION_ADD_TO_FORGE: {"forge_action_data": {Scripts.ACTION_BLOCK: {"block": "forge_block", "target_override": BaseAction.TARGET_OVERRIDES.PLAYER, "audio_path": AudioConstants.SFX_GROUP_SHIELD_UP}}, "forge_action_load": 1}}
 	]
 	Global.register_rod(card_heavy_framework)
 
@@ -89,8 +89,8 @@ static func add_cards_orange() -> void:
 	card_defense_script.card_values = {"block": 3, "forge_block": 8}
 	card_defense_script.card_upgrade_value_improvements = {"block": 1, "forge_block": 3}
 	card_defense_script.card_play_actions = [
-		{Scripts.ACTION_BLOCK: {"target_override": BaseAction.TARGET_OVERRIDES.PLAYER}},
-		{Scripts.ACTION_ADD_TO_FORGE: {"forge_action_data": {Scripts.ACTION_BLOCK: {"block": "forge_block", "target_override": BaseAction.TARGET_OVERRIDES.PLAYER}}, "forge_action_load": 2}}
+		{Scripts.ACTION_BLOCK: {"target_override": BaseAction.TARGET_OVERRIDES.PLAYER, "audio_path": AudioConstants.SFX_GROUP_SHIELD_UP}},
+		{Scripts.ACTION_ADD_TO_FORGE: {"forge_action_data": {Scripts.ACTION_BLOCK: {"block": "forge_block", "target_override": BaseAction.TARGET_OVERRIDES.PLAYER, "audio_path": AudioConstants.SFX_GROUP_SHIELD_UP}}, "forge_action_load": 2}}
 	]
 	Global.register_rod(card_defense_script)
 
@@ -140,7 +140,7 @@ static func add_cards_orange() -> void:
 	card_overheat_shot.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_overheat_shot.card_requires_target = true
 	card_overheat_shot.card_energy_cost = 1
-	card_overheat_shot.card_values = {"damage": 6, "additional_damage": 2, "impact_vfx_animation_id": "animation_vfx_impact_default"}
+	card_overheat_shot.card_values = {"damage": 6, "additional_damage": 2, "impact_vfx_animation_id": "animation_vfx_slash_orange"}
 	card_overheat_shot.card_upgrade_value_improvements = {"damage": 2, "additional_damage": 0}
 	card_overheat_shot.card_play_actions = [
 		{
@@ -205,13 +205,13 @@ static func add_cards_orange() -> void:
 							"multiplied_values": ["additional_block"],
 							"multiplied_values_bases": {"additional_block": 0},
 							"action_data": [
-								{Scripts.ACTION_BLOCK: {"target_override": BaseAction.TARGET_OVERRIDES.PLAYER}}
+								{Scripts.ACTION_BLOCK: {"target_override": BaseAction.TARGET_OVERRIDES.PLAYER, "audio_path": AudioConstants.SFX_GROUP_SHIELD_UP}}
 							]
 						}
 					}
 				],
 				"failed_action_data": [
-					{Scripts.ACTION_BLOCK: {"target_override": BaseAction.TARGET_OVERRIDES.PLAYER}}
+					{Scripts.ACTION_BLOCK: {"target_override": BaseAction.TARGET_OVERRIDES.PLAYER, "audio_path": AudioConstants.SFX_GROUP_SHIELD_UP}}
 				]
 			}
 		}
@@ -242,7 +242,7 @@ static func add_cards_orange() -> void:
 						"option_validators": [{Scripts.VALIDATOR_FORGE_LOAD: {"load_required": 1}}],
 						"option_sub_actions": [
 							{Scripts.ACTION_CONSUME_FORGE_LOAD: {"load_amount": 1}},
-							{Scripts.ACTION_BLOCK: {"custom_key_names": {"block": "block_per_load"}, "target_override": BaseAction.TARGET_OVERRIDES.PLAYER}}
+							{Scripts.ACTION_BLOCK: {"custom_key_names": {"block": "block_per_load"}, "target_override": BaseAction.TARGET_OVERRIDES.PLAYER, "audio_path": AudioConstants.SFX_GROUP_SHIELD_UP}}
 						]
 					},
 					{
@@ -251,7 +251,7 @@ static func add_cards_orange() -> void:
 						"option_validators": [{Scripts.VALIDATOR_FORGE_LOAD: {"load_required": 2}}],
 						"option_sub_actions": [
 							{Scripts.ACTION_CONSUME_FORGE_LOAD: {"load_amount": 2}},
-							{Scripts.ACTION_BLOCK: {"custom_key_names": {"block": "block_2"}, "target_override": BaseAction.TARGET_OVERRIDES.PLAYER}}
+							{Scripts.ACTION_BLOCK: {"custom_key_names": {"block": "block_2"}, "target_override": BaseAction.TARGET_OVERRIDES.PLAYER, "audio_path": AudioConstants.SFX_GROUP_SHIELD_UP}}
 						]
 					},
 					{
@@ -260,7 +260,7 @@ static func add_cards_orange() -> void:
 						"option_validators": [{Scripts.VALIDATOR_FORGE_LOAD: {"load_required": 3}}],
 						"option_sub_actions": [
 							{Scripts.ACTION_CONSUME_FORGE_LOAD: {"load_amount": 3}},
-							{Scripts.ACTION_BLOCK: {"custom_key_names": {"block": "block_3"}, "target_override": BaseAction.TARGET_OVERRIDES.PLAYER}}
+							{Scripts.ACTION_BLOCK: {"custom_key_names": {"block": "block_3"}, "target_override": BaseAction.TARGET_OVERRIDES.PLAYER, "audio_path": AudioConstants.SFX_GROUP_SHIELD_UP}}
 						]
 					}
 				]
@@ -280,7 +280,7 @@ static func add_cards_orange() -> void:
 							"option_validators": [{Scripts.VALIDATOR_FORGE_LOAD: {"load_required": 1}}],
 							"option_sub_actions": [
 								{Scripts.ACTION_CONSUME_FORGE_LOAD: {"load_amount": 1}},
-								{Scripts.ACTION_BLOCK: {"custom_key_names": {"block": "block_per_load"}, "target_override": BaseAction.TARGET_OVERRIDES.PLAYER}}
+								{Scripts.ACTION_BLOCK: {"custom_key_names": {"block": "block_per_load"}, "target_override": BaseAction.TARGET_OVERRIDES.PLAYER, "audio_path": AudioConstants.SFX_GROUP_SHIELD_UP}}
 							]
 						},
 						{
@@ -289,7 +289,7 @@ static func add_cards_orange() -> void:
 							"option_validators": [{Scripts.VALIDATOR_FORGE_LOAD: {"load_required": 2}}],
 							"option_sub_actions": [
 								{Scripts.ACTION_CONSUME_FORGE_LOAD: {"load_amount": 2}},
-								{Scripts.ACTION_BLOCK: {"custom_key_names": {"block": "block_2"}, "target_override": BaseAction.TARGET_OVERRIDES.PLAYER}}
+								{Scripts.ACTION_BLOCK: {"custom_key_names": {"block": "block_2"}, "target_override": BaseAction.TARGET_OVERRIDES.PLAYER, "audio_path": AudioConstants.SFX_GROUP_SHIELD_UP}}
 							]
 						},
 						{
@@ -298,7 +298,7 @@ static func add_cards_orange() -> void:
 							"option_validators": [{Scripts.VALIDATOR_FORGE_LOAD: {"load_required": 3}}],
 							"option_sub_actions": [
 								{Scripts.ACTION_CONSUME_FORGE_LOAD: {"load_amount": 3}},
-								{Scripts.ACTION_BLOCK: {"custom_key_names": {"block": "block_3"}, "target_override": BaseAction.TARGET_OVERRIDES.PLAYER}}
+								{Scripts.ACTION_BLOCK: {"custom_key_names": {"block": "block_3"}, "target_override": BaseAction.TARGET_OVERRIDES.PLAYER, "audio_path": AudioConstants.SFX_GROUP_SHIELD_UP}}
 							]
 						}
 					]

@@ -13,7 +13,7 @@ static func add_cards_green() -> void:
 	card_blossom.card_color_id = "color_{0}".format([color])
 	card_blossom.card_texture_path = "sprites/card/green/card_blossom.png"
 	card_blossom.card_description = "恢复 [health_amount] 点完整度。"
-	card_blossom.card_hint = "危急时用于稳定完整度。"
+	card_blossom.card_hint = "回复生命（完整度）；打出后本场战斗不再出现。"
 	card_blossom.card_type = CardData.CARD_TYPES.SKILL
 	card_blossom.card_rarity = CardData.CARD_RARITIES.UNCOMMON
 	card_blossom.card_requires_target = false
@@ -30,6 +30,7 @@ static func add_cards_green() -> void:
 	card_bud.card_color_id = "color_{0}".format([color])
 	card_bud.card_texture_path = "sprites/card/green/card_bud.png"
 	card_bud.card_description = "自己获得 [parent_status_charge_amount] 层 [status_icon:status_effect_pointy]。目标获得 [target_status_charge_amount] 层 [status_icon:status_effect_pointy]。"
+	card_bud.card_hint = "给自己和目标叠加 [status_icon:status_effect_pointy]（受到攻击时会反弹等量伤害给攻击者）。"
 	card_bud.card_type = CardData.CARD_TYPES.SKILL
 	card_bud.card_rarity = CardData.CARD_RARITIES.UNCOMMON
 	card_bud.card_requires_target = true
@@ -60,7 +61,7 @@ static func add_cards_green() -> void:
 	card_cell_wall.card_color_id = "color_{0}".format([color])
 	card_cell_wall.card_texture_path = "sprites/card/green/card_cell_wall.png"
 	card_cell_wall.card_description = "移除防火墙，并获得与防火墙数值一致的 [status_icon:status_effect_overshield]。"
-	card_cell_wall.card_hint = "适合在防火墙较高时使用。"
+	card_cell_wall.card_hint = "把当前护盾（防火墙）全部转成等量的 [status_icon:status_effect_overshield]（可跨回合保留、不会每回合清零的护盾）。"
 	card_cell_wall.card_type = CardData.CARD_TYPES.SKILL
 	card_cell_wall.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_cell_wall.card_requires_target = false
@@ -83,16 +84,17 @@ static func add_cards_green() -> void:
 	card_chloroplast.card_color_id = "color_{0}".format([color])
 	card_chloroplast.card_texture_path = "sprites/card/green/card_chloroplast.png"
 	card_chloroplast.card_description = "对所有敌人造成 [damage] 点伤害。被物理删除时，对所有单位造成 [exhaust_damage] 点伤害。"
+	card_chloroplast.card_hint = "对所有敌人造成高额伤害；当它被消耗（进入坏道区）时，再对包括你自己在内的全场造成一次伤害。"
 	card_chloroplast.card_type = CardData.CARD_TYPES.ATTACK
 	card_chloroplast.card_rarity = CardData.CARD_RARITIES.UNCOMMON
 	card_chloroplast.card_energy_cost = 3
 	card_chloroplast.card_requires_target = false
 	card_chloroplast.card_end_of_turn_destination = HandManager.EXHAUST_PILE
-	card_chloroplast.card_values = { "damage": 35, "exhaust_damage": 10, "impact_vfx_animation_id": "animation_vfx_impact_default" }
+	card_chloroplast.card_values = { "damage": 35, "exhaust_damage": 10, "impact_vfx_animation_id": "animation_vfx_magic_green" }
 	card_chloroplast.card_upgrade_value_improvements = { "damage": 10 }
 	card_chloroplast.card_play_actions = [
 		{
-			Scripts.ACTION_ATTACK_GENERATOR: {
+			Scripts.ACTION_ATTACK_GENERATOR: { "audio_path": AudioConstants.SFX_GROUP_DAGGER_STAB, 
 				"number_of_attacks": 1,
 				"time_delay": 0.5,
 				"target_override": BaseAction.TARGET_OVERRIDES.ALL_ENEMIES,
@@ -101,7 +103,7 @@ static func add_cards_green() -> void:
 	]
 	card_chloroplast.card_exhaust_actions = [
 		{
-			Scripts.ACTION_ATTACK_GENERATOR: {
+			Scripts.ACTION_ATTACK_GENERATOR: { "audio_path": AudioConstants.SFX_GROUP_DAGGER_STAB, 
 				"custom_key_names": { "damage": "exhaust_damage" },
 				"number_of_attacks": 1,
 				"time_delay": 0.5,
@@ -118,18 +120,18 @@ static func add_cards_green() -> void:
 	card_clippers.card_color_id = "color_{0}".format([color])
 	card_clippers.card_texture_path = "sprites/card/green/card_clippers.png"
 	card_clippers.card_description = "造成 [number_of_attacks] 次 [damage] 点伤害。获得 [status_charge_amount] 层 [status_icon:status_effect_damage_increase]。加入脚本库时，失去 [health_amount] 点完整度。"
-	card_clippers.card_hint = "加入脚本库的代价只会触发一次。"
+	card_clippers.card_hint = "多段攻击并获得 [status_icon:status_effect_damage_increase]（提高之后的攻击伤害）；此牌加入牌组时会扣一次生命，且只扣这一次。"
 	card_clippers.card_type = CardData.CARD_TYPES.ATTACK
 	card_clippers.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_clippers.card_keyword_object_ids = []
-	card_clippers.card_values = { "damage": 5, "number_of_attacks": 2, "health_amount": -5, "status_effect_object_id": "status_effect_damage_increase", "status_charge_amount": 2, "impact_vfx_animation_id": "animation_vfx_impact_default" }
+	card_clippers.card_values = { "damage": 5, "number_of_attacks": 2, "health_amount": -5, "status_effect_object_id": "status_effect_damage_increase", "status_charge_amount": 2, "impact_vfx_animation_id": "animation_vfx_slash_green" }
 	card_clippers.card_upgrade_value_improvements = { "damage": 2 }
 	card_clippers.card_play_actions = [
 		{
 			Scripts.ACTION_APPLY_STATUS: { "status_effect_object_id": "status_effect_damage_increase", "time_delay": 0.5, "target_override": BaseAction.TARGET_OVERRIDES.PARENT },
 		},
 		{
-			Scripts.ACTION_ATTACK_GENERATOR: { "time_delay": 0.3 },
+			Scripts.ACTION_ATTACK_GENERATOR: { "audio_path": AudioConstants.SFX_GROUP_DAGGER_STAB,  "time_delay": 0.3 },
 		},
 	]
 	card_clippers.card_add_to_deck_actions = [
@@ -146,6 +148,7 @@ static func add_cards_green() -> void:
 	card_differentiation.card_color_id = "color_{0}".format([color])
 	card_differentiation.card_texture_path = "sprites/card/green/card_differentiation.png"
 	card_differentiation.card_description = "造成 [attack_damage] 点伤害。失去 [self_damage] 点完整度。"
+	card_differentiation.card_hint = "对目标造成高伤害，但你自己也会损失少量生命（完整度）。"
 	card_differentiation.card_type = CardData.CARD_TYPES.ATTACK
 	card_differentiation.card_rarity = CardData.CARD_RARITIES.UNCOMMON
 	card_differentiation.card_requires_target = true
@@ -160,7 +163,7 @@ static func add_cards_green() -> void:
 			},
 		},
 		{
-			Scripts.ACTION_ATTACK_GENERATOR: {
+			Scripts.ACTION_ATTACK_GENERATOR: { "audio_path": AudioConstants.SFX_GROUP_DAGGER_STAB, 
 				"custom_key_names": { "damage": "attack_damage" },
 				"number_of_attacks": 1,
 				"time_delay": 0.5,
@@ -177,7 +180,7 @@ static func add_cards_green() -> void:
 	card_fertilize.card_color_id = "color_{0}".format([color])
 	card_fertilize.card_texture_path = "sprites/card/green/card_fertilize.png"
 	card_fertilize.card_description = "失去 [self_damage] 点完整度，获得 [energy_amount] 点算力。将当前防火墙全部转化为 [status_icon:status_effect_overshield]。"
-	card_fertilize.card_type = CardData.CARD_TYPES.SKILL
+	card_fertilize.card_hint = "损失部分生命（完整度）换取大量能量（算力），并把当前护盾全部转成可跨回合保留的 [status_icon:status_effect_overshield]。"
 	card_fertilize.card_rarity = CardData.CARD_RARITIES.RARE
 	card_fertilize.card_requires_target = false
 	card_fertilize.card_values = { "self_damage": 10, "energy_amount": 3 }
@@ -208,6 +211,7 @@ static func add_cards_green() -> void:
 	card_fruit.card_color_id = "color_{0}".format([color])
 	card_fruit.card_texture_path = "sprites/card/green/card_fruit.png"
 	card_fruit.card_description = "随机触发以下一项：获得 [small_max_health_amount] 点最大完整度，或获得 [big_max_health_amount] 点最大完整度，或获得 [energy_amount] 点算力。消耗品。"
+	card_fruit.card_hint = "随机获得最大生命提升，或立刻获得能量（算力）；用后从牌组永久移除。"
 	card_fruit.card_type = CardData.CARD_TYPES.SKILL
 	card_fruit.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_fruit.card_requires_target = false
@@ -240,6 +244,7 @@ static func add_cards_green() -> void:
 	card_growth.card_color_id = "color_{0}".format([color])
 	card_growth.card_texture_path = "sprites/card/green/card_growth.png"
 	card_growth.card_description = "获得 [status_charge_amount] 层 [status_icon:status_effect_overshield]。读取 [draw_count] 个脚本。"
+	card_growth.card_hint = "获得 [status_icon:status_effect_overshield]（可跨回合保留的护盾）并摸牌；打出后本场战斗不再出现。"
 	card_growth.card_type = CardData.CARD_TYPES.SKILL
 	card_growth.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_growth.card_requires_target = false
@@ -266,7 +271,7 @@ static func add_cards_green() -> void:
 	card_lotus.card_color_id = "color_{0}".format([color])
 	card_lotus.card_texture_path = "sprites/card/green/card_lotus.png"
 	card_lotus.card_description = "使 [status_icon:status_effect_overshield] 层数变为 [status_effect_multiplier_amount] 倍。"
-	card_lotus.card_type = CardData.CARD_TYPES.SKILL
+	card_lotus.card_hint = "把你当前的 [status_icon:status_effect_overshield] 层数翻倍；打出后本场战斗不再出现。"
 	card_lotus.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_lotus.card_requires_target = false
 	card_lotus.card_play_destination = HandManager.EXHAUST_PILE
@@ -290,6 +295,7 @@ static func add_cards_green() -> void:
 	card_moss.card_color_id = "color_{0}".format([color])
 	card_moss.card_texture_path = "sprites/card/green/card_moss.png"
 	card_moss.card_description = "造成等同于 [status_icon:status_effect_overshield] 层数的伤害。获得 [status_charge_amount] 层 [status_icon:status_effect_overshield]。"
+	card_moss.card_hint = "先获得 [status_icon:status_effect_overshield]（可跨回合保留的护盾），再造成等同于当前 [status_icon:status_effect_overshield] 层数的伤害。"
 	card_moss.card_type = CardData.CARD_TYPES.ATTACK
 	card_moss.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_moss.card_energy_cost = 2
@@ -304,7 +310,7 @@ static func add_cards_green() -> void:
 			},
 		},
 		{
-			Scripts.ACTION_ATTACK_GENERATOR: {
+			Scripts.ACTION_ATTACK_GENERATOR: { "audio_path": AudioConstants.SFX_GROUP_DAGGER_STAB, 
 				"target_override": BaseAction.TARGET_OVERRIDES.SELECTED_TARGETS,
 				"forced_interceptor_ids": ["interceptor_damage_from_overshield"],
 				"time_delay": 0.3,
@@ -320,6 +326,7 @@ static func add_cards_green() -> void:
 	card_pollen.card_color_id = "color_{0}".format([color])
 	card_pollen.card_texture_path = "sprites/card/green/card_pollen.png"
 	card_pollen.card_description = "获得 [status_charge_amount] 层 [status_icon:status_effect_pollen]，副层数为 [status_secondary_charge_amount]。"
+	card_pollen.card_hint = "获得 [status_icon:status_effect_pollen]：之后每回合会损失少量生命，但同时多摸几张牌。"
 	card_pollen.card_type = CardData.CARD_TYPES.POWER
 	card_pollen.card_rarity = CardData.CARD_RARITIES.RARE
 	card_pollen.card_energy_cost = 3
@@ -343,6 +350,7 @@ static func add_cards_green() -> void:
 	card_petals.card_color_id = "color_{0}".format([color])
 	card_petals.card_texture_path = "sprites/card/green/card_petals.png"
 	card_petals.card_description = "获得 [block] 点防火墙。获得 [status_charge_amount] 层 [status_icon:status_effect_temp_preserve_block]。加入脚本库时，失去 [health_amount] 点完整度。"
+	card_petals.card_hint = "获得大量护盾，并用 [status_icon:status_effect_temp_preserve_block] 让护盾在回合结束时不清零；此牌加入牌组时扣一次生命。"
 	card_petals.card_type = CardData.CARD_TYPES.SKILL
 	card_petals.card_rarity = CardData.CARD_RARITIES.RARE
 	card_petals.card_requires_target = false
@@ -362,6 +370,7 @@ static func add_cards_green() -> void:
 		{
 			Scripts.ACTION_BLOCK: {
 				"target_override": BaseAction.TARGET_OVERRIDES.PARENT,
+				"audio_path": AudioConstants.SFX_GROUP_SHIELD_UP,
 			},
 		},
 	]
@@ -379,11 +388,12 @@ static func add_cards_green() -> void:
 	card_reap.card_color_id = "color_{0}".format([color])
 	card_reap.card_texture_path = "sprites/card/green/card_reap.png"
 	card_reap.card_description = "造成 [damage] 点伤害。获得等同于实际伤害量的 [status_icon:status_effect_overshield]。"
+	card_reap.card_hint = "造成伤害，并按实际造成的伤害获得等量 [status_icon:status_effect_overshield]（可跨回合保留的护盾）。"
 	card_reap.card_type = CardData.CARD_TYPES.ATTACK
 	card_reap.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_reap.card_energy_cost = 2
 	card_reap.card_requires_target = true
-	card_reap.card_values = { "damage": 10, "impact_vfx_animation_id": "animation_vfx_impact_default" }
+	card_reap.card_values = { "damage": 10, "impact_vfx_animation_id": "animation_vfx_magic_green" }
 	card_reap.card_upgrade_value_improvements = { "damage": 4 }
 	card_reap.card_play_actions = [
 		{
@@ -394,7 +404,7 @@ static func add_cards_green() -> void:
 			},
 		},
 		{
-			Scripts.ACTION_ATTACK_GENERATOR: {
+			Scripts.ACTION_ATTACK_GENERATOR: { "audio_path": AudioConstants.SFX_GROUP_DAGGER_STAB, 
 				"target_override": BaseAction.TARGET_OVERRIDES.SELECTED_TARGETS,
 				"time_delay": 0.3,
 			},
@@ -410,16 +420,17 @@ static func add_cards_green() -> void:
 	card_wildflower.card_texture_path = "sprites/card/green/card_wildflower.png"
 	card_wildflower.card_energy_cost = 2
 	card_wildflower.card_description = "造成 [damage] 点伤害。若[前置时钟周期]受到过伤害，则耗能为 0。"
+	card_wildflower.card_hint = "会留在手里的攻击牌；若你在上一回合受到过伤害，这回合打出它不花费用。"
 	card_wildflower.card_is_retained = true
 	card_wildflower.card_keyword_object_ids = ["keyword_retain"]
 	card_wildflower.card_type = CardData.CARD_TYPES.ATTACK
 	card_wildflower.card_rarity = CardData.CARD_RARITIES.UNCOMMON
 	card_wildflower.card_requires_target = true
-	card_wildflower.card_values = { "damage": 15, "number_of_attacks": 1, "impact_vfx_animation_id": "animation_vfx_impact_default" }
+	card_wildflower.card_values = { "damage": 15, "number_of_attacks": 1, "impact_vfx_animation_id": "animation_vfx_magic_green" }
 	card_wildflower.card_upgrade_value_improvements = { "damage": 5 }
 	card_wildflower.card_play_actions = [
 		{
-			Scripts.ACTION_ATTACK_GENERATOR: { },
+			Scripts.ACTION_ATTACK_GENERATOR: { "audio_path": AudioConstants.SFX_GROUP_DAGGER_STAB,  },
 		},
 	]
 	card_wildflower.add_card_decorator(
@@ -442,6 +453,7 @@ static func add_cards_green() -> void:
 	card_symbiosis.card_color_id = "color_{0}".format([color])
 	card_symbiosis.card_texture_path = "sprites/card/green/card_symbiosis.png"
 	card_symbiosis.card_description = "获得 [status_icon:status_effect_preserve_overshield]。"
+	card_symbiosis.card_hint = "获得 [status_icon:status_effect_preserve_overshield]，使你的 [status_icon:status_effect_overshield] 不再每回合衰减。"
 	card_symbiosis.card_type = CardData.CARD_TYPES.POWER
 	card_symbiosis.card_rarity = CardData.CARD_RARITIES.RARE
 	card_symbiosis.card_energy_cost = 3
@@ -484,6 +496,7 @@ static func add_cards_green() -> void:
 	card_thorns.card_color_id = "color_{0}".format([color])
 	card_thorns.card_texture_path = "sprites/card/green/card_thorns.png"
 	card_thorns.card_description = "获得 [block] 点防火墙。获得 [status_charge_amount] 层 [status_icon:status_effect_pointy]。"
+	card_thorns.card_hint = "获得护盾（防火墙）和 [status_icon:status_effect_pointy]（受到攻击时反弹等量伤害给攻击者）。"
 	card_thorns.card_type = CardData.CARD_TYPES.SKILL
 	card_thorns.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_thorns.card_energy_cost = 1
@@ -501,6 +514,7 @@ static func add_cards_green() -> void:
 			Scripts.ACTION_BLOCK: {
 				"time_delay": 0.2,
 				"target_override": BaseAction.TARGET_OVERRIDES.PARENT,
+				"audio_path": AudioConstants.SFX_GROUP_SHIELD_UP,
 			},
 		},
 	]
@@ -513,6 +527,7 @@ static func add_cards_green() -> void:
 	card_verdant.card_color_id = "color_{0}".format([color])
 	card_verdant.card_texture_path = "sprites/card/green/card_verdant.png"
 	card_verdant.card_description = "被读取时，获得 [status_charge_amount] 层 [status_icon:status_effect_cap_damage]，副层数为 [status_secondary_charge_amount]。"
+	card_verdant.card_hint = "这张牌不能主动打出；被摸到时会消耗掉自己，并给你 [status_icon:status_effect_cap_damage]（限制单次掉血上限）。"
 	card_verdant.card_type = CardData.CARD_TYPES.SKILL
 	card_verdant.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_verdant.card_requires_target = false
@@ -546,14 +561,15 @@ static func add_cards_green() -> void:
 	card_vines.card_color_id = "color_{0}".format([color])
 	card_vines.card_texture_path = "sprites/card/green/card_vines.png"
 	card_vines.card_description = "对所有敌人造成 [number_of_attacks] 次 [damage] 点伤害。不受 [status_icon:status_effect_pointy] 影响。"
+	card_vines.card_hint = "对所有敌人多段攻击，且不会触发敌人的 [status_icon:status_effect_pointy] 反伤。"
 	card_vines.card_type = CardData.CARD_TYPES.ATTACK
 	card_vines.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_vines.card_requires_target = false
-	card_vines.card_values = { "damage": 5, "number_of_attacks": 2, "self_damage": 2, "impact_vfx_animation_id": "animation_vfx_impact_default" }
+	card_vines.card_values = { "damage": 5, "number_of_attacks": 2, "self_damage": 2, "impact_vfx_animation_id": "animation_vfx_slash_green" }
 	card_vines.card_upgrade_value_improvements = { "damage": 5 }
 	card_vines.card_play_actions = [
 		{
-			Scripts.ACTION_ATTACK_GENERATOR: {
+			Scripts.ACTION_ATTACK_GENERATOR: { "audio_path": AudioConstants.SFX_GROUP_DAGGER_STAB, 
 				"time_delay": 0.4,
 				"target_override": BaseAction.TARGET_OVERRIDES.ALL_ENEMIES,
 				"ignored_interceptor_ids": ["interceptor_pointy"],
@@ -570,13 +586,13 @@ static func add_cards_green() -> void:
 	card_conclusion.card_color_id = "color_{0}".format([color])
 	card_conclusion.card_texture_path = "sprites/card/green/card_conclusion.png"
 	card_conclusion.card_description = "造成 [damage] 点伤害。保留时，每回合结束后每个未使用的 [energy_icon] 使本脚本伤害永久增加 [damage_growth] 点。"
-	card_conclusion.card_type = CardData.CARD_TYPES.ATTACK
+	card_conclusion.card_hint = "会留在手里的攻击牌；只要保留不打出，每回合结束时每点没用掉的能量都会永久提高它的伤害。"
 	card_conclusion.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_conclusion.card_energy_cost = 3
 	card_conclusion.card_requires_target = true
 	card_conclusion.card_is_retained = true
 	card_conclusion.card_play_destination = HandManager.EXHAUST_PILE
-	card_conclusion.card_values = { "damage": 12, "number_of_attacks": 1, "damage_growth": 4, "card_value_improvements": { "damage": 4 }, "impact_vfx_animation_id": "animation_vfx_impact_default" }
+	card_conclusion.card_values = { "damage": 12, "number_of_attacks": 1, "damage_growth": 4, "card_value_improvements": { "damage": 4 }, "impact_vfx_animation_id": "animation_vfx_magic_green" }
 	card_conclusion.card_first_upgrade_property_changes = {
 		"card_description": "造成 [damage] 点伤害。保留时，每回合结束后每个未使用的 [energy_icon] 使本脚本伤害永久增加 [damage_growth] 点。",
 		"card_value_improvements": { "damage": 6 },
@@ -584,7 +600,7 @@ static func add_cards_green() -> void:
 	card_conclusion.card_first_upgrade_value_changes = { "damage_growth": 6 }
 	card_conclusion.card_play_actions = [
 		{
-			Scripts.ACTION_ATTACK_GENERATOR: {
+			Scripts.ACTION_ATTACK_GENERATOR: { "audio_path": AudioConstants.SFX_GROUP_DAGGER_STAB, 
 				"time_delay": 0.3,
 				"target_override": BaseAction.TARGET_OVERRIDES.SELECTED_TARGETS,
 			},
@@ -608,6 +624,7 @@ static func add_cards_green() -> void:
 	card_datum.card_color_id = "color_{0}".format([color])
 	card_datum.card_texture_path = "sprites/card/green/card_datum.png"
 	card_datum.card_description = "获得 [block] 点防火墙。被读取时自动复制自身。保留时，时钟周期结束后本卡耗能永久减少 [energy_cost_reduction] 点。消耗品。"
+	card_datum.card_hint = "获得护盾（防火墙）；被摸到时自动复制一张到手牌；保留在手里则每回合结束永久降低它的费用；用后从牌组永久移除。"
 	card_datum.card_type = CardData.CARD_TYPES.SKILL
 	card_datum.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_datum.card_energy_cost = 3
@@ -621,6 +638,7 @@ static func add_cards_green() -> void:
 			Scripts.ACTION_BLOCK: {
 				"time_delay": 0.2,
 				"target_override": BaseAction.TARGET_OVERRIDES.PARENT,
+				"audio_path": AudioConstants.SFX_GROUP_SHIELD_UP,
 			},
 		},
 	]
@@ -663,6 +681,7 @@ static func add_cards_green() -> void:
 	card_photoelectric_synthesis.card_color_id = "color_{0}".format([color])
 	card_photoelectric_synthesis.card_texture_path = "sprites/card/green/card_photoelectric_synthesis.png"
 	card_photoelectric_synthesis.card_description = "获得 [status_charge_amount] 层 [status_icon:status_effect_damage_increase]。需吸收 [required_absorbed_energy_energy_icons] 后才能调用。已吸收 [card_absorbed_energy_energy_icons]。"
+	card_photoelectric_synthesis.card_hint = "留在手里，累计吸收足够能量（算力）后才能打出；打出后获得大量 [status_icon:status_effect_damage_increase]（提高攻击伤害）。"
 	card_photoelectric_synthesis.card_type = CardData.CARD_TYPES.POWER
 	card_photoelectric_synthesis.card_rarity = CardData.CARD_RARITIES.RARE
 	card_photoelectric_synthesis.card_energy_cost = 0
@@ -714,11 +733,12 @@ static func add_cards_green() -> void:
 	card_big_boom.card_color_id = "color_{0}".format([color])
 	card_big_boom.card_texture_path = "sprites/card/green/card_big_boom.png"
 	card_big_boom.card_description = "对所有敌人造成 [damage] 点伤害。获得 [status_charge_amount] 层 [status_icon:status_effect_overheat]。"
+	card_big_boom.card_hint = "对所有敌人造成伤害，并获得 [status_icon:status_effect_overheat]（内核过热，层数够高会爆裂波及全场）。"
 	card_big_boom.card_type = CardData.CARD_TYPES.ATTACK
 	card_big_boom.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_big_boom.card_requires_target = false
 	card_big_boom.card_energy_cost = 2
-	card_big_boom.card_values = { "damage": 12, "status_charge_amount": 5, "time_delay": 0.2, "impact_vfx_animation_id": "animation_vfx_impact_default" }
+	card_big_boom.card_values = { "damage": 12, "status_charge_amount": 5, "time_delay": 0.2, "impact_vfx_animation_id": "animation_vfx_slash_green" }
 	card_big_boom.card_upgrade_value_improvements = { "damage": 14 }
 	card_big_boom.card_play_actions = [
 		{
@@ -728,7 +748,7 @@ static func add_cards_green() -> void:
 			},
 		},
 		{
-			Scripts.ACTION_ATTACK_GENERATOR: {
+			Scripts.ACTION_ATTACK_GENERATOR: { "audio_path": AudioConstants.SFX_GROUP_DAGGER_STAB, 
 				"target_override": BaseAction.TARGET_OVERRIDES.ALL_ENEMIES,
 			},
 		},
@@ -741,7 +761,8 @@ static func add_cards_green() -> void:
 	card_containment.card_name = "收容"
 	card_containment.card_color_id = "color_{0}".format([color])
 	card_containment.card_texture_path = "sprites/card/green/card_containment.png"
-	card_containment.card_description = "获得 [block] 点防火墙。将 [number_of_cards] 个 [冗余数据] 加入当前线程。"
+	card_containment.card_description = "获得 [block] 点防火墙。将 [number_of_cards] 个 [card_name:card_waste] 加入当前线程。"
+	card_containment.card_hint = "获得大量护盾（防火墙），并生成 [number_of_cards] 张“冗余数据”到手牌。"
 	card_containment.card_type = CardData.CARD_TYPES.SKILL
 	card_containment.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_containment.card_requires_target = false
@@ -757,6 +778,7 @@ static func add_cards_green() -> void:
 		{
 			Scripts.ACTION_BLOCK: {
 				"time_delay": 0.3,
+				"audio_path": AudioConstants.SFX_GROUP_SHIELD_UP,
 			},
 		},
 	]
@@ -769,7 +791,7 @@ static func add_cards_green() -> void:
 	card_critical.card_color_id = "color_{0}".format([color])
 	card_critical.card_texture_path = "sprites/card/green/card_critical.png"
 	card_critical.card_description = "每回合开始时，获得 [status_charge_amount] 层 [status_icon:status_effect_critical]。"
-	card_critical.card_type = CardData.CARD_TYPES.POWER
+	card_critical.card_hint = "打出后每回合开始都会获得 [status_icon:status_effect_critical]（每回合自动累积 [status_icon:status_effect_overheat] 内核过热）。"
 	card_critical.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_critical.card_requires_target = false
 	card_critical.card_energy_cost = 1
@@ -785,7 +807,7 @@ static func add_cards_green() -> void:
 				},
 			},
 			{
-				Scripts.ACTION_ATTACK_GENERATOR: {
+				Scripts.ACTION_ATTACK_GENERATOR: { "audio_path": AudioConstants.SFX_GROUP_DAGGER_STAB, 
 					"time_delay": 0.3,
 					"target_override": BaseAction.TARGET_OVERRIDES.ALL_ENEMIES,
 				},
@@ -810,6 +832,7 @@ static func add_cards_green() -> void:
 	card_feedback_loop.card_color_id = "color_{0}".format([color])
 	card_feedback_loop.card_texture_path = "sprites/card/green/card_feedback_loop.png"
 	card_feedback_loop.card_description = "获得 [status_charge_amount] 层 [status_icon:status_effect_feedback_loop]。"
+	card_feedback_loop.card_hint = "打出后获得 [status_icon:status_effect_feedback_loop]：之后每次 [status_icon:status_effect_overheat] 爆裂都会为你回复能量（算力）。"
 	card_feedback_loop.card_type = CardData.CARD_TYPES.POWER
 	card_feedback_loop.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_feedback_loop.card_requires_target = false
@@ -850,8 +873,8 @@ static func add_cards_green() -> void:
 	card_fusion_cannon.card_name = "聚变炮"
 	card_fusion_cannon.card_color_id = "color_{0}".format([color])
 	card_fusion_cannon.card_texture_path = "sprites/card/green/card_fusion_cannon.png"
-	card_fusion_cannon.card_description = "将 [number_of_cards] 个 [冗余数据] 加入坏道区，然后坏道区中每有 1 个 [冗余数据]，造成 [damage] 点伤害。"
-	card_fusion_cannon.card_type = CardData.CARD_TYPES.ATTACK
+	card_fusion_cannon.card_description = "将 [number_of_cards] 个 [card_name:card_waste] 加入坏道区，然后坏道区中每有 1 个 [card_name:card_waste]，造成 [damage] 点伤害。"
+	card_fusion_cannon.card_hint = "生成数张“冗余数据”丢进坏道区，再按坏道区里“冗余数据”的数量成倍造成伤害。"
 	card_fusion_cannon.card_rarity = CardData.CARD_RARITIES.RARE
 	card_fusion_cannon.card_energy_cost = 4
 	card_fusion_cannon.card_requires_target = true
@@ -860,11 +883,11 @@ static func add_cards_green() -> void:
 		"number_of_attacks": 1,
 		"number_of_cards": 3,
 		"created_card_object_id": "card_waste",
-		"impact_vfx_animation_id": "animation_vfx_impact_default",
+		"impact_vfx_animation_id": "animation_vfx_slash_green",
 	}
 	card_fusion_cannon.card_upgrade_value_improvements = { "damage": 2 }
 	card_fusion_cannon.card_first_upgrade_property_changes = {
-		"card_description": "将 [number_of_cards] 个 [冗余数据] 加入坏道区，然后坏道区中每有 1 个 [冗余数据]，造成 [damage] 点伤害。",
+		"card_description": "将 [number_of_cards] 个 [card_name:card_waste] 加入坏道区，然后坏道区中每有 1 个 [card_name:card_waste]，造成 [damage] 点伤害。",
 	}
 	card_fusion_cannon.card_play_actions = [
 		{
@@ -884,7 +907,7 @@ static func add_cards_green() -> void:
 							"multiplied_values": ["damage"],
 							"action_data": [
 								{
-									Scripts.ACTION_ATTACK_GENERATOR: {
+									Scripts.ACTION_ATTACK_GENERATOR: { "audio_path": AudioConstants.SFX_GROUP_DAGGER_STAB, 
 										"time_delay": 0.5,
 									},
 								},
@@ -914,7 +937,7 @@ static func add_cards_green() -> void:
 	card_meltdown.card_requires_target = false
 	card_meltdown.card_values = { "status_charge_amount": 15, "block": 1 }
 	card_meltdown.card_keyword_object_ids = []
-	card_meltdown.card_hint = "防火墙可吸收爆裂伤害，形成自洽闭环。"
+	card_meltdown.card_hint = "获得等同于 [status_icon:status_effect_overheat] 层数的护盾，并大量叠加 [status_icon:status_effect_overheat]；护盾正好可以吸收过热爆裂造成的伤害。"
 	card_meltdown.card_upgrade_value_improvements = { "status_charge_amount": 10 }
 	card_meltdown.card_first_upgrade_property_changes = {}
 	card_meltdown.card_play_actions = [
@@ -941,8 +964,8 @@ static func add_cards_green() -> void:
 	card_particle_accelerator.card_name = "粒子加速器"
 	card_particle_accelerator.card_color_id = "color_{0}".format([color])
 	card_particle_accelerator.card_texture_path = "sprites/card/green/card_particle_accelerator.png"
-	card_particle_accelerator.card_description = "获得 [energy_amount_energy_icons]。将 [number_of_cards] 个 [冗余数据] 加入回收站。"
-	card_particle_accelerator.card_type = CardData.CARD_TYPES.SKILL
+	card_particle_accelerator.card_description = "获得 [energy_amount_energy_icons]。将 [number_of_cards] 个 [card_name:card_waste] 加入回收站。"
+	card_particle_accelerator.card_hint = "立刻获得能量（算力），代价是生成数张“冗余数据”进入弃牌堆（回收站）。"
 	card_particle_accelerator.card_rarity = CardData.CARD_RARITIES.UNCOMMON
 	card_particle_accelerator.card_requires_target = false
 	card_particle_accelerator.card_energy_cost = 0
@@ -956,7 +979,7 @@ static func add_cards_green() -> void:
 		"target_override": BaseAction.TARGET_OVERRIDES.PARENT,
 	}
 	card_particle_accelerator.card_upgrade_value_improvements = { "energy_amount": 1 }
-	card_particle_accelerator.card_first_upgrade_property_changes = { "card_description": "获得 [energy_amount_energy_icons]。将 [number_of_cards] 个 [冗余数据] 加入回收站。" }
+	card_particle_accelerator.card_first_upgrade_property_changes = { "card_description": "获得 [energy_amount_energy_icons]。将 [number_of_cards] 个 [card_name:card_waste] 加入回收站。" }
 	card_particle_accelerator.card_play_actions = [
 		{
 			Scripts.ACTION_CREATE_CARDS: {
@@ -978,6 +1001,7 @@ static func add_cards_green() -> void:
 	card_unstable.card_color_id = "color_{0}".format([color])
 	card_unstable.card_texture_path = "sprites/card/green/card_unstable.png"
 	card_unstable.card_description = "读取 [draw_count] 个脚本。获得 [status_charge_amount] 层 [status_icon:status_effect_overheat]。"
+	card_unstable.card_hint = "摸数张牌，并获得 [status_icon:status_effect_overheat]（内核过热，层数够高会爆裂波及全场）。"
 	card_unstable.card_type = CardData.CARD_TYPES.SKILL
 	card_unstable.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_unstable.card_requires_target = false
@@ -1004,13 +1028,14 @@ static func add_cards_green() -> void:
 	card_waste.card_color_id = "color_{0}".format([color])
 	card_waste.card_texture_path = "sprites/card/green/card_waste.png"
 	card_waste.card_description = "如果保留在当前线程中，时钟周期结束时获得 [status_charge_amount] 层 [status_icon:status_effect_overheat]，并对随机敌人造成 [damage] 点伤害。"
+	card_waste.card_hint = "一张废牌：若回合结束仍留在手里，你会获得 [status_icon:status_effect_overheat]，并对随机一个敌人造成少量伤害。"
 	card_waste.card_type = CardData.CARD_TYPES.STATUS
 	card_waste.card_rarity = CardData.CARD_RARITIES.GENERATED
 	card_waste.card_requires_target = false
 	card_waste.card_play_destination = HandManager.EXHAUST_PILE
 	card_waste.card_energy_cost = 1
 	card_waste.card_upgrade_amount_max = 0 # cannot be upgraded
-	card_waste.card_values = { "damage": 3, "status_charge_amount": 2, "impact_vfx_animation_id": "animation_vfx_impact_default" }
+	card_waste.card_values = { "damage": 3, "status_charge_amount": 2, "impact_vfx_animation_id": "animation_vfx_magic_green" }
 	card_waste.card_end_of_turn_actions = [
 		{
 			Scripts.ACTION_APPLY_STATUS: {
@@ -1034,7 +1059,8 @@ static func add_cards_green() -> void:
 	card_garbage_collection.card_name = "垃圾回收"
 	card_garbage_collection.card_color_id = "color_{0}".format([color])
 	card_garbage_collection.card_texture_path = "sprites/card/green/card_garbage_collection.png"
-	card_garbage_collection.card_description = "选择当前线程中 [exhaust_amount] 个 [冗余数据] 加入坏道区。获得 [block] 点防火墙并读取 [draw_count] 个脚本。"
+	card_garbage_collection.card_description = "选择当前线程中 [exhaust_amount] 个 [card_name:card_waste] 加入坏道区。获得 [block] 点防火墙并读取 [draw_count] 个脚本。"
+	card_garbage_collection.card_hint = "选择手里的“冗余数据”消耗掉，换取护盾（防火墙）并摸牌。"
 	card_garbage_collection.card_type = CardData.CARD_TYPES.SKILL
 	card_garbage_collection.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_garbage_collection.card_requires_target = false
@@ -1059,6 +1085,7 @@ static func add_cards_green() -> void:
 		{
 			Scripts.ACTION_BLOCK: {
 				"target_override": BaseAction.TARGET_OVERRIDES.PARENT,
+				"audio_path": AudioConstants.SFX_GROUP_SHIELD_UP,
 			},
 		},
 		{

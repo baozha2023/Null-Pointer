@@ -65,6 +65,7 @@ static func add_cards_white() -> void:
 		{
 			Scripts.ACTION_BLOCK: {
 				"target_override": BaseAction.TARGET_OVERRIDES.PLAYER,
+				"audio_path": AudioConstants.SFX_GROUP_SHIELD_UP,
 			},
 		},
 	]
@@ -162,7 +163,7 @@ static func add_cards_white() -> void:
 	var card_curse_exception: CardData = CardData.new("card_curse_exception")
 	card_curse_exception.card_name = "异常报错"
 	card_curse_exception.card_color_id = "color_white"
-	card_curse_exception.card_texture_path = "sprites/card/white/card_kernel_reconstruct.png"
+	card_curse_exception.card_texture_path = "sprites/card/white/card_curse_exception.png"
 	card_curse_exception.card_description = "无用。不可打出。\n[color=#ff6b6b]抽到此牌时，受到1点伤害。[/color]"
 	card_curse_exception.card_hint = "这是一张诅咒卡牌。不仅会污染卡池，某些情况下还会造成负面效果。"
 	card_curse_exception.card_type = CardData.CARD_TYPES.CURSE
@@ -184,7 +185,7 @@ static func add_cards_white() -> void:
 	var card_status_dazed: CardData = CardData.new("card_status_dazed")
 	card_status_dazed.card_name = "垃圾数据"
 	card_status_dazed.card_color_id = "color_white"
-	card_status_dazed.card_texture_path = "sprites/card/status/card_dazed.png"
+	card_status_dazed.card_texture_path = "sprites/card/white/card_status_dazed.png"
 	card_status_dazed.card_description = "无法被打出。回合结束时被消耗。"
 	card_status_dazed.card_type = CardData.CARD_TYPES.STATUS
 	card_status_dazed.card_rarity = CardData.CARD_RARITIES.GENERATED
@@ -196,7 +197,7 @@ static func add_cards_white() -> void:
 	var card_status_burn: CardData = CardData.new("card_status_burn")
 	card_status_burn.card_name = "过载发热"
 	card_status_burn.card_color_id = "color_white"
-	card_status_burn.card_texture_path = "sprites/card/status/card_burn.png"
+	card_status_burn.card_texture_path = "sprites/card/white/card_status_burn.png"
 	card_status_burn.card_description = "无法被打出。在你的回合结束时，受到 [damage] 点伤害。"
 	card_status_burn.card_type = CardData.CARD_TYPES.STATUS
 	card_status_burn.card_rarity = CardData.CARD_RARITIES.GENERATED

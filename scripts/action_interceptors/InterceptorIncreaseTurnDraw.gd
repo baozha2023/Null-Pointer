@@ -22,7 +22,4 @@ func process_action_interception(action_interceptor_processor: ActionInterceptor
 	var modified_draw_count: int = draw_count + draw_increase_charges
 	action_interceptor_processor.set_shadowed_action_values("draw_count", modified_draw_count)
 	
-	# decay the status instantly
-	ActionGenerator.generate_decay_status_effect(parent_combatant, INCREASE_TURN_DRAW_STATUS_EFFECT_ID, -draw_increase_charges)
-	
 	return ACTION_ACCEPTENCES.CONTINUE

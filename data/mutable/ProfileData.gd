@@ -34,6 +34,9 @@ static var ENABLE_ALL_DIFFICULTIES: bool = false
 ## Setting this to true will reveal all cards in the codex regardless of whether they have been discovered.
 static var UNLOCK_ALL_CARDS_IN_CODEX: bool = false
 
+## 测试专用常量：是否开启一键打 Boss（控制地图中一键 boss 按钮的可见性）
+static var ENABLE_ONE_CLICK_BOSS: bool = false
+
 ## Tracks which cards the player has discovered (encountered) in the game.
 @export var profile_discovered_cards: Dictionary = {}
 

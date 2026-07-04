@@ -293,7 +293,7 @@ func generate_insufficient_energy_speech_bubble() -> void:
 	generated_action.perform_action()
 
 ## Generates and instantly plays a sound file
-func generate_sound_action(audio_path: String, audio_path_is_absolute: bool = false):
+func generate_sound_action(audio_path: Array, audio_path_is_absolute: bool = false):
 	var player: Player = Global.get_player()
 	var action_data: Array[Dictionary] = [{Scripts.ACTION_PLAY_SOUND: {"audio_path": audio_path, "audio_path_is_absolute": audio_path_is_absolute}}]
 
