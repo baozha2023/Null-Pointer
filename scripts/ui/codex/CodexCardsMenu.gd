@@ -8,11 +8,13 @@ extends BaseMenu
 @onready var codex_card_cost_sort_button: Button = %CodexCardCostSortButton
 @onready var codex_card_type_sort_button: Button = %CodexCardTypeSortButton
 @onready var codex_card_detail_panel: Control = %CodexCardDetailPanel
+@onready var codex_search_line_edit: LineEdit = %CodexSearchLineEdit
 
 enum SortMode { RARITY, COST, TYPE }
 var current_sort_mode: SortMode = SortMode.RARITY
 
 var selected_card_pack_data: CardPackData = null
+var current_search_text: String = ""
 
 func _ready() -> void:
 	codex_card_rarity_sort_button.toggle_mode = true
@@ -21,6 +23,8 @@ func _ready() -> void:
 	
 	# 关闭自动跟随焦点，防止双击卡牌时列表自动滚动导致鼠标偏移而判定失败
 	codex_card_rgsc.follow_focus = false
+	
+	codex_search_line_edit.text_changed.connect(_on_search_text_changed)
 	
 	# 优化布局：增大卡牌的左右和上下间距
 	codex_card_rgsc.grid_container.add_theme_constant_override("h_separation", 45)
@@ -108,6 +112,10 @@ func _populate_codex_cards(card_pack_data: CardPackData = null) -> void:
 	# generate data to make cards
 	for card_object_id: String in card_object_ids:
 		var card_data: CardData = Global.get_card_data(card_object_id)
+		
+		if current_search_text != "" and not (current_search_text in card_data.card_name.to_lower()):
+			continue
+			
 		card_args.append([card_data, 0, false, true, true])
 	
 	if len(card_args) > 1:
@@ -121,6 +129,10 @@ func _populate_codex_cards(card_pack_data: CardPackData = null) -> void:
 
 func _on_codex_card_card_pack_button_pressed(card_pack_data: CardPackData):
 	selected_card_pack_data = card_pack_data
+	_populate_codex_cards(selected_card_pack_data)
+
+func _on_search_text_changed(new_text: String) -> void:
+	current_search_text = new_text.to_lower()
 	_populate_codex_cards(selected_card_pack_data)
 
 #region Sorting

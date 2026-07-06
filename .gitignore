@@ -13,3 +13,7 @@ export_presets.cfg
 external/profile.json
 .idea/
 .claude/
+
+# Logs and IDEs
+*.log
+.vscode/

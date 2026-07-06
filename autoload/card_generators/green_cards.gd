@@ -147,13 +147,13 @@ static func add_cards_green() -> void:
 	card_differentiation.card_name = "进程分化"
 	card_differentiation.card_color_id = "color_{0}".format([color])
 	card_differentiation.card_texture_path = "sprites/card/green/card_differentiation.png"
-	card_differentiation.card_description = "造成 [attack_damage] 点伤害。失去 [self_damage] 点完整度。"
+	card_differentiation.card_description = "造成 [damage] 点伤害。失去 [self_damage] 点完整度。"
 	card_differentiation.card_hint = "对目标造成高伤害，但你自己也会损失少量生命（完整度）。"
 	card_differentiation.card_type = CardData.CARD_TYPES.ATTACK
 	card_differentiation.card_rarity = CardData.CARD_RARITIES.UNCOMMON
 	card_differentiation.card_requires_target = true
-	card_differentiation.card_values = { "attack_damage": 12, "self_damage": 2 }
-	card_differentiation.card_upgrade_value_improvements = { "attack_damage": 5 }
+	card_differentiation.card_values = { "damage": 12, "self_damage": 2 }
+	card_differentiation.card_upgrade_value_improvements = { "damage": 5 }
 	card_differentiation.card_play_actions = [
 		{
 			Scripts.ACTION_DIRECT_DAMAGE: {
@@ -164,7 +164,6 @@ static func add_cards_green() -> void:
 		},
 		{
 			Scripts.ACTION_ATTACK_GENERATOR: { "audio_path": AudioConstants.SFX_GROUP_DAGGER_STAB, 
-				"custom_key_names": { "damage": "attack_damage" },
 				"number_of_attacks": 1,
 				"time_delay": 0.5,
 				"target_override": BaseAction.TARGET_OVERRIDES.SELECTED_TARGETS,
@@ -188,16 +187,16 @@ static func add_cards_green() -> void:
 	card_fertilize.card_first_upgrade_property_changes = { "card_description": "失去 [self_damage] 点完整度，获得 [energy_amount] 点算力。将当前防火墙全部转化为 [status_icon:status_effect_overshield]。" }
 	card_fertilize.card_play_actions = [
 		{
-			Scripts.ACTION_DIRECT_DAMAGE: {
-				"custom_key_names": { "damage": "self_damage" },
-				"bypass_block": true,
+			Scripts.ACTION_BLOCK_TO_STATUS: {
+				"status_effect_object_id": "status_effect_overshield",
 				"target_override": BaseAction.TARGET_OVERRIDES.PARENT,
 			},
 		},
 		{ Scripts.ACTION_ADD_ENERGY: { } },
 		{
-			Scripts.ACTION_BLOCK_TO_STATUS: {
-				"status_effect_object_id": "status_effect_overshield",
+			Scripts.ACTION_DIRECT_DAMAGE: {
+				"custom_key_names": { "damage": "self_damage" },
+				"bypass_block": true,
 				"target_override": BaseAction.TARGET_OVERRIDES.PARENT,
 			},
 		},

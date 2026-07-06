@@ -267,7 +267,8 @@ Single shader: `scripts/ui/outline.gdshader` — a `canvas_item` shader drawing 
 
 All UI scenes are preloaded in the `Scenes` singleton. UI scripts are in `scripts/ui/`. The root scene (`Root.tscn`) has three top-level children: **TitleScreen** (menus), **RunScreen** (in-game HUD), and **Tooltips** (global tooltip layer, Z-index 1000). Key subsystems:
 - **Card display**: `Card.tscn` + `CardDecorator.tscn` (for enchantment-like card visual modifications)
-- **Codex**: Browseable content encyclopedia with five tabs: Cards, Artifacts, Consumables, Enemies, and Glossary (keywords + status effects with descriptions). Card tab supports sorting by rarity/cost/type and **double-click** on any card opens `CodexCardDetailPanel` — a full overlay showing all card data: basic info, flags, pile routing, numeric values, upgrade paths, decorators, action hooks, keywords, and tags.
+- **Codex**: Browseable content encyclopedia with five tabs: Cards, Artifacts, Consumables, Enemies, and Glossary (keywords + status effects with descriptions). Card tab supports pack filtering, text searching, sorting by rarity/cost/type and **double-click** on any card opens `CodexCardDetailPanel` — a full overlay showing all card data: basic info, flags, pile routing, numeric values, upgrade paths, decorators, action hooks, keywords, and tags.
+- **Card Selection**: `CardSelectionOverlay.tscn` supports browsing, selecting cards, filtering by card packs, and text search.
 - **Map**: `MapLocation.tscn` with `Line2D` connections for Act navigation
 - **Rewards**: Card draft, artifact, and money reward screens
 - **Shop**: Purchase cards, artifacts, and consumables

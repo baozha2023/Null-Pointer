@@ -25,11 +25,12 @@ func perform_action():
 		
 		var action_data: Array[Dictionary] = [
 			{Scripts.ACTION_APPLY_STATUS: {
+				"status_effect_object_id": status_effect_object_id,
 				"status_charge_amount": status_charge_amount
 			}}
 		]
 		
-		var generated_action: BaseAction = ActionGenerator.create_actions(parent_combatant, card_play_request, targets, action_data, self)[0]
+		var generated_action: BaseAction = ActionGenerator.create_actions(parent_combatant, card_play_request, [target], action_data, self)[0]
 		generated_action.perform_action()
 
 func is_action_short_circuited() -> bool:

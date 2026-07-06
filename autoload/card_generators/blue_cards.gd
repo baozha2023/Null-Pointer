@@ -111,7 +111,10 @@ static func add_cards_blue() -> void:
 	card_stack_trace.card_energy_cost = 1
 	card_stack_trace.card_play_destination = HandManager.EXHAUST_PILE
 	card_stack_trace.card_values = {"energy_cost_zero": 0}
-	card_stack_trace.card_first_upgrade_property_changes = {"card_play_destination": HandManager.DISCARD_PILE}
+	card_stack_trace.card_first_upgrade_property_changes = {
+		"card_play_destination": HandManager.DISCARD_PILE,
+		"card_hint": "从弃牌堆（回收站）里选一张已打出的牌拿回手牌，且本回合打出它不花费用。"
+	}
 	card_stack_trace.card_play_actions = [
 		{
 			Scripts.ACTION_PICK_CARDS: {
@@ -556,7 +559,7 @@ static func add_cards_blue() -> void:
 	card_darknet_protocol.card_upgrade_value_improvements = {"multiplier_offset": 1}
 	card_darknet_protocol.card_first_upgrade_property_changes = {
 		"card_end_of_turn_destination": HandManager.DISCARD_PILE,
-		"card_description": "获得 X 层 [status_icon:status_effect_damage_increase]。",
+		"card_description": "获得 X+1 层 [status_icon:status_effect_damage_increase]。",
 	}
 	card_darknet_protocol.card_play_actions = [
 		{
@@ -590,7 +593,10 @@ static func add_cards_blue() -> void:
 	card_security_audit.card_energy_cost = 1
 	card_security_audit.card_play_destination = HandManager.EXHAUST_PILE
 	card_security_audit.card_values = {"status_charge_amount": 1, "status_effect_object_id": "status_effect_vulnerable"}
-	card_security_audit.card_first_upgrade_property_changes = {"card_play_destination": HandManager.DISCARD_PILE}
+	card_security_audit.card_first_upgrade_property_changes = {
+		"card_play_destination": HandManager.DISCARD_PILE,
+		"card_hint": "按你当前手牌数量，给目标叠加等量的 [status_icon:status_effect_vulnerable]。"
+	}
 	card_security_audit.card_play_actions = [
 		{
 			Scripts.ACTION_VARIABLE_COMBAT_STATS_MODIFIER: {
@@ -759,7 +765,7 @@ static func add_cards_blue() -> void:
 	card_botnet_strike.card_name = "僵尸网络打击"
 	card_botnet_strike.card_color_id = "color_{0}".format([color])
 	card_botnet_strike.card_texture_path = "sprites/card/blue/card_botnet_strike.png"
-	card_botnet_strike.card_description = "造成 [number_of_attacks] 次 [damage] 点伤害。在本时钟周期每打出过 1 个脚本，次数加 [number_of_attacks_modifier]。"
+	card_botnet_strike.card_description = "造成 [number_of_attacks] 次 [damage] 点伤害（在本时钟周期每打出过 1 个脚本，次数加 [number_of_attacks_modifier]）"
 	card_botnet_strike.card_hint = "本回合你每打出过一张牌，这次攻击就多攻击一段，越晚打出越强。"
 	card_botnet_strike.card_type = CardData.CARD_TYPES.ATTACK
 	card_botnet_strike.card_rarity = CardData.CARD_RARITIES.RARE

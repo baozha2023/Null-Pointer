@@ -5,7 +5,7 @@
 [ext_resource type="AnimationLibrary" uid="uid://dvbwuh87t2tha" path="res://animations/Combatant.res" id="2_p0uf2"]
 [ext_resource type="PackedScene" uid="uid://b0qk0vn81d0kp" path="res://scenes/combatants/LayeredHealthBar.tscn" id="3_ef7si"]
 [ext_resource type="Texture2D" uid="uid://dw4k1k81ap581" path="res://sprites/missing_texture.png" id="4_m3o5b"]
-[ext_resource type="Texture2D" uid="uid://d33u8m744fh03" path="res://icon.svg" id="6_2s8kq"]
+[ext_resource type="Texture2D" uid="uid://c45xfek4l50e5" path="res://sprites/intents/enemy_intent_attacking.png" id="6_2s8kq"]
 [ext_resource type="PackedScene" uid="uid://d3ay0q2ywlmkj" path="res://scenes/combatants/SpeechBubble.tscn" id="6_jg3sr"]
 [ext_resource type="PackedScene" uid="uid://bblblockind01" path="res://scenes/combatants/BlockIndicator.tscn" id="shield_scn"]
 

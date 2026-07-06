@@ -189,6 +189,7 @@ func _ready():
 	ProfileData.ENABLE_ALL_DIFFICULTIES = false
 	ProfileData.UNLOCK_ALL_CARDS_IN_CODEX = false
 	ProfileData.ENABLE_ONE_CLICK_BOSS = false
+	ProfileData.REQUIRE_BZ_GAMES_LAUNCH = false
 	StatsHandler.TRACK_RUN_HISTORY = true
 	
 	### Mod 支持和外部文件加载

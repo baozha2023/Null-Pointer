@@ -363,7 +363,7 @@ static func add_run_start_options() -> void:
 			Scripts.ACTION_PICK_CARDS: {
 				"use_parent_card": false, "min_card_amount": 1, "max_card_amount": 1,
 				"min_cards_are_required_for_action": false, "quick_pick": false, "can_back_out": false,
-				"random_selection": false, "card_pick_text": "选择升级", "card_pick_type": HandManager.DECK,
+				"random_selection": false, "card_pick_text": "选择升级", "card_pick_type": HandManager.UPGRADE_DECK,
 				"validator_data": [{ Scripts.VALIDATOR_CARD_UPGRADEABLE: { } }],
 				"action_data": [{ Scripts.ACTION_UPGRADE_CARDS: { } }]
 			}

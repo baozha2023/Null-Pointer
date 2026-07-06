@@ -30,455 +30,12 @@ func generate_production_data() -> void:
 	add_custom_ui()
 	add_custom_signals()
 
-	add_artifacts()
+	GlobalProdArtifactsGenerator.generate_artifacts()
 	add_card_decorators()
 	add_cards()
-
 	add_card_packs()
-	add_artifact_packs()
 	add_consumable_packs()
 
-#region Artifacts
-func add_artifacts() -> void:
-	var artifact_add_money: ArtifactData = ArtifactData.new("artifact_add_money")
-	artifact_add_money.artifact_name = "数据币外设插件"
-	artifact_add_money.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.COMMON
-	artifact_add_money.artifact_texture_path = "sprites/artifacts/artifact_add_money.png"
-	artifact_add_money.artifact_description = "获得时增加 200 数据币"
-	artifact_add_money.artifact_add_actions = [{ Scripts.ACTION_ADD_MONEY: { "money_amount": 200 } }]
-
-	Global.register_rod(artifact_add_money)
-
-	var artifact_high_latency: ArtifactData = ArtifactData.new("artifact_high_latency")
-	artifact_high_latency.artifact_name = "高延迟插件"
-	artifact_high_latency.artifact_texture_path = "sprites/artifacts/artifact_high_latency.png"
-	artifact_high_latency.artifact_description = "每回合开始时，少抽 1 张牌。"
-	artifact_high_latency.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.EVENT
-	artifact_high_latency.artifact_appears_in_artifact_packs = false
-	artifact_high_latency.artifact_counter_max = 999
-	artifact_high_latency.artifact_counter = 1
-	artifact_high_latency.artifact_first_turn_actions = [
-		{
-			Scripts.ACTION_APPLY_STATUS: {
-				"target_override": BaseAction.TARGET_OVERRIDES.PLAYER,
-				"status_effect_object_id": "status_effect_high_latency",
-				"custom_key_names": {
-					"status_charge_amount": "artifact_counter"
-				}
-			},
-		},
-	]
-	Global.register_rod(artifact_high_latency)
-
-	var artifact_memory_leak: ArtifactData = ArtifactData.new("artifact_memory_leak")
-	artifact_memory_leak.artifact_name = "内存泄漏插件"
-	artifact_memory_leak.artifact_texture_path = "sprites/artifacts/artifact_memory_leak.png"
-	artifact_memory_leak.artifact_description = "每回合开始时，失去 1 点完整度。"
-	artifact_memory_leak.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.EVENT
-	artifact_memory_leak.artifact_appears_in_artifact_packs = false
-	artifact_memory_leak.artifact_counter_max = 999
-	artifact_memory_leak.artifact_counter = 1
-	artifact_memory_leak.artifact_first_turn_actions = [
-		{
-			Scripts.ACTION_APPLY_STATUS: {
-				"target_override": BaseAction.TARGET_OVERRIDES.PLAYER,
-				"status_effect_object_id": "status_effect_memory_leak",
-				"custom_key_names": {
-					"status_charge_amount": "artifact_counter"
-				}
-			},
-		},
-	]
-	Global.register_rod(artifact_memory_leak)
-
-	var artifact_negate_money_gain: ArtifactData = ArtifactData.new("artifact_negate_money_gain")
-	artifact_negate_money_gain.artifact_name = "算力外设插件"
-	artifact_negate_money_gain.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.COMMON
-	artifact_negate_money_gain.artifact_texture_path = "sprites/artifacts/artifact_negate_money_gain.png"
-	artifact_negate_money_gain.artifact_description = "每时钟周期获得 {0}。无法再获得数据币".format([TextParser.ENERGY_ICON_KEYWORD])
-	artifact_negate_money_gain.artifact_add_actions = [
-		{
-			Scripts.ACTION_ADD_ENERGY: {
-				"target_overrides": BaseAction.TARGET_OVERRIDES.PLAYER,
-				"energy_amount_max": 1,
-			},
-		},
-	]
-	artifact_negate_money_gain.artifact_remove_actions = [
-		{
-			Scripts.ACTION_ADD_ENERGY: {
-				"target_overrides": BaseAction.TARGET_OVERRIDES.PLAYER,
-				"energy_amount_max": -1,
-			},
-		},
-	]
-	artifact_negate_money_gain.artifact_interceptor_ids = ["interceptor_negate_add_money"]
-
-	Global.register_rod(artifact_negate_money_gain)
-
-	var artifact_heal_on_combat_ended: ArtifactData = ArtifactData.new("artifact_heal_on_combat_ended")
-	artifact_heal_on_combat_ended.artifact_name = "战后治疗外设插件"
-	artifact_heal_on_combat_ended.artifact_texture_path = "sprites/artifacts/artifact_heal_on_combat_ended.png"
-	artifact_heal_on_combat_ended.artifact_description = "战斗结束时恢复5点完整度"
-	artifact_heal_on_combat_ended.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.COMMON
-	artifact_heal_on_combat_ended.artifact_end_of_combat_actions = [
-		{
-			Scripts.ACTION_ADD_HEALTH: { "target_override": BaseAction.TARGET_OVERRIDES.PLAYER, "health_amount": 5 },
-		},
-	]
-
-	Global.register_rod(artifact_heal_on_combat_ended)
-
-	var artifact_auto_restore: ArtifactData = ArtifactData.new("artifact_auto_restore")
-	artifact_auto_restore.artifact_name = "自适应修复外设"
-	artifact_auto_restore.artifact_texture_path = "sprites/artifacts/artifact_auto_restore.png"
-	artifact_auto_restore.artifact_description = "每回合开始时，完整度上限增加层数，并完全恢复。"
-	artifact_auto_restore.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.EVENT
-	
-	artifact_auto_restore.artifact_counter = 5
-	artifact_auto_restore.artifact_counter_max = 5
-	artifact_auto_restore.artifact_script_path = "res://scripts/artifacts/ArtifactAutoRestore.gd"
-	
-	Global.register_rod(artifact_auto_restore)
-
-	var artifact_full_heal: ArtifactData = ArtifactData.new("artifact_full_heal")
-	artifact_full_heal.artifact_name = "完全治疗外设插件"
-	artifact_full_heal.artifact_texture_path = "sprites/artifacts/artifact_full_heal.png"
-	artifact_full_heal.artifact_description = "获得时完全恢复完整度"
-	artifact_full_heal.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.RARE
-	artifact_full_heal.artifact_add_actions = [
-		{
-			Scripts.ACTION_HEAL_PERCENT: {
-				"target_override": BaseAction.TARGET_OVERRIDES.PLAYER,
-				"percentage_heal_amount": 1.0,
-			},
-		},
-	]
-
-	Global.register_rod(artifact_full_heal)
-
-	var artifact_draw_on_kill: ArtifactData = ArtifactData.new("artifact_draw_on_kill")
-	artifact_draw_on_kill.artifact_name = "击杀加载脚本外设插件"
-	artifact_draw_on_kill.artifact_texture_path = "sprites/artifacts/artifact_draw_on_kill.png"
-	artifact_draw_on_kill.artifact_description = "击杀敌人时加载一个脚本"
-	artifact_draw_on_kill.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.UNCOMMON
-	artifact_draw_on_kill.artifact_script_path = "res://scripts/artifacts/ArtifactDrawOnKill.gd"
-	Global.register_rod(artifact_draw_on_kill)
-
-	var artifact_draw_on_combat_start: ArtifactData = ArtifactData.new("artifact_draw_on_combat_start")
-	artifact_draw_on_combat_start.artifact_name = "初始加载脚本外设插件"
-	artifact_draw_on_combat_start.artifact_description = "首时钟周期额外加载2个脚本"
-	artifact_draw_on_combat_start.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.UNCOMMON
-	artifact_draw_on_combat_start.artifact_color_id = "color_green"
-	artifact_draw_on_combat_start.artifact_texture_path = "sprites/artifacts/artifact_draw_on_combat_start.png"
-	artifact_draw_on_combat_start.artifact_first_turn_actions = [{ Scripts.ACTION_DRAW_GENERATOR: { "draw_count": 2 } }]
-
-	Global.register_rod(artifact_draw_on_combat_start)
-
-	var artifact_energy_on_combat_start: ArtifactData = ArtifactData.new("artifact_energy_on_combat_start")
-	artifact_energy_on_combat_start.artifact_name = "初始算力外设插件"
-	artifact_energy_on_combat_start.artifact_description = "首时钟周期获得 {0}。".format([TextParser.ENERGY_ICON_KEYWORD])
-	artifact_energy_on_combat_start.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.UNCOMMON
-	artifact_energy_on_combat_start.artifact_texture_path = "sprites/artifacts/artifact_energy_on_combat_start.png"
-	artifact_energy_on_combat_start.artifact_first_turn_actions = [{ Scripts.ACTION_ADD_ENERGY: { "energy_amount": 1 } }]
-
-	Global.register_rod(artifact_energy_on_combat_start)
-
-	var artifact_easy_mode: ArtifactData = ArtifactData.new("artifact_easy_mode")
-	artifact_easy_mode.artifact_name = "安全模式外设插件"
-	artifact_easy_mode.artifact_texture_path = "sprites/artifacts/artifact_easy_mode.png"
-	artifact_easy_mode.artifact_description = "将敌人完整度设为1"
-	artifact_easy_mode.artifact_counter = 999
-	artifact_easy_mode.artifact_counter_max = 999
-	artifact_easy_mode.artifact_counter_reset_on_combat_end = -1
-	artifact_easy_mode.artifact_counter_reset_on_turn_start = -1
-	artifact_easy_mode.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.EVENT
-	artifact_easy_mode.artifact_script_path = "res://scripts/artifacts/ArtifactEasyMode.gd"
-
-	Global.register_rod(artifact_easy_mode)
-
-	var artifact_data_scarcity: ArtifactData = ArtifactData.new("artifact_data_scarcity")
-	artifact_data_scarcity.artifact_name = "数据贫瘠插件"
-	artifact_data_scarcity.artifact_description = "获得的数据币收益减少20%。"
-	artifact_data_scarcity.artifact_texture_path = "sprites/artifacts/artifact_data_scarcity.png"
-	artifact_data_scarcity.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.EVENT
-	artifact_data_scarcity.artifact_appears_in_artifact_packs = false
-	artifact_data_scarcity.artifact_interceptor_ids = ["interceptor_reduce_add_money"]
-	Global.register_rod(artifact_data_scarcity)
-
-	var artifact_inflation: ArtifactData = ArtifactData.new("artifact_inflation")
-	artifact_inflation.artifact_name = "通货膨胀插件"
-	artifact_inflation.artifact_description = "商店所有商品价格上涨25%。"
-	artifact_inflation.artifact_texture_path = "sprites/artifacts/artifact_inflation.png"
-	artifact_inflation.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.EVENT
-	artifact_inflation.artifact_appears_in_artifact_packs = false
-	artifact_inflation.artifact_interceptor_ids = ["interceptor_increase_shop_price"]
-	Global.register_rod(artifact_inflation)
-	
-	var artifact_data_abundance: ArtifactData = ArtifactData.new("artifact_data_abundance")
-	artifact_data_abundance.artifact_name = "数据充裕插件"
-	artifact_data_abundance.artifact_description = "所有数据币获取量增加20%。"
-	artifact_data_abundance.artifact_texture_path = "sprites/artifacts/artifact_data_abundance.png"
-	artifact_data_abundance.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.RARE
-	artifact_data_abundance.artifact_appears_in_artifact_packs = true
-	artifact_data_abundance.artifact_interceptor_ids = ["interceptor_increase_add_money"]
-	Global.register_rod(artifact_data_abundance)
-	
-	var artifact_deflation: ArtifactData = ArtifactData.new("artifact_deflation")
-	artifact_deflation.artifact_name = "通货紧缩插件"
-	artifact_deflation.artifact_description = "商店所有商品价格下降25%。"
-	artifact_deflation.artifact_texture_path = "sprites/artifacts/artifact_deflation.png"
-	artifact_deflation.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.RARE
-	artifact_deflation.artifact_appears_in_artifact_packs = true
-	artifact_deflation.artifact_interceptor_ids = ["interceptor_decrease_shop_price"]
-	Global.register_rod(artifact_deflation)
-
-	var artifact_block_on_attacks: ArtifactData = ArtifactData.new("artifact_block_on_attacks")
-	artifact_block_on_attacks.artifact_name = "攻击防火墙外设插件"
-	artifact_block_on_attacks.artifact_description = "每3次攻击获得5点防火墙"
-	artifact_block_on_attacks.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.COMMON
-	artifact_block_on_attacks.artifact_color_id = "color_red"
-	artifact_block_on_attacks.artifact_texture_path = "sprites/artifacts/artifact_block_on_attacks.png"
-	artifact_block_on_attacks.artifact_script_path = "res://scripts/artifacts/ArtifactBlockOnAttacks.gd"
-	artifact_block_on_attacks.artifact_counter_max = 3
-	artifact_block_on_attacks.artifact_counter_wraparound = true
-	artifact_block_on_attacks.artifact_counter_reset_on_turn_start = 0
-	artifact_block_on_attacks.artifact_counter_reset_on_combat_end = 0
-	artifact_block_on_attacks.artifact_max_counter_actions = [
-		{
-			Scripts.ACTION_BLOCK: { "block": 5, "target_override": BaseAction.TARGET_OVERRIDES.PLAYER, "audio_path": AudioConstants.SFX_GROUP_SHIELD_UP },
-		},
-	]
-
-	Global.register_rod(artifact_block_on_attacks)
-
-	var artifact_retain_hand: ArtifactData = ArtifactData.new("artifact_retain_hand")
-	artifact_retain_hand.artifact_name = "当前线程保留外设插件"
-	artifact_retain_hand.artifact_texture_path = "sprites/artifacts/artifact_retain_hand.png"
-	artifact_retain_hand.artifact_description = "时钟周期结束时，当前线程中的所有脚本不会被丢弃"
-	artifact_retain_hand.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.BOSS
-	artifact_retain_hand.artifact_script_path = "res://scripts/artifacts/ArtifactRetainHand.gd"
-
-	Global.register_rod(artifact_retain_hand)
-
-	# preserves energy between turns
-	var artifact_preserve_energy: ArtifactData = ArtifactData.new("artifact_preserve_energy")
-	artifact_preserve_energy.artifact_name = "算力保留外设插件"
-	artifact_preserve_energy.artifact_texture_path = "sprites/artifacts/artifact_preserve_energy.png"
-	artifact_preserve_energy.artifact_description = "时钟周期结束时，未消耗的算力将保留至下一周期"
-	artifact_preserve_energy.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.RARE
-	artifact_preserve_energy.artifact_first_turn_actions = [
-		{
-			Scripts.ACTION_APPLY_STATUS: {
-				"target_override": BaseAction.TARGET_OVERRIDES.PLAYER,
-				"status_effect_object_id": "status_effect_preserve_energy",
-			},
-		},
-	]
-	artifact_preserve_energy.artifact_script_path = "res://scripts/artifacts/BaseArtifact.gd"
-
-	Global.register_rod(artifact_preserve_energy)
-
-	# Enables a rest action when obtained, which grants a damage increase at the start of combat
-	var artifact_increase_attack_on_rest: ArtifactData = ArtifactData.new("artifact_increase_attack_on_rest")
-	artifact_increase_attack_on_rest.artifact_name = "碎片整理增伤外设插件"
-	artifact_increase_attack_on_rest.artifact_description = "在维护终端可进行碎片整理。每场战斗开始时获得 1 层 [status_icon:status_effect_damage_increase] 算力增幅（最高提升 3 次）。"
-	artifact_increase_attack_on_rest.artifact_counter = 0
-	artifact_increase_attack_on_rest.artifact_counter_max = 3
-	artifact_increase_attack_on_rest.artifact_color_id = "color_orange"
-	artifact_increase_attack_on_rest.artifact_texture_path = "sprites/artifacts/artifact_increase_attack_on_rest.png"
-	artifact_increase_attack_on_rest.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.COMMON
-	artifact_increase_attack_on_rest.artifact_add_actions = [
-		{
-			Scripts.ACTION_UPDATE_REST_ACTIONS: { "add_rest_action_object_ids": ["rest_action_increase_attack_on_rest"] },
-		},
-	]
-	artifact_increase_attack_on_rest.artifact_first_turn_actions = [
-		{
-			Scripts.ACTION_APPLY_STATUS: {
-				"target_override": BaseAction.TARGET_OVERRIDES.PLAYER,
-				"status_effect_object_id": "status_effect_damage_increase",
-				"custom_key_names": {
-					# convert artifact counter passed in from BaseArtifact, into the status charges
-					"status_charge_amount": "artifact_counter",
-				},
-			},
-		},
-	]
-
-	Global.register_rod(artifact_increase_attack_on_rest)
-
-	var artifact_see_top_of_draw_pile: ArtifactData = ArtifactData.new("artifact_see_top_of_draw_pile")
-	artifact_see_top_of_draw_pile.artifact_name = "查看内存队列外设插件"
-	artifact_see_top_of_draw_pile.artifact_description = "可以查看内存队列顶部的脚本"
-	artifact_see_top_of_draw_pile.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.COMMON
-	artifact_see_top_of_draw_pile.artifact_color_id = "color_blue"
-	artifact_see_top_of_draw_pile.artifact_texture_path = "sprites/artifacts/artifact_see_top_of_draw_pile.png"
-	artifact_see_top_of_draw_pile.artifact_right_click_actions = [
-		{
-			Scripts.ACTION_EMIT_CUSTOM_SIGNAL: {
-				"custom_signal_object_id": "custom_signal_open_see_top_ui",
-				"custom_signal_value": 0
-			}
-		}
-	]
-	Global.register_rod(artifact_see_top_of_draw_pile)
-
-	var artifact_forge: ArtifactData = ArtifactData.new("artifact_forge")
-	artifact_forge.artifact_name = "锻造台外设"
-	artifact_forge.artifact_description = "解锁锻造台，提供高级的代码编译和改造功能"
-	artifact_forge.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.EVENT	
-	artifact_forge.artifact_color_id = "color_orange"
-	artifact_forge.artifact_script_path = "res://scripts/artifacts/ArtifactForge.gd"
-	artifact_forge.artifact_counter_max = 999
-	artifact_forge.artifact_texture_path = "sprites/artifacts/artifact_forge.png"
-	artifact_forge.artifact_right_click_actions = [
-		{
-			Scripts.ACTION_EMIT_CUSTOM_SIGNAL: {
-				"custom_signal_object_id": "custom_signal_open_forge_ui",
-				"custom_signal_value": 0
-			}
-		}
-	]
-	artifact_forge.artifact_turn_start_actions = [
-		{Scripts.ACTION_TAKE_FROM_FORGE: {
-			"take_type": -1, 
-			"clear_after_take": true,
-			"execute_directly": false
-		}}
-	]
-	Global.register_rod(artifact_forge)
-
-
-	# Makes an attack card top deck when obtained
-	var artifact_top_deck_attack_card: ArtifactData = ArtifactData.new("artifact_top_deck_attack_card")
-	artifact_top_deck_attack_card.artifact_name = "攻击脚本置顶外设插件"
-	artifact_top_deck_attack_card.artifact_texture_path = "sprites/artifacts/artifact_top_deck_attack_card.png"
-	artifact_top_deck_attack_card.artifact_description = "选择一个攻击脚本置于脚本库顶部。"
-	artifact_top_deck_attack_card.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.COMMON
-	artifact_top_deck_attack_card.artifact_add_actions = [
-		{
-			Scripts.ACTION_PICK_CARDS: {
-				"max_card_amount": 1,
-				"min_card_amount": 1,
-				"min_cards_are_required_for_action": true,
-				"random_selection": false,
-				"quick_pick": true,
-				"card_pick_type": HandManager.DECK,
-				"card_pick_text": "选择一个脚本置于脚本库顶",
-				"action_data": [
-					# convert the card to top deck
-					{
-						Scripts.ACTION_CHANGE_CARD_PROPERTIES: {
-							"modify_parent_card": false,
-							"card_properties": { "card_unremovable_from_deck": true, "card_untransformable_from_deck": true, "card_first_shuffle_priority": 1 },
-						},
-					},
-				],
-				# only non-generated removable attack cards allowed
-				"validator_data": [
-					{ Scripts.VALIDATOR_CARD_TYPE: { "card_types": [CardData.CARD_TYPES.ATTACK] } },
-					{ Scripts.VALIDATOR_CARD_RARITY: { "card_rarities_exclude": [CardData.CARD_RARITIES.GENERATED] } },
-					{ Scripts.VALIDATOR_CARD_PROPERTIES: { "card_property_name": "card_unremovable_from_deck", "operator": "==", "comparison_value": false } },
-				],
-			},
-		},
-	]
-
-	Global.register_rod(artifact_top_deck_attack_card)
-
-	var artifact_right_click_shuffle_deck: ArtifactData = ArtifactData.new("artifact_right_click_shuffle_deck")
-	artifact_right_click_shuffle_deck.artifact_name = "重洗外设插件"
-	artifact_right_click_shuffle_deck.artifact_description = "右键将回收站的数据重新分配入内存队列。"
-	artifact_right_click_shuffle_deck.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.COMMON
-	artifact_right_click_shuffle_deck.artifact_color_id = "color_green"
-	artifact_right_click_shuffle_deck.artifact_texture_path = "sprites/artifacts/artifact_right_click_shuffle_deck.png"
-	artifact_right_click_shuffle_deck.artifact_script_path = "res://scripts/artifacts/BaseArtifact.gd"
-	artifact_right_click_shuffle_deck.artifact_right_click_actions = [
-		{ Scripts.ACTION_RESHUFFLE: { } },
-	]
-
-	Global.register_rod(artifact_right_click_shuffle_deck)
-
-	# 垃圾回收器：消耗脚本时恢复完整度
-	var artifact_garbage_collector: ArtifactData = ArtifactData.new("artifact_garbage_collector")
-	artifact_garbage_collector.artifact_name = "垃圾回收器"
-	artifact_garbage_collector.artifact_description = "每当一个脚本被消耗时，恢复 2 点完整度。"
-	artifact_garbage_collector.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.UNCOMMON
-	artifact_garbage_collector.artifact_texture_path = "sprites/artifacts/artifact_garbage_collector.png"
-	artifact_garbage_collector.artifact_script_path = "res://scripts/artifacts/ArtifactGarbageCollector.gd"
-
-	Global.register_rod(artifact_garbage_collector)
-
-	# 镜像流量复制：手动丢弃脚本时抽牌
-	var artifact_traffic_mirroring: ArtifactData = ArtifactData.new("artifact_traffic_mirroring")
-	artifact_traffic_mirroring.artifact_name = "镜像流量复制"
-	artifact_traffic_mirroring.artifact_description = "每当手动丢弃一个脚本时，加载 1 个脚本。"
-	artifact_traffic_mirroring.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.UNCOMMON
-	artifact_traffic_mirroring.artifact_texture_path = "sprites/artifacts/artifact_traffic_mirroring.png"
-	artifact_traffic_mirroring.artifact_script_path = "res://scripts/artifacts/ArtifactTrafficMirroring.gd"
-
-	Global.register_rod(artifact_traffic_mirroring)
-
-	# 零信任网关：首回合AOE减益 + 自防
-	var artifact_zero_trust_gateway: ArtifactData = ArtifactData.new("artifact_zero_trust_gateway")
-	artifact_zero_trust_gateway.artifact_name = "零信任网关"
-	artifact_zero_trust_gateway.artifact_description = "首时钟周期对所有敌人施加 2 层漏洞暴露，并获得 4 点防火墙。"
-	artifact_zero_trust_gateway.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.RARE
-	artifact_zero_trust_gateway.artifact_texture_path = "sprites/artifacts/artifact_zero_trust_gateway.png"
-	artifact_zero_trust_gateway.artifact_first_turn_actions = [
-		{
-			Scripts.ACTION_APPLY_STATUS: {
-				"target_override": BaseAction.TARGET_OVERRIDES.ALL_ENEMIES,
-				"status_effect_object_id": "status_effect_vulnerable",
-				"status_charge_amount": 2,
-			},
-		},
-		{
-			Scripts.ACTION_BLOCK: {
-				"target_override": BaseAction.TARGET_OVERRIDES.PLAYER,
-				"block": 4,
-				"audio_path": AudioConstants.SFX_GROUP_SHIELD_UP,
-			},
-		},
-	]
-
-	Global.register_rod(artifact_zero_trust_gateway)
-
-	# 热修复补丁：攻击充能 → 抽牌 + 回能
-	var artifact_hotfix_patch: ArtifactData = ArtifactData.new("artifact_hotfix_patch")
-	artifact_hotfix_patch.artifact_name = "热修复补丁"
-	artifact_hotfix_patch.artifact_description = "每打出 3 次攻击，加载 1 个脚本并获得 {0}。".format([TextParser.ENERGY_ICON_KEYWORD])
-	artifact_hotfix_patch.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.RARE
-	artifact_hotfix_patch.artifact_texture_path = "sprites/artifacts/artifact_hotfix_patch.png"
-	artifact_hotfix_patch.artifact_script_path = "res://scripts/artifacts/ArtifactHotfixPatch.gd"
-	artifact_hotfix_patch.artifact_counter_max = 3
-	artifact_hotfix_patch.artifact_counter_wraparound = true
-	artifact_hotfix_patch.artifact_counter_reset_on_turn_start = 0
-	artifact_hotfix_patch.artifact_counter_reset_on_combat_end = 0
-	artifact_hotfix_patch.artifact_max_counter_actions = [
-		{ Scripts.ACTION_DRAW_GENERATOR: { "draw_count": 1 } },
-		{ Scripts.ACTION_ADD_ENERGY: { "energy_amount": 1 } },
-	]
-
-	Global.register_rod(artifact_hotfix_patch)
-
-	# 进程看门狗：濒死救援，单次触发后自移除
-	var artifact_watchdog: ArtifactData = ArtifactData.new("artifact_watchdog")
-	artifact_watchdog.artifact_name = "进程看门狗"
-	artifact_watchdog.artifact_description = "每场战斗中，当完整度首次低于 50% 时，恢复 30% 最大完整度。触发后此外设被永久移除。"
-	artifact_watchdog.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.BOSS
-	artifact_watchdog.artifact_texture_path = "sprites/artifacts/artifact_watchdog.png"
-	artifact_watchdog.artifact_script_path = "res://scripts/artifacts/ArtifactWatchdog.gd"
-
-	Global.register_rod(artifact_watchdog)
-
-	### Filler Artifacts
-
-
-
-
-#endregion
 
 #region Consumables
 func add_consumables() -> void:
@@ -1795,6 +1352,36 @@ func add_action_interceptors() -> void:
 	interceptor_high_latency.action_intercepted_action_paths = [Scripts.ACTION_DRAW_GENERATOR]
 	Global.register_rod(interceptor_high_latency)
 
+	var interceptor_brute_force_attack: ActionInterceptorData = ActionInterceptorData.new("interceptor_brute_force_attack")
+	interceptor_brute_force_attack.action_interceptor_modifies_parent = true
+	interceptor_brute_force_attack.action_interceptor_script_path = Scripts.INTERCEPTOR_BRUTE_FORCE_ATTACK
+	interceptor_brute_force_attack.action_intercepted_action_paths = [Scripts.ACTION_ATTACK]
+	Global.register_rod(interceptor_brute_force_attack)
+
+	var interceptor_brute_force_draw: ActionInterceptorData = ActionInterceptorData.new("interceptor_brute_force_draw")
+	interceptor_brute_force_draw.action_interceptor_modifies_parent = true
+	interceptor_brute_force_draw.action_interceptor_script_path = Scripts.INTERCEPTOR_BRUTE_FORCE_DRAW
+	interceptor_brute_force_draw.action_intercepted_action_paths = [Scripts.ACTION_DRAW_GENERATOR]
+	Global.register_rod(interceptor_brute_force_draw)
+
+	var interceptor_zero_day_db: ActionInterceptorData = ActionInterceptorData.new("interceptor_zero_day_db")
+	interceptor_zero_day_db.action_interceptor_modifies_parent = true
+	interceptor_zero_day_db.action_interceptor_script_path = Scripts.INTERCEPTOR_ZERO_DAY_DB
+	interceptor_zero_day_db.action_intercepted_action_paths = [Scripts.ACTION_APPLY_STATUS]
+	Global.register_rod(interceptor_zero_day_db)
+
+	var interceptor_overflow_stack: ActionInterceptorData = ActionInterceptorData.new("interceptor_overflow_stack")
+	interceptor_overflow_stack.action_interceptor_modifies_parent = false
+	interceptor_overflow_stack.action_interceptor_script_path = Scripts.INTERCEPTOR_OVERFLOW_STACK
+	interceptor_overflow_stack.action_intercepted_action_paths = [Scripts.ACTION_APPLY_STATUS]
+	Global.register_rod(interceptor_overflow_stack)
+
+	var interceptor_packet_sniffer: ActionInterceptorData = ActionInterceptorData.new("interceptor_packet_sniffer")
+	interceptor_packet_sniffer.action_interceptor_modifies_parent = true
+	interceptor_packet_sniffer.action_interceptor_script_path = Scripts.INTERCEPTOR_PACKET_SNIFFER
+	interceptor_packet_sniffer.action_intercepted_action_paths = [Scripts.ACTION_APPLY_STATUS]
+	Global.register_rod(interceptor_packet_sniffer)
+
 
 
 #endregion
@@ -1936,9 +1523,9 @@ func add_characters() -> void:
 		"card_basic_attack_green",
 		"card_basic_attack_green",
 		"card_basic_attack_green",
-		"card_basic_attack_green",
+        "card_basic_attack_green",
 		"card_basic_block_green",
-		"card_basic_block_green",
+        "card_basic_block_green",
 		"card_basic_block_green",
 		"card_basic_block_green",
         "card_energy_next_turn"
@@ -1954,12 +1541,16 @@ func add_characters() -> void:
 			"sprites/characters/character_green/attack/character_green_attack_2.png",
 			"sprites/characters/character_green/attack/character_green_attack_3.png",
 			"sprites/characters/character_green/attack/character_green_attack_4.png",
+			"sprites/characters/character_green/attack/character_green_attack_5.png",
+			"sprites/characters/character_green/attack/character_green_attack_6.png",
 		],
 		[
 			"sprites/characters/character_green/death/character_green_death_1.png",
 			"sprites/characters/character_green/death/character_green_death_2.png",
 			"sprites/characters/character_green/death/character_green_death_3.png",
 			"sprites/characters/character_green/death/character_green_death_4.png",
+			"sprites/characters/character_green/death/character_green_death_5.png",
+			"sprites/characters/character_green/death/character_green_death_6.png",
 		],
 	)
 
@@ -2032,12 +1623,12 @@ func add_characters() -> void:
 	character_blue.character_starting_artifact_pack_ids = ["artifact_pack_white", "artifact_pack_{0}".format([character_color])]
 	character_blue.character_starting_consumable_pack_ids = ["consumable_pack_white", "consumable_pack_{0}".format([character_color])]
 	character_blue.character_starting_card_object_ids = [
-		"card_exploit_token",
-		"card_exploit_token",
 		"card_basic_attack_blue",
 		"card_basic_attack_blue",
-		"card_privilege_escalation",
-		"card_privilege_escalation",
+		"card_basic_attack_blue",
+		"card_basic_attack_blue",
+		"card_basic_block_blue",
+		"card_basic_block_blue",
 		"card_basic_block_blue",
 		"card_basic_block_blue",
     	"card_energy_next_turn"
@@ -2091,7 +1682,7 @@ func add_characters() -> void:
 		  "card_basic_attack_orange",
 		  "card_basic_attack_orange",
 		  "card_basic_block_orange",
-		  "card_basic_block_orange",
+          "card_basic_block_orange",
 		  "card_basic_block_orange",
 		  "card_basic_block_orange",
           "card_energy_next_turn"
@@ -2196,6 +1787,15 @@ func add_run_modifiers() -> void:
 	run_modifier_draft_all_colors.run_modifier_modifier_script_path = Scripts.RUN_MODIFIER_CUSTOM_DRAFT_ALL_COLORS
 
 	Global.register_rod(run_modifier_draft_all_colors)
+
+	var run_modifier_test_mode: RunModifierData = RunModifierData.new("run_modifier_test_mode")
+	run_modifier_test_mode.run_modifier_name = "测试模式"
+	run_modifier_test_mode.run_modifier_description = "初始自带万能调试仪和算力调试仪，方便测试卡牌和逻辑。"
+	run_modifier_test_mode.run_modifier_is_custom = true
+	run_modifier_test_mode.run_modifier_exclusive_to_modifier_ids = []
+	run_modifier_test_mode.run_modifier_modifier_script_path = Scripts.RUN_MODIFIER_CUSTOM_TEST_MODE
+
+	Global.register_rod(run_modifier_test_mode)
 
 	### Automatic Modifiers
 
@@ -2523,35 +2123,6 @@ func add_card_packs() -> void:
 #endregion
 #region Artifact Packs
 
-func add_artifact_packs() -> void:
-	# all artifacts in game, with no filtering
-	var artifact_pack_all: ArtifactPackData = ArtifactPackData.new("artifact_pack_all")
-	artifact_pack_all.exclude_non_standard_rarities = false
-	Global.register_rod(artifact_pack_all)
-
-	# common pool artifacts, ignoring non-standard types and rarities
-	# all characters should have this and their color by default
-	var artifact_pack_white: ArtifactPackData = ArtifactPackData.new("artifact_pack_white")
-	artifact_pack_white.artifact_pack_color_id = "color_white"
-	Global.register_rod(artifact_pack_white)
-
-	var artifact_pack_red: ArtifactPackData = ArtifactPackData.new("artifact_pack_red")
-	artifact_pack_red.artifact_pack_color_id = "color_red"
-	Global.register_rod(artifact_pack_red)
-
-	var artifact_pack_blue: ArtifactPackData = ArtifactPackData.new("artifact_pack_blue")
-	artifact_pack_blue.artifact_pack_color_id = "color_blue"
-	Global.register_rod(artifact_pack_blue)
-
-	var artifact_pack_green: ArtifactPackData = ArtifactPackData.new("artifact_pack_green")
-	artifact_pack_green.artifact_pack_color_id = "color_green"
-	Global.register_rod(artifact_pack_green)
-
-	var artifact_pack_orange: ArtifactPackData = ArtifactPackData.new("artifact_pack_orange")
-	artifact_pack_orange.artifact_pack_color_id = "color_orange"
-	Global.register_rod(artifact_pack_orange)
-
-#endregion
 
 #region Consumable Packs
 func add_consumable_packs() -> void:

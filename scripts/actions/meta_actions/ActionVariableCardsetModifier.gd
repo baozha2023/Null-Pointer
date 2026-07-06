@@ -24,20 +24,17 @@ func perform_action():
 			for action_script_path in action:
 				for action_path in action:
 					var action_values: Dictionary = action[action_script_path]
-					for value_key in action_values.keys():
-						if value_key in multiplied_values:
-							var base_value: int = multiplied_values_bases.get(value_key, 0)
-							var value: int = action_values[value_key]
-							action_values[value_key] = base_value + (value * (input_energy + multiplier_offset))
+					for value_key in multiplied_values:
+						var base_value: int = multiplied_values_bases.get(value_key, 0)
+						var value: int = 0
+						if action_values.has(value_key):
+							value = action_values[value_key]
+						elif card_play_request.card_values.has(value_key):
+							value = card_play_request.card_values[value_key]
+						
+						action_values[value_key] = base_value + (value * (input_energy + multiplier_offset))
 			
 			modified_action_data.append(action)
-		
-		# also modifies any card play values
-		for value_key in card_play_request.card_values.keys():
-			if value_key in multiplied_values:
-				var base_value: int = multiplied_values_bases.get(value_key, 0)
-				var value: int = card_play_request.card_values[value_key]
-				card_play_request.card_values[value_key] = base_value + (value * (input_energy + multiplier_offset))
 		
 		var generated_actions: Array[BaseAction] = ActionGenerator.create_actions(parent_combatant, card_play_request, targets, modified_action_data, self)
 		ActionHandler.add_actions(generated_actions)

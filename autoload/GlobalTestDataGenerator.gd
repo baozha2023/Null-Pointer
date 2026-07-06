@@ -55,16 +55,15 @@ func add_test_artifacts_to_player() -> void:
 func add_test_artifacts() -> void:
 	var artifact_add_money: ArtifactData = ArtifactData.new("artifact_add_money")
 	artifact_add_money.artifact_name = "外设插件：获得数据币"
-	artifact_add_money.artifact_texture_path = "sprites/artifacts/artifact_add_money.png"
-	artifact_add_money.artifact_description = "获得时增加 200 数据币"
-	artifact_add_money.artifact_add_actions = [{Scripts.ACTION_ADD_MONEY: {"money_amount": 200}}]
+	artifact_add_money.artifact_description = "获得时增加 [color=green]200[/color] 数据币。"
 	
 	Global.register_rod(artifact_add_money)
 	
 	var artifact_negate_money_gain: ArtifactData = ArtifactData.new("artifact_negate_money_gain")
 	artifact_negate_money_gain.artifact_name = "外设插件：数据币禁止"
+	artifact_negate_money_gain.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.BOSS
 	artifact_negate_money_gain.artifact_texture_path = "sprites/artifacts/artifact_negate_money_gain.png"
-	artifact_negate_money_gain.artifact_description = "每时钟周期获得 {0}。无法再获得数据币".format([TextParser.ENERGY_ICON_KEYWORD])
+	artifact_negate_money_gain.artifact_description = "每时钟周期获得 [energy_icon]。无法再获得数据币"
 	artifact_negate_money_gain.artifact_add_actions = [{Scripts.ACTION_ADD_ENERGY:{
 		"target_overrides": BaseAction.TARGET_OVERRIDES.PLAYER,
 		"energy_amount_max": 1,
@@ -80,8 +79,8 @@ func add_test_artifacts() -> void:
 	var artifact_heal_on_combat_ended: ArtifactData = ArtifactData.new("artifact_heal_on_combat_ended")
 	artifact_heal_on_combat_ended.artifact_name = "外设插件：战后回复"
 	artifact_heal_on_combat_ended.artifact_texture_path = "sprites/artifacts/artifact_heal_on_combat_ended.png"
-	artifact_heal_on_combat_ended.artifact_description = "战斗结束时回复5点完整度"
-	artifact_heal_on_combat_ended.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.COMMON
+	artifact_heal_on_combat_ended.artifact_description = "战斗结束时恢复 [color=green]5[/color] 点完整度。"
+	artifact_heal_on_combat_ended.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.UNCOMMON
 	artifact_heal_on_combat_ended.artifact_end_of_combat_actions = [{
 			Scripts.ACTION_ADD_HEALTH: {
 				"target_override": BaseAction.TARGET_OVERRIDES.PLAYER,
@@ -108,7 +107,7 @@ func add_test_artifacts() -> void:
 	var artifact_draw_on_kill: ArtifactData = ArtifactData.new("artifact_draw_on_kill")
 	artifact_draw_on_kill.artifact_name = "外设插件：击杀加载脚本"
 	artifact_draw_on_kill.artifact_texture_path = "sprites/artifacts/artifact_draw_on_kill.png"
-	artifact_draw_on_kill.artifact_description = "击杀敌人时加载一个脚本"
+	artifact_draw_on_kill.artifact_description = "击杀敌人时加载 [color=blue]1[/color] 个脚本。"
 	artifact_draw_on_kill.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.UNCOMMON
 	artifact_draw_on_kill.artifact_script_path = "res://scripts/artifacts/ArtifactDrawOnKill.gd"
 	Global.register_rod(artifact_draw_on_kill)
@@ -116,8 +115,8 @@ func add_test_artifacts() -> void:
 	
 	var artifact_draw_on_combat_start: ArtifactData = ArtifactData.new("artifact_draw_on_combat_start")
 	artifact_draw_on_combat_start.artifact_name = "外设插件：战斗加载脚本"
-	artifact_draw_on_combat_start.artifact_description = "首时钟周期额外加载2个脚本"
-	artifact_draw_on_combat_start.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.UNCOMMON
+	artifact_draw_on_combat_start.artifact_description = "首时钟周期额外加载 [color=blue]2[/color] 个脚本。"
+	artifact_draw_on_combat_start.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.BASIC
 	artifact_draw_on_combat_start.artifact_color_id = "color_green"
 	artifact_draw_on_combat_start.artifact_texture_path = "sprites/artifacts/artifact_draw_on_combat_start.png"
 	artifact_draw_on_combat_start.artifact_first_turn_actions = [{Scripts.ACTION_DRAW_GENERATOR: {"draw_count": 2}}]
@@ -127,8 +126,9 @@ func add_test_artifacts() -> void:
 	
 	var artifact_easy_mode: ArtifactData = ArtifactData.new("artifact_easy_mode")
 	artifact_easy_mode.artifact_name = "外设插件：安全模式"
+	artifact_easy_mode.artifact_color_id = ""
 	artifact_easy_mode.artifact_texture_path = "sprites/artifacts/artifact_easy_mode.png"
-	artifact_easy_mode.artifact_description = "将所有敌人的完整度设为1"
+	artifact_easy_mode.artifact_description = "将所有敌人的完整度设为 [color=red]1[/color]。"
 	artifact_easy_mode.artifact_counter = 999
 	artifact_easy_mode.artifact_counter_max = 999
 	artifact_easy_mode.artifact_counter_reset_on_combat_end = -1
@@ -140,7 +140,8 @@ func add_test_artifacts() -> void:
 	
 	var artifact_data_scarcity: ArtifactData = ArtifactData.new("artifact_data_scarcity")
 	artifact_data_scarcity.artifact_name = "数据贫瘠插件"
-	artifact_data_scarcity.artifact_description = "获得的数据币收益减少20%。"
+	artifact_data_scarcity.artifact_color_id = ""
+	artifact_data_scarcity.artifact_description = "获得的数据币收益减少 [color=red]20%[/color]。"
 	artifact_data_scarcity.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.EVENT
 	artifact_data_scarcity.artifact_appears_in_artifact_packs = false
 	artifact_data_scarcity.artifact_interceptor_ids = ["interceptor_reduce_add_money"]
@@ -148,7 +149,8 @@ func add_test_artifacts() -> void:
 
 	var artifact_inflation: ArtifactData = ArtifactData.new("artifact_inflation")
 	artifact_inflation.artifact_name = "通货膨胀插件"
-	artifact_inflation.artifact_description = "商店所有商品价格上涨25%。"
+	artifact_inflation.artifact_color_id = ""
+	artifact_inflation.artifact_description = "商店所有商品价格上涨 [color=red]25%[/color]。"
 	artifact_inflation.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.EVENT
 	artifact_inflation.artifact_appears_in_artifact_packs = false
 	artifact_inflation.artifact_interceptor_ids = ["interceptor_increase_shop_price"]
@@ -156,8 +158,8 @@ func add_test_artifacts() -> void:
 	
 	var artifact_block_on_attacks: ArtifactData = ArtifactData.new("artifact_block_on_attacks")
 	artifact_block_on_attacks.artifact_name = "外设插件：攻击加盾"
-	artifact_block_on_attacks.artifact_description = "每攻击3次获得5点防火墙"
-	artifact_block_on_attacks.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.COMMON
+	artifact_block_on_attacks.artifact_description = "每 [color=blue]3[/color] 次攻击获得 [color=blue]5[/color] 点防火墙。当前：[color=blue][artifact_counter][/color]/3"
+	artifact_block_on_attacks.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.BASIC
 	artifact_block_on_attacks.artifact_color_id = "color_red"
 	artifact_block_on_attacks.artifact_texture_path = "sprites/artifacts/artifact_block_on_attacks.png"
 	artifact_block_on_attacks.artifact_script_path = "res://scripts/artifacts/ArtifactBlockOnAttacks.gd"
@@ -183,10 +185,10 @@ func add_test_artifacts() -> void:
 	# Enables a rest action when obtained, which grants a damage increase at the start of combat
 	var artifact_increase_attack_on_rest: ArtifactData = ArtifactData.new("artifact_increase_attack_on_rest")
 	artifact_increase_attack_on_rest.artifact_name = "外设插件：碎片整理增伤"
-	artifact_increase_attack_on_rest.artifact_description = "在维护终端可永久提升 1 点攻击力（最高提升 3 点）"
+	artifact_increase_attack_on_rest.artifact_description = "在维护终端可永久提升 [color=green]1[/color] 点攻击力（最高提升 [color=green]3[/color] 点）。当前：[color=green][artifact_counter][/color]/3"
 	artifact_increase_attack_on_rest.artifact_counter = 0
 	artifact_increase_attack_on_rest.artifact_counter_max = 3
-	artifact_increase_attack_on_rest.artifact_color_id = "color_orange"
+	artifact_increase_attack_on_rest.artifact_color_id = "color_red"
 	artifact_increase_attack_on_rest.artifact_texture_path = "sprites/artifacts/artifact_increase_attack_on_rest.png"
 	artifact_increase_attack_on_rest.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.COMMON
 	artifact_increase_attack_on_rest.artifact_add_actions = [{
@@ -206,8 +208,8 @@ func add_test_artifacts() -> void:
 	
 	var artifact_see_top_of_draw_pile: ArtifactData = ArtifactData.new("artifact_see_top_of_draw_pile")
 	artifact_see_top_of_draw_pile.artifact_name = "外设插件：查看内存队列"
-	artifact_see_top_of_draw_pile.artifact_description = "可以查看内存队列顶部的脚本"
-	artifact_see_top_of_draw_pile.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.COMMON
+	artifact_see_top_of_draw_pile.artifact_description = "可以预见内存队列顶部的脚本。\n[color=gray]（支持右键/双击操作）[/color]"
+	artifact_see_top_of_draw_pile.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.BASIC
 	artifact_see_top_of_draw_pile.artifact_color_id = "color_blue"
 	artifact_see_top_of_draw_pile.artifact_texture_path = "sprites/artifacts/artifact_see_top_of_draw_pile.png"
 	artifact_see_top_of_draw_pile.artifact_right_click_actions = [
@@ -223,8 +225,8 @@ func add_test_artifacts() -> void:
 
 	var artifact_forge: ArtifactData = ArtifactData.new("artifact_forge")
 	artifact_forge.artifact_name = "锻造台外设"
-	artifact_forge.artifact_description = "解锁锻造台，提供高级的代码编译和改造功能"
-	artifact_forge.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.COMMON
+	artifact_forge.artifact_description = "解锁锻造台，提供高级的代码编译和改造功能。\n[color=gray]（支持右键/双击操作）[/color]"
+	artifact_forge.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.BASIC
 	artifact_forge.artifact_color_id = "color_orange"
 	artifact_forge.artifact_script_path = "res://scripts/artifacts/ArtifactForge.gd"
 	artifact_forge.artifact_counter_max = 999
@@ -244,7 +246,7 @@ func add_test_artifacts() -> void:
 	var artifact_top_deck_attack_card: ArtifactData = ArtifactData.new("artifact_top_deck_attack_card")
 	artifact_top_deck_attack_card.artifact_name = "外设插件：攻击脚本置顶"
 	artifact_top_deck_attack_card.artifact_texture_path = "sprites/artifacts/artifact_top_deck_attack_card.png"
-	artifact_top_deck_attack_card.artifact_description = "选择一个攻击脚本，使其出现在脚本库顶部。"
+	artifact_top_deck_attack_card.artifact_description = "选择一个攻击脚本，使其出现在内存队列顶部。"
 	artifact_top_deck_attack_card.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.COMMON
 	artifact_top_deck_attack_card.artifact_add_actions = [
 	{
@@ -280,7 +282,7 @@ func add_test_artifacts() -> void:
 	
 	var artifact_right_click_shuffle_deck: ArtifactData = ArtifactData.new("artifact_right_click_shuffle_deck")
 	artifact_right_click_shuffle_deck.artifact_name = "外设插件：重新分配"
-	artifact_right_click_shuffle_deck.artifact_description = "右键将回收站重新分配入内存队列。"
+	artifact_right_click_shuffle_deck.artifact_description = "将回收站重新分配入内存队列。\n[color=gray]（支持右键/双击操作）[/color]"
 	artifact_right_click_shuffle_deck.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.COMMON
 	artifact_right_click_shuffle_deck.artifact_color_id = "color_green"
 	artifact_right_click_shuffle_deck.artifact_texture_path = "sprites/artifacts/artifact_right_click_shuffle_deck.png"
@@ -710,7 +712,7 @@ func add_test_rest_actions() -> void:
 	Scripts.ACTION_PICK_CARDS: {
 		"min_card_amount": 1,
 		"max_card_amount": 1,
-		"card_pick_type": HandManager.DECK,
+		"card_pick_type": HandManager.UPGRADE_DECK,
 		"card_pick_text": "选择最多 {0} 个脚本升级。已选 {1} 个",
 		"min_cards_are_required_for_action": true, # won't fire if you cancel it
 		"quick_pick": false,
@@ -1462,7 +1464,7 @@ func add_test_dialogue() -> void:
 	dialogue_modify_card_option_3.dialogue_option_actions = [
 		{
 		Scripts.ACTION_PICK_CARDS: {
-			"card_pick_type": HandManager.DECK,
+			"card_pick_type": HandManager.UPGRADE_DECK,
 			"action_data": [{Scripts.ACTION_UPGRADE_CARDS: {}}],
 			"validator_data": [
 				{Scripts.VALIDATOR_CARD_UPGRADEABLE: {}}
@@ -1805,13 +1807,13 @@ func add_test_keywords() -> void:
 	var keyword_top_deck: KeywordData = KeywordData.new("keyword_top_deck")
 	keyword_top_deck.keyword_name = "置顶"
 	keyword_top_deck.keyword_prefix = "[前置] "
-	keyword_top_deck.keyword_text_bb_code = "战斗开始时置于脚本库顶部"
+	keyword_top_deck.keyword_text_bb_code = "战斗开始时置于内存队列顶部"
 	Global.register_rod(keyword_top_deck)
 	
 	var keyword_bottom_deck: KeywordData = KeywordData.new("keyword_bottom_deck")
 	keyword_bottom_deck.keyword_name = "置底"
 	keyword_bottom_deck.keyword_prefix = "[前置] "
-	keyword_bottom_deck.keyword_text_bb_code = "战斗开始时置于脚本库底部"
+	keyword_bottom_deck.keyword_text_bb_code = "战斗开始时置于内存队列底部"
 	Global.register_rod(keyword_bottom_deck)
 		
 	var keyword_retain: KeywordData = KeywordData.new("keyword_retain")
@@ -2371,7 +2373,7 @@ func add_test_run_start_options() -> void:
 	run_start_option_upgrade_all_damage.run_start_option_actions = [
 		{
 		Scripts.ACTION_PICK_CARDS: {
-			"card_pick_type": HandManager.DECK,
+			"card_pick_type": HandManager.UPGRADE_DECK,
 			"min_cards_are_required": false,
 			"random_selection": true,
 			"max_card_amount": 99,
@@ -4541,7 +4543,7 @@ func add_test_cards() -> void:
 	
 	# Discard up to the top 3 attacks from draw pile
 	var card_discard_attacks_from_draw: CardData = CardData.new("card_discard_attacks_from_draw")
-	card_discard_attacks_from_draw.card_name = "丢弃脚本库攻击脚本"
+	card_discard_attacks_from_draw.card_name = "丢弃内存队列攻击脚本"
 	card_discard_attacks_from_draw.card_color_id = "color_blue"
 	card_discard_attacks_from_draw.card_texture_path = "external/sprites/cards/blue/card_blue.png"
 	card_discard_attacks_from_draw.card_description = "弃置内存队列顶部最多 [pickable_cards_max_amount] 个攻击脚本。"
@@ -4675,10 +4677,10 @@ func add_test_cards() -> void:
 	
 	# Upgrade all cards in combat deck card
 	var card_upgrade_entire_deck: CardData = CardData.new("card_upgrade_entire_deck")
-	card_upgrade_entire_deck.card_name = "升级战斗脚本库"
+	card_upgrade_entire_deck.card_name = "升级战斗内存队列"
 	card_upgrade_entire_deck.card_color_id = "color_white"
 	card_upgrade_entire_deck.card_texture_path = "external/sprites/cards/white/card_white.png"
-	card_upgrade_entire_deck.card_description = "本场战斗中升级脚本库中的所有脚本。"
+	card_upgrade_entire_deck.card_description = "本场战斗中升级内存队列中的所有脚本。"
 	card_upgrade_entire_deck.card_type = CardData.CARD_TYPES.SKILL
 	card_upgrade_entire_deck.card_rarity = CardData.CARD_RARITIES.RARE
 	card_upgrade_entire_deck.card_requires_target = false
@@ -4782,7 +4784,7 @@ func add_test_cards() -> void:
 	card_draft_random_player_pool.card_name = "随机加载"
 	card_draft_random_player_pool.card_color_id = "color_white"
 	card_draft_random_player_pool.card_texture_path = "external/sprites/cards/white/card_white.png"
-	card_draft_random_player_pool.card_description = "从玩家的脚本库中随机添加一个脚本到当前线程。其费用为 0"
+	card_draft_random_player_pool.card_description = "从玩家的内存队列中随机添加一个脚本到当前线程。其费用为 0"
 	card_draft_random_player_pool.card_type = CardData.CARD_TYPES.SKILL
 	card_draft_random_player_pool.card_rarity = CardData.CARD_RARITIES.RARE
 	card_draft_random_player_pool.card_requires_target = false

@@ -160,8 +160,13 @@ func display_codex_artifact_tooltip(artifact_data: ArtifactData) -> void:
 		var rarity_text: String = "\n"
 		rarity_text += "[" + ARTIFACT_RARITY_DISPLAY.get(artifact_data.artifact_rarity, "???") + "]"
 		
+		var context: Dictionary = {
+			"artifact_counter": artifact_data.artifact_counter,
+		}
+		var parsed_desc: String = TextParser.parse(artifact_data.artifact_description, context)
+		
 		var artifact_tooltip_bbcode: String = "[color=orange]{0}[/color]{1}\n{2}".format([
-			artifact_data.artifact_name, rarity_text, artifact_data.artifact_description
+			artifact_data.artifact_name, rarity_text, parsed_desc
 		])
 		display_tooltip(artifact_tooltip_bbcode, true, false, false, 0.0, 0.0, null)
 

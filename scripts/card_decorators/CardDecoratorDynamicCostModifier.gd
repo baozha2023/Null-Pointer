@@ -11,6 +11,11 @@ func _init(parent_card: Card, card_decorator_data: CardDecoratorData):
 func _connect_signals():
 	Signals.card_drawn.connect(_on_card_drawn)
 	Signals.combat_stat_changed.connect(_on_combat_stat_changed)
+	Signals.player_turn_started.connect(_on_player_turn_started)
+
+func _on_player_turn_started():
+	_update_card_cost()
+
 
 func _on_card_drawn(_card_data: CardData):
 	# keep, so card's cost updates on draw

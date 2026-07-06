@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://bg7gmq537qyn5"]
 
 [ext_resource type="Script" uid="uid://ckfi22o2jit0b" path="res://scripts/Root.gd" id="1_ak6de"]
+[ext_resource type="PackedScene" uid="uid://dfb0l2x5vqxyz" path="res://scenes/ui/CardSelectionOverlay.tscn" id="100_cso"]
 [ext_resource type="Theme" uid="uid://cd5rw86bhiyn" path="res://themes/title_screen_theme.tres" id="2_bi5lp"]
 [ext_resource type="Script" uid="uid://dw0xyfu580mkb" path="res://scripts/ui/menus/TitleScreen.gd" id="2_m6atk"]
 [ext_resource type="Texture2D" uid="uid://d33u8m744fh03" path="res://icon.svg" id="3_8ax2e"]
@@ -602,13 +603,15 @@ theme_override_font_sizes/font_size = 16
 text = "外设插件名称"
 clip_text = true
 
-[node name="CharacterArtifactDescriptionLabel" type="Label" parent="TitleScreen/NewRunMenu/CharacterSelect/VBoxContainer/Control2/VBoxContainer" unique_id=1447978852]
+[node name="CharacterArtifactDescriptionLabel" type="RichTextLabel" parent="TitleScreen/NewRunMenu/CharacterSelect/VBoxContainer/Control2/VBoxContainer" unique_id=1447978852]
 unique_name_in_owner = true
 layout_direction = 2
 layout_mode = 2
-theme_override_font_sizes/font_size = 16
+theme_override_font_sizes/normal_font_size = 16
+bbcode_enabled = true
 text = "描述"
-autowrap_mode = 2
+fit_content = true
+scroll_active = false
 
 [node name="StartRun" type="Control" parent="TitleScreen/NewRunMenu" unique_id=142426646]
 layout_mode = 1
@@ -1103,13 +1106,23 @@ theme_override_constants/margin_top = 8
 theme_override_constants/margin_right = 8
 theme_override_constants/margin_bottom = 16
 
-[node name="CodexCardPackContainer" type="VBoxContainer" parent="TitleScreen/CodexMenu/VSplitContainer/CodexContentDisplay/CodexCardsMenu/HSplitContainer/ScrollContainer/MarginContainer2" unique_id=2098949023]
+[node name="LeftPanel" type="VBoxContainer" parent="TitleScreen/CodexMenu/VSplitContainer/CodexContentDisplay/CodexCardsMenu/HSplitContainer/ScrollContainer/MarginContainer2"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="CodexCardPackContainer" type="VBoxContainer" parent="TitleScreen/CodexMenu/VSplitContainer/CodexContentDisplay/CodexCardsMenu/HSplitContainer/ScrollContainer/MarginContainer2/LeftPanel" unique_id=2098949023]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="CodexCardColorButton" parent="TitleScreen/CodexMenu/VSplitContainer/CodexContentDisplay/CodexCardsMenu/HSplitContainer/ScrollContainer/MarginContainer2/CodexCardPackContainer" unique_id=1144760387 instance=ExtResource("11_kw7ld")]
+[node name="CodexCardColorButton" parent="TitleScreen/CodexMenu/VSplitContainer/CodexContentDisplay/CodexCardsMenu/HSplitContainer/ScrollContainer/MarginContainer2/LeftPanel/CodexCardPackContainer" unique_id=1144760387 instance=ExtResource("11_kw7ld")]
 layout_mode = 2
+
+[node name="CodexSearchLineEdit" type="LineEdit" parent="TitleScreen/CodexMenu/VSplitContainer/CodexContentDisplay/CodexCardsMenu/HSplitContainer/ScrollContainer/MarginContainer2/LeftPanel"]
+unique_name_in_owner = true
+layout_mode = 2
+placeholder_text = "搜索..."
+clear_button_enabled = true
 
 [node name="MarginContainer" type="MarginContainer" parent="TitleScreen/CodexMenu/VSplitContainer/CodexContentDisplay/CodexCardsMenu/HSplitContainer" unique_id=1412776906]
 layout_mode = 2
@@ -1123,7 +1136,7 @@ unique_name_in_owner = true
 layout_mode = 2
 follow_focus = true
 horizontal_scroll_mode = 3
-vertical_scroll_mode = 3
+vertical_scroll_mode = 2
 script = ExtResource("10_kpmo0")
 follow_focus_margin = 200
 allow_horizontal_scroll = false
@@ -2855,83 +2868,10 @@ offset_right = 672.0
 offset_bottom = 575.0
 text = "恢复进程"
 
-[node name="CardSelectionOverlay" type="Control" parent="RunScreen" unique_id=262278364]
+[node name="CardSelectionOverlay" parent="RunScreen" unique_id=262278364 instance=ExtResource("100_cso")]
 unique_name_in_owner = true
-process_mode = 1
-visible = false
-z_index = 10
-anchors_preset = 0
-offset_right = 1200.0
-offset_bottom = 700.0
-script = ExtResource("10_bwtvr")
-
-[node name="Background" type="ColorRect" parent="RunScreen/CardSelectionOverlay" unique_id=257922218]
-layout_mode = 0
-offset_right = 1200.0
-offset_bottom = 700.0
-color = Color(0.203922, 0.188235, 0.215686, 0.631373)
-
-[node name="BackButton" type="Button" parent="RunScreen/CardSelectionOverlay" unique_id=414985548]
 visible = false
 layout_mode = 0
-offset_left = 16.0
-offset_top = 344.0
-offset_right = 160.0
-offset_bottom = 375.0
-theme_override_styles/normal = SubResource("StyleBoxTexture_btn_common_normal")
-theme_override_styles/pressed = SubResource("StyleBoxTexture_btn_common_pressed")
-theme_override_styles/hover = SubResource("StyleBoxTexture_btn_common_hover")
-text = "<-"
-
-[node name="ConfirmButton" type="Button" parent="RunScreen/CardSelectionOverlay" unique_id=575565750]
-visible = false
-layout_mode = 0
-offset_left = 504.0
-offset_top = 40.0
-offset_right = 648.0
-offset_bottom = 71.0
-theme_override_styles/normal = SubResource("StyleBoxTexture_btn_common_normal")
-theme_override_styles/pressed = SubResource("StyleBoxTexture_btn_common_pressed")
-theme_override_styles/hover = SubResource("StyleBoxTexture_btn_common_hover")
-text = "确认"
-
-[node name="CardPickLabel" type="Label" parent="RunScreen/CardSelectionOverlay" unique_id=1269392340]
-layout_mode = 0
-offset_left = 176.0
-offset_top = 8.0
-offset_right = 1016.0
-offset_bottom = 32.0
-text = "选择脚本"
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="ScrollContainer" type="ScrollContainer" parent="RunScreen/CardSelectionOverlay" unique_id=209764368]
-layout_mode = 0
-offset_left = 152.0
-offset_top = 80.0
-offset_right = 1000.0
-offset_bottom = 680.0
-follow_focus = true
-horizontal_scroll_mode = 3
-vertical_scroll_mode = 3
-script = ExtResource("25_t3i5t")
-wheel_scroll_damper = SubResource("Resource_tn5yy")
-dragging_scroll_damper = SubResource("Resource_kpmo0")
-follow_focus_margin = 200
-allow_horizontal_scroll = false
-metadata/_edit_group_ = true
-
-[node name="MarginContainer" type="MarginContainer" parent="RunScreen/CardSelectionOverlay/ScrollContainer" unique_id=414322937]
-layout_mode = 2
-theme_override_constants/margin_left = 24
-theme_override_constants/margin_top = 8
-theme_override_constants/margin_bottom = 96
-
-[node name="CardContainer" type="GridContainer" parent="RunScreen/CardSelectionOverlay/ScrollContainer/MarginContainer" unique_id=1755940544]
-layout_mode = 2
-theme_override_constants/h_separation = 20
-theme_override_constants/v_separation = 20
-columns = 4
 
 [node name="OptionSelectionOverlay" parent="RunScreen" unique_id=1233169154 instance=ExtResource("99_optsel")]
 visible = false

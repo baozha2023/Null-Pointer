@@ -151,27 +151,27 @@ color = Color(0, 0, 0, 1)
 [node name="CardTexture" type="TextureRect" parent="Pivot/CardVisual" unique_id=2043221152]
 unique_name_in_owner = true
 layout_mode = 0
-offset_left = 25.0
-offset_top = 20.0
-offset_right = 165.0
-offset_bottom = 160.0
+offset_left = 36.0
+offset_top = 19.0
+offset_right = 156.0
+offset_bottom = 139.0
 texture = ExtResource("1_7f6u3")
 expand_mode = 1
 
 [node name="CardName" type="RichTextLabel" parent="Pivot/CardVisual/CardTexture" unique_id=1200185766]
 unique_name_in_owner = true
 layout_mode = 0
-offset_left = 38.0
-offset_top = 4.0
-offset_right = 139.0
-offset_bottom = 30.0
-theme_override_font_sizes/normal_font_size = 18
+offset_left = 28.0
+offset_top = 1.0
+offset_right = 123.0
+offset_bottom = 24.0
+theme_override_font_sizes/normal_font_size = 16
 bbcode_enabled = true
 text = "脚本名称"
 scroll_active = false
 script = ExtResource("3_8gkbw")
 _max_size = 18
-_current_font_size = 18
+_current_font_size = 16
 _editor_defaults_set = true
 
 [node name="Background" type="TextureRect" parent="Pivot/CardVisual" unique_id=1358371467]
@@ -187,16 +187,16 @@ stretch_mode = 5
 
 [node name="ColorRect" type="ColorRect" parent="Pivot/CardVisual" unique_id=898164059]
 layout_mode = 0
-offset_left = 27.0
-offset_top = 160.0
-offset_right = 164.0
-offset_bottom = 162.0
+offset_left = 25.0
+offset_top = 139.0
+offset_right = 167.0
+offset_bottom = 141.0
 
 [node name="CardDescription" type="RichTextLabel" parent="Pivot/CardVisual" unique_id=1283790728]
 unique_name_in_owner = true
 layout_mode = 0
 offset_left = 29.0
-offset_top = 162.0
+offset_top = 144.0
 offset_right = 161.0
 offset_bottom = 221.0
 theme_override_font_sizes/normal_font_size = 12
@@ -236,9 +236,9 @@ vertical_alignment = 1
 unique_name_in_owner = true
 layout_mode = 0
 offset_left = 20.0
-offset_top = 141.0
+offset_top = 118.0
 offset_right = 170.0
-offset_bottom = 160.0
+offset_bottom = 137.0
 theme_override_constants/line_spacing = -3
 theme_override_font_sizes/font_size = 12
 text = "脚本类型"

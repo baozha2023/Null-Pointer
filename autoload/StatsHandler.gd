@@ -395,6 +395,7 @@ func _add_to_combat_enum_stat(stat_enum: int, stat_amount: int) -> void:
 		# convert the combat enum stat to a stat name and then apply to both
 		var stat_name: String = current_combat_stats._get_stat_name(stat_enum)
 		add_to_stat(stat_name, stat_amount)
+		Signals.combat_stat_changed.emit(stat_enum)
 
 ## Adds a value to a given custom stat. Can accept custom stats.
 ## If combat is happening will add to that as well.

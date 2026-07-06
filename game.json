@@ -1,0 +1,12 @@
+{
+  "id": "com.bz.nullpointer",
+  "name": "Null Pointer",
+  "version": "2.2.0",
+  "description": "基于 Godot 开发、深受《杀戮尖塔》启发的赛博骇客 Roguelike 牌组构建游戏。",
+  "author": "BZ-Games Team",
+  "platformVersion": ">=3.0.0",
+  "entry": "Null Pointer.exe",
+  "type": "singleplayer",
+  "achievements": [],
+  "statistics": []
+}

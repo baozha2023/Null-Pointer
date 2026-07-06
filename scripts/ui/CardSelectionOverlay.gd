@@ -6,6 +6,13 @@ extends Control
 @onready var card_picking_label: Label = $CardPickLabel
 @onready var confirm_button: Button = $ConfirmButton
 @onready var back_button: Button = $BackButton
+@onready var left_panel: VBoxContainer = $LeftPanel
+@onready var card_pack_container: VBoxContainer = $LeftPanel/CardPackContainer
+@onready var search_line_edit: LineEdit = $LeftPanel/SearchLineEdit
+
+var all_pickable_cards: Array[CardData] = []
+var selected_card_pack_data: CardPackData = null
+var current_search_text: String = ""
 
 var current_card_pick_action: ActionBasePickCards = null	# an action currently requesting cards from the player to select. If null clicking cards plays them
 
@@ -22,6 +29,7 @@ func _ready():
 	
 	confirm_button.button_up.connect(_on_confirm_button_up)
 	back_button.button_up.connect(_on_back_button_up)
+	search_line_edit.text_changed.connect(_on_search_text_changed)
 	
 	Signals.run_started.connect(_on_run_started)
 	Signals.run_ended.connect(_on_run_ended)
@@ -31,7 +39,19 @@ func _on_card_pick_requested(card_pick_action: ActionBasePickCards):
 		if HandManager.DECK_PICK_TYPES.has(card_pick_action.get_card_pick_type()):
 			set_card_mode(CARD_MODES.SELECT)
 			current_card_pick_action = card_pick_action
-			populate_cards(card_pick_action.get_pickable_cards())
+			all_pickable_cards = card_pick_action.get_pickable_cards()
+			
+			if current_card_pick_action.has_method("is_filter_enabled") and current_card_pick_action.is_filter_enabled():
+				left_panel.visible = true
+				current_search_text = ""
+				search_line_edit.text = ""
+				_populate_card_packs()
+			else:
+				left_panel.visible = false
+				selected_card_pack_data = null
+				current_search_text = ""
+				search_line_edit.text = ""
+				populate_cards(all_pickable_cards)
 			
 			card_picking_label.text = current_card_pick_action.get_card_pick_text()
 			confirm_button.visible = current_card_pick_action.are_enough_cards_picked()
@@ -59,11 +79,70 @@ func clear_cards():
 	for child in card_container.get_children():
 		child.queue_free()
 
+func _populate_card_packs() -> void:
+	for child in card_pack_container.get_children():
+		child.queue_free()
+	
+	var card_pack_bg = ButtonGroup.new()
+	var is_first = true
+	
+	var card_pack_ids: Array = Global._id_to_card_pack_data.keys()
+	card_pack_ids.erase("card_pack_all")
+	card_pack_ids.push_front("card_pack_all")
+	
+	for card_pack_id: String in card_pack_ids:
+		var card_pack_data: CardPackData = Global.get_card_pack_data(card_pack_id)
+		if card_pack_data == null or not card_pack_data.card_pack_displays_in_codex:
+			continue
+			
+		var card_pack_button: CodexCardPackButton = Scenes.CODEX_CARD_PACK_BUTTON.instantiate()
+		card_pack_container.add_child(card_pack_button)
+		
+		card_pack_button.toggle_mode = true
+		card_pack_button.button_group = card_pack_bg
+		if is_first:
+			card_pack_button.button_pressed = true
+			selected_card_pack_data = card_pack_data
+			is_first = false
+		
+		card_pack_button.init(card_pack_data)
+		card_pack_button.codex_card_card_pack_button_pressed.connect(_on_card_pack_button_pressed)
+	
+	_filter_and_populate_cards()
+
+func _on_card_pack_button_pressed(card_pack_data: CardPackData) -> void:
+	selected_card_pack_data = card_pack_data
+	_filter_and_populate_cards()
+
+func _on_search_text_changed(new_text: String) -> void:
+	current_search_text = new_text.to_lower()
+	_filter_and_populate_cards()
+
+func _filter_and_populate_cards() -> void:
+	var filtered_cards: Array[CardData] = []
+	for card in all_pickable_cards:
+		var color_match = false
+		if selected_card_pack_data == null or selected_card_pack_data.object_id == "card_pack_all":
+			color_match = true
+		elif card.card_color_id == selected_card_pack_data.card_pack_color_id:
+			color_match = true
+			
+		var search_match = false
+		if current_search_text == "":
+			search_match = true
+		elif current_search_text in card.card_name.to_lower():
+			search_match = true
+			
+		if color_match and search_match:
+			filtered_cards.append(card)
+			
+	populate_cards(filtered_cards)
+
 func _on_card_hovered(_card: Card):
-	pass
+	UIHover.scale_up(_card)
 
 func _on_card_unhovered(_card: Card):
-	pass
+	UIHover.scale_down(_card)
 
 func _on_card_selected(card: Card):
 	if card_mode == CARD_MODES.SELECT:

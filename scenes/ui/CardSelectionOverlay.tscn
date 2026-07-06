@@ -1,0 +1,120 @@
+[gd_scene format=3 uid="uid://dfb0l2x5vqxy0"]
+
+[ext_resource type="Script" uid="uid://brwptyvf1yacl" path="res://scripts/ui/CardSelectionOverlay.gd" id="1_cso"]
+[ext_resource type="Script" uid="uid://b2t515tpjrija" path="res://addons/smooth_scroll_container/SmoothScrollContainer.gd" id="25_t3i5t"]
+[ext_resource type="Script" uid="uid://b3nvcsku8u75w" path="res://addons/smooth_scroll_container/scroll_damper/expo_scroll_damper.gd" id="26_08sam"]
+[ext_resource type="Texture2D" uid="uid://djt1sc74fp60x" path="res://sprites/btn_common_hover.png" id="btn_common_hover"]
+[ext_resource type="Texture2D" uid="uid://dab6flcgmdgpn" path="res://sprites/btn_common_normal.png" id="btn_common_normal"]
+[ext_resource type="Texture2D" uid="uid://bkrlkjojwbv77" path="res://sprites/btn_common_pressed.png" id="btn_common_pressed"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_btn_common_normal"]
+texture = ExtResource("btn_common_normal")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_btn_common_pressed"]
+texture = ExtResource("btn_common_pressed")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_btn_common_hover"]
+texture = ExtResource("btn_common_hover")
+
+[sub_resource type="Resource" id="Resource_tn5yy"]
+script = ExtResource("26_08sam")
+friction = 10.0
+metadata/_custom_type_script = "uid://b3nvcsku8u75w"
+
+[sub_resource type="Resource" id="Resource_kpmo0"]
+script = ExtResource("26_08sam")
+metadata/_custom_type_script = "uid://b3nvcsku8u75w"
+
+[node name="CardSelectionOverlay" type="Control" unique_id=858413541]
+process_mode = 1
+z_index = 10
+layout_mode = 3
+anchors_preset = 0
+offset_right = 1200.0
+offset_bottom = 700.0
+script = ExtResource("1_cso")
+
+[node name="Background" type="ColorRect" parent="." unique_id=1780478139]
+layout_mode = 0
+offset_right = 1200.0
+offset_bottom = 700.0
+color = Color(0.203922, 0.188235, 0.215686, 0.631373)
+
+[node name="BackButton" type="Button" parent="." unique_id=2006628872]
+visible = false
+layout_mode = 0
+offset_left = 16.0
+offset_top = 344.0
+offset_right = 160.0
+offset_bottom = 375.0
+theme_override_styles/normal = SubResource("StyleBoxTexture_btn_common_normal")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_btn_common_pressed")
+theme_override_styles/hover = SubResource("StyleBoxTexture_btn_common_hover")
+text = "<-"
+
+[node name="ConfirmButton" type="Button" parent="." unique_id=1282914665]
+visible = false
+layout_mode = 0
+offset_left = 504.0
+offset_top = 40.0
+offset_right = 648.0
+offset_bottom = 71.0
+theme_override_styles/normal = SubResource("StyleBoxTexture_btn_common_normal")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_btn_common_pressed")
+theme_override_styles/hover = SubResource("StyleBoxTexture_btn_common_hover")
+text = "确认"
+
+[node name="CardPickLabel" type="Label" parent="." unique_id=728129373]
+layout_mode = 0
+offset_left = 176.0
+offset_top = 8.0
+offset_right = 1016.0
+offset_bottom = 32.0
+text = "选择脚本"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="LeftPanel" type="VBoxContainer" parent="."]
+visible = false
+layout_mode = 0
+offset_left = 16.0
+offset_top = 80.0
+offset_right = 136.0
+offset_bottom = 680.0
+theme_override_constants/separation = 16
+
+[node name="CardPackContainer" type="VBoxContainer" parent="LeftPanel"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="SearchLineEdit" type="LineEdit" parent="LeftPanel"]
+layout_mode = 2
+placeholder_text = "搜索..."
+clear_button_enabled = true
+
+[node name="ScrollContainer" type="ScrollContainer" parent="." unique_id=1567815245]
+layout_mode = 0
+offset_left = 216.0
+offset_top = 80.0
+offset_right = 1115.0
+offset_bottom = 680.0
+follow_focus = true
+horizontal_scroll_mode = 3
+vertical_scroll_mode = 2
+script = ExtResource("25_t3i5t")
+wheel_scroll_damper = SubResource("Resource_tn5yy")
+dragging_scroll_damper = SubResource("Resource_kpmo0")
+follow_focus_margin = 200
+allow_horizontal_scroll = false
+
+[node name="MarginContainer" type="MarginContainer" parent="ScrollContainer" unique_id=978299137]
+layout_mode = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_bottom = 96
+
+[node name="CardContainer" type="GridContainer" parent="ScrollContainer/MarginContainer" unique_id=427499645]
+layout_mode = 2
+theme_override_constants/h_separation = 20
+theme_override_constants/v_separation = 20
+columns = 4

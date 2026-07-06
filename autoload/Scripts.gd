@@ -182,6 +182,7 @@ const VALIDATOR_IN_COMBAT: String = "res://scripts/validators/ValidatorInCombat.
 const VALIDATOR_PLAYER_TURN: String = "res://scripts/validators/ValidatorPlayerTurn.gd"
 const VALIDATOR_TURN_COUNT: String = "res://scripts/validators/ValidatorTurnCount.gd"
 const VALIDATOR_FORGE_LOAD: String = "res://scripts/validators/ValidatorForgeLoad.gd"
+const VALIDATOR_FORGE_HAS_ACTION_TYPE: String = "res://scripts/validators/ValidatorForgeHasActionType.gd"
 
 # enemy validators
 const VALIDATOR_ENEMY_TYPE: String = "res://scripts/validators/ValidatorEnemyType.gd"
@@ -245,6 +246,13 @@ const INTERCEPTOR_PRESERVE_OVERSHIELD: String = "res://scripts/action_intercepto
 # boss mechanic interceptors
 const INTERCEPTOR_DAMAGE_THRESHOLD: String = "res://scripts/action_interceptors/InterceptorDamageThreshold.gd"
 const INTERCEPTOR_CARD_PLAY_REACTION: String = "res://scripts/action_interceptors/InterceptorCardPlayReaction.gd"
+
+# custom artifact interceptors
+const INTERCEPTOR_BRUTE_FORCE_ATTACK: String = "res://scripts/action_interceptors/InterceptorBruteForceAttack.gd"
+const INTERCEPTOR_BRUTE_FORCE_DRAW: String = "res://scripts/action_interceptors/InterceptorBruteForceDraw.gd"
+const INTERCEPTOR_ZERO_DAY_DB: String = "res://scripts/action_interceptors/InterceptorZeroDayDB.gd"
+const INTERCEPTOR_OVERFLOW_STACK: String = "res://scripts/action_interceptors/InterceptorOverflowStack.gd"
+const INTERCEPTOR_PACKET_SNIFFER: String = "res://scripts/action_interceptors/InterceptorPacketSniffer.gd"
 #endregion
 
 #region Run Modifiers
@@ -260,4 +268,5 @@ const RUN_MODIFIER_DIFFICULTY_5: String = "res://scripts/run_modifiers/difficult
 const RUN_MODIFIER_CUSTOM_DRAFT_ALL_COLORS: String = "res://scripts/run_modifiers/custom/RunModifierCustomDraftAllColors.gd"
 const RUN_MODIFIER_CUSTOM_EASYMODE: String = "res://scripts/run_modifiers/custom/RunModifierCustomEasyMode.gd"
 const RUN_MODIFIER_CUSTOM_ENDLESS_MODE: String = "res://scripts/run_modifiers/custom/RunModifierCustomEndlessMode.gd"
+const RUN_MODIFIER_CUSTOM_TEST_MODE: String = "res://scripts/run_modifiers/custom/RunModifierCustomTestMode.gd"
 #endregion

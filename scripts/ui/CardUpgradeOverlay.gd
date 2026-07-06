@@ -73,10 +73,10 @@ func clear_cards():
 		child.queue_free()
 
 func _on_card_hovered(_card: Card):
-	pass
+	UIHover.scale_up(_card)
 
 func _on_card_unhovered(_card: Card):
-	pass
+	UIHover.scale_down(_card)
 
 func _on_card_selected(card: Card):
 	if current_card_pick_action != null:

@@ -15,7 +15,7 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 [application]
 
 config/name="Null Pointer"
-config/version="2.2"
+config/version="2.3"
 run/main_scene="res://scenes/LoadingScreen.tscn"
 config/features=PackedStringArray("4.6")
 boot_splash/bg_color=Color(0, 0, 0, 1)
@@ -44,6 +44,7 @@ StatsHandler="*res://autoload/StatsHandler.gd"
 SoundManager="*uid://bjkhgdroa1wwd"
 UIMessage="*res://autoload/UIMessage.gd"
 TextParser="*res://autoload/TextParser.gd"
+Platform="*uid://bm7iteog3dwv5"
 
 [debug]
 

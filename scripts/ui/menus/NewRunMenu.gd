@@ -98,7 +98,7 @@ func populate_character_info(character_object_id: String) -> void:
 			if artifact_data != null:
 				character_artifact_texture_rect.texture = FileLoader.load_texture(artifact_data.artifact_texture_path)
 				character_artifact_name_label.text = artifact_data.artifact_name
-				character_artifact_description_label.text = artifact_data.artifact_description
+				character_artifact_description_label.text = TextParser.parse(artifact_data.artifact_description, {"artifact_counter": artifact_data.artifact_counter})
 		
 		# play character selection audio if it exists
 		if character_data.character_selection_audio_path != "":

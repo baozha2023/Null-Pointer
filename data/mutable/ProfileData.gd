@@ -37,6 +37,9 @@ static var UNLOCK_ALL_CARDS_IN_CODEX: bool = false
 ## 测试专用常量：是否开启一键打 Boss（控制地图中一键 boss 按钮的可见性）
 static var ENABLE_ONE_CLICK_BOSS: bool = false
 
+## 是否仅支持通过 BZ-Games 平台启动。如果为 true 且未成功连接/鉴权，游戏将被阻止启动。
+static var REQUIRE_BZ_GAMES_LAUNCH: bool = false
+
 ## Tracks which cards the player has discovered (encountered) in the game.
 @export var profile_discovered_cards: Dictionary = {}
 
