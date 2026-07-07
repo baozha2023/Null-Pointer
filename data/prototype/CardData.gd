@@ -489,3 +489,26 @@ func is_discovered() -> bool:
 	if Global.profile_data == null:
 		return false
 	return Global.profile_data.profile_discovered_cards.has(object_id)
+
+#region Engine Bug Fixes
+## Overrides get_prototype to properly deep copy nested generic arrays inside the untyped dictionary `card_decorators`
+func get_prototype(duplicate_sub_prototypes: bool = true) -> PrototypeData:
+	var copy: CardData = super.get_prototype(duplicate_sub_prototypes)
+	if duplicate_sub_prototypes:
+		var new_decorators: Dictionary[String, Dictionary] = {}
+		new_decorators.assign(_deep_copy_dict(card_decorators))
+		copy.card_decorators = new_decorators
+	return copy
+
+func _deep_copy_dict(dict: Dictionary) -> Dictionary:
+	var new_dict: Dictionary = {}
+	for key in dict:
+		var value = dict[key]
+		if value is Dictionary:
+			new_dict[key] = _deep_copy_dict(value)
+		elif value is Array:
+			new_dict[key] = value.duplicate(true)
+		else:
+			new_dict[key] = value
+	return new_dict
+#endregion

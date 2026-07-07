@@ -9,11 +9,12 @@ func perform_action() -> void:
 		if load_amount <= 0:
 			continue
 
-		var artifacts: Array[ArtifactData] = Global.player_data.get_player_artifacts_with_artifact_id("artifact_forge")
-		if not artifacts.is_empty():
-			var forge: ArtifactData = artifacts[0]
-			var new_load: int = max(0, forge.artifact_counter - load_amount)
-			forge.set_artifact_counter(new_load)
+		var player: BaseCombatant = Global.get_player()
+		if player != null:
+			var current_charge: int = player.get_status_charges("status_effect_turn_forge_load")
+			if current_charge > 0:
+				var to_remove: int = min(current_charge, load_amount)
+				player.add_status_effect_charges("status_effect_turn_forge_load", -to_remove)
 
 func _to_string():
 	return "Action Consume Forge Load"

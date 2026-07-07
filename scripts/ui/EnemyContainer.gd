@@ -49,11 +49,14 @@ func populate_enemies_from_event(event_data: EventData = Global.get_player_event
 
 ## Helper function for spawning enemies. Supplied a container for either automatic placement or
 ## positional placement depending on the event.
-func _spawn_enemy(enemy_object_id: String, container: Control = automatic_enemy_container) -> Enemy:
+func _spawn_enemy(enemy_object_id: String, container: Control = automatic_enemy_container, is_minion: bool = false) -> Enemy:
 	
 	var enemy: Enemy = Scenes.ENEMY.instantiate()
 	var enemy_data: EnemyData = Global.get_enemy_data_from_prototype(enemy_object_id)
 	
+	if is_minion:
+		enemy_data.enemy_is_minion = true
+		
 	enemy_data.apply_enemy_difficulty_modifiers()
 	enemy_data.randomize_health(true)
 	
@@ -62,8 +65,8 @@ func _spawn_enemy(enemy_object_id: String, container: Control = automatic_enemy_
 	
 	return enemy
 
-func spawn_enemy_at_slot(enemy_object_id: String, slot_id: int) -> Enemy:
-	var enemy: Enemy = _spawn_enemy(enemy_object_id, positional_enemy_container)
+func spawn_enemy_at_slot(enemy_object_id: String, slot_id: int, is_minion: bool = false) -> Enemy:
+	var enemy: Enemy = _spawn_enemy(enemy_object_id, positional_enemy_container, is_minion)
 	enemy.enemy_slot = slot_id
 	
 	# determine non automatic enemy position
@@ -83,8 +86,8 @@ func clear_enemies():
 	for child in positional_enemy_container.get_children():
 		child.queue_free()
 
-func _on_enemy_spawn_requested(enemy_object_id: String, slot_id: int):
-	spawn_enemy_at_slot(enemy_object_id, slot_id)
+func _on_enemy_spawn_requested(enemy_object_id: String, slot_id: int, is_minion: bool = false):
+	spawn_enemy_at_slot(enemy_object_id, slot_id, is_minion)
 
 func _on_run_ended():
 	clear_enemies()

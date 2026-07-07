@@ -16,7 +16,7 @@ func perform_action() -> void:
 				for f in fallback_action_data:
 					fallback_typed.append(f)
 				var initiator: BaseCombatant = parent_combatant
-				var actions: Array[BaseAction] = ActionGenerator.create_actions(initiator, card_play_request, targets, fallback_typed, self)
+				var actions: Array[BaseAction] = ActionGenerator.create_actions(initiator, card_play_request, get_adjusted_action_targets(), fallback_typed, self)
 				ActionHandler.add_actions(actions)
 			continue
 
@@ -25,16 +25,7 @@ func perform_action() -> void:
 		var execute_directly: bool = action_interceptor_processor.get_shadowed_action_values("execute_directly", false)
 		var override_load: int = action_interceptor_processor.get_shadowed_action_values("override_load", -1)
 
-		# Step A: Determine total_load
-		var total_load: int = 0
-		var artifacts: Array[ArtifactData] = Global.player_data.get_player_artifacts_with_artifact_id("artifact_forge")
-		if override_load >= 0:
-			total_load = override_load
-		else:
-			if not artifacts.is_empty():
-				total_load = artifacts[0].artifact_counter
-
-		# Step B: Extract actions
+		# Step A: Extract actions
 		var taken_actions: Array = []
 		if take_type == 0:
 			taken_actions.append(forge_actions[0])
@@ -42,6 +33,16 @@ func perform_action() -> void:
 			taken_actions.append(forge_actions[-1])
 		else:
 			taken_actions = forge_actions.duplicate()
+
+		# Calculate extracted load
+		var extracted_load: int = 0
+		for entry in taken_actions:
+			extracted_load += entry.get("load", 0)
+
+		# Step B: Determine total_load for cost
+		var total_load: int = extracted_load
+		if override_load >= 0:
+			total_load = override_load
 
 		# Step C: Precise clear
 		if clear_after_take:
@@ -54,8 +55,9 @@ func perform_action() -> void:
 			
 			Global.player_data.player_values["forge_actions"] = forge_actions
 			
+			var artifacts: Array[ArtifactData] = Global.player_data.get_player_artifacts_with_artifact_id("artifact_forge")
 			if not artifacts.is_empty():
-				var new_counter = max(0, artifacts[0].artifact_counter - total_load)
+				var new_counter = max(0, artifacts[0].artifact_counter - extracted_load)
 				artifacts[0].set_artifact_counter(new_counter)
 			Signals.forge_actions_changed.emit()
 
@@ -89,14 +91,14 @@ func perform_action() -> void:
 			var initiator: BaseCombatant = parent_combatant
 			# Reverse to ensure FIFO execution (since ActionHandler pushes to stack)
 			card_play_actions.reverse()
-			var actions: Array[BaseAction] = ActionGenerator.create_actions(initiator, card_play_request, targets, card_play_actions, self)
+			var actions: Array[BaseAction] = ActionGenerator.create_actions(initiator, card_play_request, get_adjusted_action_targets(), card_play_actions, self)
 			ActionHandler.add_actions(actions)
 		else:
 			# Check if hand is full. If full, skip card generation
 			if len(HandManager.player_hand) < HandManager.PLAYER_DEFAULT_HAND_CARD_COUNT_MAX:
 				var fusion_card: CardData = CardData.new("card_forge_fusion")
-				fusion_card.card_name = "融合编译"
-				fusion_card.card_description = "很神秘，暂不显示"
+				fusion_card.card_name = "融合"
+				fusion_card.card_description = "释放锻造台中的指定代码，并按顺序依次执行这些指令。 [color=gray]此卡牌仅在战斗中通过特定的锻造机制动态生成。[/color]"
 				fusion_card.card_texture_path = "sprites/cards/card_forge_compile.png"
 				fusion_card.card_color_id = "color_white"
 				fusion_card.card_energy_cost = final_cost

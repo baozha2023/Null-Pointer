@@ -2616,7 +2616,7 @@ func add_test_enemies() -> void:
 		])
 	var enemy_act_1_boss_1_summon_actions: Array[Dictionary] = [
 				{
-				Scripts.ACTION_SUMMON_ENEMIES: {"number_of_spawns": 2, "spawn_slots": [1,2], "time_delay": 0.5, "random_enemy_object_ids": ["enemy_minion_1", "enemy_minion_2"], "target_override": BaseAction.TARGET_OVERRIDES.PARENT}
+				Scripts.ACTION_SUMMON_ENEMIES: {"number_of_spawns": 2, "spawn_slots": [1,2], "time_delay": 0.5, "random_enemy_object_ids": ["enemy_minion_1", "enemy_minion_2"], "target_override": BaseAction.TARGET_OVERRIDES.PARENT, "is_minion": true}
 				}
 			]
 	enemy_act_1_boss_1.add_intent_state([
@@ -3193,7 +3193,7 @@ func add_test_cards() -> void:
 	card_reshuffle_draw.card_name = "重洗并加载脚本"
 	card_reshuffle_draw.card_color_id = "color_blue"
 	card_reshuffle_draw.card_texture_path = "external/sprites/cards/blue/card_blue.png"
-	card_reshuffle_draw.card_description = "将回收站重新分配入内存队列。\n读取 [draw_count] 个脚本"
+	card_reshuffle_draw.card_description = "将回收站重新分配入内存队列。 读取 [draw_count] 个脚本"
 	card_reshuffle_draw.card_type = CardData.CARD_TYPES.SKILL
 	card_reshuffle_draw.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_reshuffle_draw.card_energy_cost = 0
@@ -3369,7 +3369,7 @@ func add_test_cards() -> void:
 	card_self_attaching_attack.card_name = "自附着攻击"
 	card_self_attaching_attack.card_color_id = "color_blue"
 	card_self_attaching_attack.card_texture_path = "external/sprites/cards/blue/card_blue.png"
-	card_self_attaching_attack.card_description = "战斗开始时附着到一个随机敌人身上\n造成 [damage] 点伤害"
+	card_self_attaching_attack.card_description = "战斗开始时附着到一个随机敌人身上 造成 [damage] 点伤害"
 	card_self_attaching_attack.card_type = CardData.CARD_TYPES.ATTACK
 	card_self_attaching_attack.card_rarity = CardData.CARD_RARITIES.UNCOMMON
 	card_self_attaching_attack.card_energy_cost = 0
@@ -3988,7 +3988,7 @@ func add_test_cards() -> void:
 	card_right_click_transform_mode_a.card_name = "模式 A"
 	card_right_click_transform_mode_a.card_color_id = "color_red"
 	card_right_click_transform_mode_a.card_texture_path = "external/sprites/cards/red/card_red.png"
-	card_right_click_transform_mode_a.card_description = "造成 [damage] 点伤害\n右键点击转换为 B 形态"
+	card_right_click_transform_mode_a.card_description = "造成 [damage] 点伤害 右键点击转换为 B 形态"
 	card_right_click_transform_mode_a.card_type = CardData.CARD_TYPES.ATTACK
 	card_right_click_transform_mode_a.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_right_click_transform_mode_a.card_color_id = "color_red"
@@ -4014,7 +4014,7 @@ func add_test_cards() -> void:
 	card_right_click_transform_mode_b.card_name = "模式 B"
 	card_right_click_transform_mode_b.card_color_id = "color_red"
 	card_right_click_transform_mode_b.card_texture_path = "external/sprites/cards/red/card_red.png"
-	card_right_click_transform_mode_b.card_description = "获得 [block] 点防火墙\n右键点击转换为 A 形态"
+	card_right_click_transform_mode_b.card_description = "获得 [block] 点防火墙 右键点击转换为 A 形态"
 	card_right_click_transform_mode_b.card_type = CardData.CARD_TYPES.SKILL
 	card_right_click_transform_mode_b.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_right_click_transform_mode_b.card_appears_in_card_packs = false
@@ -4707,7 +4707,7 @@ func add_test_cards() -> void:
 	card_draft_random_attack.card_name = "加载取攻击脚本"
 	card_draft_random_attack.card_color_id = "color_green"
 	card_draft_random_attack.card_texture_path = "external/sprites/cards/green/card_green.png"
-	card_draft_random_attack.card_description = "从 3 个攻击脚本中选择一个加入当前线程。\n本场战斗中其费用为 0"
+	card_draft_random_attack.card_description = "从 3 个攻击脚本中选择一个加入当前线程。 本场战斗中其费用为 0"
 	card_draft_random_attack.card_type = CardData.CARD_TYPES.SKILL
 	card_draft_random_attack.card_rarity = CardData.CARD_RARITIES.UNCOMMON
 	card_draft_random_attack.card_requires_target = false
@@ -4747,7 +4747,7 @@ func add_test_cards() -> void:
 	card_draft_red_card.card_name = "加载猩红脚本"
 	card_draft_red_card.card_color_id = "color_red"
 	card_draft_red_card.card_texture_path = "external/sprites/cards/red/card_red.png"
-	card_draft_red_card.card_description = "从 5 个猩红脚本中选择一个加入当前线程。\n本场战斗中其费用为 0"
+	card_draft_red_card.card_description = "从 5 个猩红脚本中选择一个加入当前线程。 本场战斗中其费用为 0"
 	card_draft_red_card.card_type = CardData.CARD_TYPES.SKILL
 	card_draft_red_card.card_rarity = CardData.CARD_RARITIES.UNCOMMON
 	card_draft_red_card.card_requires_target = false

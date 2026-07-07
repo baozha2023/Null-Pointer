@@ -52,7 +52,10 @@ func _on_forge_actions_changed():
 
 func _refresh_display():
 	var forge_actions: Array = Global.player_data.player_values.get("forge_actions", [])
-	title_label.text = "锻造台（%d 条）" % forge_actions.size()
+	var actual_load: int = 0
+	for entry in forge_actions:
+		actual_load += entry.get("load", 0)
+	title_label.text = "锻造台（实际负载：%d）" % actual_load
 
 	if forge_actions.is_empty():
 		action_list_label.text = "[color=gray]锻造台为空。使用「代码采集」类卡牌来存入效果。[/color]"

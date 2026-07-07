@@ -115,12 +115,11 @@ func _parse_action_recursively(action: Dictionary, card_data: CardData, status_i
 		if typeof(action_params) != TYPE_DICTIONARY:
 			continue
 			
-		if action_key == Scripts.ACTION_APPLY_STATUS or action_key == Scripts.ACTION_BLOCK_TO_STATUS:
-			var status_id = action_params.get("status_effect_object_id", "")
-			if status_id == "":
-				status_id = card_data.card_values.get("status_effect_object_id", "")
-			if status_id != "" and not status_ids.has(status_id):
-				status_ids.append(status_id)
+		var status_id = action_params.get("status_effect_object_id", action_params.get("stat_variable_name", ""))
+		if status_id == "" and (action_key == Scripts.ACTION_APPLY_STATUS or action_key == Scripts.ACTION_BLOCK_TO_STATUS):
+			status_id = card_data.card_values.get("status_effect_object_id", "")
+		if status_id != "" and not status_ids.has(status_id):
+			status_ids.append(status_id)
 				
 		if action_key == Scripts.ACTION_CREATE_CARDS:
 			var created_card_id = action_params.get("created_card_object_id", "")
@@ -129,12 +128,14 @@ func _parse_action_recursively(action: Dictionary, card_data: CardData, status_i
 			if created_card_id != "" and not card_ids.has(created_card_id):
 				card_ids.append(created_card_id)
 				
-		if action_params.has("action_data"):
-			var nested_actions = action_params["action_data"]
-			if typeof(nested_actions) == TYPE_ARRAY:
-				for nested_action in nested_actions:
-					if typeof(nested_action) == TYPE_DICTIONARY:
-						_parse_action_recursively(nested_action, card_data, status_ids, card_ids)
+		var nested_keys = ["action_data", "passed_action_data", "failed_action_data", "validator_data"]
+		for nested_key in nested_keys:
+			if action_params.has(nested_key):
+				var nested_actions = action_params[nested_key]
+				if typeof(nested_actions) == TYPE_ARRAY:
+					for nested_action in nested_actions:
+						if typeof(nested_action) == TYPE_DICTIONARY:
+							_parse_action_recursively(nested_action, card_data, status_ids, card_ids)
 
 func clear_tooltips() -> void:
 	for child in get_children():

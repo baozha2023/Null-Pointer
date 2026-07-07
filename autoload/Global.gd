@@ -181,10 +181,10 @@ func _ready():
 	
 	### 生成生产环境数据（真实游戏内容）
 	GlobalProdDataGenerator.generate_production_data()
-	
+
 	### 生成测试环境数据（用于开发调试）
 	#GlobalTestDataGenerator.generate_test_data()
-	
+
 	### 测试专用标识/作弊开关
 	ProfileData.ENABLE_ALL_DIFFICULTIES = false
 	ProfileData.UNLOCK_ALL_CARDS_IN_CODEX = false

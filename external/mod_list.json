@@ -6,13 +6,12 @@
 		"mod_load_data": {
 			"external/": {
 				"enabled": true,
-				"load_priority": 0
+				"load_priority": 0.0
 			},
-			"external/mods/example_mod/": {
+			"external/mods/mod_data_example_mod/": {
 				"enabled": false,
-				"load_priority": 1
-			},
-			
+				"load_priority": 1.0
+			}
 		},
 		"object_id": "mod_list"
 	}

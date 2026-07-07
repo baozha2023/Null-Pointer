@@ -3,9 +3,9 @@
 
 	},
 	"properties": {
-		"mod_author": "Desire Path Games",
+		"mod_author": "BZ Games Team",
 		"mod_dependency_mod_ids": [],
-		"mod_description": "Base Game. This will load all data json objects in listed folders. See mod_list.json",
+		"mod_description": "游戏本体。这将从列表中的目录加载所有官方的 JSON 数据对象。详见 mod_list.json",
 		"mod_folder_to_load_data": {
 			"external/data/action_interceptors/": {
 				"class_name": "ActionInterceptorData",
@@ -15,13 +15,21 @@
 				"class_name": "ActData",
 				"table_name": "_id_to_act_data"
 			},
-			"external/data/artifacts/": {
-				"class_name": "ArtifactData",
-				"table_name": "_id_to_artifact_data"
+			"external/data/animations/": {
+				"class_name": "AnimationData",
+				"table_name": "_id_to_animation_data"
 			},
 			"external/data/artifact_packs/": {
 				"class_name": "ArtifactPackData",
 				"table_name": "_id_to_artifact_pack_data"
+			},
+			"external/data/artifacts/": {
+				"class_name": "ArtifactData",
+				"table_name": "_id_to_artifact_data"
+			},
+			"external/data/card_decorators/": {
+				"class_name": "CardDecoratorData",
+				"table_name": "_id_to_card_decorator_data"
 			},
 			"external/data/card_packs/": {
 				"class_name": "CardPackData",
@@ -38,6 +46,10 @@
 			"external/data/colors/": {
 				"class_name": "ColorData",
 				"table_name": "_id_to_color_data"
+			},
+			"external/data/consumable_packs/": {
+				"class_name": "ConsumablePackData",
+				"table_name": "_id_to_consumable_pack_data"
 			},
 			"external/data/consumables/": {
 				"class_name": "ConsumableData",
@@ -71,6 +83,10 @@
 				"class_name": "KeywordData",
 				"table_name": "_id_to_keyword_data"
 			},
+			"external/data/options/": {
+				"class_name": "OptionData",
+				"table_name": "_id_to_option_data"
+			},
 			"external/data/player/": {
 				"class_name": "PlayerData",
 				"table_name": "_id_to_player_data"
@@ -97,13 +113,15 @@
 			"minor": 0,
 			"patch": 0
 		},
-		"mod_name": "",
+		"mod_name": "Base Game",
+		"mod_script_file_paths": {
+
+		},
 		"mod_version": {
 			"major": 0,
 			"minor": 0,
 			"patch": 0
 		},
-		"mod_script_file_paths": {},
 		"object_id": "mod_data_base_game"
 	}
 }

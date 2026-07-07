@@ -31,6 +31,8 @@ func perform_action():
 				stat_value = parent_combatant.get_status_charges(stat_variable_name)
 			elif combat_stat_name == "block_amount" and parent_combatant != null:
 				stat_value = parent_combatant.get_block()
+			elif combat_stat_name == "actions_in_forge":
+				stat_value = _get_forge_action_count(action_interceptor_processor)
 			else:
 				stat_value = _get_combat_stat_by_name(combat_stat_name)
 		else:
@@ -80,3 +82,21 @@ func _get_combat_stat_by_name(stat_name: String) -> int:
 					count += 1
 			return count
 	return 0
+
+func _get_forge_action_count(action_interceptor_processor: ActionInterceptorProcessor) -> int:
+	var count: int = 0
+	var forge_actions: Array = Global.player_data.player_values.get("forge_actions", [])
+	var action_types: Array = action_interceptor_processor.get_shadowed_action_values("action_types", [])
+	
+	for entry in forge_actions:
+		if typeof(entry) != TYPE_DICTIONARY:
+			continue
+		if action_types.is_empty():
+			count += 1
+		else:
+			var action_data: Dictionary = entry.get("action_data", {})
+			for key in action_data:
+				if key in action_types:
+					count += 1
+					break
+	return count

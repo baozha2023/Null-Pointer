@@ -6,9 +6,9 @@ class_name ModData
 ## The name of the mod as displayed in a mod loader.
 @export var mod_name: String = ""
 ## Optional. The name of the one responsible for the mod.
-@export var mod_author: String = ""
+@export var mod_author: String = "BZ Games Team"
 ## A short description of what the mod does.
-@export var mod_description: String = ""
+@export var mod_description: String = "游戏本体。这将从列表中的目录加载所有官方的 JSON 数据对象。详见 mod_list.json"
 ## Optional. The internal semantic versioning of the mod if one is used.
 @export var mod_version: Dictionary[String, int] = {
 	"major": 0,

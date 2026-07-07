@@ -55,6 +55,7 @@ const PILE_DISPLAY_NAMES: Dictionary = {
 # magic strings for other "pile" selections in HandManager.get_pile()
 const DECK: String = "DECK"
 const UPGRADE_DECK: String = "UPGRADE_DECK"
+const ENCHANT_DECK: String = "ENCHANT_DECK"
 const COMBAT_DECK: String = "COMBAT_DECK"
 const PLAYED_THIS_TURN: String = "PLAYED_THIS_TURN"
 const PLAYED_LAST_TURN: String = "PLAYED_LAST_TURN"
@@ -118,7 +119,7 @@ func _ready() -> void:
 func generate_combat_deck() -> Array[CardData]:
 	var combat_deck: Array[CardData] = []
 	for card_data in Global.player_data.player_deck:
-		var copied_card = card_data.duplicate(true)
+		var copied_card = card_data.get_prototype(true)
 		copied_card.parent_card = card_data
 		combat_deck.append(copied_card)
 	return combat_deck
@@ -251,7 +252,7 @@ func get_pile(pile_name: String) -> Array[CardData]:
 	
 	# special "piles" that are derived rather than actual piles
 	match pile_name:
-		HandManager.DECK, HandManager.UPGRADE_DECK:
+		HandManager.DECK, HandManager.UPGRADE_DECK, HandManager.ENCHANT_DECK:
 			return Global.player_data.player_deck
 		HandManager.COMBAT_DECK:
 			var combat_deck: Array[CardData] = []
@@ -659,9 +660,9 @@ func add_cards_to_hand(cards: Array[CardData], hand_card_count_max: int = HandMa
 		if not player_hand.has(card_data):
 			if len(HandManager.player_hand) < hand_card_count_max:
 				HandManager.move_card_to_limbo(card_data)
-				var card: Card = hand.create_cards_in_hand([card_data])[0]
 				HandManager.player_hand.append(card_data)
-
+				var card: Card = hand.create_cards_in_hand([card_data])[0]
+				
 				Signals.card_added_to_hand.emit(card_data)
 			else:
 				discarded_cards.append(card_data)

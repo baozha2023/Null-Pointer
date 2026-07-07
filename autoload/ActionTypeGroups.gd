@@ -1,0 +1,51 @@
+class_name ActionTypeGroups
+
+const ATTACK_ACTIONS: Array[String] = [
+	Scripts.ACTION_ATTACK,
+	Scripts.ACTION_ATTACK_GENERATOR,
+	Scripts.ACTION_DIRECT_DAMAGE
+]
+
+const DEFENSE_ACTIONS: Array[String] = [
+	Scripts.ACTION_BLOCK,
+	Scripts.ACTION_BLOCK_BY_STATUS
+]
+
+const HEAL_ACTIONS: Array[String] = [
+	Scripts.ACTION_ADD_HEALTH,
+	Scripts.ACTION_SET_HEALTH,
+	Scripts.ACTION_HEAL_PERCENT
+]
+
+const STATUS_ACTIONS: Array[String] = [
+	Scripts.ACTION_APPLY_STATUS,
+	Scripts.ACTION_DECAY_STATUS,
+	Scripts.ACTION_MULTIPLY_STATUS,
+	Scripts.ACTION_BLOCK_TO_STATUS
+]
+
+const ENERGY_ACTIONS: Array[String] = [
+	Scripts.ACTION_ADD_ENERGY,
+	Scripts.ACTION_RESET_ENERGY
+]
+
+const DRAW_ACTIONS: Array[String] = [
+	Scripts.ACTION_DRAW,
+	Scripts.ACTION_DRAW_GENERATOR
+]
+
+const FORGE_ACTIONS: Array[String] = [
+	Scripts.ACTION_ADD_TO_FORGE,
+	Scripts.ACTION_TAKE_FROM_FORGE,
+	Scripts.ACTION_CONSUME_FORGE_LOAD
+]
+
+const CARD_MANIPULATION_ACTIONS: Array[String] = [
+	Scripts.ACTION_DISCARD_CARDS,
+	Scripts.ACTION_EXHAUST_CARDS,
+	Scripts.ACTION_BANISH_CARDS,
+	Scripts.ACTION_MOVE_CARDS_TO_LIMBO,
+	Scripts.ACTION_TRANSFORM_CARDS,
+	Scripts.ACTION_UPGRADE_CARDS,
+	Scripts.ACTION_RETAIN_CARDS
+]

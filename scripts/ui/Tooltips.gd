@@ -191,7 +191,9 @@ func hide_tooltip() -> void:
 	visible = false
 	tooltip_label.visible = false
 	panel_container.visible = false
+	panel_container.reset_size()
 	keyword_container.visible = false
+	keyword_container.reset_size()
 	
 
 func _process(_delta: float) -> void:

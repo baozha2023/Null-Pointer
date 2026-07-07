@@ -12,16 +12,6 @@ func _init(parent_card: Card, card_decorator_data: CardDecoratorData):
 	
 	decorator_values = card_data.card_decorators.get(card_decorator_data.object_id, {})
 	
-	# Fallbacks in case Godot 4 loses the nested dictionary/arrays on CardData.duplicate(true)
-	if decorator_values.get("multiplied_values", []).is_empty() and card_decorator_data.object_id == "decorator_botnet_strike":
-		decorator_values = {
-			"stat_enum": CombatStatsData.STATS.CARDS_PLAYED,
-			"turn_stat_type": 0,
-			"multiplied_values": ["number_of_attacks"],
-			"multiplied_values_bases": {"number_of_attacks": 1},
-			"multiplied_values_per_stat": {"number_of_attacks": 1}
-		}
-	
 	stat_enum = decorator_values.get("stat_enum", CombatStatsData.STATS.CARDS_DISCARDED)
 
 func _connect_signals():

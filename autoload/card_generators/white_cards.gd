@@ -34,6 +34,7 @@ static func add_cards_white() -> void:
 	card_traffic_sniff.card_color_id = "color_{0}".format([color])
 	card_traffic_sniff.card_texture_path = "sprites/card/white/card_traffic_sniff.png"
 	card_traffic_sniff.card_description = "读取 [draw_count] 个脚本。消耗。"
+	card_traffic_sniff.card_hint = "一次性大量抽牌；用后从牌组永久移除。"
 	card_traffic_sniff.card_type = CardData.CARD_TYPES.SKILL
 	card_traffic_sniff.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_traffic_sniff.card_requires_target = false
@@ -54,6 +55,7 @@ static func add_cards_white() -> void:
 	card_firewall_patch.card_color_id = "color_{0}".format([color])
 	card_firewall_patch.card_texture_path = "sprites/card/white/card_firewall_patch.png"
 	card_firewall_patch.card_description = "获得 [block] 点防火墙。消耗。"
+	card_firewall_patch.card_hint = "提供一次性高额护盾；用后从牌组永久移除。"
 	card_firewall_patch.card_type = CardData.CARD_TYPES.SKILL
 	card_firewall_patch.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_firewall_patch.card_requires_target = false
@@ -77,6 +79,7 @@ static func add_cards_white() -> void:
 	card_memory_snapshot.card_color_id = "color_{0}".format([color])
 	card_memory_snapshot.card_texture_path = "sprites/card/white/card_memory_snapshot.png"
 	card_memory_snapshot.card_description = "选择复制当前线程中最多 [card_amount] 个脚本。消耗。"
+	card_memory_snapshot.card_hint = "在战斗中复制核心卡牌；用后从牌组永久移除。"
 	card_memory_snapshot.card_type = CardData.CARD_TYPES.SKILL
 	card_memory_snapshot.card_rarity = CardData.CARD_RARITIES.UNCOMMON
 	card_memory_snapshot.card_requires_target = false
@@ -103,6 +106,7 @@ static func add_cards_white() -> void:
 	card_log_cleanup.card_color_id = "color_{0}".format([color])
 	card_log_cleanup.card_texture_path = "sprites/card/white/card_log_cleanup.png"
 	card_log_cleanup.card_description = "选择回收站中最多 [number_of_cards] 个脚本物理删除。虚无。"
+	card_log_cleanup.card_hint = "清理弃牌堆中的垃圾牌，精简牌库；若本回合不打出，回合结束也会被永久移除。"
 	card_log_cleanup.card_type = CardData.CARD_TYPES.SKILL
 	card_log_cleanup.card_rarity = CardData.CARD_RARITIES.UNCOMMON
 	card_log_cleanup.card_requires_target = false
@@ -131,6 +135,7 @@ static func add_cards_white() -> void:
 	card_kernel_reconstruct.card_color_id = "color_{0}".format([color])
 	card_kernel_reconstruct.card_texture_path = "sprites/card/white/card_kernel_reconstruct.png"
 	card_kernel_reconstruct.card_description = "选择脚本库中最多 [number_of_cards] 个脚本永久升级。消耗。"
+	card_kernel_reconstruct.card_hint = "极其珍贵的永久强化手段；用后从牌组永久移除。"
 	card_kernel_reconstruct.card_type = CardData.CARD_TYPES.POWER
 	card_kernel_reconstruct.card_rarity = CardData.CARD_RARITIES.RARE
 	card_kernel_reconstruct.card_requires_target = false
@@ -164,7 +169,7 @@ static func add_cards_white() -> void:
 	card_curse_exception.card_name = "异常报错"
 	card_curse_exception.card_color_id = "color_white"
 	card_curse_exception.card_texture_path = "sprites/card/white/card_curse_exception.png"
-	card_curse_exception.card_description = "无用。不可打出。\n[color=#ff6b6b]抽到此牌时，受到1点伤害。[/color]"
+	card_curse_exception.card_description = "无法被打出。 [color=#ff6b6b]抽到此牌时，受到1点伤害。[/color]"
 	card_curse_exception.card_hint = "这是一张诅咒卡牌。不仅会污染卡池，某些情况下还会造成负面效果。"
 	card_curse_exception.card_type = CardData.CARD_TYPES.CURSE
 	card_curse_exception.card_rarity = CardData.CARD_RARITIES.GENERATED
@@ -186,7 +191,8 @@ static func add_cards_white() -> void:
 	card_status_dazed.card_name = "垃圾数据"
 	card_status_dazed.card_color_id = "color_white"
 	card_status_dazed.card_texture_path = "sprites/card/white/card_status_dazed.png"
-	card_status_dazed.card_description = "无法被打出。回合结束时被消耗。"
+	card_status_dazed.card_description = "无法被打出。 回合结束时被消耗。"
+	card_status_dazed.card_hint = "状态牌。卡在手里占用抽牌空间，回合结束后自动消失。"
 	card_status_dazed.card_type = CardData.CARD_TYPES.STATUS
 	card_status_dazed.card_rarity = CardData.CARD_RARITIES.GENERATED
 	card_status_dazed.card_is_playable = false
@@ -198,7 +204,8 @@ static func add_cards_white() -> void:
 	card_status_burn.card_name = "过载发热"
 	card_status_burn.card_color_id = "color_white"
 	card_status_burn.card_texture_path = "sprites/card/white/card_status_burn.png"
-	card_status_burn.card_description = "无法被打出。在你的回合结束时，受到 [damage] 点伤害。"
+	card_status_burn.card_description = "无法被打出。 [color=#ff6b6b]在你的回合结束时，受到 [damage] 点伤害。[/color]"
+	card_status_burn.card_hint = "状态牌。不仅卡手，回合结束时还会对你造成真实伤害！"
 	card_status_burn.card_type = CardData.CARD_TYPES.STATUS
 	card_status_burn.card_rarity = CardData.CARD_RARITIES.GENERATED
 	card_status_burn.card_is_playable = false
@@ -214,3 +221,17 @@ static func add_cards_white() -> void:
 		}
 	]
 	Global.register_rod(card_status_burn)
+	
+	# 融合（占位符，用于图鉴显示）
+	var card_forge_fusion: CardData = CardData.new("card_forge_fusion")
+	card_forge_fusion.card_name = "融合"
+	card_forge_fusion.card_color_id = "color_white"
+	card_forge_fusion.card_texture_path = "sprites/cards/card_basic_skill_white.png" # Temp sprite
+	card_forge_fusion.card_description = "释放锻造台中的指定代码，并按顺序依次执行这些指令。 [color=gray]此卡牌仅在战斗中通过特定的锻造机制动态生成。[/color]"
+	card_forge_fusion.card_hint = "融合卡是锻造台外设的核心产物，能够完美继承并连续执行所有被置入锻造台的卡牌的核心指令。合理规划锻造顺序，可以打出极具破坏力的组合效果！"
+	card_forge_fusion.card_type = CardData.CARD_TYPES.SKILL
+	card_forge_fusion.card_rarity = CardData.CARD_RARITIES.GENERATED
+	card_forge_fusion.card_requires_target = false
+	card_forge_fusion.card_energy_cost = 0
+	card_forge_fusion.card_play_actions = []
+	Global.register_rod(card_forge_fusion)

@@ -245,12 +245,12 @@ static func add_enemies() -> void:
 	# 召唤 2 只防火墙
 	var boss_2_summon_actions: Array[Dictionary] = [
 		{
-			Scripts.ACTION_SUMMON_ENEMIES: {"number_of_spawns": 2, "spawn_slots": [1, 2], "time_delay": 0.5, "random_enemy_object_ids": ["enemy_act_2_firewall", "enemy_act_2_firewall"], "target_override": BaseAction.TARGET_OVERRIDES.PARENT},
+			Scripts.ACTION_SUMMON_ENEMIES: {"number_of_spawns": 2, "spawn_slots": [1, 2], "time_delay": 0.5, "random_enemy_object_ids": ["enemy_act_2_firewall", "enemy_act_2_firewall"], "target_override": BaseAction.TARGET_OVERRIDES.PARENT, "is_minion": true},
 		},
 	]
 	var boss_2_summon_actions_d5: Array[Dictionary] = [
 		{
-			Scripts.ACTION_SUMMON_ENEMIES: {"number_of_spawns": 2, "spawn_slots": [1, 2], "time_delay": 0.5, "random_enemy_object_ids": ["enemy_act_2_firewall", "enemy_act_2_firewall"], "target_override": BaseAction.TARGET_OVERRIDES.PARENT},
+			Scripts.ACTION_SUMMON_ENEMIES: {"number_of_spawns": 2, "spawn_slots": [1, 2], "time_delay": 0.5, "random_enemy_object_ids": ["enemy_act_2_firewall", "enemy_act_2_firewall"], "target_override": BaseAction.TARGET_OVERRIDES.PARENT, "is_minion": true},
 		},
 		{
 			Scripts.ACTION_APPLY_STATUS: {"status_effect_object_id": "status_effect_pointy", "status_charge_amount": 3, "time_delay": EnemyData.ENEMY_ATTACK_DELAY, "target_override": BaseAction.TARGET_OVERRIDES.ALL_ENEMIES}

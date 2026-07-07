@@ -37,24 +37,27 @@ func _ready():
 func _on_card_pick_requested(card_pick_action: ActionBasePickCards):
 	if card_pick_action != null:
 		if HandManager.DECK_PICK_TYPES.has(card_pick_action.get_card_pick_type()):
-			set_card_mode(CARD_MODES.SELECT)
+			var show_filter: bool = false
+			if card_pick_action.has_method("is_filter_enabled") and card_pick_action.is_filter_enabled():
+				show_filter = true
+				
+			set_card_mode(CARD_MODES.SELECT, show_filter)
 			current_card_pick_action = card_pick_action
 			all_pickable_cards = card_pick_action.get_pickable_cards()
 			
-			if current_card_pick_action.has_method("is_filter_enabled") and current_card_pick_action.is_filter_enabled():
-				left_panel.visible = true
+			if show_filter:
 				current_search_text = ""
 				search_line_edit.text = ""
 				_populate_card_packs()
 			else:
-				left_panel.visible = false
 				selected_card_pack_data = null
 				current_search_text = ""
 				search_line_edit.text = ""
 				populate_cards(all_pickable_cards)
 			
 			card_picking_label.text = current_card_pick_action.get_card_pick_text()
-			confirm_button.visible = current_card_pick_action.are_enough_cards_picked()
+			confirm_button.visible = true
+			confirm_button.disabled = not current_card_pick_action.are_enough_cards_picked()
 			
 			back_button.visible = current_card_pick_action.get_card_pick_can_back_out()
 
@@ -159,7 +162,7 @@ func _on_card_selected(card: Card):
 					card.set_card_glow(true)
 					
 			card_picking_label.text = current_card_pick_action.get_card_pick_text()
-			confirm_button.visible = current_card_pick_action.are_enough_cards_picked()
+			confirm_button.disabled = not current_card_pick_action.are_enough_cards_picked()
 			
 			# quick pick automatically confirms
 			if current_card_pick_action.is_quick_pick():
@@ -180,13 +183,14 @@ func _on_back_button_up():
 	
 ### View mode wrappers
 
-func set_card_mode(_card_mode: int) -> void:
+func set_card_mode(_card_mode: int, show_left_panel: bool = false) -> void:
 	card_mode = _card_mode
 	
 	visible = true
 	card_picking_label.visible = false
 	back_button.visible = false
 	confirm_button.visible = false
+	left_panel.visible = show_left_panel
 	
 	if card_mode == CARD_MODES.VIEW:
 		back_button.visible = true

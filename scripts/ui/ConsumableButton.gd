@@ -12,26 +12,31 @@ signal consumable_slot_button_up(slot_index: int)
 func _ready():
 	UIHover.add_hover_scale(self)
 	button_up.connect(_on_button_up)
+	mouse_entered.connect(_on_mouse_entered)
+	mouse_exited.connect(_on_mouse_exited)
 
 func init(_consumable_slot_index: int):
 	consumable_slot_index = _consumable_slot_index
 	
 	var consumable_data: ConsumableData = Global.get_player_consumable_in_slot_index(consumable_slot_index)
 	if consumable_data != null:
-		# set tooltip
-		tooltip_text = consumable_data.consumable_name
-		if consumable_data.consumable_description != "":
-			tooltip_text += "\n" + consumable_data.consumable_description
 		# texture
 		texture_normal = FileLoader.load_texture(consumable_data.consumable_texture_path)
 		self_modulate.a = 1.0
 	else:
 		# empty consumable slot
 		self_modulate.a = 0.3
-		tooltip_text = ""
 		texture_normal = EMPTY_TEXTURE
 	
 
-
 func _on_button_up():
 	consumable_slot_button_up.emit(consumable_slot_index)
+
+func _on_mouse_entered():
+	var consumable_data: ConsumableData = Global.get_player_consumable_in_slot_index(consumable_slot_index)
+	if consumable_data != null and HandManager.tooltip != null:
+		HandManager.tooltip.display_codex_consumable_tooltip(consumable_data)
+
+func _on_mouse_exited():
+	if HandManager.tooltip != null:
+		HandManager.tooltip.hide_tooltip()

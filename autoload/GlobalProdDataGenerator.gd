@@ -31,7 +31,8 @@ func generate_production_data() -> void:
 	add_custom_signals()
 
 	GlobalProdArtifactsGenerator.generate_artifacts()
-	add_card_decorators()
+	GlobalProdDecoratorsGenerator.generate_decorators()
+	
 	add_cards()
 	add_card_packs()
 	add_consumable_packs()
@@ -394,80 +395,6 @@ func add_rest_actions() -> void:
 
 	Global.register_rod(rest_action_remove_cards)
 
-	# enchant a selected card from your deck
-	# randomly chooses an enchant
-	# must have at least one card that can be decorated and enough money
-	# NOTE: To add more random enchants, you must update the random selection, the pick validator, and the rest action deck validator
-	var rest_action_enchant_cards: RestActionData = RestActionData.new("rest_action_enchant_cards")
-	rest_action_enchant_cards.rest_action_name = "附魔脚本 (25)"
-	rest_action_enchant_cards.rest_action_stat_name = "REST_ENCHANT_CARDS_COUNT"
-	rest_action_enchant_cards.rest_action_cost_type = RestActionData.REST_ACTION_COST_TYPES.INCLUSIVE
-	rest_action_enchant_cards.rest_action_auto_end = false
-	rest_action_enchant_cards.rest_actions = [
-		{
-			Scripts.ACTION_PICK_CARDS: {
-				"use_parent_card": false,
-				"min_card_amount": 1,
-				"max_card_amount": 1,
-				"min_cards_are_required_for_action": true,
-				"quick_pick": false,
-				"can_back_out": true, # allows rest action to be canceled
-				"random_selection": false,
-				"card_pick_text": "选择一个脚本附魔",
-				"card_pick_type": HandManager.DECK,
-				# only decoratable cards allowed, must be able to slot one of the provided decorators
-				"validator_data": [
-					{
-						Scripts.VALIDATOR_CARD_IS_DECORATABLE: {
-							"card_decorator_ids": [
-								"card_decorator_extra_draw",
-								"card_decorator_block_on_play",
-							],
-						},
-					},
-				],
-				"action_data": [
-					# finish rest action
-					{ Scripts.ACTION_REST_ACTION_END: { "rest_action_id": "rest_action_enchant_cards" } },
-					# remove money
-					{ Scripts.ACTION_ADD_MONEY: { "money_amount": -25 } },
-					# randomly decorate the card
-					{
-						Scripts.ACTION_DECORATE_CARDS: {
-							"decorate_parent_card": false, # already selecting the deck card
-							"random_card_decorators": {
-								"card_decorator_extra_draw": { },
-								"card_decorator_block_on_play": { },
-							},
-						},
-					},
-				],
-			},
-		},
-	]
-	rest_action_enchant_cards.rest_action_validators = [
-		{
-			# must have enough money
-			Scripts.VALIDATOR_MONEY: {
-				"money_amount": 25,
-			},
-		},
-		{
-			# must have at least one card that can slot a decorator
-			Scripts.VALIDATOR_DECK_HAS_DECORATABLE_CARD: {
-				"card_pick_type": HandManager.DECK,
-				"card_decorator_ids": [
-					"card_decorator_extra_draw",
-					"card_decorator_block_on_play",
-				],
-				"card_types": CardData.CARD_TYPES.values(), # any card
-				"invert_validation": false,
-			},
-		},
-	]
-
-	Global.register_rod(rest_action_enchant_cards)
-
 	# add random consumable action
 	var rest_action_add_random_consumable: RestActionData = RestActionData.new("rest_action_add_random_consumable")
 	rest_action_add_random_consumable.rest_action_name = "随机物理删除品"
@@ -515,6 +442,50 @@ func add_status_effects() -> void:
 	status_effect_curiosity.status_effect_interceptor_ids = ["interceptor_card_play_reaction"]
 	Global.register_rod(status_effect_curiosity)
 
+	var status_effect_firewall_protocol: StatusEffectData = StatusEffectData.new("status_effect_firewall_protocol")
+	status_effect_firewall_protocol.status_effect_name = "【系统专用】锻造台外设被动防御监听进程"
+	status_effect_firewall_protocol.status_effect_description = "专用于锻造台外设等相关机制的被动防御监听进程。"
+	status_effect_firewall_protocol.status_effect_tooltip = "每当你打出 [card_name:card_forge_fusion] 时，获得 [color=yellow][charge_amount][/color] 点 防火墙。"
+	status_effect_firewall_protocol.status_effect_decay_rate = 0
+	status_effect_firewall_protocol.status_effect_type = StatusEffectData.STATUS_EFFECT_TYPES.NEUTRAL
+	status_effect_firewall_protocol.status_effect_is_visible = false
+	status_effect_firewall_protocol.status_effect_interceptor_ids = ["interceptor_firewall_protocol"]
+	status_effect_firewall_protocol.status_effect_player_actions = [
+		{
+			Scripts.ACTION_BLOCK: {
+				"custom_key_names": {"block": "invoking_status_effect_charges"},
+				"target_override": BaseAction.TARGET_OVERRIDES.PARENT,
+				"audio_path": AudioConstants.SFX_GROUP_SHIELD_UP
+			}
+		}
+	]
+	Global.register_rod(status_effect_firewall_protocol)
+
+	var status_effect_payload_turbine: StatusEffectData = StatusEffectData.new("status_effect_payload_turbine")
+	status_effect_payload_turbine.status_effect_name = "负载涡轮"
+	status_effect_payload_turbine.status_effect_description = "每回合第一次获得载荷时，额外获得等同于层数的载荷。"
+	status_effect_payload_turbine.status_effect_tooltip = "每回合第一次获得载荷时，额外获得 [color=yellow][charge_amount][/color] 层 载荷。"
+	status_effect_payload_turbine.status_effect_decay_rate = 0
+	status_effect_payload_turbine.status_effect_type = StatusEffectData.STATUS_EFFECT_TYPES.BUFF
+	status_effect_payload_turbine.status_effect_is_visible = true
+	status_effect_payload_turbine.status_effect_interceptor_ids = ["interceptor_payload_turbine"]
+	status_effect_payload_turbine.status_effect_action_process_times = [
+		StatusEffectData.STATUS_EFFECT_PROCESS_TIMES.PRE_DRAW_PLAYER_START_TURN
+	]
+	status_effect_payload_turbine.status_effect_player_process_actions = [
+		{
+			Scripts.ACTION_APPLY_STATUS: {
+				"status_effect_object_id": "status_effect_payload_turbine",
+				"status_charge_amount": 0,
+				"status_secondary_charge_amount": 1,
+				"target_override": BaseAction.TARGET_OVERRIDES.PLAYER
+			}
+		}
+	]
+	Global.register_rod(status_effect_payload_turbine)
+
+
+
 	var status_effect_overshield: StatusEffectData = StatusEffectData.new("status_effect_overshield")
 	status_effect_overshield.status_effect_name = "过载防火墙"
 	status_effect_overshield.status_effect_description = "抵挡等同于层数的伤害，可跨时钟周期存在。"
@@ -534,7 +505,8 @@ func add_status_effects() -> void:
 
 	# Preserve Energy
 	var status_effect_preserve_energy: StatusEffectData = StatusEffectData.new("status_effect_preserve_energy")
-	status_effect_preserve_energy.status_effect_name = "算力保留"
+	status_effect_preserve_energy.status_effect_name = "【系统专用】算力保留跨回合维持进程"
+	status_effect_preserve_energy.status_effect_description = "专用于跨回合保留算力相关机制的系统底层后台进程。"
 	status_effect_preserve_energy.status_effect_charge_upper_bound = 1
 	status_effect_preserve_energy.status_effect_is_visible = false
 	status_effect_preserve_energy.status_effect_decay_rate = 0
@@ -1069,7 +1041,8 @@ func add_status_effects() -> void:
 	Global.register_rod(status_effect_block_on_special_discard)
 
 	var status_effect_high_latency: StatusEffectData = StatusEffectData.new("status_effect_high_latency")
-	status_effect_high_latency.status_effect_name = "高延迟"
+	status_effect_high_latency.status_effect_name = "【系统专用】高延迟异常状态挂载核心进程"
+	status_effect_high_latency.status_effect_description = "专用于处理高延迟debuff计算及伤害延后结算机制的系统底层进程。"
 	status_effect_high_latency.status_effect_is_visible = false
 	status_effect_high_latency.status_effect_type = StatusEffectData.STATUS_EFFECT_TYPES.NEUTRAL
 	status_effect_high_latency.status_effect_decay_rate = 0
@@ -1078,7 +1051,8 @@ func add_status_effects() -> void:
 	Global.register_rod(status_effect_high_latency)
 
 	var status_effect_memory_leak: StatusEffectData = StatusEffectData.new("status_effect_memory_leak")
-	status_effect_memory_leak.status_effect_name = "内存泄漏"
+	status_effect_memory_leak.status_effect_name = "【系统专用】内存泄漏延迟伤害结算进程"
+	status_effect_memory_leak.status_effect_description = "专用于处理内存泄漏触发的每回合延迟自我伤害计算的系统底层进程。"
 	status_effect_memory_leak.status_effect_is_visible = false
 	status_effect_memory_leak.status_effect_type = StatusEffectData.STATUS_EFFECT_TYPES.NEUTRAL
 	status_effect_memory_leak.status_effect_decay_rate = 0
@@ -1098,8 +1072,10 @@ func add_status_effects() -> void:
 	Global.register_rod(status_effect_memory_leak)
 
 	var status_effect_turn_forge_load: StatusEffectData = StatusEffectData.new("status_effect_turn_forge_load")
-	status_effect_turn_forge_load.status_effect_name = "本回合锻造载荷"
-	status_effect_turn_forge_load.status_effect_is_visible = false
+	status_effect_turn_forge_load.status_effect_name = "载荷"
+	status_effect_turn_forge_load.status_effect_description = "记录本回合内被加入锻造台的所有代码的总负载。"
+	status_effect_turn_forge_load.status_effect_texture_path = "sprites/status_effects/icon_turn_forge_load.png"
+	status_effect_turn_forge_load.status_effect_is_visible = true
 	status_effect_turn_forge_load.status_effect_type = StatusEffectData.STATUS_EFFECT_TYPES.NEUTRAL
 	status_effect_turn_forge_load.status_effect_action_process_times = [StatusEffectData.STATUS_EFFECT_PROCESS_TIMES.PRE_DRAW_PLAYER_START_TURN]
 	status_effect_turn_forge_load.status_effect_decay_type = StatusEffectData.STATUS_EFFECT_DECAY_TYPES.ZERO_OUT
@@ -1148,6 +1124,20 @@ func add_action_interceptors() -> void:
 	interceptor_card_play_reaction.action_interceptor_script_path = Scripts.INTERCEPTOR_CARD_PLAY_REACTION
 	interceptor_card_play_reaction.action_intercepted_action_paths = [Scripts.ACTION_CARD_PLAY]
 	Global.register_rod(interceptor_card_play_reaction)
+
+	var interceptor_firewall_protocol: ActionInterceptorData = ActionInterceptorData.new("interceptor_firewall_protocol")
+	interceptor_firewall_protocol.action_interceptor_priority = 0
+	interceptor_firewall_protocol.action_interceptor_modifies_parent = true
+	interceptor_firewall_protocol.action_interceptor_script_path = Scripts.INTERCEPTOR_FIREWALL_PROTOCOL
+	interceptor_firewall_protocol.action_intercepted_action_paths = [Scripts.ACTION_CARD_PLAY]
+	Global.register_rod(interceptor_firewall_protocol)
+
+	var interceptor_payload_turbine: ActionInterceptorData = ActionInterceptorData.new("interceptor_payload_turbine")
+	interceptor_payload_turbine.action_interceptor_priority = 0
+	interceptor_payload_turbine.action_interceptor_modifies_parent = true
+	interceptor_payload_turbine.action_interceptor_script_path = "res://scripts/action_interceptors/InterceptorPayloadTurbine.gd"
+	interceptor_payload_turbine.action_intercepted_action_paths = [Scripts.ACTION_APPLY_STATUS]
+	Global.register_rod(interceptor_payload_turbine)
 
 	# increases damage done by attackers
 	var interceptor_damage_increase: ActionInterceptorData = ActionInterceptorData.new("interceptor_damage_increase")
@@ -1525,7 +1515,7 @@ func add_characters() -> void:
 		"card_basic_attack_green",
         "card_basic_attack_green",
 		"card_basic_block_green",
-        "card_basic_block_green",
+		"card_basic_block_green",
 		"card_basic_block_green",
 		"card_basic_block_green",
         "card_energy_next_turn"
@@ -1682,7 +1672,7 @@ func add_characters() -> void:
 		  "card_basic_attack_orange",
 		  "card_basic_attack_orange",
 		  "card_basic_block_orange",
-          "card_basic_block_orange",
+		  "card_basic_block_orange",
 		  "card_basic_block_orange",
 		  "card_basic_block_orange",
           "card_energy_next_turn"
@@ -1883,106 +1873,6 @@ func add_player_data() -> void:
 
 #endregion
 
-#region Card Decorators
-func add_card_decorators() -> void:
-	# decorator that changes card cost based on combat stats
-	var card_decorator_dynamic_cost_modifier: CardDecoratorData = CardDecoratorData.new("card_decorator_dynamic_cost_modifier")
-	card_decorator_dynamic_cost_modifier.card_decorator_script_path = Scripts.DECORATOR_DYNAMIC_COST_MODIFIER
-
-	Global.register_rod(card_decorator_dynamic_cost_modifier)
-
-	# decorator that modifies card_values based on combat stats
-	var card_decorator_dynamic_value_modifier: CardDecoratorData = CardDecoratorData.new("card_decorator_dynamic_value_modifier")
-	card_decorator_dynamic_value_modifier.card_decorator_script_path = Scripts.DECORATOR_DYNAMIC_VALUE_MODIFIER
-
-	Global.register_rod(card_decorator_dynamic_value_modifier)
-
-	# decorator that applies block on card play
-	# applies a custom decorator value to the card and displays the number on the decorator
-	var card_decorator_block_on_play: CardDecoratorData = CardDecoratorData.new("card_decorator_block_on_play")
-	card_decorator_block_on_play.card_decorator_name = "防御固化"
-	card_decorator_block_on_play.card_decorator_description = "打出时，额外提供 [decorator_value_block] 点防火墙。"
-	card_decorator_block_on_play.card_decorator_texture_path = "sprites/card-borders/purple_decorator.png"
-	card_decorator_block_on_play.card_decorator_value_improvements = {
-		"decorator_value_block": 5,
-	}
-	# Pre/post description replaced by card_decorator_description tooltip (see CardDecorator.gd)
-	#card_decorator_block_on_play.card_decorator_pre_description = "[center][color=purple]Block [decorator_value_block][/color][/center]\n"
-	card_decorator_block_on_play.card_decorator_label_value_name = "decorator_value_block"
-	card_decorator_block_on_play.card_decorator_add_keyword_ids = ["keyword_block"]
-	card_decorator_block_on_play.card_decorator_pre_play_actions = [
-		{
-			Scripts.ACTION_BLOCK: {
-				# convert the decorator's block into actual block
-				"custom_key_names": { "block": "decorator_value_block" },
-				"time_delay": 0.5,
-				"audio_path": AudioConstants.SFX_GROUP_SHIELD_UP,
-				"target_override": BaseAction.TARGET_OVERRIDES.PARENT,
-			},
-		},
-	]
-	Global.register_rod(card_decorator_block_on_play)
-
-	# decorator that removes exhaust from a card
-	# should be combined with a validator to prevent it from being applied to a non exhausting card
-	var card_decorator_remove_exhaust: CardDecoratorData = CardDecoratorData.new("card_decorator_remove_exhaust")
-	card_decorator_remove_exhaust.card_decorator_name = "持久运行"
-	card_decorator_remove_exhaust.card_decorator_description = "失去物理删除属性，使用后进入回收站。"
-	card_decorator_remove_exhaust.card_decorator_texture_path = "sprites/card-borders/yellow_decorator.png"
-	card_decorator_remove_exhaust.card_decorator_card_pack_id = "card_pack_exhaust_cards"
-	card_decorator_remove_exhaust.card_decorator_property_changes = {
-		"card_play_destination": HandManager.DISCARD_PILE,
-	}
-	Global.register_rod(card_decorator_remove_exhaust)
-
-	# decorator that draws extra cards when the card is drawn the first time
-	# applies a custom decorator value to the card and displays the number on the decorator
-	var card_decorator_extra_draw: CardDecoratorData = CardDecoratorData.new("card_decorator_extra_draw")
-	card_decorator_extra_draw.card_decorator_name = "初始加载"
-	card_decorator_extra_draw.card_decorator_description = "本局游戏中首次抽到此牌时，额外抽取 2 个脚本。"
-	card_decorator_extra_draw.card_decorator_texture_path = "sprites/card-borders/green_decorator.png"
-	card_decorator_extra_draw.card_decorator_value_changes = {
-		# add a flag to the card used to check for first time
-		"decorator_value_extra_draw": 2,
-	}
-	# Pre/post description replaced by card_decorator_description tooltip (see CardDecorator.gd)
-	#card_decorator_extra_draw.card_decorator_post_description = "[center][color=green]首次抽到时，抽取 2 个脚本。[/color][/center]\n"
-	card_decorator_extra_draw.card_decorator_label_value_name = "decorator_value_extra_draw"
-	card_decorator_extra_draw.card_decorator_post_draw_actions = [
-		{
-			# check flag when drawn
-			Scripts.ACTION_VALIDATOR: {
-				"validator_data": [
-					{
-						Scripts.VALIDATOR_CARD_VALUES: {
-							"card_value_name": "decorator_value_extra_draw",
-							"operator": ">",
-							"comparison_value": 0,
-							"invert_validation": false,
-						},
-					},
-				],
-				# draw cards and change flag
-				"passed_action_data": [
-					{
-						Scripts.ACTION_CHANGE_CARD_VALUES: {
-							"pick_played_card": true,
-							"modify_parent_card": false,
-							"new_card_values": { "decorator_value_extra_draw": 0 },
-						},
-					},
-					{
-						Scripts.ACTION_DRAW_GENERATOR: {
-							# alias the extra draw count
-							"custom_key_names": { "draw_count": "decorator_value_extra_draw" },
-						},
-					},
-				],
-			},
-		},
-	]
-	Global.register_rod(card_decorator_extra_draw)
-#endregion
 
 #region Cards
 

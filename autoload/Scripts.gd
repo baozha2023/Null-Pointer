@@ -103,6 +103,7 @@ const ACTION_PICK_CARDS: String = "res://scripts/actions/card_actions/pick_card_
 const ACTION_PICK_UPGRADE_CARDS: String = "res://scripts/actions/card_actions/pick_card_actions/ActionPickUpgradeCards.gd"
 const ACTION_PICK_DUPLICATE_CARDS: String = "res://scripts/actions/card_actions/pick_card_actions/ActionPickDuplicateCards.gd"
 const ACTION_CREATE_CARDS: String = "res://scripts/actions/card_actions/pick_card_actions/ActionCreateCards.gd"
+const ACTION_DEBUG_PICK_ANY_CARD: String = "res://scripts/actions/card_actions/pick_card_actions/ActionDebugPickAnyCard.gd"
 # 	cardset actions; these affect a list of picked cards
 const ACTION_IMPROVE_CARD_VALUES: String = "res://scripts/actions/card_actions/cardset_actions/ActionImproveCardValues.gd"
 const ACTION_CHANGE_CARD_VALUES: String = "res://scripts/actions/card_actions/cardset_actions/ActionChangeCardValues.gd"
@@ -246,6 +247,7 @@ const INTERCEPTOR_PRESERVE_OVERSHIELD: String = "res://scripts/action_intercepto
 # boss mechanic interceptors
 const INTERCEPTOR_DAMAGE_THRESHOLD: String = "res://scripts/action_interceptors/InterceptorDamageThreshold.gd"
 const INTERCEPTOR_CARD_PLAY_REACTION: String = "res://scripts/action_interceptors/InterceptorCardPlayReaction.gd"
+const INTERCEPTOR_FIREWALL_PROTOCOL: String = "res://scripts/action_interceptors/InterceptorFirewallProtocol.gd"
 
 # custom artifact interceptors
 const INTERCEPTOR_BRUTE_FORCE_ATTACK: String = "res://scripts/action_interceptors/InterceptorBruteForceAttack.gd"

@@ -576,12 +576,14 @@ static func add_artifacts() -> void:
 	artifact_debug_card_picker.artifact_script_path = "res://scripts/artifacts/BaseArtifact.gd"
 	artifact_debug_card_picker.artifact_right_click_actions = [
 		{
-			"res://scripts/actions/card_actions/pick_card_actions/ActionDebugPickAnyCard.gd": {
+			Scripts.ACTION_DEBUG_PICK_ANY_CARD: {
 				"max_card_amount": 1,
 				"min_card_amount": 1,
 				"min_cards_are_required_for_action": true,
 				"random_selection": false,
 				"quick_pick": true,
+				"can_back_out": true,
+				"is_filter_enabled": true,
 				"card_pick_text": "选择一张卡牌加入手牌",
 				"action_data": [
 					{ Scripts.ACTION_ADD_CARDS_TO_HAND: { } }

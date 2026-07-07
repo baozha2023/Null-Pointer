@@ -465,12 +465,13 @@ func _on_combatant_blocked(base_combatant: BaseCombatant, amount_blocked: int):
 		_add_to_combat_enum_stat(CombatStatsData.STATS.ENEMY_BLOCKED_COUNT, 1)
 	if base_combatant.is_in_group("players"):
 		_add_to_combat_enum_stat(CombatStatsData.STATS.PLAYER_BLOCKED_AMOUNT, amount_blocked)
-		_add_to_combat_enum_stat(CombatStatsData.STATS.PLAYER_BLOCKED_AMOUNT, 1)
+		_add_to_combat_enum_stat(CombatStatsData.STATS.PLAYER_BLOCKED_COUNT, 1)
 func _on_combatant_damaged(base_combatant: BaseCombatant, unblocked_damage: int, zero_capped_damage: int, overkill_damage: int):
 	if base_combatant.is_in_group("enemies"):
 		_add_to_combat_enum_stat(CombatStatsData.STATS.ENEMY_DAMAGED_AMOUNT, unblocked_damage)
 		_add_to_combat_enum_stat(CombatStatsData.STATS.ENEMY_DAMAGED_CAPPED_AMOUNT, zero_capped_damage)
 		_add_to_combat_enum_stat(CombatStatsData.STATS.ENEMY_DAMAGED_OVERKILL_AMOUNT, overkill_damage)
+		_add_to_combat_enum_stat(CombatStatsData.STATS.ENEMY_DAMAGED_COUNT, 1)
 	if base_combatant.is_in_group("players"):
 		# no need to track capped and overkill damage for player
 		_add_to_combat_enum_stat(CombatStatsData.STATS.PLAYER_DAMAGED_AMOUNT, unblocked_damage)

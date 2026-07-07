@@ -11,6 +11,10 @@ func process_action_interception(action_interceptor_processor: ActionInterceptor
 	
 	var parent_combatant: BaseCombatant = action_interceptor_processor.parent_action.parent_combatant
 	
+	# 避免 HandManager 发出 [null] 和 [enemies] 导致的重复触发 Bug
+	if action_interceptor_processor.target != null:
+		return ACTION_ACCEPTENCES.CONTINUE
+		
 	var card_play_request: CardPlayRequest = action_interceptor_processor.parent_action.card_play_request
 	# will not duplicate duplicated plays
 	if not card_play_request.is_duplicate_play:

@@ -263,8 +263,11 @@ func load_read_only_data() -> void:
 			var old_script_path: String = mod_data.mod_script_file_paths[mod_script_file_path]
 			
 			var new_script: Script = load(full_script_path)
-			if old_script_path != "":
-				new_script.take_over_path(old_script_path)
+			if new_script:
+				if old_script_path != "":
+					new_script.take_over_path(old_script_path)
+			else:
+				DebugLogger.log_line("FileLoader: Failed to load script at " + full_script_path, Color.RED, DebugLogger.Severities.ERROR)
 		
 		# iterate over every subdirectory listed in mod info's folders
 		for mod_sub_directory: String in mod_data.mod_folder_to_load_data.keys():
@@ -375,7 +378,7 @@ func validate_enabled_mod_dependencies(mod_list: Array[String]) -> Array[String]
 func _generate_mod_list_data(save_to_file: bool = true) -> ModListData:
 	var mod_list_data: ModListData = ModListData.new("mod_list")
 	mod_list_data.mod_load_data = {
-		EXTERNAL_DIR_DATA_PATH: {
+		EXTERNAL_DIR_PATH: {
 			"enabled": true,
 			"load_priority": 0
 		}	
@@ -391,6 +394,9 @@ func _generate_mod_list_data(save_to_file: bool = true) -> ModListData:
 ## save_to_file exports it which you'll typically want to do.
 func _generate_base_mod_data(save_to_file: bool = true) -> ModData:
 	var mod_data: ModData = ModData.new("mod_data_base_game")
+	mod_data.mod_name = "Base Game"
+	mod_data.mod_author = "BZ Games Team"
+	mod_data.mod_description = "Base Game. This will load all data json objects in listed folder locations. You can disable this to safely prevent external files from overriding built-in data."
 	
 	var mod_folder_to_load_data: Dictionary = {}
 	for schema_row: Array in Global.SCHEMA:
@@ -410,7 +416,7 @@ func _generate_base_mod_data(save_to_file: bool = true) -> ModData:
 	mod_data.mod_folder_to_load_data = mod_folder_to_load_data
 	
 	if save_to_file:
-		save_json(EXTERNAL_DIR_DATA_PATH, MOD_INFO_FILE_NAME, mod_data.get_serializable_properties_to_json_patch())
+		save_json(EXTERNAL_DIR_PATH, MOD_INFO_FILE_NAME, mod_data.get_serializable_properties_to_json_patch())
 	
 	return mod_data
 

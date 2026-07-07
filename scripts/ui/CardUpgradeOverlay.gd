@@ -45,7 +45,8 @@ func _on_card_pick_requested(card_pick_action: ActionBasePickCards):
 			populate_cards(card_pick_action.get_pickable_cards())
 			
 			card_picking_label.text = current_card_pick_action.get_card_pick_text()
-			confirm_button.visible = current_card_pick_action.are_enough_cards_picked()
+			confirm_button.visible = true
+			confirm_button.disabled = not current_card_pick_action.are_enough_cards_picked()
 			
 			back_button.visible = current_card_pick_action.get_card_pick_can_back_out()
 
@@ -110,7 +111,7 @@ func _on_card_selected(card: Card):
 					_update_preview()
 				
 		card_picking_label.text = current_card_pick_action.get_card_pick_text()
-		confirm_button.visible = current_card_pick_action.are_enough_cards_picked()
+		confirm_button.disabled = not current_card_pick_action.are_enough_cards_picked()
 		
 		# quick pick automatically confirms
 		if current_card_pick_action.is_quick_pick():
@@ -142,8 +143,8 @@ func _update_preview() -> void:
 	# clamp preview target level (cannot preview below current level)
 	preview_target_level = clamp(preview_target_level, selected_card_data.card_upgrade_amount, selected_card_data.card_upgrade_amount_max)
 	
-	# Duplicate the actual selected card to preserve dynamic modifications
-	var preview_data: CardData = selected_card_data.duplicate(true)
+	# get upgraded card data
+	var preview_data: CardData = selected_card_data.get_prototype(true)
 	
 	# Apply only the difference in upgrades
 	var upgrades_needed = preview_target_level - selected_card_data.card_upgrade_amount

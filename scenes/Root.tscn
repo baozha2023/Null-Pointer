@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://bg7gmq537qyn5"]
 
 [ext_resource type="Script" uid="uid://ckfi22o2jit0b" path="res://scripts/Root.gd" id="1_ak6de"]
+[ext_resource type="PackedScene" path="res://scenes/ui/menus/ModMenu.tscn" id="mod_menu_scene"]
 [ext_resource type="PackedScene" uid="uid://dfb0l2x5vqxyz" path="res://scenes/ui/CardSelectionOverlay.tscn" id="100_cso"]
 [ext_resource type="Theme" uid="uid://cd5rw86bhiyn" path="res://themes/title_screen_theme.tres" id="2_bi5lp"]
 [ext_resource type="Script" uid="uid://dw0xyfu580mkb" path="res://scripts/ui/menus/TitleScreen.gd" id="2_m6atk"]
@@ -30,6 +31,7 @@
 [ext_resource type="Script" uid="uid://dj8cttlgi1fow" path="res://scripts/ui/codex/CodexCardsMenu.gd" id="11_nownq"]
 [ext_resource type="Texture2D" uid="uid://csm0chktmbxho" path="res://sprites/characters/character_green/character_green_poster.png" id="11_ug4o1"]
 [ext_resource type="PackedScene" uid="uid://cim470d3rss83" path="res://scenes/ui/CardUpgradeOverlay.tscn" id="11_upgrade"]
+[ext_resource type="PackedScene" path="res://scenes/ui/CardEnchantOverlay.tscn" id="101_enchant"]
 [ext_resource type="Script" uid="uid://bepy2gle06uwf" path="res://scripts/ui/CardDraftSelectionOverlay.gd" id="11_yys3c"]
 [ext_resource type="Script" uid="uid://dm6o2678kafwr" path="res://scripts/ui/menus/RunScreen.gd" id="12_elxq6"]
 [ext_resource type="Script" uid="uid://c2i6b2ert5jls" path="res://scripts/ui/PauseButton.gd" id="13_i7igs"]
@@ -289,7 +291,8 @@ NodePath("VBoxContainer/NewRunButton"): NodePath("../NewRunMenu"),
 NodePath("VBoxContainer/CodexButton"): NodePath("../CodexMenu"),
 NodePath("VBoxContainer/RunHistoryButton"): NodePath("../RunHistoryMenu"),
 NodePath("VBoxContainer/SettingsButton"): NodePath("../SettingsMenu"),
-NodePath("VBoxContainer/ProfileStatsButton"): NodePath("../ProfileStatsMenu")
+NodePath("VBoxContainer/ProfileStatsButton"): NodePath("../ProfileStatsMenu"),
+NodePath("VBoxContainer/ModButton"): NodePath("../ModMenu")
 }
 
 [node name="TextureRect" type="TextureRect" parent="TitleScreen/MainMenu" unique_id=467371030]
@@ -440,6 +443,20 @@ theme_override_styles/normal = SubResource("StyleBoxTexture_ug4o1")
 theme_override_styles/pressed = SubResource("StyleBoxTexture_8b2qk")
 theme_override_styles/hover = SubResource("StyleBoxTexture_gdi3b")
 text = "注销"
+
+[node name="ModButton" type="Button" parent="TitleScreen/MainMenu/VBoxContainer"]
+custom_minimum_size = Vector2(295, 71)
+layout_mode = 0
+offset_left = -264.0
+offset_top = 193.0
+offset_right = 31.0
+offset_bottom = 264.0
+size_flags_horizontal = 4
+theme = ExtResource("2_bi5lp")
+theme_override_styles/normal = SubResource("StyleBoxTexture_ug4o1")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_8b2qk")
+theme_override_styles/hover = SubResource("StyleBoxTexture_gdi3b")
+text = "模组"
 
 [node name="NewRunMenu" type="Control" parent="TitleScreen" unique_id=1700370497 node_paths=PackedStringArray("navigation_button_to_menu")]
 visible = false
@@ -1233,7 +1250,7 @@ unique_name_in_owner = true
 layout_mode = 2
 follow_focus = true
 horizontal_scroll_mode = 3
-vertical_scroll_mode = 3
+vertical_scroll_mode = 2
 script = ExtResource("10_kpmo0")
 follow_focus_margin = 200
 allow_horizontal_scroll = false
@@ -1542,6 +1559,8 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
+
+[node name="ModMenu" parent="TitleScreen" instance=ExtResource("mod_menu_scene")]
 
 [node name="ProfileStatsMenu" type="Control" parent="TitleScreen" unique_id=187253601 node_paths=PackedStringArray("navigation_button_to_menu")]
 visible = false
@@ -2918,6 +2937,15 @@ offset_bottom = 531.0
 text = "跳过"
 
 [node name="CardUpgradeOverlay" parent="RunScreen" unique_id=273723737 instance=ExtResource("11_upgrade")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = 0.0
+
+[node name="CardEnchantOverlay" parent="RunScreen" unique_id=273723738 instance=ExtResource("101_enchant")]
 unique_name_in_owner = true
 visible = false
 layout_mode = 1

@@ -251,6 +251,9 @@ func get_pickable_cards_max_amount() -> int:
 func get_card_pick_can_back_out() -> bool:
 	return get_action_value("can_back_out", false)
 
+func is_filter_enabled() -> bool:
+	return get_action_value("is_filter_enabled", false)
+
 
 ## Gets all cards that meet pickable criteria from a given input list of cards.
 ## This factors in additonal validators that can be supplied.

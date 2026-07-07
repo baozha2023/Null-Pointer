@@ -12,6 +12,8 @@ func perform_action():
 		# spawn slots that may be filled
 		var spawn_slots: Array[int] = []
 		spawn_slots.assign(action_interceptor_processor.get_shadowed_action_values("spawn_slots", []))
+		# whether the summoned enemies should be flagged as minions
+		var is_minion: bool = action_interceptor_processor.get_shadowed_action_values("is_minion", false)
 		# a list of enemy ids that could spawn
 		var random_enemy_object_ids: Array = action_interceptor_processor.get_shadowed_action_values("random_enemy_object_ids", []).duplicate()
 		if len(random_enemy_object_ids) == 0:
@@ -50,7 +52,7 @@ func perform_action():
 			
 			var enemy_object_id: String = random_enemy_object_ids[0]
 			# spawn enemy
-			Signals.enemy_spawn_requested.emit(enemy_object_id, slot_id)
+			Signals.enemy_spawn_requested.emit(enemy_object_id, slot_id, is_minion)
 			remaining_spawns -= 1
 		
 func _to_string():
