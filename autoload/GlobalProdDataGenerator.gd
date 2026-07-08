@@ -442,6 +442,17 @@ func add_status_effects() -> void:
 	status_effect_curiosity.status_effect_interceptor_ids = ["interceptor_card_play_reaction"]
 	Global.register_rod(status_effect_curiosity)
 
+	var status_effect_curiosity2: StatusEffectData = StatusEffectData.new("status_effect_curiosity2")
+	status_effect_curiosity2.status_effect_name = "内存监听"
+	status_effect_curiosity2.status_effect_description = "自身打出脚本时，获得相应增益。"
+	status_effect_curiosity2.status_effect_tooltip = "每当你打出 [color=yellow][curiosity_trigger_threshold][/color] 张 [color=yellow][curiosity_trigger_card_types][/color] 时，获得 [color=yellow][curiosity_reaction_amount][/color] 层 [status_icon:[curiosity_reaction_status_id]]。\n当前已打出：[color=yellow][curiosity_current_counter] / [curiosity_trigger_threshold][/color] 张"
+	status_effect_curiosity2.status_effect_texture_path = "sprites/status_effects/icon_curiosity.png"
+	status_effect_curiosity2.status_effect_decay_rate = 0
+	status_effect_curiosity2.status_effect_type = StatusEffectData.STATUS_EFFECT_TYPES.BUFF
+	status_effect_curiosity2.status_effect_interceptor_ids = ["interceptor_card_play_reaction_self"]
+	status_effect_curiosity2.status_effect_allows_multiples = true
+	Global.register_rod(status_effect_curiosity2)
+
 	var status_effect_firewall_protocol: StatusEffectData = StatusEffectData.new("status_effect_firewall_protocol")
 	status_effect_firewall_protocol.status_effect_name = "【系统专用】锻造台外设被动防御监听进程"
 	status_effect_firewall_protocol.status_effect_description = "专用于锻造台外设等相关机制的被动防御监听进程。"
@@ -1125,6 +1136,13 @@ func add_action_interceptors() -> void:
 	interceptor_card_play_reaction.action_intercepted_action_paths = [Scripts.ACTION_CARD_PLAY]
 	Global.register_rod(interceptor_card_play_reaction)
 
+	var interceptor_card_play_reaction_self: ActionInterceptorData = ActionInterceptorData.new("interceptor_card_play_reaction_self")
+	interceptor_card_play_reaction_self.action_interceptor_priority = 0
+	interceptor_card_play_reaction_self.action_interceptor_modifies_parent = true
+	interceptor_card_play_reaction_self.action_interceptor_script_path = Scripts.INTERCEPTOR_CARD_PLAY_REACTION_SELF
+	interceptor_card_play_reaction_self.action_intercepted_action_paths = [Scripts.ACTION_CARD_PLAY]
+	Global.register_rod(interceptor_card_play_reaction_self)
+
 	var interceptor_firewall_protocol: ActionInterceptorData = ActionInterceptorData.new("interceptor_firewall_protocol")
 	interceptor_firewall_protocol.action_interceptor_priority = 0
 	interceptor_firewall_protocol.action_interceptor_modifies_parent = true
@@ -1327,13 +1345,13 @@ func add_action_interceptors() -> void:
 	var interceptor_increase_shop_price: ActionInterceptorData = ActionInterceptorData.new("interceptor_increase_shop_price")
 	interceptor_increase_shop_price.action_interceptor_modifies_parent = true
 	interceptor_increase_shop_price.action_interceptor_script_path = Scripts.INTERCEPTOR_INCREASE_SHOP_PRICE
-	interceptor_increase_shop_price.action_intercepted_action_paths = [Scripts.ACTION_GET_SHOP_PRICE]
+	interceptor_increase_shop_price.action_intercepted_action_paths = [Scripts.ACTION_GET_SHOP_PRICE, Scripts.ACTION_GET_ENCHANT_PRICE]
 	Global.register_rod(interceptor_increase_shop_price)
 	
 	var interceptor_decrease_shop_price: ActionInterceptorData = ActionInterceptorData.new("interceptor_decrease_shop_price")
 	interceptor_decrease_shop_price.action_interceptor_modifies_parent = true
 	interceptor_decrease_shop_price.action_interceptor_script_path = Scripts.INTERCEPTOR_DECREASE_SHOP_PRICE
-	interceptor_decrease_shop_price.action_intercepted_action_paths = [Scripts.ACTION_GET_SHOP_PRICE]
+	interceptor_decrease_shop_price.action_intercepted_action_paths = [Scripts.ACTION_GET_SHOP_PRICE, Scripts.ACTION_GET_ENCHANT_PRICE]
 	Global.register_rod(interceptor_decrease_shop_price)
 
 	var interceptor_high_latency: ActionInterceptorData = ActionInterceptorData.new("interceptor_high_latency")
@@ -1513,7 +1531,7 @@ func add_characters() -> void:
 		"card_basic_attack_green",
 		"card_basic_attack_green",
 		"card_basic_attack_green",
-        "card_basic_attack_green",
+		"card_basic_attack_green",
 		"card_basic_block_green",
 		"card_basic_block_green",
 		"card_basic_block_green",
@@ -2004,6 +2022,48 @@ func add_card_packs() -> void:
 		},
 	]
 	Global.register_rod(card_pack_exhaust_cards)
+
+	# 非物理删除卡牌池，供"系统维护"附魔等使用
+	var card_pack_non_exhaust_cards: CardPackData = CardPackData.new("card_pack_non_exhaust_cards")
+	card_pack_non_exhaust_cards.card_pack_displays_in_codex = false
+	card_pack_non_exhaust_cards.card_pack_validators = [
+		{
+			Scripts.VALIDATOR_CARD_PROPERTIES: {
+				"card_property_name": "card_play_destination",
+				"operator": "==",
+				"comparison_value": HandManager.DISCARD_PILE,
+			},
+		},
+	]
+	Global.register_rod(card_pack_non_exhaust_cards)
+
+	# 必须有目标卡牌池，供"算力爆发"附魔等使用
+	var card_pack_requires_target_cards: CardPackData = CardPackData.new("card_pack_requires_target_cards")
+	card_pack_requires_target_cards.card_pack_displays_in_codex = false
+	card_pack_requires_target_cards.card_pack_validators = [
+		{
+			Scripts.VALIDATOR_CARD_PROPERTIES: {
+				"card_property_name": "card_requires_target",
+				"operator": "==",
+				"comparison_value": true,
+			},
+		},
+	]
+	Global.register_rod(card_pack_requires_target_cards)
+
+	# 必须是非保留属性的卡牌池，供"静态寄存"附魔使用
+	var card_pack_non_retained_cards: CardPackData = CardPackData.new("card_pack_non_retained_cards")
+	card_pack_non_retained_cards.card_pack_displays_in_codex = false
+	card_pack_non_retained_cards.card_pack_validators = [
+		{
+			Scripts.VALIDATOR_CARD_PROPERTIES: {
+				"card_property_name": "card_is_retained",
+				"operator": "==",
+				"comparison_value": false,
+			},
+		},
+	]
+	Global.register_rod(card_pack_non_retained_cards)
 
 	var card_pack_white: CardPackData = CardPackData.new("card_pack_white")
 	card_pack_white.card_pack_color_id = "color_white"

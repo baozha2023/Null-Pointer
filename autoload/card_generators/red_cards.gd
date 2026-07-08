@@ -598,6 +598,11 @@ static func add_cards_red() -> void:
 	card_ci_pipeline.card_status_effect_object_ids = ["status_effect_increase_turn_draw"]
 	card_ci_pipeline.card_play_actions = [
 		{
+			Scripts.ACTION_REMOVE_CARDS_FROM_DECK: {
+				"pick_played_card": true
+			}
+		},
+		{
 			Scripts.ACTION_APPLY_STATUS: {
 				"status_effect_object_id": "status_effect_damage_increase",
 				"target_override": BaseAction.TARGET_OVERRIDES.PARENT,
@@ -631,6 +636,11 @@ static func add_cards_red() -> void:
 	card_fork.card_values = {"status_charge_amount": 1}
 	card_fork.card_upgrade_value_improvements = {"status_charge_amount": 1}
 	card_fork.card_play_actions = [
+		{
+			Scripts.ACTION_REMOVE_CARDS_FROM_DECK: {
+				"pick_played_card": true
+			}
+		},
 		{
 			Scripts.ACTION_APPLY_STATUS: {
 				"status_effect_object_id": "status_effect_duplicate_attacks",
@@ -672,6 +682,11 @@ static func add_cards_red() -> void:
 		},
 	]
 	card_circuit_breaker.card_play_actions = [
+		{
+			Scripts.ACTION_REMOVE_CARDS_FROM_DECK: {
+				"pick_played_card": true
+			}
+		},
 		{
 			Scripts.ACTION_BLOCK: {
 				"target_override": BaseAction.TARGET_OVERRIDES.PARENT,
@@ -728,6 +743,11 @@ static func add_cards_red() -> void:
 	card_connection_pool.card_upgrade_value_improvements = {"block": 3, "status_charge_amount": 1}
 	card_connection_pool.card_keyword_object_ids = []
 	card_connection_pool.card_play_actions = [
+		{
+			Scripts.ACTION_REMOVE_CARDS_FROM_DECK: {
+				"pick_played_card": true
+			}
+		},
 		{
 			Scripts.ACTION_BLOCK: {
 				"target_override": BaseAction.TARGET_OVERRIDES.PARENT,
@@ -958,6 +978,11 @@ static func add_cards_red() -> void:
 	card_compile_opt.card_upgrade_amount_max = 1
 	card_compile_opt.card_play_actions = [
 		{
+			Scripts.ACTION_REMOVE_CARDS_FROM_DECK: {
+				"pick_played_card": true
+			}
+		},
+		{
 			Scripts.ACTION_PICK_CARDS: {
 				"custom_key_names": {"max_card_amount": "card_amount", "min_card_amount": "card_amount"},
 				"min_cards_are_required_for_action": false,
@@ -982,11 +1007,6 @@ static func add_cards_red() -> void:
 					},
 				],
 			},
-		},
-		{
-			Scripts.ACTION_REMOVE_CARDS_FROM_DECK: {
-				"pick_played_card": true
-			}
 		}
 	]
 	Global.register_rod(card_compile_opt)

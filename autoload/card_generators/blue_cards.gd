@@ -794,5 +794,88 @@ static func add_cards_blue() -> void:
 	]
 
 	Global.register_rod(card_botnet_strike)
+	
+	# 蓝卡：多路复用
+	var card_multiplexing: CardData = CardData.new("card_multiplexing")
+	card_multiplexing.card_name = "多路复用"
+	card_multiplexing.card_color_id = "color_{0}".format([color])
+	card_multiplexing.card_description = "选择 1 项协议进程挂载为内存监听。"
+	card_multiplexing.card_hint = "极高自由度的 Buff 牌，根据当前战斗流派选择合适的挂机监听方案。"
+	card_multiplexing.card_type = CardData.CARD_TYPES.POWER
+	card_multiplexing.card_rarity = CardData.CARD_RARITIES.RARE
+	card_multiplexing.card_requires_target = false
+	card_multiplexing.card_energy_cost = 1
+	card_multiplexing.card_play_actions = [
+		{
+			Scripts.ACTION_PICK_OPTIONS: {
+				"options": [
+					{
+						"option_name": "攻击协议",
+						"option_description": "打出 3 张[color=red]攻击卡[/color]时，获得 1 层[status_icon:status_effect_damage_increase]。",
+						"option_sub_actions": [
+							{
+								Scripts.ACTION_APPLY_STATUS: {
+									"target_override": BaseAction.TARGET_OVERRIDES.PLAYER,
+									"status_effect_object_id": "status_effect_curiosity2",
+									"status_charge_amount": 1,
+									"status_force_apply_new_effect": true,
+									"status_custom_values": {
+										"curiosity_trigger_card_types": [CardData.CARD_TYPES.ATTACK],
+										"curiosity_trigger_threshold": 3,
+										"curiosity_reaction_status_id": "status_effect_damage_increase",
+										"curiosity_reaction_amount": 1,
+										"curiosity_current_counter": 0
+									}
+								}
+							}
+						]
+					},
+					{
+						"option_name": "防御协议",
+						"option_description": "打出 3 张[color=green]技能卡[/color]时，获得 2 层[status_icon:status_effect_block_on_turn_end]。",
+						"option_sub_actions": [
+							{
+								Scripts.ACTION_APPLY_STATUS: {
+									"target_override": BaseAction.TARGET_OVERRIDES.PLAYER,
+									"status_effect_object_id": "status_effect_curiosity2",
+									"status_charge_amount": 1,
+									"status_force_apply_new_effect": true,
+									"status_custom_values": {
+										"curiosity_trigger_card_types": [CardData.CARD_TYPES.SKILL],
+										"curiosity_trigger_threshold": 3,
+										"curiosity_reaction_status_id": "status_effect_block_on_turn_end",
+										"curiosity_reaction_amount": 2,
+										"curiosity_current_counter": 0
+									}
+								}
+							}
+						]
+					},
+					{
+						"option_name": "资源协议",
+						"option_description": "打出 2 张[color=blue]能力卡[/color]时，获得 1 层[status_icon:status_effect_bonus_energy_per_turn]。",
+						"option_sub_actions": [
+							{
+								Scripts.ACTION_APPLY_STATUS: {
+									"target_override": BaseAction.TARGET_OVERRIDES.PLAYER,
+									"status_effect_object_id": "status_effect_curiosity2",
+									"status_charge_amount": 1,
+									"status_force_apply_new_effect": true,
+									"status_custom_values": {
+										"curiosity_trigger_card_types": [CardData.CARD_TYPES.POWER],
+										"curiosity_trigger_threshold": 2,
+										"curiosity_reaction_status_id": "status_effect_bonus_energy_per_turn",
+										"curiosity_reaction_amount": 1,
+										"curiosity_current_counter": 0
+									}
+								}
+							}
+						]
+					}
+				]
+			}
+		}
+	]
+	Global.register_rod(card_multiplexing)
 
 	#endregion

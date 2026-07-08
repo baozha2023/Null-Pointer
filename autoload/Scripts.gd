@@ -86,6 +86,7 @@ const ACTION_CLEAR_REWARDS = "res://scripts/actions/rewards/ActionClearRewards.g
 # shop
 const ACTION_SHOP_PURCHASE_ITEMS: String = "res://scripts/actions/shop_actions/ActionShopPurchaseItems.gd"
 const ACTION_GET_SHOP_PRICE: String = "res://scripts/actions/shop_actions/ActionGetShopPrice.gd"
+const ACTION_GET_ENCHANT_PRICE: String = "res://scripts/actions/shop_actions/ActionGetEnchantPrice.gd"
 const ACTION_SHOP_POPULATE_ITEMS: String = "res://scripts/actions/shop_actions/ActionShopPopulateItems.gd"
 
 # artifact actions
@@ -247,6 +248,7 @@ const INTERCEPTOR_PRESERVE_OVERSHIELD: String = "res://scripts/action_intercepto
 # boss mechanic interceptors
 const INTERCEPTOR_DAMAGE_THRESHOLD: String = "res://scripts/action_interceptors/InterceptorDamageThreshold.gd"
 const INTERCEPTOR_CARD_PLAY_REACTION: String = "res://scripts/action_interceptors/InterceptorCardPlayReaction.gd"
+const INTERCEPTOR_CARD_PLAY_REACTION_SELF: String = "res://scripts/action_interceptors/InterceptorCardPlayReactionSelf.gd"
 const INTERCEPTOR_FIREWALL_PROTOCOL: String = "res://scripts/action_interceptors/InterceptorFirewallProtocol.gd"
 
 # custom artifact interceptors

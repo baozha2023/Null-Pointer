@@ -87,3 +87,54 @@ func format_value(key: String, val: Variant) -> String:
 			type_names.append(CardData.CARD_TYPE_DISPLAY.get(t, "未知脚本"))
 		return "、".join(type_names)
 	return str(val)
+
+func parse_forge_actions_to_text(forge_actions: Array) -> String:
+	var display_text: String = ""
+	for i in forge_actions.size():
+		var entry: Dictionary = forge_actions[i]
+		var action_data: Dictionary = entry.get("action_data", {})
+		var custom_description: String = entry.get("description", "")
+
+		var action_name: String = ""
+		var action_detail: String = ""
+		for action_path: String in action_data:
+			action_name = action_path.get_file().replace(".gd", "").replace("Action", "")
+			
+			if custom_description != "":
+				action_detail = parse(custom_description, action_data[action_path])
+			else:
+				if action_path == Scripts.ACTION_ATTACK_GENERATOR or action_path == Scripts.ACTION_ATTACK:
+					var damage = action_data[action_path].get("damage", 0)
+					var amount = action_data[action_path].get("number_of_attacks", 1)
+					if amount > 1:
+						action_detail = "造成 %d 点伤害 %d 次" % [damage, amount]
+					else:
+						action_detail = "造成 %d 点伤害" % damage
+				elif action_path == Scripts.ACTION_ADD_HEALTH:
+					var health = action_data[action_path].get("health_amount", 0)
+					action_detail = "恢复 %d 点完整度" % health
+				elif action_path == Scripts.ACTION_BLOCK:
+					var block = action_data[action_path].get("block", 0)
+					action_detail = "获得 %d 点防火墙" % block
+				elif action_path == Scripts.ACTION_DRAW or action_path == Scripts.ACTION_DRAW_GENERATOR:
+					var amount = action_data[action_path].get("draw_count", 1)
+					action_detail = "抽取 %d 张卡牌" % amount
+				elif action_path == Scripts.ACTION_DIRECT_DAMAGE:
+					var damage = action_data[action_path].get("damage", 1)
+					action_detail = "造成 %d 点真实伤害" % damage
+				elif action_path == Scripts.ACTION_APPLY_STATUS:
+					var status_id = action_data[action_path].get("status_effect_object_id", "")
+					var amount = action_data[action_path].get("status_charge_amount", 1)
+					var raw_text = "施加 %d 层 [status_icon:%s]" % [amount, status_id]
+					action_detail = parse(raw_text)
+				elif action_path == Scripts.ACTION_ADD_ENERGY:
+					var amount = action_data[action_path].get("energy_amount", 1)
+					var raw_text = "获得 [amount_energy_icons]"
+					action_detail = parse(raw_text, {"amount": amount})
+				else:
+					action_detail = JSON.stringify(action_data[action_path])
+
+		display_text += "[color=orange][%d][/color] %s\n" % [i, action_name]
+		display_text += "    [color=gray]%s[/color]\n" % action_detail
+
+	return display_text.strip_edges()

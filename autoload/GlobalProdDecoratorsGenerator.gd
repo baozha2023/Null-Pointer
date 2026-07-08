@@ -4,7 +4,11 @@ extends RefCounted
 const REST_SITE_ENCHANT_POOL: Array[String] = [
 	"card_decorator_block_on_play",
 	"card_decorator_remove_exhaust",
-	"card_decorator_extra_draw"
+	"card_decorator_extra_draw",
+	"card_decorator_damage_on_play",
+	"card_decorator_energy_on_play",
+	"card_decorator_add_retain",
+	"card_decorator_heal_on_play"
 ]
 
 static func generate_decorators() -> void:
@@ -110,6 +114,80 @@ static func add_card_decorators() -> void:
 		},
 	]
 	Global.register_rod(card_decorator_extra_draw)
+
+	# decorator that deals extra damage on play
+	var card_decorator_damage_on_play: CardDecoratorData = CardDecoratorData.new("card_decorator_damage_on_play")
+	card_decorator_damage_on_play.card_decorator_name = "算力爆发"
+	card_decorator_damage_on_play.card_decorator_description = "打出时，额外对目标造成 [decorator_value_damage] 点伤害。"
+	card_decorator_damage_on_play.card_decorator_texture_path = "sprites/card-borders/purple_decorator.png"
+	card_decorator_damage_on_play.card_decorator_card_pack_id = "card_pack_requires_target_cards"
+	card_decorator_damage_on_play.card_decorator_value_improvements = {
+		"decorator_value_damage": 3,
+	}
+	card_decorator_damage_on_play.card_decorator_label_value_name = "decorator_value_damage"
+	card_decorator_damage_on_play.card_decorator_pre_play_actions = [
+		{
+			Scripts.ACTION_ATTACK_GENERATOR: {
+				"custom_key_names": { "damage": "decorator_value_damage" },
+				"number_of_attacks": 1,
+				"target_override": BaseAction.TARGET_OVERRIDES.SELECTED_TARGETS,
+				"audio_path": AudioConstants.SFX_GROUP_SWORD_SLASH,
+			},
+		},
+	]
+	Global.register_rod(card_decorator_damage_on_play)
+
+	# decorator that gives energy on play
+	var card_decorator_energy_on_play: CardDecoratorData = CardDecoratorData.new("card_decorator_energy_on_play")
+	card_decorator_energy_on_play.card_decorator_name = "能量回馈"
+	card_decorator_energy_on_play.card_decorator_description = "打出时，恢复 [decorator_value_energy] 点能量。"
+	card_decorator_energy_on_play.card_decorator_texture_path = "sprites/card-borders/yellow_decorator.png"
+	card_decorator_energy_on_play.card_decorator_value_improvements = {
+		"decorator_value_energy": 1,
+	}
+	card_decorator_energy_on_play.card_decorator_label_value_name = "decorator_value_energy"
+	card_decorator_energy_on_play.card_decorator_pre_play_actions = [
+		{
+			Scripts.ACTION_ADD_ENERGY: {
+				"custom_key_names": { "energy_amount": "decorator_value_energy" },
+			},
+		},
+	]
+	Global.register_rod(card_decorator_energy_on_play)
+
+	# decorator that adds retain
+	var card_decorator_add_retain: CardDecoratorData = CardDecoratorData.new("card_decorator_add_retain")
+	card_decorator_add_retain.card_decorator_name = "静态寄存"
+	card_decorator_add_retain.card_decorator_description = "获得保留属性（回合结束时不会被丢弃）。"
+	card_decorator_add_retain.card_decorator_texture_path = "sprites/card-borders/yellow_decorator.png"
+	card_decorator_add_retain.card_decorator_card_pack_id = "card_pack_non_retained_cards"
+	card_decorator_add_retain.card_decorator_property_changes = {
+		"card_is_retained": true,
+	}
+	Global.register_rod(card_decorator_add_retain)
+
+	# decorator that heals on play but exhausts
+	var card_decorator_heal_on_play: CardDecoratorData = CardDecoratorData.new("card_decorator_heal_on_play")
+	card_decorator_heal_on_play.card_decorator_name = "系统维护"
+	card_decorator_heal_on_play.card_decorator_description = "打出时，恢复 [decorator_value_heal] 点生命值。但打出后将被强制物理删除。"
+	card_decorator_heal_on_play.card_decorator_texture_path = "sprites/card-borders/green_decorator.png"
+	card_decorator_heal_on_play.card_decorator_card_pack_id = "card_pack_non_exhaust_cards"
+	card_decorator_heal_on_play.card_decorator_value_improvements = {
+		"decorator_value_heal": 2,
+	}
+	card_decorator_heal_on_play.card_decorator_label_value_name = "decorator_value_heal"
+	card_decorator_heal_on_play.card_decorator_property_changes = {
+		"card_play_destination": HandManager.EXHAUST_PILE,
+	}
+	card_decorator_heal_on_play.card_decorator_pre_play_actions = [
+		{
+			Scripts.ACTION_ADD_HEALTH: {
+				"custom_key_names": { "health_amount": "decorator_value_heal" },
+				"target_override": BaseAction.TARGET_OVERRIDES.PARENT,
+			},
+		},
+	]
+	Global.register_rod(card_decorator_heal_on_play)
 #endregion
 
 #region Rest Actions

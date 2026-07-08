@@ -35,3 +35,9 @@ const SFX_GROUP_BUFF_AURA: Array[String] = [
 	"res://sounds/audio/SFX_Spl_BuffAura_02.wav",
 	"res://sounds/audio/SFX_Spl_BuffAura_03.wav"
 ]
+
+const SFX_GROUP_FORGE_FUSION: Array[String] = [
+	"res://sounds/audio/sfx_forge_fusion_01.wav",
+	"res://sounds/audio/sfx_forge_fusion_02.wav",
+	"res://sounds/audio/sfx_forge_fusion_03.wav"
+]

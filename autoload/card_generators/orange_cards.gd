@@ -36,7 +36,7 @@ static func add_cards_orange() -> void:
 	card_structural_defense.card_upgrade_value_improvements = {"block": 2, "forge_block": 2}
 	card_structural_defense.card_play_actions = [
 		{Scripts.ACTION_BLOCK: {"target_override": BaseAction.TARGET_OVERRIDES.PLAYER, "audio_path": AudioConstants.SFX_GROUP_SHIELD_UP}},
-		{Scripts.ACTION_ADD_TO_FORGE: {"forge_action_data": {Scripts.ACTION_BLOCK: {"block": "forge_block", "target_override": BaseAction.TARGET_OVERRIDES.PLAYER, "audio_path": AudioConstants.SFX_GROUP_SHIELD_UP, "time_delay": 0.2}}, "forge_action_load": 1}}
+		{Scripts.ACTION_ADD_TO_FORGE: {"forge_action_data": {Scripts.ACTION_BLOCK: {"block": "forge_block", "target_override": BaseAction.TARGET_OVERRIDES.PLAYER, "time_delay": 0.2}}, "forge_action_load": 1}}
 	]
 	Global.register_rod(card_structural_defense)
 
@@ -72,7 +72,7 @@ static func add_cards_orange() -> void:
 	card_heavy_framework.card_upgrade_value_improvements = {"block": 2, "forge_block": 2}
 	card_heavy_framework.card_play_actions = [
 		{Scripts.ACTION_BLOCK: {"target_override": BaseAction.TARGET_OVERRIDES.PLAYER, "audio_path": AudioConstants.SFX_GROUP_SHIELD_UP}},
-		{Scripts.ACTION_ADD_TO_FORGE: {"forge_action_data": {Scripts.ACTION_BLOCK: {"block": "forge_block", "target_override": BaseAction.TARGET_OVERRIDES.PLAYER, "audio_path": AudioConstants.SFX_GROUP_SHIELD_UP, "time_delay": 0.2}}, "forge_action_load": 1}}
+		{Scripts.ACTION_ADD_TO_FORGE: {"forge_action_data": {Scripts.ACTION_BLOCK: {"block": "forge_block", "target_override": BaseAction.TARGET_OVERRIDES.PLAYER, "time_delay": 0.2}}, "forge_action_load": 1}}
 	]
 	Global.register_rod(card_heavy_framework)
 
@@ -90,7 +90,7 @@ static func add_cards_orange() -> void:
 	card_defense_script.card_upgrade_value_improvements = {"block": 1, "forge_block": 3}
 	card_defense_script.card_play_actions = [
 		{Scripts.ACTION_BLOCK: {"target_override": BaseAction.TARGET_OVERRIDES.PLAYER, "audio_path": AudioConstants.SFX_GROUP_SHIELD_UP}},
-		{Scripts.ACTION_ADD_TO_FORGE: {"forge_action_data": {Scripts.ACTION_BLOCK: {"block": "forge_block", "target_override": BaseAction.TARGET_OVERRIDES.PLAYER, "audio_path": AudioConstants.SFX_GROUP_SHIELD_UP, "time_delay": 0.2}}, "forge_action_load": 2}}
+		{Scripts.ACTION_ADD_TO_FORGE: {"forge_action_data": {Scripts.ACTION_BLOCK: {"block": "forge_block", "target_override": BaseAction.TARGET_OVERRIDES.PLAYER, "time_delay": 0.2}}, "forge_action_load": 2}}
 	]
 	Global.register_rod(card_defense_script)
 
@@ -101,7 +101,7 @@ static func add_cards_orange() -> void:
 	card_chain_ballistics.card_texture_path = "sprites/card/orange/card_chain_ballistics.png"
 	card_chain_ballistics.card_description = "[color=orange]向锻造台加入「造成 [forge_damage] 点伤害 [forge_amount] 次，载荷3」[/color]。获得 [block] 点防火墙。"
 	card_chain_ballistics.card_type = CardData.CARD_TYPES.ATTACK
-	card_chain_ballistics.card_rarity = CardData.CARD_RARITIES.COMMON
+	card_chain_ballistics.card_rarity = CardData.CARD_RARITIES.UNCOMMON
 	card_chain_ballistics.card_requires_target = false
 	card_chain_ballistics.card_energy_cost = 1
 	card_chain_ballistics.card_values = {"block": 3, "forge_damage": 3, "forge_amount": 3}
@@ -137,7 +137,7 @@ static func add_cards_orange() -> void:
 	card_overheat_shot.card_texture_path = "sprites/card/orange/card_overheat_shot.png"
 	card_overheat_shot.card_description = "造成 [damage] 点伤害。每有 2 层 [status_icon:status_effect_turn_forge_load]，额外造成 [additional_damage] 点伤害。"
 	card_overheat_shot.card_type = CardData.CARD_TYPES.ATTACK
-	card_overheat_shot.card_rarity = CardData.CARD_RARITIES.COMMON
+	card_overheat_shot.card_rarity = CardData.CARD_RARITIES.UNCOMMON
 	card_overheat_shot.card_requires_target = true
 	card_overheat_shot.card_energy_cost = 1
 	card_overheat_shot.card_values = {"damage": 6, "additional_damage": 2, "impact_vfx_animation_id": "animation_vfx_slash_orange"}
@@ -181,7 +181,7 @@ static func add_cards_orange() -> void:
 	card_pressure_shield.card_texture_path = "sprites/card/orange/card_pressure_shield.png"
 	card_pressure_shield.card_description = "获得 [block] 点格挡。每有 2 层 [status_icon:status_effect_turn_forge_load]，额外获得 [additional_block] 点格挡。"
 	card_pressure_shield.card_type = CardData.CARD_TYPES.SKILL
-	card_pressure_shield.card_rarity = CardData.CARD_RARITIES.COMMON
+	card_pressure_shield.card_rarity = CardData.CARD_RARITIES.UNCOMMON
 	card_pressure_shield.card_requires_target = false
 	card_pressure_shield.card_energy_cost = 1
 	card_pressure_shield.card_values = {"block": 5, "additional_block": 2}
@@ -225,7 +225,7 @@ static func add_cards_orange() -> void:
 	card_emergency_barrier.card_texture_path = "sprites/card/orange/card_emergency_barrier.png"
 	card_emergency_barrier.card_description = "消耗至多 3 层 [status_icon:status_effect_turn_forge_load]。每消耗 1 层 [status_icon:status_effect_turn_forge_load]，获得 [block_per_load] 点格挡。消耗。"
 	card_emergency_barrier.card_type = CardData.CARD_TYPES.SKILL
-	card_emergency_barrier.card_rarity = CardData.CARD_RARITIES.COMMON
+	card_emergency_barrier.card_rarity = CardData.CARD_RARITIES.UNCOMMON
 	card_emergency_barrier.card_requires_target = false
 	card_emergency_barrier.card_energy_cost = 0
 	card_emergency_barrier.card_play_destination = HandManager.EXHAUST_PILE
@@ -315,7 +315,7 @@ static func add_cards_orange() -> void:
 	card_trial_run.card_texture_path = "sprites/card/orange/card_trial_run.png"
 	card_trial_run.card_description = "将锻造台中的最后一段代码段封装为一张融合牌加入手牌，不移除代码段。 如果锻造台为空，抽1张牌。"
 	card_trial_run.card_type = CardData.CARD_TYPES.SKILL
-	card_trial_run.card_rarity = CardData.CARD_RARITIES.COMMON
+	card_trial_run.card_rarity = CardData.CARD_RARITIES.UNCOMMON
 	card_trial_run.card_requires_target = false
 	card_trial_run.card_energy_cost = 1
 	card_trial_run.card_first_upgrade_property_changes = {"card_energy_cost": 0, "card_description": "将锻造台中的最后一段代码段封装为一张融合牌加入手牌，不移除代码段。 如果锻造台为空，抽1张牌。"}
@@ -341,7 +341,7 @@ static func add_cards_orange() -> void:
 	card_snippet_extraction.card_texture_path = "sprites/card/orange/card_snippet_extraction.png"
 	card_snippet_extraction.card_description = "造成 [damage] 点伤害。执行锻造台中的第一段代码段，然后移除代码段。"
 	card_snippet_extraction.card_type = CardData.CARD_TYPES.ATTACK
-	card_snippet_extraction.card_rarity = CardData.CARD_RARITIES.COMMON
+	card_snippet_extraction.card_rarity = CardData.CARD_RARITIES.UNCOMMON
 	card_snippet_extraction.card_requires_target = true
 	card_snippet_extraction.card_energy_cost = 1
 	card_snippet_extraction.card_values = {"damage": 5}
@@ -420,7 +420,7 @@ static func add_cards_orange() -> void:
 	card_lightweight_shield.card_values = {"forge_block": 4}
 	card_lightweight_shield.card_upgrade_value_improvements = {"forge_block": 2}
 	card_lightweight_shield.card_play_actions = [
-		{Scripts.ACTION_ADD_TO_FORGE: {"forge_action_data": {Scripts.ACTION_BLOCK: {"block": "forge_block", "target_override": BaseAction.TARGET_OVERRIDES.PLAYER, "audio_path": AudioConstants.SFX_GROUP_SHIELD_UP, "time_delay": 0.2}}, "forge_action_load": 1}}
+		{Scripts.ACTION_ADD_TO_FORGE: {"forge_action_data": {Scripts.ACTION_BLOCK: {"block": "forge_block", "target_override": BaseAction.TARGET_OVERRIDES.PLAYER, "time_delay": 0.2}}, "forge_action_load": 1}}
 	]
 	Global.register_rod(card_lightweight_shield)
 
@@ -462,7 +462,7 @@ static func add_cards_orange() -> void:
 	card_preset_warhead.card_texture_path = "sprites/card/orange/card_preset_warhead.png"
 	card_preset_warhead.card_description = "造成 [damage] 点伤害。 如果锻造台中已有攻击代码，[color=orange]向锻造台加入「造成 [bonus_damage] 点伤害，载荷2」[/color]。"
 	card_preset_warhead.card_type = CardData.CARD_TYPES.ATTACK
-	card_preset_warhead.card_rarity = CardData.CARD_RARITIES.COMMON
+	card_preset_warhead.card_rarity = CardData.CARD_RARITIES.UNCOMMON
 	card_preset_warhead.card_requires_target = true
 	card_preset_warhead.card_energy_cost = 1
 	card_preset_warhead.card_values = {"damage": 6, "bonus_damage": 7}
@@ -495,7 +495,7 @@ static func add_cards_orange() -> void:
 	card_solid_structure.card_texture_path = "sprites/card/orange/card_solid_structure.png"
 	card_solid_structure.card_description = "获得 [block] 点防火墙。 如果锻造台中已有防御代码，[color=orange]向锻造台加入「获得 [bonus_block] 点防火墙，载荷2」[/color]。"
 	card_solid_structure.card_type = CardData.CARD_TYPES.SKILL
-	card_solid_structure.card_rarity = CardData.CARD_RARITIES.COMMON
+	card_solid_structure.card_rarity = CardData.CARD_RARITIES.UNCOMMON
 	card_solid_structure.card_requires_target = false
 	card_solid_structure.card_energy_cost = 1
 	card_solid_structure.card_values = {"block": 4, "bonus_block": 7}
@@ -511,7 +511,7 @@ static func add_cards_orange() -> void:
 				],
 				"passed_action_data": [
 					{Scripts.ACTION_ADD_TO_FORGE: {
-						"forge_action_data": {Scripts.ACTION_BLOCK: {"block": "bonus_block", "target_override": BaseAction.TARGET_OVERRIDES.PLAYER, "audio_path": AudioConstants.SFX_GROUP_SHIELD_UP, "time_delay": 0.2}},
+						"forge_action_data": {Scripts.ACTION_BLOCK: {"block": "bonus_block", "target_override": BaseAction.TARGET_OVERRIDES.PLAYER, "time_delay": 0.2}},
 						"forge_action_load": 2,
 						"forge_action_description": "获得 [bonus_block] 点防火墙"
 					}}
@@ -699,7 +699,7 @@ static func add_cards_orange() -> void:
 	card_force_run.card_texture_path = "sprites/card/orange/card_force_run.png"
 	card_force_run.card_description = "直接融合锻造台所有代码段，融合牌0费，锻造台中的代码段全消除。"
 	card_force_run.card_type = CardData.CARD_TYPES.SKILL
-	card_force_run.card_rarity = CardData.CARD_RARITIES.UNCOMMON
+	card_force_run.card_rarity = CardData.CARD_RARITIES.RARE
 	card_force_run.card_requires_target = false
 	card_force_run.card_energy_cost = 2
 	card_force_run.card_play_destination = HandManager.EXHAUST_PILE
@@ -752,7 +752,7 @@ static func add_cards_orange() -> void:
 	card_firewall_protocol.card_texture_path = "sprites/card/orange/card_firewall_protocol.png"
 	card_firewall_protocol.card_description = "在脚本库中生效。 每当你打出 [card_name:card_forge_fusion] 时，获得 [status_stacks] 层 [status_icon:status_effect_firewall_protocol]。"
 	card_firewall_protocol.card_type = CardData.CARD_TYPES.POWER
-	card_firewall_protocol.card_rarity = CardData.CARD_RARITIES.UNCOMMON
+	card_firewall_protocol.card_rarity = CardData.CARD_RARITIES.RARE
 	card_firewall_protocol.card_requires_target = false
 	card_firewall_protocol.card_energy_cost = 2
 	card_firewall_protocol.card_values = {"status_stacks": 8}
@@ -777,7 +777,7 @@ static func add_cards_orange() -> void:
 	card_payload_turbine.card_texture_path = "sprites/card/orange/card_payload_turbine.png"
 	card_payload_turbine.card_description = "在脚本库中生效。 每回合第一次获得载荷时，额外获得 [status_stacks] 层载荷。"
 	card_payload_turbine.card_type = CardData.CARD_TYPES.POWER
-	card_payload_turbine.card_rarity = CardData.CARD_RARITIES.UNCOMMON
+	card_payload_turbine.card_rarity = CardData.CARD_RARITIES.RARE
 	card_payload_turbine.card_requires_target = false
 	card_payload_turbine.card_energy_cost = 1
 	card_payload_turbine.card_values = {"status_stacks": 2}
@@ -802,7 +802,7 @@ static func add_cards_orange() -> void:
 	card_recursive_loading.card_texture_path = "sprites/card/orange/card_recursive_loading.png"
 	card_recursive_loading.card_description = "[color=orange]向锻造台加入「获得 [forge_load_amount] 层载荷，载荷1」[/color]。消耗。"
 	card_recursive_loading.card_type = CardData.CARD_TYPES.SKILL
-	card_recursive_loading.card_rarity = CardData.CARD_RARITIES.COMMON
+	card_recursive_loading.card_rarity = CardData.CARD_RARITIES.UNCOMMON
 	card_recursive_loading.card_requires_target = false
 	card_recursive_loading.card_energy_cost = 0
 	card_recursive_loading.card_play_destination = HandManager.EXHAUST_PILE
@@ -852,7 +852,7 @@ static func add_cards_orange() -> void:
 						"option_description": "向锻造台加入「获得 8 点防火墙，载荷2」。",
 						"option_sub_actions": [
 							{Scripts.ACTION_ADD_TO_FORGE: {
-								"forge_action_data": {Scripts.ACTION_BLOCK: {"block": "forge_block", "target_override": BaseAction.TARGET_OVERRIDES.PLAYER, "audio_path": AudioConstants.SFX_GROUP_SHIELD_UP, "time_delay": 0.2}},
+								"forge_action_data": {Scripts.ACTION_BLOCK: {"block": "forge_block", "target_override": BaseAction.TARGET_OVERRIDES.PLAYER, "time_delay": 0.2}},
 								"forge_action_load": 2
 							}}
 						]
@@ -892,7 +892,7 @@ static func add_cards_orange() -> void:
 							"option_description": "向锻造台加入「获得 10 点防火墙，载荷2」。",
 							"option_sub_actions": [
 								{Scripts.ACTION_ADD_TO_FORGE: {
-									"forge_action_data": {Scripts.ACTION_BLOCK: {"block": "forge_block", "target_override": BaseAction.TARGET_OVERRIDES.PLAYER, "audio_path": AudioConstants.SFX_GROUP_SHIELD_UP, "time_delay": 0.2}},
+									"forge_action_data": {Scripts.ACTION_BLOCK: {"block": "forge_block", "target_override": BaseAction.TARGET_OVERRIDES.PLAYER, "time_delay": 0.2}},
 									"forge_action_load": 2
 								}}
 							]
@@ -921,7 +921,7 @@ static func add_cards_orange() -> void:
 	card_code_audit.card_texture_path = "sprites/card/orange/card_code_audit.png"
 	card_code_audit.card_description = "将锻造台中所有代码段封装为一张融合牌加入手牌，不移除代码段。如果锻造台为空，抽2张牌。"
 	card_code_audit.card_type = CardData.CARD_TYPES.SKILL
-	card_code_audit.card_rarity = CardData.CARD_RARITIES.UNCOMMON
+	card_code_audit.card_rarity = CardData.CARD_RARITIES.RARE
 	card_code_audit.card_requires_target = false
 	card_code_audit.card_energy_cost = 1
 	card_code_audit.card_first_upgrade_property_changes = {"card_energy_cost": 0}
@@ -947,7 +947,7 @@ static func add_cards_orange() -> void:
 	card_dual_compile.card_texture_path = "sprites/card/orange/card_dual_compile.png"
 	card_dual_compile.card_description = "造成 [damage] 点伤害。[color=orange]向锻造台加入「造成 [forge_damage] 点伤害，载荷1」和「获得 [forge_block] 点防火墙，载荷1」[/color]。"
 	card_dual_compile.card_type = CardData.CARD_TYPES.ATTACK
-	card_dual_compile.card_rarity = CardData.CARD_RARITIES.COMMON
+	card_dual_compile.card_rarity = CardData.CARD_RARITIES.UNCOMMON
 	card_dual_compile.card_requires_target = true
 	card_dual_compile.card_energy_cost = 2
 	card_dual_compile.card_values = {"damage": 8, "forge_damage": 6, "forge_block": 6}
@@ -959,7 +959,7 @@ static func add_cards_orange() -> void:
 			"forge_action_load": 1
 		}},
 		{Scripts.ACTION_ADD_TO_FORGE: {
-			"forge_action_data": {Scripts.ACTION_BLOCK: {"block": "forge_block", "target_override": BaseAction.TARGET_OVERRIDES.PLAYER, "audio_path": AudioConstants.SFX_GROUP_SHIELD_UP, "time_delay": 0.2}},
+			"forge_action_data": {Scripts.ACTION_BLOCK: {"block": "forge_block", "target_override": BaseAction.TARGET_OVERRIDES.PLAYER, "time_delay": 0.2}},
 			"forge_action_load": 1
 		}}
 	]
@@ -989,3 +989,79 @@ static func add_cards_orange() -> void:
 		}}
 	]
 	Global.register_rod(card_payload_resonance)
+
+	# 32. 发现漏洞 (Find Vulnerability)
+	var card_find_vulnerability: CardData = CardData.new("card_find_vulnerability")
+	card_find_vulnerability.card_name = "发现漏洞"
+	card_find_vulnerability.card_color_id = "color_{0}".format([color])
+	card_find_vulnerability.card_texture_path = "sprites/card/orange/card_find_vulnerability.png"
+	card_find_vulnerability.card_description = "给予敌人 [vulnerable] 层漏洞暴露。[color=orange]向锻造台加入「给予敌人 [forge_vulnerable] 层漏洞暴露，载荷2」[/color]。"
+	card_find_vulnerability.card_type = CardData.CARD_TYPES.SKILL
+	card_find_vulnerability.card_rarity = CardData.CARD_RARITIES.UNCOMMON
+	card_find_vulnerability.card_requires_target = true
+	card_find_vulnerability.card_energy_cost = 1
+	card_find_vulnerability.card_values = {"damage": 5, "vulnerable": 1, "forge_vulnerable": 1}
+	card_find_vulnerability.card_first_upgrade_property_changes = {
+		"card_description": "造成 [damage] 点伤害。给予敌人 [vulnerable] 层漏洞暴露。[color=orange]向锻造台加入「给予敌人 [forge_vulnerable] 层漏洞暴露，载荷2」[/color]。",
+		"card_play_actions": [
+			{Scripts.ACTION_DIRECT_DAMAGE: {}},
+			{Scripts.ACTION_APPLY_STATUS: {"status_effect_object_id": "status_effect_vulnerable", "custom_key_names": {"status_charge_amount": "vulnerable"}}},
+			{Scripts.ACTION_ADD_TO_FORGE: {
+				"forge_action_data": {Scripts.ACTION_APPLY_STATUS: {"status_effect_object_id": "status_effect_vulnerable", "status_charge_amount": "forge_vulnerable"}},
+				"forge_action_load": 2
+			}}
+		]
+	}
+	card_find_vulnerability.card_play_actions = [
+		{Scripts.ACTION_APPLY_STATUS: {"status_effect_object_id": "status_effect_vulnerable", "custom_key_names": {"status_charge_amount": "vulnerable"}}},
+		{Scripts.ACTION_ADD_TO_FORGE: {
+			"forge_action_data": {Scripts.ACTION_APPLY_STATUS: {"status_effect_object_id": "status_effect_vulnerable", "status_charge_amount": "forge_vulnerable"}},
+			"forge_action_load": 2
+		}}
+	]
+	Global.register_rod(card_find_vulnerability)
+
+	# 33. 巨型弹头 (Giant Warhead)
+	var card_giant_warhead: CardData = CardData.new("card_giant_warhead")
+	card_giant_warhead.card_name = "巨型弹头"
+	card_giant_warhead.card_color_id = "color_{0}".format([color])
+	card_giant_warhead.card_texture_path = "sprites/card/orange/card_giant_warhead.png"
+	card_giant_warhead.card_description = "[color=orange]向锻造台加入「造成 [forge_damage] 点伤害，载荷6」[/color]。"
+	card_giant_warhead.card_type = CardData.CARD_TYPES.SKILL
+	card_giant_warhead.card_rarity = CardData.CARD_RARITIES.RARE
+	card_giant_warhead.card_requires_target = false
+	card_giant_warhead.card_energy_cost = 2
+	card_giant_warhead.card_play_destination = HandManager.EXHAUST_PILE
+	card_giant_warhead.card_values = {"forge_damage": 25}
+	card_giant_warhead.card_upgrade_value_improvements = {"forge_damage": 5}
+	card_giant_warhead.card_play_actions = [
+		{Scripts.ACTION_ADD_TO_FORGE: {
+			"forge_action_data": {Scripts.ACTION_ATTACK: {"damage": "forge_damage", "time_delay": 0.2}},
+			"forge_action_load": 6
+		}}
+	]
+	Global.register_rod(card_giant_warhead)
+
+	# 34. 终局运行 (Final Run)
+	var card_final_run: CardData = CardData.new("card_final_run")
+	card_final_run.card_name = "终局运行"
+	card_final_run.card_color_id = "color_{0}".format([color])
+	card_final_run.card_texture_path = "sprites/card/orange/card_final_run.png"
+	card_final_run.card_description = "造成 [damage] 点伤害。立即融合锻造台中所有代码段。"
+	card_final_run.card_type = CardData.CARD_TYPES.ATTACK
+	card_final_run.card_rarity = CardData.CARD_RARITIES.RARE
+	card_final_run.card_requires_target = true
+	card_final_run.card_energy_cost = 3
+	card_final_run.card_play_destination = HandManager.EXHAUST_PILE
+	card_final_run.card_values = {"damage": 10}
+	card_final_run.card_upgrade_value_improvements = {"damage": 6}
+	card_final_run.card_play_actions = [
+		{Scripts.ACTION_DIRECT_DAMAGE: {}},
+		{Scripts.ACTION_TAKE_FROM_FORGE: {
+			"take_type": 2,
+			"clear_after_take": true,
+			"execute_directly": false,
+			"override_load": 0
+		}}
+	]
+	Global.register_rod(card_final_run)

@@ -251,6 +251,18 @@ func get_pickable_cards_max_amount() -> int:
 func get_card_pick_can_back_out() -> bool:
 	return get_action_value("can_back_out", false)
 
+## Whether the enchant is free (no gold cost). Used by CardEnchantOverlay.
+func is_enchant_free() -> bool:
+	return get_action_value("enchant_free", false)
+
+## The base gold cost for a random enchant. Can be modified by price interceptors.
+func get_enchant_random_cost() -> int:
+	return get_action_value("enchant_random_cost", 25)
+
+## The base gold cost for a specific enchant. Can be modified by price interceptors.
+func get_enchant_specific_cost() -> int:
+	return get_action_value("enchant_specific_cost", 100)
+
 func is_filter_enabled() -> bool:
 	return get_action_value("is_filter_enabled", false)
 

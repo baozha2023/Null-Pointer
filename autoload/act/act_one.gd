@@ -4,14 +4,165 @@ extends RefCounted
 
 static func add_enemies() -> void:
 	const DIFFICULTY_STARTING: int = 0
+	const DIFFICULTY_STANDARD_ENEMIES_HARDER: int = 1
 	const DIFFICULTY_MINIBOSS_ENEMIES_HARDER: int = 2
 	const DIFFICULTY_BOSS_ENEMIES_HARDER: int = 3
+	const DIFFICULTY_MINIBOSS_ENEMIES_HARDER_2: int = 4
+	const DIFFICULTY_BOSS_ENEMIES_HARDER_2: int = 5
+
+	# ===== EASY ENEMIES =====
+	# 废弃无人机 (Scrap Drone) - Easy
+	var enemy_easy_1: EnemyData = EnemyData.new("enemy_easy_1")
+	enemy_easy_1.enemy_name = "废弃无人机"
+	enemy_easy_1.add_health_bounds(10, 14)
+	enemy_easy_1.add_health_bounds(12, 16, DIFFICULTY_STANDARD_ENEMIES_HARDER)
+	enemy_easy_1.enemy_texture_path = ""
+	enemy_easy_1.add_intent_state(
+		[EnemyIntentData.new(EnemyIntentData.INTENT_INITIAL, DIFFICULTY_STARTING, 0, 0, "", 0, "", {"intent_attack": 1})]
+	)
+	enemy_easy_1.add_intent_state(
+		[
+			EnemyIntentData.new("intent_attack", DIFFICULTY_STARTING, 3, 1, "", 0, "", {"intent_attack": 1}),
+			EnemyIntentData.new("intent_attack", DIFFICULTY_STANDARD_ENEMIES_HARDER, 4, 1, "", 0, "", {"intent_attack": 1})
+		]
+	)
+	var _enemy_easy_1_anim: AnimationData = enemy_easy_1.add_standard_animations([""])
+	Global.register_rod(enemy_easy_1)
+
+	# 受损炮塔 (Damaged Turret) - Easy
+	var enemy_easy_2: EnemyData = EnemyData.new("enemy_easy_2")
+	enemy_easy_2.enemy_name = "受损炮塔"
+	enemy_easy_2.add_health_bounds(15, 18)
+	enemy_easy_2.add_health_bounds(18, 22, DIFFICULTY_STANDARD_ENEMIES_HARDER)
+	enemy_easy_2.enemy_texture_path = ""
+	enemy_easy_2.add_intent_state(
+		[EnemyIntentData.new(EnemyIntentData.INTENT_INITIAL, DIFFICULTY_STARTING, 0, 0, "", 0, "", {"intent_charge": 1})]
+	)
+	enemy_easy_2.add_intent_state(
+		[EnemyIntentData.new("intent_charge", DIFFICULTY_STARTING, 0, 0, "", 0, "", {"intent_attack": 1}, [], [EnemyIntentData.INTENT_DISPLAY_TYPES.BUFFING], "充能")]
+	)
+	enemy_easy_2.add_intent_state(
+		[
+			EnemyIntentData.new("intent_attack", DIFFICULTY_STARTING, 6, 1, "", 0, "", {"intent_charge": 1}),
+			EnemyIntentData.new("intent_attack", DIFFICULTY_STANDARD_ENEMIES_HARDER, 8, 1, "", 0, "", {"intent_charge": 1})
+		]
+	)
+	var _enemy_easy_2_anim: AnimationData = enemy_easy_2.add_standard_animations([""])
+	Global.register_rod(enemy_easy_2)
+
+	# 巡逻清扫机 (Patrol Sweeper) - Easy
+	var enemy_easy_3: EnemyData = EnemyData.new("enemy_easy_3")
+	enemy_easy_3.enemy_name = "巡逻清扫机"
+	enemy_easy_3.add_health_bounds(12, 15)
+	enemy_easy_3.add_health_bounds(14, 18, DIFFICULTY_STANDARD_ENEMIES_HARDER)
+	enemy_easy_3.enemy_texture_path = ""
+	enemy_easy_3.add_intent_state(
+		[EnemyIntentData.new(EnemyIntentData.INTENT_INITIAL, DIFFICULTY_STARTING, 0, 0, "", 0, "", {"intent_attack": 1})]
+	)
+	enemy_easy_3.add_intent_state(
+		[
+			EnemyIntentData.new("intent_attack", DIFFICULTY_STARTING, 4, 1, "", 0, "", {"intent_defend": 1}),
+			EnemyIntentData.new("intent_attack", DIFFICULTY_STANDARD_ENEMIES_HARDER, 5, 1, "", 0, "", {"intent_defend": 1})
+		]
+	)
+	enemy_easy_3.add_intent_state(
+		[
+			EnemyIntentData.new("intent_defend", DIFFICULTY_STARTING, 0, 0, "", 4, "", {"intent_attack": 1}),
+			EnemyIntentData.new("intent_defend", DIFFICULTY_STANDARD_ENEMIES_HARDER, 0, 0, "", 6, "", {"intent_attack": 1})
+		]
+	)
+	var _enemy_easy_3_anim: AnimationData = enemy_easy_3.add_standard_animations([""])
+	Global.register_rod(enemy_easy_3)
+
+	# ===== HARD ENEMIES =====
+	# 内存泄漏者 (Memory Leaker) - Hard
+	var enemy_hard_1: EnemyData = EnemyData.new("enemy_hard_1")
+	enemy_hard_1.enemy_name = "内存泄漏者"
+	enemy_hard_1.add_health_bounds(25, 30)
+	enemy_hard_1.add_health_bounds(28, 35, DIFFICULTY_STANDARD_ENEMIES_HARDER)
+	enemy_hard_1.enemy_texture_path = ""
+	enemy_hard_1.add_intent_state(
+		[EnemyIntentData.new(EnemyIntentData.INTENT_INITIAL, DIFFICULTY_STARTING, 0, 0, "", 0, "", {"intent_attack": 1})]
+	)
+	enemy_hard_1.add_intent_state(
+		[
+			EnemyIntentData.new("intent_attack", DIFFICULTY_STARTING, 5, 1, "", 0, "", {"intent_buff": 1}),
+			EnemyIntentData.new("intent_attack", DIFFICULTY_STANDARD_ENEMIES_HARDER, 7, 1, "", 0, "", {"intent_buff": 1})
+		]
+	)
+	var buff_actions_hard_1: Array[Dictionary] = [
+		{
+			Scripts.ACTION_APPLY_STATUS: {
+				"target_override": BaseAction.TARGET_OVERRIDES.PARENT,
+				"status_effect_object_id": "status_effect_damage_increase",
+				"status_charge_amount": 2
+			}
+		}
+	]
+	var buff_actions_hard_1_asc1: Array[Dictionary] = [
+		{
+			Scripts.ACTION_APPLY_STATUS: {
+				"target_override": BaseAction.TARGET_OVERRIDES.PARENT,
+				"status_effect_object_id": "status_effect_damage_increase",
+				"status_charge_amount": 3
+			}
+		}
+	]
+	enemy_hard_1.add_intent_state(
+		[
+			EnemyIntentData.new("intent_buff", DIFFICULTY_STARTING, 0, 0, "", 0, "", {"intent_attack": 1}, buff_actions_hard_1),
+			EnemyIntentData.new("intent_buff", DIFFICULTY_STANDARD_ENEMIES_HARDER, 0, 0, "", 0, "", {"intent_attack": 1}, buff_actions_hard_1_asc1)
+		]
+	)
+	var _enemy_hard_1_anim: AnimationData = enemy_hard_1.add_standard_animations([""])
+	Global.register_rod(enemy_hard_1)
+
+	# 流氓进程 (Rogue Process) - Hard
+	var enemy_hard_2: EnemyData = EnemyData.new("enemy_hard_2")
+	enemy_hard_2.enemy_name = "流氓进程"
+	enemy_hard_2.add_health_bounds(20, 25)
+	enemy_hard_2.add_health_bounds(24, 28, DIFFICULTY_STANDARD_ENEMIES_HARDER)
+	enemy_hard_2.enemy_texture_path = ""
+	enemy_hard_2.enemy_block = 10
+	enemy_hard_2.add_intent_state(
+		[EnemyIntentData.new(EnemyIntentData.INTENT_INITIAL, DIFFICULTY_STARTING, 0, 0, "", 0, "", {"intent_defend_allies": 1})]
+	)
+	var rogue_defend_allies: Array[Dictionary] = [
+		{
+			Scripts.ACTION_BLOCK: {
+				"target_override": BaseAction.TARGET_OVERRIDES.ALL_ENEMIES,
+				"block": 6
+			}
+		}
+	]
+	var rogue_defend_allies_asc1: Array[Dictionary] = [
+		{
+			Scripts.ACTION_BLOCK: {
+				"target_override": BaseAction.TARGET_OVERRIDES.ALL_ENEMIES,
+				"block": 9
+			}
+		}
+	]
+	enemy_hard_2.add_intent_state(
+		[
+			EnemyIntentData.new("intent_defend_allies", DIFFICULTY_STARTING, 0, 0, "", 0, "", {"intent_attack": 1}, rogue_defend_allies, [EnemyIntentData.INTENT_DISPLAY_TYPES.BLOCKING]),
+			EnemyIntentData.new("intent_defend_allies", DIFFICULTY_STANDARD_ENEMIES_HARDER, 0, 0, "", 0, "", {"intent_attack": 1}, rogue_defend_allies_asc1, [EnemyIntentData.INTENT_DISPLAY_TYPES.BLOCKING])
+		]
+	)
+	enemy_hard_2.add_intent_state(
+		[
+			EnemyIntentData.new("intent_attack", DIFFICULTY_STARTING, 6, 1, "", 0, "", {"intent_defend_allies": 1}),
+			EnemyIntentData.new("intent_attack", DIFFICULTY_STANDARD_ENEMIES_HARDER, 8, 1, "", 0, "", {"intent_defend_allies": 1})
+		]
+	)
+	var _enemy_hard_2_anim: AnimationData = enemy_hard_2.add_standard_animations([""])
+	Global.register_rod(enemy_hard_2)
 
 	# 递归风暴 — 重击型精英（无限递归导致栈溢出般的伤害）
 	var enemy_act_1_miniboss_1: EnemyData = EnemyData.new("enemy_act_1_miniboss_1")
 	enemy_act_1_miniboss_1.add_health_bounds(100, 100)
 	enemy_act_1_miniboss_1.add_health_bounds(120, 120, DIFFICULTY_MINIBOSS_ENEMIES_HARDER)
-	enemy_act_1_miniboss_1.add_health_bounds(135, 135, 4)
+	enemy_act_1_miniboss_1.add_health_bounds(135, 135, DIFFICULTY_MINIBOSS_ENEMIES_HARDER_2)
 	enemy_act_1_miniboss_1.enemy_type = EnemyData.ENEMY_TYPES.MINIBOSS
 	enemy_act_1_miniboss_1.enemy_name = "递归妖"
 	enemy_act_1_miniboss_1.enemy_texture_path = "sprites/enemies/act1/enemy_recursion.png"
@@ -43,7 +194,7 @@ static func add_enemies() -> void:
 	var enemy_act_1_miniboss_2: EnemyData = EnemyData.new("enemy_act_1_miniboss_2")
 	enemy_act_1_miniboss_2.add_health_bounds(45, 55)
 	enemy_act_1_miniboss_2.add_health_bounds(70, 80, DIFFICULTY_MINIBOSS_ENEMIES_HARDER)
-	enemy_act_1_miniboss_2.add_health_bounds(85, 95, 4)
+	enemy_act_1_miniboss_2.add_health_bounds(85, 95, DIFFICULTY_MINIBOSS_ENEMIES_HARDER_2)
 	enemy_act_1_miniboss_2.enemy_type = EnemyData.ENEMY_TYPES.MINIBOSS
 	enemy_act_1_miniboss_2.enemy_name = "竞态鬼"
 	enemy_act_1_miniboss_2.enemy_texture_path = "sprites/enemies/act1/enemy_race_condition.png"
@@ -71,12 +222,57 @@ static func add_enemies() -> void:
 
 	Global.register_rod(enemy_act_1_miniboss_2)
 
+	# 勒索病毒 (Ransomware) - Miniboss
+	var enemy_miniboss_new_1: EnemyData = EnemyData.new("enemy_miniboss_new_1")
+	enemy_miniboss_new_1.add_health_bounds(80, 90)
+	enemy_miniboss_new_1.add_health_bounds(95, 105, DIFFICULTY_MINIBOSS_ENEMIES_HARDER)
+	enemy_miniboss_new_1.add_health_bounds(110, 120, DIFFICULTY_MINIBOSS_ENEMIES_HARDER_2)
+	enemy_miniboss_new_1.enemy_type = EnemyData.ENEMY_TYPES.MINIBOSS
+	enemy_miniboss_new_1.enemy_name = "勒索病毒"
+	enemy_miniboss_new_1.enemy_texture_path = ""
+	enemy_miniboss_new_1.add_intent_state(
+		[EnemyIntentData.new(EnemyIntentData.INTENT_INITIAL, DIFFICULTY_STARTING, 0, 0, "", 0, "", {"intent_attack": 1})]
+	)
+	enemy_miniboss_new_1.add_intent_state(
+		[
+			EnemyIntentData.new("intent_attack", DIFFICULTY_STARTING, 12, 1, "", 0, "", {"intent_summon": 1}),
+			EnemyIntentData.new("intent_attack", DIFFICULTY_MINIBOSS_ENEMIES_HARDER, 15, 1, "", 0, "", {"intent_summon": 1})
+		]
+	)
+	var summon_actions: Array[Dictionary] = [
+		{
+			Scripts.ACTION_SUMMON_ENEMIES: {
+				"number_of_spawns": 1,
+				"spawn_slots": [1],
+				"is_minion": true,
+				"random_enemy_object_ids": ["enemy_minion_1"]
+			}
+		}
+	]
+	enemy_miniboss_new_1.add_intent_state(
+		[EnemyIntentData.new("intent_summon", DIFFICULTY_STARTING, 0, 0, "", 0, "", {"intent_buff": 1}, summon_actions, [], "召唤")]
+	)
+	var buff_actions_ransomware: Array[Dictionary] = [
+		{
+			Scripts.ACTION_APPLY_STATUS: {
+				"target_override": BaseAction.TARGET_OVERRIDES.PARENT,
+				"status_effect_object_id": "status_effect_damage_increase",
+				"status_charge_amount": 2
+			}
+		}
+	]
+	enemy_miniboss_new_1.add_intent_state(
+		[EnemyIntentData.new("intent_buff", DIFFICULTY_STARTING, 0, 0, "", 0, "", {"intent_attack": 1}, buff_actions_ransomware)]
+	)
+	var _enemy_miniboss_new_1_anim: AnimationData = enemy_miniboss_new_1.add_standard_animations([""])
+	Global.register_rod(enemy_miniboss_new_1)
+
 	# INITIALIZE CORE GUARDIAN PROGRAM - Overheat Engine Boss
 	var enemy_act_1_boss_1: EnemyData = EnemyData.new("enemy_act_1_boss_1")
 	enemy_act_1_boss_1.enemy_name = "核心守护程序"
 	enemy_act_1_boss_1.add_health_bounds(200, 200)
 	enemy_act_1_boss_1.add_health_bounds(250, 250, DIFFICULTY_BOSS_ENEMIES_HARDER)
-	enemy_act_1_boss_1.add_health_bounds(280, 280, 5)
+	enemy_act_1_boss_1.add_health_bounds(280, 280, DIFFICULTY_BOSS_ENEMIES_HARDER_2)
 	enemy_act_1_boss_1.enemy_type = EnemyData.ENEMY_TYPES.BOSS
 	enemy_act_1_boss_1.enemy_texture_path = "sprites/enemies/act1/boss_guardian.png"
 	
@@ -167,8 +363,8 @@ static func add_enemies() -> void:
 	)
 	enemy_act_1_boss_1.add_intent_state(
 		[
-			EnemyIntentData.new("intent_pollute", DIFFICULTY_STARTING, 5, 1, "", 10, "", {"intent_suppress": 1}, boss_1_pollute_actions, [], "向抽牌堆洗入 1 张过载发热"),
-			EnemyIntentData.new("intent_pollute", 3, 5, 1, "", 10, "", {"intent_repair": 1}, boss_1_pollute_actions_d3, [], "向抽牌堆洗入发热与垃圾数据"),
+			EnemyIntentData.new("intent_pollute", DIFFICULTY_STARTING, 5, 1, "", 10, "", {"intent_suppress": 1}, boss_1_pollute_actions),
+			EnemyIntentData.new("intent_pollute", 3, 5, 1, "", 10, "", {"intent_repair": 1}, boss_1_pollute_actions_d3),
 		]
 	)
 	enemy_act_1_boss_1.add_intent_state(
@@ -233,7 +429,7 @@ static func add_enemies() -> void:
 		[
 			EnemyIntentData.new("intent_system_reset", DIFFICULTY_STARTING, 25, 1, "", 0, "", {"intent_suppress": 1}),
 			EnemyIntentData.new("intent_system_reset", DIFFICULTY_BOSS_ENEMIES_HARDER, 30, 1, "", 0, "", {"intent_suppress": 1}),
-			EnemyIntentData.new("intent_system_reset", 5, 35, 1, "", 0, "", {"intent_suppress": 1}, boss_1_system_reset_actions_d5, [], "向抽牌堆洗入 2 张过载发热"),
+			EnemyIntentData.new("intent_system_reset", 5, 35, 1, "", 0, "", {"intent_suppress": 1}, boss_1_system_reset_actions_d5),
 		]
 	)
 	
@@ -333,36 +529,61 @@ static func add_enemies() -> void:
 static func add_events() -> void:
 	## Act 1 Combat
 	var event_act_1_easy_combat_1: EventData = EventData.new("event_act_1_easy_combat_1")
-	event_act_1_easy_combat_1.event_death_message_bbcode = "被系统初始化进程中断"
 	event_act_1_easy_combat_1.event_weighted_enemy_object_ids = [
-		{"enemy_1": 1, "enemy_2": 1, "enemy_3": 1},
-		{"enemy_1": 1, "enemy_2": 1, "enemy_3": 1},
-		{"enemy_1": 1, "enemy_2": 1, "enemy_3": 1},
+		{"enemy_easy_1": 1},
+		{"enemy_easy_1": 1},
 	]
-
 	Global.register_rod(event_act_1_easy_combat_1)
 
 	var event_act_1_easy_combat_2: EventData = EventData.new("event_act_1_easy_combat_2")
 	event_act_1_easy_combat_2.event_weighted_enemy_object_ids = [
-		{"enemy_3": 1},
+		{"enemy_easy_2": 1},
+		{"enemy_easy_1": 1},
 	]
-
 	Global.register_rod(event_act_1_easy_combat_2)
 
 	var event_act_1_easy_combat_3: EventData = EventData.new("event_act_1_easy_combat_3")
 	event_act_1_easy_combat_3.event_weighted_enemy_object_ids = [
-		{"enemy_1": 1},
-		{"enemy_2": 1},
+		{"enemy_easy_3": 1},
+		{"enemy_easy_3": 1},
 	]
-
 	Global.register_rod(event_act_1_easy_combat_3)
 
 	var event_act_1_easy_combat_4: EventData = EventData.new("event_act_1_easy_combat_4")
 	event_act_1_easy_combat_4.event_weighted_enemy_object_ids = [
-		{"enemy_4": 1},
+		{"enemy_easy_2": 1},
+		{"enemy_easy_3": 1},
 	]
-
 	Global.register_rod(event_act_1_easy_combat_4)
+
+	var event_act_1_hard_combat_1: EventData = EventData.new("event_act_1_hard_combat_1")
+	event_act_1_hard_combat_1.event_weighted_enemy_object_ids = [
+		{"enemy_1": 1},
+		{"enemy_2": 1},
+	]
+	Global.register_rod(event_act_1_hard_combat_1)
+
+	var event_act_1_hard_combat_2: EventData = EventData.new("event_act_1_hard_combat_2")
+	event_act_1_hard_combat_2.event_weighted_enemy_object_ids = [
+		{"enemy_hard_1": 1},
+		{"enemy_hard_2": 1},
+	]
+	Global.register_rod(event_act_1_hard_combat_2)
+
+	var event_act_1_hard_combat_3: EventData = EventData.new("event_act_1_hard_combat_3")
+	event_act_1_hard_combat_3.event_weighted_enemy_object_ids = [
+		{"enemy_3": 1},
+		{"enemy_easy_1": 1},
+		{"enemy_1": 1},
+	]
+	Global.register_rod(event_act_1_hard_combat_3)
+
+	var event_act_1_hard_combat_4: EventData = EventData.new("event_act_1_hard_combat_4")
+	event_act_1_hard_combat_4.event_weighted_enemy_object_ids = [
+		{"enemy_hard_1": 1},
+		{"enemy_hard_1": 1},
+	]
+	Global.register_rod(event_act_1_hard_combat_4)
 
 	var event_act_1_miniboss_1: EventData = EventData.new("event_act_1_miniboss_1")
 	event_act_1_miniboss_1.event_weighted_enemy_object_ids = [
@@ -385,6 +606,15 @@ static func add_events() -> void:
 	]
 
 	Global.register_rod(event_act_1_miniboss_3)
+
+	var event_act_1_miniboss_4: EventData = EventData.new("event_act_1_miniboss_4")
+	event_act_1_miniboss_4.event_weighted_enemy_object_ids = [
+		{"enemy_miniboss_new_1": 1},
+	]
+	event_act_1_miniboss_4.event_enemy_placement_is_automatic = false
+	event_act_1_miniboss_4.event_enemy_placement_positions = [[0, 0], [250, 0]]
+
+	Global.register_rod(event_act_1_miniboss_4)
 
 	var event_act_1_boss_1: EventData = EventData.new("event_act_1_boss_1")
 	event_act_1_boss_1.event_weighted_enemy_object_ids = [
@@ -416,12 +646,12 @@ static func add_events() -> void:
 	# act 1 hard pool
 	var event_pool_act_1_hard: EventPoolData = EventPoolData.new("event_pool_act_1_hard")
 	event_pool_act_1_hard.add_events_to_pool(
-		event_act_1_easy_combat_1,
+		event_act_1_hard_combat_1,
 		[
-			event_act_1_easy_combat_1,
-			event_act_1_easy_combat_2,
-			event_act_1_easy_combat_3,
-			event_act_1_easy_combat_4,
+			event_act_1_hard_combat_1,
+			event_act_1_hard_combat_2,
+			event_act_1_hard_combat_3,
+			event_act_1_hard_combat_4,
 		],
 	)
 
@@ -474,6 +704,7 @@ static func add_events() -> void:
 		[
 			event_act_1_miniboss_1,
 			event_act_1_miniboss_2,
+			event_act_1_miniboss_4,
 		],
 	)
 	Global.register_rod(event_pool_act_1_miniboss)
@@ -496,7 +727,20 @@ static func add_act() -> void:
 	act_1.act_codex_number = 1
 	act_1.act_next_act_ids = ["act_2"]
 	act_1.act_action_script_path = Scripts.ACTION_GENERATE_ACT
-	act_1.act_map_floor_templates = ActData.default_floor_templates()
+	act_1.act_map_floor_templates = [
+		{"min": 4, "max": 6, "pool": "easy", "fixed": []},                                # 1
+		{"min": 4, "max": 6, "pool": "easy", "fixed": []},                                # 2
+		{"min": 3, "max": 4, "pool": "easy", "fixed": []},                                # 3: 无保底
+		{"min": 4, "max": 6, "pool": "easy", "fixed": ["TREASURE"]},                      # 4: 1 宝箱
+		{"min": 4, "max": 6, "pool": "easy", "fixed": ["SHOP"]},                          # 5: 1 商店
+		{"min": 3, "max": 4, "pool": "easy", "fixed": ["MINIBOSS", "REST_SITE"]},         # 6: 1 精英, 1 休息处
+		{"min": 2, "max": 3, "pool": "easy", "fixed": []},                                # 7: 无保底
+		{"min": 4, "max": 6, "pool": "hard", "fixed": ["MINIBOSS"]},                      # 8: 1 精英
+		{"min": 4, "max": 6, "pool": "hard", "fixed": []},                                # 9: 无保底
+		{"min": 3, "max": 4, "pool": "hard", "fixed": ["TREASURE", "SHOP"]},              # 10: 1 宝箱, 1 商店
+		{"min": 3, "max": 5, "pool": "hard", "fixed": ["REST_SITE"]},                     # 11: 1 休息处
+		{"min": 3, "max": 5, "pool": "hard", "fixed": []},                                # 12: 无保底
+	]
 	
 	act_1.act_music_ambient_file_path = "res://sounds/bgm/bgm_act_1.mp3"
 	act_1.act_music_combat_file_path = "res://sounds/bgm/bgm_act_1.mp3"
@@ -510,3 +754,5 @@ static func add_act() -> void:
 	act_1.act_boss_event_pool_object_id = "event_pool_act_1_boss"
 	act_1.act_background_texture_path = "sprites/act/1/bg_act_1_init.png"
 	Global.register_rod(act_1)
+
+# Force Godot to reload script

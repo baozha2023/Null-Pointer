@@ -621,3 +621,78 @@ static func add_dialogues() -> void:
 	var event_outsourcing: EventData = EventData.new("event_outsourcing")
 	event_outsourcing.event_dialogue_object_id = dialogue_ou.object_id
 	Global.register_rod(event_outsourcing)
+
+	# =========================================================================
+	# Event 11: 赛博祭坛 (Cyber Altar)
+	# =========================================================================
+	var dialogue_cyber_altar: DialogueData = DialogueData.new("dialogue_cyber_altar")
+	dialogue_cyber_altar.dialogue_name_bbcode = "[wave amp=50.0 freq=2.0 connected=1][color=magenta]赛博祭坛[/color][/wave]"
+	Global.register_rod(dialogue_cyber_altar)
+
+	var option_cyber_altar_a: DialogueOptionData = DialogueOptionData.new("option_cyber_altar_a")
+	option_cyber_altar_a.dialogue_option_bbcode = "[color=red]失去 10 点完整度[/color]。[color=green]免费附魔 1 张脚本。[/color]"
+	option_cyber_altar_a.dialogue_option_failed_validator_bbcode = "[color=grey][锁定]: 完整度不足以完成献祭[/color]"
+	option_cyber_altar_a.dialogue_option_actions = [
+		{ Scripts.ACTION_ADD_HEALTH: { "target_override": BaseAction.TARGET_OVERRIDES.PLAYER, "health_amount": -10 } },
+		{ Scripts.ACTION_PICK_CARDS: {
+			"card_pick_type": HandManager.ENCHANT_DECK,
+			"enchant_free": true,
+			"min_card_amount": 1,
+			"max_card_amount": 1,
+			"min_cards_are_required_for_action": false,
+			"quick_pick": false,
+			"can_back_out": false,
+			"validator_data": [{ Scripts.VALIDATOR_CARD_IS_DECORATABLE: { "card_decorator_ids": GlobalProdDecoratorsGenerator.REST_SITE_ENCHANT_POOL } }],
+			"action_data": []
+		} }
+	]
+	option_cyber_altar_a.dialogue_option_validators = [
+		{ Scripts.VALIDATOR_PLAYER_HEALTH: { "health_amount": 11 } }
+	]
+
+	var option_cyber_altar_b: DialogueOptionData = DialogueOptionData.new("option_cyber_altar_b")
+	option_cyber_altar_b.dialogue_option_bbcode = "[color=red]失去 20 点完整度[/color]。[color=green]免费附魔 1 张脚本，并将其升级。[/color]"
+	option_cyber_altar_b.dialogue_option_failed_validator_bbcode = "[color=grey][锁定]: 完整度不足以完成高级献祭[/color]"
+	option_cyber_altar_b.dialogue_option_actions = [
+		{ Scripts.ACTION_ADD_HEALTH: { "target_override": BaseAction.TARGET_OVERRIDES.PLAYER, "health_amount": -20 } },
+		{ Scripts.ACTION_PICK_CARDS: {
+			"card_pick_type": HandManager.ENCHANT_DECK,
+			"enchant_free": true,
+			"min_card_amount": 1,
+			"max_card_amount": 1,
+			"min_cards_are_required_for_action": false,
+			"quick_pick": false,
+			"can_back_out": false,
+			"validator_data": [
+				{ Scripts.VALIDATOR_CARD_IS_DECORATABLE: { "card_decorator_ids": GlobalProdDecoratorsGenerator.REST_SITE_ENCHANT_POOL } },
+				{ Scripts.VALIDATOR_CARD_UPGRADEABLE: { } }
+			],
+			"action_data": [{ Scripts.ACTION_UPGRADE_CARDS: { } }]
+		} }
+	]
+	option_cyber_altar_b.dialogue_option_validators = [
+		{ Scripts.VALIDATOR_PLAYER_HEALTH: { "health_amount": 21 } }
+	]
+
+	var option_cyber_altar_c: DialogueOptionData = DialogueOptionData.new("option_cyber_altar_c")
+	option_cyber_altar_c.dialogue_option_bbcode = "[转身离开] [color=green]不冒这个险[/color]"
+	option_cyber_altar_c.dialogue_option_actions = []
+
+	dialogue_cyber_altar._assign_option(option_cyber_altar_a)
+	dialogue_cyber_altar._assign_option(option_cyber_altar_b)
+	dialogue_cyber_altar._assign_option(option_cyber_altar_c)
+
+	var state_cyber_altar_init: DialogueStateData = DialogueStateData.new("state_cyber_altar_init")
+	state_cyber_altar_init.dialogue_state_prompt_bbcode = "你偶然闯入了一个古老的赛博空间节点，这里矗立着一座闪烁着幽紫色光芒的数据祭坛。祭坛的屏幕上滚动着强大的附魔代码，但它似乎在渴求你的系统完整度..."
+	state_cyber_altar_init.dialogue_state_dialogue_texture_path = "external/sprites/events/event_pick_something.png"
+	state_cyber_altar_init.dialogue_state_dialogue_option_object_ids = [
+		option_cyber_altar_a.object_id,
+		option_cyber_altar_b.object_id,
+		option_cyber_altar_c.object_id
+	]
+	dialogue_cyber_altar._assign_state(state_cyber_altar_init)
+	dialogue_cyber_altar._assign_initial_state(state_cyber_altar_init)
+
+	var event_cyber_altar: EventData = EventData.new("event_cyber_altar")
+	event_cyber_altar.event_dialogue_object_id = dialogue_cyber_altar.object_id
+	Global.register_rod(event_cyber_altar)

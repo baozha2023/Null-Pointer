@@ -162,16 +162,12 @@ func infer_intent_display_types() -> void:
 					continue
 				# determine if buffing self or debuffing player
 				var status_effect_data: StatusEffectData = Global.get_status_effect_data(status_effect_object_id)
-				# buffing enemies
 				if status_effect_data.status_effect_type == StatusEffectData.STATUS_EFFECT_TYPES.BUFF:
-					if action_target == BaseAction.TARGET_OVERRIDES.PARENT or action_target == BaseAction.TARGET_OVERRIDES.ALL_ENEMIES:
-						if not enemy_intent_display_types.has(EnemyIntentData.INTENT_DISPLAY_TYPES.BUFFING):
-							enemy_intent_display_types.append(EnemyIntentData.INTENT_DISPLAY_TYPES.BUFFING)
-				# debuffing player
+					if not enemy_intent_display_types.has(EnemyIntentData.INTENT_DISPLAY_TYPES.BUFFING):
+						enemy_intent_display_types.append(EnemyIntentData.INTENT_DISPLAY_TYPES.BUFFING)
 				if status_effect_data.status_effect_type == StatusEffectData.STATUS_EFFECT_TYPES.DEBUFF:
-					if action_target == BaseAction.TARGET_OVERRIDES.PLAYER:
-						if not enemy_intent_display_types.has(EnemyIntentData.INTENT_DISPLAY_TYPES.DEBUFFING):
-							enemy_intent_display_types.append(EnemyIntentData.INTENT_DISPLAY_TYPES.DEBUFFING)
+					if not enemy_intent_display_types.has(EnemyIntentData.INTENT_DISPLAY_TYPES.DEBUFFING):
+						enemy_intent_display_types.append(EnemyIntentData.INTENT_DISPLAY_TYPES.DEBUFFING)
 
 ## Gets the bbcode needed to display this intent for codex entries.
 ## NOTE: Extend the bottom section to include more custom action scripts if desired
@@ -195,6 +191,8 @@ func get_intent_codex_bbcode(display_type_filter: int = -1) -> String:
 	for action: Dictionary in enemy_intent_custom_actions:
 		for action_script_path: String in action:
 			var action_data: Dictionary = action[action_script_path]
+			var pre_action_length: int = returned_bbcode.length()
+			var ignore_unparsed: bool = false
 			match action_script_path:
 				# summoning
 				Scripts.ACTION_SUMMON_ENEMIES:
@@ -243,26 +241,68 @@ func get_intent_codex_bbcode(display_type_filter: int = -1) -> String:
 						continue
 					
 
-					# determine if buffing self or debuffing player
-					# buffing enemies
-					if status_effect_data.status_effect_type == StatusEffectData.STATUS_EFFECT_TYPES.BUFF:
-						if action_target == BaseAction.TARGET_OVERRIDES.PARENT or action_target == BaseAction.TARGET_OVERRIDES.ALL_ENEMIES:
-							if display_type_filter == -1 or display_type_filter == INTENT_DISPLAY_TYPES.BUFFING:
-								if returned_bbcode.length() > 0:
-									returned_bbcode += "\n" # newline
-								returned_bbcode += "获得 {0} 层 [status_icon:{1}]".format([status_charge_amount, status_effect_object_id])
-					# debuffing player or self
-					if status_effect_data.status_effect_type == StatusEffectData.STATUS_EFFECT_TYPES.DEBUFF:
-						if action_target == BaseAction.TARGET_OVERRIDES.PLAYER:
-							if display_type_filter == -1 or display_type_filter == INTENT_DISPLAY_TYPES.DEBUFFING:
-								if returned_bbcode.length() > 0:
-									returned_bbcode += "\n" # newline
-								returned_bbcode += "施加 {0} 层 [status_icon:{1}]".format([status_charge_amount, status_effect_object_id])
-						elif action_target == BaseAction.TARGET_OVERRIDES.PARENT or action_target == BaseAction.TARGET_OVERRIDES.ALL_ENEMIES:
-							if display_type_filter == -1 or display_type_filter == INTENT_DISPLAY_TYPES.DEBUFFING:
-								if returned_bbcode.length() > 0:
-									returned_bbcode += "\n" # newline
-								returned_bbcode += "陷入 {0} 层 [status_icon:{1}]".format([status_charge_amount, status_effect_object_id])
+					if action_target == BaseAction.TARGET_OVERRIDES.PARENT or action_target == BaseAction.TARGET_OVERRIDES.ALL_ENEMIES:
+						if display_type_filter == -1 or display_type_filter == INTENT_DISPLAY_TYPES.BUFFING or display_type_filter == INTENT_DISPLAY_TYPES.DEBUFFING:
+							if returned_bbcode.length() > 0:
+								returned_bbcode += "\n" # newline
+							returned_bbcode += "获得 {0} 层 [status_icon:{1}]".format([status_charge_amount, status_effect_object_id])
+					elif action_target == BaseAction.TARGET_OVERRIDES.PLAYER or action_target == BaseAction.TARGET_OVERRIDES.ALL_COMBATANTS:
+						if display_type_filter == -1 or display_type_filter == INTENT_DISPLAY_TYPES.BUFFING or display_type_filter == INTENT_DISPLAY_TYPES.DEBUFFING:
+							if returned_bbcode.length() > 0:
+								returned_bbcode += "\n" # newline
+							returned_bbcode += "施加 {0} 层 [status_icon:{1}]".format([status_charge_amount, status_effect_object_id])
+				
+				# custom block
+				Scripts.ACTION_BLOCK:
+					var action_target: int = action_data.get("target_override", BaseAction.TARGET_OVERRIDES.PARENT)
+					var custom_block_amount: int = action_data.get("block", 0)
+					if custom_block_amount > 0 and (display_type_filter == -1 or display_type_filter == INTENT_DISPLAY_TYPES.BLOCKING):
+						if returned_bbcode.length() > 0:
+							returned_bbcode += "\n" # newline
+						if action_target == BaseAction.TARGET_OVERRIDES.ALL_ENEMIES:
+							returned_bbcode += "所有友方获得 {0} 点防火墙".format([custom_block_amount])
+						else:
+							returned_bbcode += "获得 {0} 点防火墙".format([custom_block_amount])
+				
+				Scripts.ACTION_CREATE_CARDS:
+					var created_card_object_id: String = action_data.get("created_card_object_id", "")
+					var number_of_cards: int = action_data.get("number_of_cards", 1)
+					var nested_actions: Array = action_data.get("action_data", [])
+					
+					if created_card_object_id == "":
+						DebugLogger.log_error("EnemyIntentData: No created_card_object_id supplied for ACTION_CREATE_CARDS action")
+						continue
+						
+					var card_data = Global.get_card_data(created_card_object_id)
+					if card_data == null:
+						DebugLogger.log_error("EnemyIntentData: Invalid card ID {0} supplied for ACTION_CREATE_CARDS action".format([created_card_object_id]))
+						continue
+						
+					var destination_text: String = "队列" # fallback
+					for nested_action in nested_actions:
+						for nested_script_path in nested_action:
+							match nested_script_path:
+								Scripts.ACTION_ADD_CARDS_TO_DRAW:
+									destination_text = "内存队列"
+								Scripts.ACTION_ADD_CARDS_TO_HAND:
+									destination_text = "当前线程"
+								Scripts.ACTION_ADD_CARDS_TO_DECK:
+									destination_text = "脚本库"
+					
+					var hex_color: String = "orange"
+					if card_data.card_color_id != "":
+						var color_data = Global.get_color_data(card_data.card_color_id)
+						if color_data != null:
+							hex_color = "#" + color_data.color.to_html(false)
+					
+					if returned_bbcode.length() > 0:
+						returned_bbcode += "\n"
+					returned_bbcode += "向{0}洗入 {1} 张 [color={2}]{3}[/color]".format([destination_text, number_of_cards, hex_color, card_data.card_name])
+			
+			if not ignore_unparsed and returned_bbcode.length() == pre_action_length and display_type_filter == -1:
+				if returned_bbcode.length() > 0:
+					returned_bbcode += "\n"
+				returned_bbcode += "[color=gray]未解析动作: " + JSON.stringify(action) + "[/color]"
 	
 	if enemy_intent_tooltip != "":
 		# only show tooltip if not filtering, or if filtering by an intent display type this intent actually has

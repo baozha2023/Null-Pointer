@@ -37,6 +37,8 @@ extends Control
 @onready var end_turn_button: Button = $EndTurnButton
 var end_turn_object: CombatEndTurn = null
 
+var _is_combat_ending: bool = false
+
 func _ready():
 	money_label.add_theme_color_override("font_color", Color("ffd700"))
 	health_label.add_theme_color_override("font_color", Color("ff4444"))
@@ -241,6 +243,7 @@ func _on_enemy_death_animation_finished(_enemy: Enemy):
 		end_combat()
 
 func _on_combat_started(event_id: String):
+	_is_combat_ending = false
 	var current_event: EventData = null
 	if event_id == "":
 		# if no event is provided, it will be derived from the location
@@ -584,6 +587,9 @@ func start_combat() -> void:
 
 ## Performs end of combat logic and signals end of combat
 func end_combat() -> void:
+	if _is_combat_ending:
+		return
+	_is_combat_ending = true
 	var event_data: EventData = Global.get_player_event_data()
 	if event_data != null:
 		# perform event initial actions

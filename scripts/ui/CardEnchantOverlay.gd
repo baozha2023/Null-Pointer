@@ -59,6 +59,14 @@ func _on_card_pick_confirmed():
 	_update_enchant_list()
 	_update_preview()
 
+func _intercept_price(base_price: int) -> int:
+	if base_price <= 0:
+		return base_price
+	var action_data: Array[Dictionary] = [{Scripts.ACTION_GET_ENCHANT_PRICE: {"money_amount": base_price}}]
+	var action: BaseAction = ActionGenerator.create_actions(Global.get_player(), null, [], action_data, null)[0]
+	var processor: ActionInterceptorProcessor = action._intercept_action([], true)[0]
+	return processor.get_shadowed_action_values("money_amount", base_price)
+
 func populate_cards(cards: Array[CardData]) -> void:
 	clear_cards()
 
@@ -146,7 +154,9 @@ func _update_enchant_list() -> void:
 		
 	# 随机附魔按钮
 	var random_btn = Button.new()
-	random_btn.text = "随机附魔 (25 金币)"
+	var is_free = current_card_pick_action.is_enchant_free()
+	var random_cost = _intercept_price(current_card_pick_action.get_enchant_random_cost())
+	random_btn.text = "随机附魔" if is_free else "随机附魔 (%d 金币)" % random_cost
 	random_btn.custom_minimum_size = Vector2(0, 40)
 	random_btn.button_up.connect(_on_enchant_option_selected.bind("random"))
 	random_btn.mouse_entered.connect(func(): HandManager.tooltip.display_decorator_tooltip("随机附魔", "从所有可用的附魔中随机抽取一个应用至该卡牌。"))
@@ -157,7 +167,8 @@ func _update_enchant_list() -> void:
 	for decorator_id in valid_enchants:
 		var decorator_data = Global.get_card_decorator_data(decorator_id)
 		var btn = Button.new()
-		btn.text = "%s (100 金币)" % decorator_data.card_decorator_name
+		var specific_cost = _intercept_price(current_card_pick_action.get_enchant_specific_cost())
+		btn.text = decorator_data.card_decorator_name if is_free else "%s (%d 金币)" % [decorator_data.card_decorator_name, specific_cost]
 		btn.custom_minimum_size = Vector2(0, 40)
 		btn.button_up.connect(_on_enchant_option_selected.bind(decorator_id))
 		
@@ -174,8 +185,10 @@ func _on_enchant_option_selected(id: String) -> void:
 	selected_enchant_id = id
 	confirm_enchant_button.disabled = false
 	
-	var cost = 25 if selected_enchant_id == "random" else 100
-	if Global.player_data.player_money < cost:
+	var is_free = current_card_pick_action.is_enchant_free()
+	var raw_cost = current_card_pick_action.get_enchant_random_cost() if selected_enchant_id == "random" else current_card_pick_action.get_enchant_specific_cost()
+	var cost = 0 if is_free else _intercept_price(raw_cost)
+	if not is_free and Global.player_data.player_money < cost:
 		confirm_enchant_button.text = "金币不足"
 		confirm_enchant_button.disabled = true
 	else:
@@ -208,11 +221,14 @@ func _on_confirm_enchant_button_up() -> void:
 	if selected_enchant_id == "" or selected_card_data == null:
 		return
 		
-	var cost = 25 if selected_enchant_id == "random" else 100
-	if Global.player_data.player_money < cost:
+	var is_free = current_card_pick_action.is_enchant_free()
+	var raw_cost = current_card_pick_action.get_enchant_random_cost() if selected_enchant_id == "random" else current_card_pick_action.get_enchant_specific_cost()
+	var cost = 0 if is_free else _intercept_price(raw_cost)
+	if not is_free and Global.player_data.player_money < cost:
 		return
-		
-	Global.player_data.add_money(-cost)
+	
+	if not is_free:
+		Global.player_data.add_money(-cost)
 	
 	var chosen_id = selected_enchant_id
 	if chosen_id == "random":

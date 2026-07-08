@@ -37,7 +37,7 @@ func init(_option_data: OptionData):
 	if option_data.option_name != "":
 		display_text += "[color=cyan]" + option_data.option_name + "[/color]\n"
 	display_text += option_data.option_description
-	rich_text_label.text = display_text
+	rich_text_label.text = TextParser.parse(display_text)
 	
 	is_disabled = option_data.option_disabled
 	

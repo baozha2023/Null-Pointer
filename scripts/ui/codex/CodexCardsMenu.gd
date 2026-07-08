@@ -121,11 +121,11 @@ func _populate_codex_cards(card_pack_data: CardPackData = null) -> void:
 	if len(card_args) > 1:
 		card_args.sort_custom(_codex_card_custom_sort)
 	
-	# populate cards
-	codex_card_rgsc.populate_children(Scenes.CARD, card_args)
+	if not codex_card_rgsc.child_populated.is_connected(_on_codex_card_added_async):
+		codex_card_rgsc.child_populated.connect(_on_codex_card_added_async)
 	
-	# 为每张卡牌连接双击检测信号（deferred 确保新节点已就绪）
-	call_deferred("_connect_card_signals")
+	# populate cards async
+	codex_card_rgsc.populate_children_async(Scenes.CARD, card_args, "init", 8, 4)
 
 func _on_codex_card_card_pack_button_pressed(card_pack_data: CardPackData):
 	selected_card_pack_data = card_pack_data
@@ -169,12 +169,11 @@ var _last_click_time: int = 0
 var _last_clicked_card: Card = null
 const DOUBLE_CLICK_THRESHOLD_MS: int = 400
 
-func _connect_card_signals() -> void:
-	for card_node: Node in codex_card_rgsc.grid_container.get_children():
-		if card_node is Card and not card_node.card_selected.is_connected(_on_codex_card_clicked):
-			card_node.card_selected.connect(_on_codex_card_clicked)
-			card_node.card_hovered.connect(_on_card_hovered)
-			card_node.card_unhovered.connect(_on_card_unhovered)
+func _on_codex_card_added_async(card_node: Control) -> void:
+	if card_node is Card and not card_node.card_selected.is_connected(_on_codex_card_clicked):
+		card_node.card_selected.connect(_on_codex_card_clicked)
+		card_node.card_hovered.connect(_on_card_hovered)
+		card_node.card_unhovered.connect(_on_card_unhovered)
 
 func _on_card_hovered(card: Card) -> void:
 	# 这里演示了如何传入变大比例参数，目前设为 1.15

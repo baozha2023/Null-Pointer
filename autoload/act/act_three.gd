@@ -8,6 +8,8 @@ static func add_enemies() -> void:
 	const DIFFICULTY_STANDARD_ENEMIES_HARDER: int = 1
 	const DIFFICULTY_MINIBOSS_ENEMIES_HARDER: int = 2
 	const DIFFICULTY_BOSS_ENEMIES_HARDER: int = 3
+	const DIFFICULTY_MINIBOSS_ENEMIES_HARDER_2: int = 4
+	const DIFFICULTY_BOSS_ENEMIES_HARDER_2: int = 5
 
 	#region 普通敌人
 
@@ -171,7 +173,7 @@ static func add_enemies() -> void:
 	var enemy_act_3_miniboss_1: EnemyData = EnemyData.new("enemy_act_3_miniboss_1")
 	enemy_act_3_miniboss_1.add_health_bounds(115, 115)
 	enemy_act_3_miniboss_1.add_health_bounds(140, 140, DIFFICULTY_MINIBOSS_ENEMIES_HARDER)
-	enemy_act_3_miniboss_1.add_health_bounds(155, 155, 4)
+	enemy_act_3_miniboss_1.add_health_bounds(155, 155, DIFFICULTY_MINIBOSS_ENEMIES_HARDER_2)
 	enemy_act_3_miniboss_1.enemy_type = EnemyData.ENEMY_TYPES.MINIBOSS
 	enemy_act_3_miniboss_1.enemy_name = "暴击兽"
 	enemy_act_3_miniboss_1.enemy_texture_path = "sprites/enemies/act3/enemy_act_3_miniboss_1.png"
@@ -209,15 +211,15 @@ static func add_enemies() -> void:
 	var enemy_act_3_miniboss_2: EnemyData = EnemyData.new("enemy_act_3_miniboss_2")
 	enemy_act_3_miniboss_2.add_health_bounds(85, 95)
 	enemy_act_3_miniboss_2.add_health_bounds(105, 115, DIFFICULTY_MINIBOSS_ENEMIES_HARDER)
-	enemy_act_3_miniboss_2.add_health_bounds(115, 125, 4)
+	enemy_act_3_miniboss_2.add_health_bounds(115, 125, DIFFICULTY_MINIBOSS_ENEMIES_HARDER_2)
 	enemy_act_3_miniboss_2.enemy_type = EnemyData.ENEMY_TYPES.MINIBOSS
 	enemy_act_3_miniboss_2.enemy_name = "炸弹兵"
 	enemy_act_3_miniboss_2.enemy_texture_path = "sprites/enemies/act3/enemy_act_3_miniboss_2.png"
 	var bomb_plant_actions_1: Array[Dictionary] = [
-		{Scripts.ACTION_APPLY_STATUS: {"status_effect_object_id": "status_effect_bomb", "status_charge_amount": 15, "time_delay": EnemyData.ENEMY_ATTACK_DELAY, "target_override": BaseAction.TARGET_OVERRIDES.PLAYER}},
+		{Scripts.ACTION_APPLY_STATUS: {"status_effect_object_id": "status_effect_bomb", "status_charge_amount": 15, "time_delay": EnemyData.ENEMY_ATTACK_DELAY, "target_override": BaseAction.TARGET_OVERRIDES.PARENT}},
 	]
 	var bomb_plant_actions_2: Array[Dictionary] = [
-		{Scripts.ACTION_APPLY_STATUS: {"status_effect_object_id": "status_effect_bomb", "status_charge_amount": 20, "time_delay": EnemyData.ENEMY_ATTACK_DELAY, "target_override": BaseAction.TARGET_OVERRIDES.PLAYER}},
+		{Scripts.ACTION_APPLY_STATUS: {"status_effect_object_id": "status_effect_bomb", "status_charge_amount": 20, "time_delay": EnemyData.ENEMY_ATTACK_DELAY, "target_override": BaseAction.TARGET_OVERRIDES.PARENT}},
 		{Scripts.ACTION_APPLY_STATUS: {"status_effect_object_id": "status_effect_vulnerable", "status_charge_amount": 3, "time_delay": EnemyData.ENEMY_ATTACK_DELAY, "target_override": BaseAction.TARGET_OVERRIDES.PLAYER}},
 	]
 	enemy_act_3_miniboss_2.add_intent_state(
@@ -250,7 +252,7 @@ static func add_enemies() -> void:
 	var enemy_act_3_boss_1: EnemyData = EnemyData.new("enemy_act_3_boss_1")
 	enemy_act_3_boss_1.add_health_bounds(260, 260)
 	enemy_act_3_boss_1.add_health_bounds(320, 320, DIFFICULTY_BOSS_ENEMIES_HARDER)
-	enemy_act_3_boss_1.add_health_bounds(350, 350, 5)
+	enemy_act_3_boss_1.add_health_bounds(350, 350, DIFFICULTY_BOSS_ENEMIES_HARDER_2)
 	enemy_act_3_boss_1.enemy_type = EnemyData.ENEMY_TYPES.BOSS
 	enemy_act_3_boss_1.enemy_name = "核霸主"
 	enemy_act_3_boss_1.enemy_texture_path = "sprites/enemies/act3/enemy_act_3_boss_1.png"
@@ -291,8 +293,8 @@ static func add_enemies() -> void:
 	enemy_act_3_boss_1.add_intent_state(
 		[
 			EnemyIntentData.new("intent_summon", DIFFICULTY_STARTING, 0, 0, "", 0, "", {"intent_overload": 1}, boss_3_summon_actions),
-			EnemyIntentData.new("intent_summon", 3, 0, 0, "", 0, "", {"intent_overload": 1}, boss_3_summon_actions_d3, [EnemyIntentData.INTENT_DISPLAY_TYPES.BUFFING], "启动核心保护模块，单次承伤不会超过 15 点"),
-			EnemyIntentData.new("intent_summon", 5, 0, 0, "", 0, "", {"intent_overload": 1}, boss_3_summon_actions_d5, [EnemyIntentData.INTENT_DISPLAY_TYPES.BUFFING], "召唤并强化护卫，同时启动高级核心保护模块，单次承伤不会超过 10 点"),
+			EnemyIntentData.new("intent_summon", 3, 0, 0, "", 0, "", {"intent_overload": 1}, boss_3_summon_actions_d3, [EnemyIntentData.INTENT_DISPLAY_TYPES.BUFFING]),
+			EnemyIntentData.new("intent_summon", 5, 0, 0, "", 0, "", {"intent_overload": 1}, boss_3_summon_actions_d5, [EnemyIntentData.INTENT_DISPLAY_TYPES.BUFFING]),
 		],
 	)
 
@@ -351,8 +353,8 @@ static func add_enemies() -> void:
 	]
 	enemy_act_3_boss_1.add_intent_state(
 		[
-			EnemyIntentData.new("intent_vent", DIFFICULTY_STARTING, 15, 1, "", 0, "", {"intent_overload": 1}, boss_3_vent_actions, [], "向抽牌堆洗入 2 张过载发热"),
-			EnemyIntentData.new("intent_vent", 3, 20, 1, "", 0, "", {"intent_overload": 1}, boss_3_vent_actions_d3, [], "向抽牌堆洗入 3 张过载发热"),
+			EnemyIntentData.new("intent_vent", DIFFICULTY_STARTING, 15, 1, "", 0, "", {"intent_overload": 1}, boss_3_vent_actions),
+			EnemyIntentData.new("intent_vent", 3, 20, 1, "", 0, "", {"intent_overload": 1}, boss_3_vent_actions_d3),
 		],
 	)
 
@@ -538,7 +540,20 @@ static func add_act() -> void:
 	act_3.act_codex_number = 3
 	act_3.act_next_act_ids = ["act_1"]
 	act_3.act_action_script_path = Scripts.ACTION_GENERATE_ACT
-	act_3.act_map_floor_templates = ActData.default_floor_templates()
+	act_3.act_map_floor_templates = [
+		{"min": 4, "max": 6, "pool": "hard", "fixed": []},                                # 1
+		{"min": 4, "max": 6, "pool": "hard", "fixed": []},                                # 2
+		{"min": 3, "max": 4, "pool": "hard", "fixed": []},                                # 3: 无保底
+		{"min": 4, "max": 6, "pool": "hard", "fixed": ["TREASURE"]},                      # 4: 1 宝箱
+		{"min": 4, "max": 6, "pool": "hard", "fixed": ["SHOP"]},                          # 5: 1 商店
+		{"min": 3, "max": 4, "pool": "hard", "fixed": ["MINIBOSS", "REST_SITE"]},         # 6: 1 精英, 1 休息处
+		{"min": 2, "max": 3, "pool": "hard", "fixed": []},                                # 7: 无保底
+		{"min": 4, "max": 6, "pool": "hard", "fixed": ["MINIBOSS"]},                      # 8: 1 精英
+		{"min": 4, "max": 6, "pool": "hard", "fixed": []},                                # 9: 无保底
+		{"min": 3, "max": 4, "pool": "hard", "fixed": ["TREASURE", "SHOP"]},              # 10: 1 宝箱, 1 商店
+		{"min": 3, "max": 5, "pool": "hard", "fixed": ["REST_SITE"]},                     # 11: 1 休息处
+		{"min": 3, "max": 5, "pool": "hard", "fixed": []},                                # 12: 无保底
+	]
 	
 	act_3.act_music_ambient_file_path = "res://sounds/bgm/bgm_act_3.mp3"
 	act_3.act_music_combat_file_path = "res://sounds/bgm/bgm_act_3.mp3"

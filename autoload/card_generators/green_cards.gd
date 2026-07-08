@@ -219,6 +219,11 @@ static func add_cards_green() -> void:
 	card_fruit.card_upgrade_value_improvements = { "small_max_health_amount": 1, "big_max_health_amount": 1 }
 	card_fruit.card_play_actions = [
 		{
+			Scripts.ACTION_REMOVE_CARDS_FROM_DECK: {
+				"pick_played_card": true
+			}
+		},
+		{
 			Scripts.ACTION_RANDOM_SELECTION: {
 				"weights": { "small_max_hp": 25, "big_max_hp": 25, "energy": 50 },
 				"weighted_action_data": {
@@ -227,11 +232,6 @@ static func add_cards_green() -> void:
 					"energy": [{ Scripts.ACTION_ADD_ENERGY: { } }],
 				},
 			},
-		},
-		{
-			Scripts.ACTION_REMOVE_CARDS_FROM_DECK: {
-				"pick_played_card": true
-			}
 		}
 	]
 
@@ -633,6 +633,11 @@ static func add_cards_green() -> void:
 	card_datum.card_values = { "block": 10, "modified_energy_cost": card_datum.card_energy_cost, "energy_cost_reduction": 1 }
 	card_datum.card_upgrade_value_improvements = { "block": 4 }
 	card_datum.card_play_actions = [
+		{
+			Scripts.ACTION_REMOVE_CARDS_FROM_DECK: {
+				"pick_played_card": true
+			}
+		},
 		{
 			Scripts.ACTION_BLOCK: {
 				"time_delay": 0.2,

@@ -64,11 +64,17 @@ func perform_action() -> void:
 		# Build card_play_actions
 		var card_play_actions: Array[Dictionary] = []
 		var has_attack: bool = false
+		var requires_target: bool = false
 		for entry in taken_actions:
 			var action_data: Dictionary = entry.get("action_data", {})
 			card_play_actions.append(action_data)
-			if action_data.has(Scripts.ACTION_ATTACK) or action_data.has(Scripts.ACTION_ATTACK_GENERATOR):
-				has_attack = true
+			for action_id in action_data.keys():
+				if action_id in ActionTypeGroups.ATTACK_ACTIONS:
+					has_attack = true
+				if action_id in ActionTypeGroups.REQUIRES_TARGET_ACTIONS:
+					var override = action_data[action_id].get("target_override", -1)
+					if override != BaseAction.TARGET_OVERRIDES.PLAYER and override != BaseAction.TARGET_OVERRIDES.ALL_ENEMIES and override != BaseAction.TARGET_OVERRIDES.RANDOM_ENEMY and override != BaseAction.TARGET_OVERRIDES.RANDOM_COMBATANT and override != BaseAction.TARGET_OVERRIDES.ALL_COMBATANTS and override != BaseAction.TARGET_OVERRIDES.PARENT:
+						requires_target = true
 
 		# Calculate final_cost based on total_load
 		var final_cost: int = 0
@@ -91,6 +97,7 @@ func perform_action() -> void:
 			var initiator: BaseCombatant = parent_combatant
 			# Reverse to ensure FIFO execution (since ActionHandler pushes to stack)
 			card_play_actions.reverse()
+			card_play_actions.append({Scripts.ACTION_PLAY_SOUND: {"audio_path": AudioConstants.SFX_GROUP_FORGE_FUSION}})
 			var actions: Array[BaseAction] = ActionGenerator.create_actions(initiator, card_play_request, get_adjusted_action_targets(), card_play_actions, self)
 			ActionHandler.add_actions(actions)
 		else:
@@ -99,16 +106,18 @@ func perform_action() -> void:
 				var fusion_card: CardData = CardData.new("card_forge_fusion")
 				fusion_card.card_name = "融合"
 				fusion_card.card_description = "释放锻造台中的指定代码，并按顺序依次执行这些指令。 [color=gray]此卡牌仅在战斗中通过特定的锻造机制动态生成。[/color]"
-				fusion_card.card_texture_path = "sprites/cards/card_forge_compile.png"
+				fusion_card.card_texture_path = "sprites/card/white/card_forge_compile.png"
 				fusion_card.card_color_id = "color_white"
 				fusion_card.card_energy_cost = final_cost
 				fusion_card.card_type = CardData.CARD_TYPES.ATTACK if has_attack else CardData.CARD_TYPES.SKILL
 				fusion_card.card_rarity = CardData.CARD_RARITIES.GENERATED
-				fusion_card.card_requires_target = has_attack
+				fusion_card.card_requires_target = requires_target
 				fusion_card.card_play_destination = HandManager.BANISH_PILE
+				fusion_card.card_hint = TextParser.parse_forge_actions_to_text(taken_actions)
 				
 				# Reverse to ensure FIFO execution
 				card_play_actions.reverse()
+				card_play_actions.append({Scripts.ACTION_PLAY_SOUND: {"audio_path": AudioConstants.SFX_GROUP_FORGE_FUSION}})
 				fusion_card.card_play_actions = card_play_actions
 
 				HandManager.add_cards_to_hand([fusion_card], HandManager.PLAYER_DEFAULT_HAND_CARD_COUNT_MAX)

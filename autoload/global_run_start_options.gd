@@ -254,6 +254,25 @@ static func add_run_start_options() -> void:
 	run_start_option_gain_15_max_hp.run_start_option_actions = [{ Scripts.ACTION_ADD_HEALTH: { "target_override": BaseAction.TARGET_OVERRIDES.PLAYER, "health_amount": 15, "health_max_amount": 15 } }]
 	Global.register_rod(run_start_option_gain_15_max_hp)
 
+	# 14. Enchant 1 card
+	var run_start_option_enchant_1_card: RunStartOptionData = RunStartOptionData.new("run_start_option_enchant_1_card")
+	run_start_option_enchant_1_card.run_start_option_bb_code = "[color=green]免费附魔 1 张脚本[/color]"
+	run_start_option_enchant_1_card.run_start_option_type = RunStartOptionData.RUN_START_OPTION_TYPES.PARTIAL_UPSIDE
+	run_start_option_enchant_1_card.run_start_option_actions = [{
+		Scripts.ACTION_PICK_CARDS: {
+			"card_pick_type": HandManager.ENCHANT_DECK,
+			"enchant_free": true,
+			"min_card_amount": 1,
+			"max_card_amount": 1,
+			"min_cards_are_required_for_action": false,
+			"quick_pick": false,
+			"can_back_out": false,
+			"validator_data": [{ Scripts.VALIDATOR_CARD_IS_DECORATABLE: { "card_decorator_ids": GlobalProdDecoratorsGenerator.REST_SITE_ENCHANT_POOL } }],
+			"action_data": []
+		}
+	}]
+	Global.register_rod(run_start_option_enchant_1_card)
+
 	### NEW FULL OPTIONS (COMPLETE)
 	# 14. Boss Relic Swap
 	var run_start_option_boss_relic_swap: RunStartOptionData = RunStartOptionData.new("run_start_option_boss_relic_swap")
@@ -388,6 +407,25 @@ static func add_run_start_options() -> void:
 		}
 	]
 	Global.register_rod(run_start_option_transform_1_card_complete)
+
+	# Complete: Enchant 1 card
+	var run_start_option_enchant_1_card_complete: RunStartOptionData = RunStartOptionData.new("run_start_option_enchant_1_card_complete")
+	run_start_option_enchant_1_card_complete.run_start_option_bb_code = "[color=green]免费附魔 1 张脚本。[/color]"
+	run_start_option_enchant_1_card_complete.run_start_option_type = RunStartOptionData.RUN_START_OPTION_TYPES.COMPLETE
+	run_start_option_enchant_1_card_complete.run_start_option_actions = [{
+		Scripts.ACTION_PICK_CARDS: {
+			"card_pick_type": HandManager.ENCHANT_DECK,
+			"enchant_free": true,
+			"min_card_amount": 1,
+			"max_card_amount": 1,
+			"min_cards_are_required_for_action": false,
+			"quick_pick": false,
+			"can_back_out": false,
+			"validator_data": [{ Scripts.VALIDATOR_CARD_IS_DECORATABLE: { "card_decorator_ids": GlobalProdDecoratorsGenerator.REST_SITE_ENCHANT_POOL } }],
+			"action_data": []
+		}
+	}]
+	Global.register_rod(run_start_option_enchant_1_card_complete)
 
 	# Complete: Gain 10% Max HP
 	var run_start_option_gain_max_hp_10_complete: RunStartOptionData = RunStartOptionData.new("run_start_option_gain_max_hp_10_complete")

@@ -1707,7 +1707,7 @@ func add_test_action_interceptors() -> void:
 	var interceptor_increase_shop_price: ActionInterceptorData = ActionInterceptorData.new("interceptor_increase_shop_price")
 	interceptor_increase_shop_price.action_interceptor_modifies_parent = true
 	interceptor_increase_shop_price.action_interceptor_script_path = Scripts.INTERCEPTOR_INCREASE_SHOP_PRICE
-	interceptor_increase_shop_price.action_intercepted_action_paths = [Scripts.ACTION_GET_SHOP_PRICE]
+	interceptor_increase_shop_price.action_intercepted_action_paths = [Scripts.ACTION_GET_SHOP_PRICE, Scripts.ACTION_GET_ENCHANT_PRICE]
 	Global.register_rod(interceptor_increase_shop_price)
 	
 

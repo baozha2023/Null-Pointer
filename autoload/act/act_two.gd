@@ -8,6 +8,8 @@ static func add_enemies() -> void:
 	const DIFFICULTY_STANDARD_ENEMIES_HARDER: int = 1
 	const DIFFICULTY_MINIBOSS_ENEMIES_HARDER: int = 2
 	const DIFFICULTY_BOSS_ENEMIES_HARDER: int = 3
+	const DIFFICULTY_MINIBOSS_ENEMIES_HARDER_2: int = 4
+	const DIFFICULTY_BOSS_ENEMIES_HARDER_2: int = 5
 
 	#region 普通敌人
 
@@ -153,7 +155,7 @@ static func add_enemies() -> void:
 	var enemy_act_2_miniboss_1: EnemyData = EnemyData.new("enemy_act_2_miniboss_1")
 	enemy_act_2_miniboss_1.add_health_bounds(110, 110)
 	enemy_act_2_miniboss_1.add_health_bounds(135, 135, DIFFICULTY_MINIBOSS_ENEMIES_HARDER)
-	enemy_act_2_miniboss_1.add_health_bounds(150, 150, 4)
+	enemy_act_2_miniboss_1.add_health_bounds(150, 150, DIFFICULTY_MINIBOSS_ENEMIES_HARDER_2)
 	enemy_act_2_miniboss_1.enemy_type = EnemyData.ENEMY_TYPES.MINIBOSS
 	enemy_act_2_miniboss_1.enemy_name = "风暴王"
 	enemy_act_2_miniboss_1.enemy_texture_path = "sprites/enemies/act2/enemy_act_2_miniboss_1.png"
@@ -190,7 +192,7 @@ static func add_enemies() -> void:
 	var enemy_act_2_miniboss_2: EnemyData = EnemyData.new("enemy_act_2_miniboss_2")
 	enemy_act_2_miniboss_2.add_health_bounds(65, 75)
 	enemy_act_2_miniboss_2.add_health_bounds(85, 95, DIFFICULTY_MINIBOSS_ENEMIES_HARDER)
-	enemy_act_2_miniboss_2.add_health_bounds(95, 105, 4)
+	enemy_act_2_miniboss_2.add_health_bounds(95, 105, DIFFICULTY_MINIBOSS_ENEMIES_HARDER_2)
 	enemy_act_2_miniboss_2.enemy_type = EnemyData.ENEMY_TYPES.MINIBOSS
 	enemy_act_2_miniboss_2.enemy_name = "验证者"
 	enemy_act_2_miniboss_2.enemy_texture_path = "sprites/enemies/act2/enemy_act_2_miniboss_2.png"
@@ -230,7 +232,7 @@ static func add_enemies() -> void:
 	var enemy_act_2_boss_1: EnemyData = EnemyData.new("enemy_act_2_boss_1")
 	enemy_act_2_boss_1.add_health_bounds(210, 210)
 	enemy_act_2_boss_1.add_health_bounds(260, 260, DIFFICULTY_BOSS_ENEMIES_HARDER)
-	enemy_act_2_boss_1.add_health_bounds(290, 290, 5)
+	enemy_act_2_boss_1.add_health_bounds(290, 290, DIFFICULTY_BOSS_ENEMIES_HARDER_2)
 	enemy_act_2_boss_1.enemy_type = EnemyData.ENEMY_TYPES.BOSS
 	enemy_act_2_boss_1.enemy_name = "火墙守将"
 	enemy_act_2_boss_1.enemy_texture_path = "sprites/enemies/act2/enemy_act_2_boss_1.png"
@@ -321,8 +323,8 @@ static func add_enemies() -> void:
 	
 	enemy_act_2_boss_1.add_intent_state(
 		[
-			EnemyIntentData.new("intent_pollute", DIFFICULTY_STARTING, 6, 1, "", 0, "", {"intent_fortify": 1}, boss_2_pollute_actions, [], "向抽牌堆洗入 1 张垃圾数据"),
-			EnemyIntentData.new("intent_pollute", 3, 6, 1, "", 0, "", {"intent_fortify": 1}, boss_2_pollute_actions_d3, [], "向抽牌堆洗入 2 张垃圾数据"),
+			EnemyIntentData.new("intent_pollute", DIFFICULTY_STARTING, 6, 1, "", 0, "", {"intent_fortify": 1}, boss_2_pollute_actions),
+			EnemyIntentData.new("intent_pollute", 3, 6, 1, "", 0, "", {"intent_fortify": 1}, boss_2_pollute_actions_d3),
 		],
 	)
 
@@ -516,7 +518,20 @@ static func add_act() -> void:
 	act_2.act_codex_number = 2
 	act_2.act_next_act_ids = ["act_3"]
 	act_2.act_action_script_path = Scripts.ACTION_GENERATE_ACT
-	act_2.act_map_floor_templates = ActData.default_floor_templates()
+	act_2.act_map_floor_templates = [
+		{"min": 4, "max": 6, "pool": "hard", "fixed": []},                                # 1
+		{"min": 4, "max": 6, "pool": "hard", "fixed": []},                                # 2
+		{"min": 3, "max": 4, "pool": "hard", "fixed": []},                                # 3: 无保底
+		{"min": 4, "max": 6, "pool": "hard", "fixed": ["TREASURE"]},                      # 4: 1 宝箱
+		{"min": 4, "max": 6, "pool": "hard", "fixed": ["SHOP"]},                          # 5: 1 商店
+		{"min": 3, "max": 4, "pool": "hard", "fixed": ["MINIBOSS", "REST_SITE"]},         # 6: 1 精英, 1 休息处
+		{"min": 2, "max": 3, "pool": "hard", "fixed": []},                                # 7: 无保底
+		{"min": 4, "max": 6, "pool": "hard", "fixed": ["MINIBOSS"]},                      # 8: 1 精英
+		{"min": 4, "max": 6, "pool": "hard", "fixed": []},                                # 9: 无保底
+		{"min": 3, "max": 4, "pool": "hard", "fixed": ["TREASURE", "SHOP"]},              # 10: 1 宝箱, 1 商店
+		{"min": 3, "max": 5, "pool": "hard", "fixed": ["REST_SITE"]},                     # 11: 1 休息处
+		{"min": 3, "max": 5, "pool": "hard", "fixed": []},                                # 12: 无保底
+	]
 	
 	act_2.act_music_ambient_file_path = "res://sounds/bgm/bgm_act_2.mp3"
 	act_2.act_music_combat_file_path = "res://sounds/bgm/bgm_act_2.mp3"

@@ -226,7 +226,7 @@ static func add_cards_white() -> void:
 	var card_forge_fusion: CardData = CardData.new("card_forge_fusion")
 	card_forge_fusion.card_name = "融合"
 	card_forge_fusion.card_color_id = "color_white"
-	card_forge_fusion.card_texture_path = "sprites/cards/card_basic_skill_white.png" # Temp sprite
+	card_forge_fusion.card_texture_path = "sprites/card/white/card_forge_compile.png"
 	card_forge_fusion.card_description = "释放锻造台中的指定代码，并按顺序依次执行这些指令。 [color=gray]此卡牌仅在战斗中通过特定的锻造机制动态生成。[/color]"
 	card_forge_fusion.card_hint = "融合卡是锻造台外设的核心产物，能够完美继承并连续执行所有被置入锻造台的卡牌的核心指令。合理规划锻造顺序，可以打出极具破坏力的组合效果！"
 	card_forge_fusion.card_type = CardData.CARD_TYPES.SKILL
