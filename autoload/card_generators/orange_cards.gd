@@ -223,7 +223,7 @@ static func add_cards_orange() -> void:
 	card_emergency_barrier.card_name = "应急屏障"
 	card_emergency_barrier.card_color_id = "color_{0}".format([color])
 	card_emergency_barrier.card_texture_path = "sprites/card/orange/card_emergency_barrier.png"
-	card_emergency_barrier.card_description = "消耗至多 3 层 [status_icon:status_effect_turn_forge_load]。每消耗 1 层 [status_icon:status_effect_turn_forge_load]，获得 [block_per_load] 点格挡。消耗。"
+	card_emergency_barrier.card_description = "使用至多 3 层 [status_icon:status_effect_turn_forge_load]。每使用 1 层 [status_icon:status_effect_turn_forge_load]，获得 [block_per_load] 点格挡。"
 	card_emergency_barrier.card_type = CardData.CARD_TYPES.SKILL
 	card_emergency_barrier.card_rarity = CardData.CARD_RARITIES.UNCOMMON
 	card_emergency_barrier.card_requires_target = false
@@ -237,7 +237,7 @@ static func add_cards_orange() -> void:
 				"can_back_out": true,
 				"options": [
 					{
-						"option_name": "消耗 1 点载荷",
+						"option_name": "使用 1 点载荷",
 						"option_description": "获得 3 点格挡。",
 						"option_validators": [{Scripts.VALIDATOR_FORGE_LOAD: {"load_required": 1}}],
 						"option_sub_actions": [
@@ -246,7 +246,7 @@ static func add_cards_orange() -> void:
 						]
 					},
 					{
-						"option_name": "消耗 2 点载荷",
+						"option_name": "使用 2 点载荷",
 						"option_description": "获得 6 点格挡。",
 						"option_validators": [{Scripts.VALIDATOR_FORGE_LOAD: {"load_required": 2}}],
 						"option_sub_actions": [
@@ -255,7 +255,7 @@ static func add_cards_orange() -> void:
 						]
 					},
 					{
-						"option_name": "消耗 3 点载荷",
+						"option_name": "使用 3 点载荷",
 						"option_description": "获得 9 点格挡。",
 						"option_validators": [{Scripts.VALIDATOR_FORGE_LOAD: {"load_required": 3}}],
 						"option_sub_actions": [
@@ -275,7 +275,7 @@ static func add_cards_orange() -> void:
 					"can_back_out": true,
 					"options": [
 						{
-							"option_name": "消耗 1 点载荷",
+							"option_name": "使用 1 点载荷",
 							"option_description": "获得 4 点格挡。",
 							"option_validators": [{Scripts.VALIDATOR_FORGE_LOAD: {"load_required": 1}}],
 							"option_sub_actions": [
@@ -284,7 +284,7 @@ static func add_cards_orange() -> void:
 							]
 						},
 						{
-							"option_name": "消耗 2 点载荷",
+							"option_name": "使用 2 点载荷",
 							"option_description": "获得 8 点格挡。",
 							"option_validators": [{Scripts.VALIDATOR_FORGE_LOAD: {"load_required": 2}}],
 							"option_sub_actions": [
@@ -293,7 +293,7 @@ static func add_cards_orange() -> void:
 							]
 						},
 						{
-							"option_name": "消耗 3 点载荷",
+							"option_name": "使用 3 点载荷",
 							"option_description": "获得 12 点格挡。",
 							"option_validators": [{Scripts.VALIDATOR_FORGE_LOAD: {"load_required": 3}}],
 							"option_sub_actions": [
@@ -364,7 +364,7 @@ static func add_cards_orange() -> void:
 	card_data_backflow.card_name = "数据回流"
 	card_data_backflow.card_color_id = "color_{0}".format([color])
 	card_data_backflow.card_texture_path = "sprites/card/orange/card_data_backflow.png"
-	card_data_backflow.card_description = "消耗 2 层 [status_icon:status_effect_turn_forge_load]。 抽2张牌。 如果 [status_icon:status_effect_turn_forge_load] 不足，抽1张牌。"
+	card_data_backflow.card_description = "使用 2 层 [status_icon:status_effect_turn_forge_load]。 抽2张牌。 如果 [status_icon:status_effect_turn_forge_load] 不足，抽1张牌。"
 	card_data_backflow.card_type = CardData.CARD_TYPES.SKILL
 	card_data_backflow.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_data_backflow.card_requires_target = false
@@ -557,7 +557,7 @@ static func add_cards_orange() -> void:
 	card_pre_execution_check.card_name = "执行前检查"
 	card_pre_execution_check.card_color_id = "color_{0}".format([color])
 	card_pre_execution_check.card_texture_path = "sprites/card/orange/card_pre_execution_check.png"
-	card_pre_execution_check.card_description = "如果 [status_icon:status_effect_turn_forge_load] 为5层或更高，获得 [block] 点防火墙。 消耗。"
+	card_pre_execution_check.card_description = "如果 [status_icon:status_effect_turn_forge_load] 为5层或更高，获得 [block] 点防火墙。"
 	card_pre_execution_check.card_type = CardData.CARD_TYPES.SKILL
 	card_pre_execution_check.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_pre_execution_check.card_requires_target = false
@@ -586,7 +586,7 @@ static func add_cards_orange() -> void:
 	card_thermal_release.card_name = "热能释放"
 	card_thermal_release.card_color_id = "color_{0}".format([color])
 	card_thermal_release.card_texture_path = "sprites/card/orange/card_thermal_release.png"
-	card_thermal_release.card_description = "造成 [damage] 点伤害。消耗所有 [status_icon:status_effect_turn_forge_load]。每消耗 1 层 [status_icon:status_effect_turn_forge_load]，额外造成 [bonus_damage] 点伤害。"
+	card_thermal_release.card_description = "造成 [damage] 点伤害。使用所有 [status_icon:status_effect_turn_forge_load]。每使用 1 层 [status_icon:status_effect_turn_forge_load]，额外造成 [bonus_damage] 点伤害。"
 	card_thermal_release.card_type = CardData.CARD_TYPES.ATTACK
 	card_thermal_release.card_rarity = CardData.CARD_RARITIES.UNCOMMON
 	card_thermal_release.card_requires_target = true
@@ -618,7 +618,7 @@ static func add_cards_orange() -> void:
 	card_overclock_cooling.card_name = "超频冷却"
 	card_overclock_cooling.card_color_id = "color_{0}".format([color])
 	card_overclock_cooling.card_texture_path = "sprites/card/orange/card_overclock_cooling.png"
-	card_overclock_cooling.card_description = "消耗所有 [status_icon:status_effect_turn_forge_load]。每消耗 1 层 [status_icon:status_effect_turn_forge_load]，获得 [bonus_block] 点格挡。如果消耗了至少 5 层 [status_icon:status_effect_turn_forge_load]，抽1张牌。"
+	card_overclock_cooling.card_description = "使用所有 [status_icon:status_effect_turn_forge_load]。每使用 1 层 [status_icon:status_effect_turn_forge_load]，获得 [bonus_block] 点格挡。如果使用了至少 5 层 [status_icon:status_effect_turn_forge_load]，抽1张牌。"
 	card_overclock_cooling.card_type = CardData.CARD_TYPES.SKILL
 	card_overclock_cooling.card_rarity = CardData.CARD_RARITIES.UNCOMMON
 	card_overclock_cooling.card_requires_target = false
@@ -666,13 +666,13 @@ static func add_cards_orange() -> void:
 	card_power_recovery.card_name = "功率回收"
 	card_power_recovery.card_color_id = "color_{0}".format([color])
 	card_power_recovery.card_texture_path = "sprites/card/orange/card_power_recovery.png"
-	card_power_recovery.card_description = "消耗 3 层 [status_icon:status_effect_turn_forge_load]。获得1点能量。消耗。"
+	card_power_recovery.card_description = "使用 3 层 [status_icon:status_effect_turn_forge_load]。获得1点能量。"
 	card_power_recovery.card_type = CardData.CARD_TYPES.SKILL
 	card_power_recovery.card_rarity = CardData.CARD_RARITIES.UNCOMMON
 	card_power_recovery.card_requires_target = false
 	card_power_recovery.card_energy_cost = 0
 	card_power_recovery.card_play_destination = HandManager.EXHAUST_PILE
-	card_power_recovery.card_first_upgrade_property_changes = {"card_play_destination": HandManager.DISCARD_PILE, "card_description": "消耗 3 层 [status_icon:status_effect_turn_forge_load]。获得1点能量。"}
+	card_power_recovery.card_first_upgrade_property_changes = {"card_play_destination": HandManager.DISCARD_PILE, "card_description": "使用 3 层 [status_icon:status_effect_turn_forge_load]。获得1点能量。"}
 	card_power_recovery.card_play_actions = [
 		{
 			Scripts.ACTION_VALIDATOR: {
@@ -750,13 +750,14 @@ static func add_cards_orange() -> void:
 	card_firewall_protocol.card_name = "防火墙协议"
 	card_firewall_protocol.card_color_id = "color_{0}".format([color])
 	card_firewall_protocol.card_texture_path = "sprites/card/orange/card_firewall_protocol.png"
-	card_firewall_protocol.card_description = "在脚本库中生效。 每当你打出 [card_name:card_forge_fusion] 时，获得 [status_stacks] 层 [status_icon:status_effect_firewall_protocol]。"
+	card_firewall_protocol.card_description = "在脚本库中生效。 每当你打出 [card_name:card_forge_fusion] 时，获得 [status_stacks] 点防火墙。"
 	card_firewall_protocol.card_type = CardData.CARD_TYPES.POWER
 	card_firewall_protocol.card_rarity = CardData.CARD_RARITIES.RARE
 	card_firewall_protocol.card_requires_target = false
 	card_firewall_protocol.card_energy_cost = 2
-	card_firewall_protocol.card_values = {"status_stacks": 8}
-	card_firewall_protocol.card_upgrade_value_improvements = {"status_stacks": 3}
+	card_firewall_protocol.card_play_destination = HandManager.EXHAUST_PILE
+	card_firewall_protocol.card_values = {"status_stacks": 8, "remove_stacks": -8}
+	card_firewall_protocol.card_upgrade_value_improvements = {"status_stacks": 3, "remove_stacks": -3}
 	card_firewall_protocol.card_status_effect_object_ids = ["status_effect_firewall_protocol"]
 	
 	var apply_firewall_action = {
@@ -767,7 +768,15 @@ static func add_cards_orange() -> void:
 		}
 	}
 	card_firewall_protocol.card_initial_combat_actions = [apply_firewall_action]
-	card_firewall_protocol.card_play_actions = []
+	card_firewall_protocol.card_play_actions = [
+		{
+			Scripts.ACTION_APPLY_STATUS: {
+				"status_effect_object_id": "status_effect_firewall_protocol",
+				"custom_key_names": {"status_charge_amount": "remove_stacks"},
+				"target_override": BaseAction.TARGET_OVERRIDES.PLAYER
+			}
+		}
+	]
 	Global.register_rod(card_firewall_protocol)
 
 	# 26. 负载涡轮 (Payload Turbine)
@@ -800,7 +809,7 @@ static func add_cards_orange() -> void:
 	card_recursive_loading.card_name = "递归加载"
 	card_recursive_loading.card_color_id = "color_{0}".format([color])
 	card_recursive_loading.card_texture_path = "sprites/card/orange/card_recursive_loading.png"
-	card_recursive_loading.card_description = "[color=orange]向锻造台加入「获得 [forge_load_amount] 层载荷，载荷1」[/color]。消耗。"
+	card_recursive_loading.card_description = "[color=orange]向锻造台加入「获得 [forge_load_amount] 层载荷，载荷1」[/color]。"
 	card_recursive_loading.card_type = CardData.CARD_TYPES.SKILL
 	card_recursive_loading.card_rarity = CardData.CARD_RARITIES.UNCOMMON
 	card_recursive_loading.card_requires_target = false
@@ -825,7 +834,7 @@ static func add_cards_orange() -> void:
 	card_module_selection.card_name = "模块选择"
 	card_module_selection.card_color_id = "color_{0}".format([color])
 	card_module_selection.card_texture_path = "sprites/card/orange/card_module_selection.png"
-	card_module_selection.card_description = "三选一[color=orange]向锻造台加入一段代码[/color]。"
+	card_module_selection.card_description = "[color=orange]选择以下一段代码加入锻造台[/color]：\n「造成 [forge_damage] 点伤害，载荷2」\n「获得 [forge_block] 点防火墙，载荷2」\n「获得 [forge_load] 层载荷，载荷1」"
 	card_module_selection.card_type = CardData.CARD_TYPES.SKILL
 	card_module_selection.card_rarity = CardData.CARD_RARITIES.UNCOMMON
 	card_module_selection.card_requires_target = false

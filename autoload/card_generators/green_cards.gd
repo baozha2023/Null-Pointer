@@ -84,7 +84,7 @@ static func add_cards_green() -> void:
 	card_chloroplast.card_color_id = "color_{0}".format([color])
 	card_chloroplast.card_texture_path = "sprites/card/green/card_chloroplast.png"
 	card_chloroplast.card_description = "对所有敌人造成 [damage] 点伤害。被物理删除时，对所有单位造成 [exhaust_damage] 点伤害。"
-	card_chloroplast.card_hint = "对所有敌人造成高额伤害；当它被消耗（进入坏道区）时，再对包括你自己在内的全场造成一次伤害。"
+	card_chloroplast.card_hint = "对所有敌人造成高额伤害；当它被物理删除（进入坏道区）时，再对包括你自己在内的全场造成一次伤害。"
 	card_chloroplast.card_type = CardData.CARD_TYPES.ATTACK
 	card_chloroplast.card_rarity = CardData.CARD_RARITIES.UNCOMMON
 	card_chloroplast.card_energy_cost = 3
@@ -209,7 +209,7 @@ static func add_cards_green() -> void:
 	card_fruit.card_name = "数据果实"
 	card_fruit.card_color_id = "color_{0}".format([color])
 	card_fruit.card_texture_path = "sprites/card/green/card_fruit.png"
-	card_fruit.card_description = "随机触发以下一项：获得 [small_max_health_amount] 点最大完整度，或获得 [big_max_health_amount] 点最大完整度，或获得 [energy_amount] 点算力。消耗品。"
+	card_fruit.card_description = "随机触发以下一项：获得 [small_max_health_amount] 点最大完整度，或获得 [big_max_health_amount] 点最大完整度，或获得 [energy_amount] 点算力。"
 	card_fruit.card_hint = "随机获得最大生命提升，或立刻获得能量（算力）；用后从牌组永久移除。"
 	card_fruit.card_type = CardData.CARD_TYPES.SKILL
 	card_fruit.card_rarity = CardData.CARD_RARITIES.COMMON
@@ -526,7 +526,7 @@ static func add_cards_green() -> void:
 	card_verdant.card_color_id = "color_{0}".format([color])
 	card_verdant.card_texture_path = "sprites/card/green/card_verdant.png"
 	card_verdant.card_description = "被读取时，获得 [status_charge_amount] 层 [status_icon:status_effect_cap_damage]，副层数为 [status_secondary_charge_amount]。"
-	card_verdant.card_hint = "这张牌不能主动打出；被摸到时会消耗掉自己，并给你 [status_icon:status_effect_cap_damage]（限制单次掉血上限）。"
+	card_verdant.card_hint = "这张牌不能主动打出；被摸到时会自动物理删除，并给你 [status_icon:status_effect_cap_damage]（限制单次掉血上限）。"
 	card_verdant.card_type = CardData.CARD_TYPES.SKILL
 	card_verdant.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_verdant.card_requires_target = false
@@ -622,7 +622,7 @@ static func add_cards_green() -> void:
 	card_datum.card_name = "数据点"
 	card_datum.card_color_id = "color_{0}".format([color])
 	card_datum.card_texture_path = "sprites/card/green/card_datum.png"
-	card_datum.card_description = "获得 [block] 点防火墙。被读取时自动复制自身。保留时，时钟周期结束后本卡耗能永久减少 [energy_cost_reduction] 点。消耗品。"
+	card_datum.card_description = "获得 [block] 点防火墙。被读取时自动复制自身。保留时，时钟周期结束后本卡耗能永久减少 [energy_cost_reduction] 点。"
 	card_datum.card_hint = "获得护盾（防火墙）；被摸到时自动复制一张到手牌；保留在手里则每回合结束永久降低它的费用；用后从牌组永久移除。"
 	card_datum.card_type = CardData.CARD_TYPES.SKILL
 	card_datum.card_rarity = CardData.CARD_RARITIES.COMMON
@@ -1064,7 +1064,7 @@ static func add_cards_green() -> void:
 	card_garbage_collection.card_color_id = "color_{0}".format([color])
 	card_garbage_collection.card_texture_path = "sprites/card/green/card_garbage_collection.png"
 	card_garbage_collection.card_description = "选择当前线程中 [exhaust_amount] 个 [card_name:card_waste] 加入坏道区。获得 [block] 点防火墙并读取 [draw_count] 个脚本。"
-	card_garbage_collection.card_hint = "选择手里的“冗余数据”消耗掉，换取护盾（防火墙）并摸牌。"
+	card_garbage_collection.card_hint = "选择手里的“冗余数据”物理删除掉，换取护盾（防火墙）并摸牌。"
 	card_garbage_collection.card_type = CardData.CARD_TYPES.SKILL
 	card_garbage_collection.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_garbage_collection.card_requires_target = false

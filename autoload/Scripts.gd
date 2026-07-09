@@ -40,6 +40,7 @@ const ACTION_SET_HEALTH: String = "res://scripts/actions/combatant_actions/Actio
 const ACTION_HEAL_PERCENT: String = "res://scripts/actions/combatant_actions/ActionHealPercent.gd"
 const ACTION_ATTACK: String = "res://scripts/actions/combatant_actions/ActionAttack.gd"
 const ACTION_ATTACK_GENERATOR: String = "res://scripts/actions/combatant_actions/ActionAttackGenerator.gd"
+const ACTION_TIME_ATTACK_GENERATOR: String = "res://scripts/actions/combatant_actions/ActionTimeAttackGenerator.gd"
 const ACTION_BLOCK: String = "res://scripts/actions/combatant_actions/ActionBlock.gd"
 const ACTION_RESET_BLOCK: String = "res://scripts/actions/combatant_actions/ActionResetBlock.gd"
 const ACTION_DEATH: String = "res://scripts/actions/combatant_actions/ActionDeath.gd"
@@ -163,6 +164,7 @@ const VALIDATOR_CARD_UPGRADEABLE: String = "res://scripts/validators/card/Valida
 const VALIDATOR_CARD_PLAY_ENEMY_ATTACKING: String = "res://scripts/validators/card_plays/ValidatorCardPlayEnemyAttacking.gd"
 const VALIDATOR_CARD_PLAY_ENERGY_INPUT: String = "res://scripts/validators/card_plays/ValidatorCardPlayEnergyInput.gd"
 const VALIDATOR_CARD_PLAY_IS_DUPLICATED: String = "res://scripts/validators/card_plays/ValidatorCardPlayIsDuplicated.gd"
+const VALIDATOR_CARD_PLAY_DEADLOCK: String = "res://scripts/validators/card_plays/ValidatorCardPlayDeadlock.gd"
 
 # deck/pile validators
 const VALIDATOR_DECK_HAS_REMOVABLE_CARD: String = "res://scripts/validators/deck/ValidatorDeckHasRemovableCard.gd"
@@ -257,6 +259,7 @@ const INTERCEPTOR_BRUTE_FORCE_DRAW: String = "res://scripts/action_interceptors/
 const INTERCEPTOR_ZERO_DAY_DB: String = "res://scripts/action_interceptors/InterceptorZeroDayDB.gd"
 const INTERCEPTOR_OVERFLOW_STACK: String = "res://scripts/action_interceptors/InterceptorOverflowStack.gd"
 const INTERCEPTOR_PACKET_SNIFFER: String = "res://scripts/action_interceptors/InterceptorPacketSniffer.gd"
+const INTERCEPTOR_CARD_PLAY_DEADLOCK: String = "res://scripts/action_interceptors/player_interceptors/InterceptorCardPlayDeadlock.gd"
 #endregion
 
 #region Run Modifiers

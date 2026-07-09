@@ -206,6 +206,7 @@ static func add_artifacts() -> void:
 	Global.register_rod(artifact_deflation)
 
 	var artifact_block_on_attacks: ArtifactData = ArtifactData.new("artifact_block_on_attacks")
+	artifact_block_on_attacks.artifact_name = "初始功转防外设插件"
 	artifact_block_on_attacks.artifact_description = "每 [color=blue]3[/color] 次攻击获得 [color=blue]5[/color] 点防火墙。当前：[color=blue][artifact_counter][/color]/3"
 	artifact_block_on_attacks.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.BASIC
 	artifact_block_on_attacks.artifact_color_id = "color_red"
@@ -372,11 +373,11 @@ static func add_artifacts() -> void:
 
 	Global.register_rod(artifact_right_click_shuffle_deck)
 
-	# 垃圾回收器：消耗脚本时恢复完整度
+	# 垃圾回收器：物理删除脚本时恢复完整度
 	var artifact_garbage_collector: ArtifactData = ArtifactData.new("artifact_garbage_collector")
 	artifact_garbage_collector.artifact_name = "垃圾回收器"
 	artifact_garbage_collector.artifact_color_id = "color_green"
-	artifact_garbage_collector.artifact_description = "每当一个脚本被消耗时，恢复 [color=green]2[/color] 点完整度。"
+	artifact_garbage_collector.artifact_description = "每当一个脚本被物理删除时，恢复 [color=green]2[/color] 点完整度。"
 	artifact_garbage_collector.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.UNCOMMON
 	artifact_garbage_collector.artifact_texture_path = "sprites/artifacts/artifact_garbage_collector.png"
 	artifact_garbage_collector.artifact_script_path = "res://scripts/artifacts/ArtifactGarbageCollector.gd"
@@ -605,8 +606,43 @@ static func add_artifacts() -> void:
 	]
 	Global.register_rod(artifact_debug_energy_adder)
 
-	### Filler Artifacts
+	# Taskmgr.exe
+	var artifact_taskmgr: ArtifactData = ArtifactData.new("artifact_taskmgr")
+	artifact_taskmgr.artifact_name = "任务管理器"
+	artifact_taskmgr.artifact_description = "[右键点击]强制物理删除（消耗）手中所有费用 ≥ 2 的脚本。每删除一张，恢复 3 点完整度。"
+	artifact_taskmgr.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.RARE
+	artifact_taskmgr.artifact_texture_path = "sprites/artifacts/artifact_taskmgr.png"
+	artifact_taskmgr.artifact_script_path = "res://scripts/artifacts/BaseArtifact.gd"
+	artifact_taskmgr.artifact_right_click_actions = [
+		{
+			Scripts.ACTION_PICK_CARDS: {
+				"card_pick_type": HandManager.HAND_PILE,
+				"min_card_amount": 999,
+				"max_card_amount": 999,
+				"random_selection": true,
+				"validator_data": [
+					{Scripts.VALIDATOR_CARD_ENERGY_COST: {"comparison_value": 2, "operator": ">="}}
+				],
+				"action_data": [
+					{Scripts.ACTION_EXHAUST_CARDS: {}},
+					{
+						Scripts.ACTION_VARIABLE_CARDSET_MODIFIER: {
+							"action_data": [
+								{Scripts.ACTION_ADD_HEALTH: {
+									"health_amount": 3,
+									"target_override": BaseAction.TARGET_OVERRIDES.PARENT
+								}}
+							],
+							"multiplied_values": ["health_amount"]
+						}
+					}
+				]
+			}
+		}
+	]
+	Global.register_rod(artifact_taskmgr)
 
+	### Filler Artifacts
 	#endregion
 
 

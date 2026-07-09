@@ -583,7 +583,7 @@ static func add_cards_red() -> void:
 	card_ci_pipeline.card_name = "持续集成"
 	card_ci_pipeline.card_color_id = "color_{0}".format([color])
 	card_ci_pipeline.card_texture_path = "sprites/card/red/card_ci_pipeline.png"
-	card_ci_pipeline.card_description = "获得 [status_charge_amount] 层 [status_icon:status_effect_damage_increase]。获得 [draw_count] 层 [status_icon:status_effect_increase_turn_draw]。消耗品。"
+	card_ci_pipeline.card_description = "获得 [status_charge_amount] 层 [status_icon:status_effect_damage_increase]。获得 [draw_count] 层 [status_icon:status_effect_increase_turn_draw]。"
 	card_ci_pipeline.card_hint = "获得 [status_icon:status_effect_damage_increase]（提高后续伤害）和回合开始多摸牌的增益；打出后本场战斗不再出现。"
 	card_ci_pipeline.card_type = CardData.CARD_TYPES.POWER
 	card_ci_pipeline.card_rarity = CardData.CARD_RARITIES.RARE
@@ -626,7 +626,7 @@ static func add_cards_red() -> void:
 	card_fork.card_name = "分叉仓库"
 	card_fork.card_color_id = "color_{0}".format([color])
 	card_fork.card_texture_path = "sprites/card/red/card_fork.png"
-	card_fork.card_description = "获得 [status_charge_amount] 层 [status_icon:status_effect_duplicate_attacks]。消耗品。"
+	card_fork.card_description = "获得 [status_charge_amount] 层 [status_icon:status_effect_duplicate_attacks]。"
 	card_fork.card_hint = "获得 [status_icon:status_effect_duplicate_attacks]（使你打出的攻击牌触发两次）；打出后本场战斗不再出现。"
 	card_fork.card_type = CardData.CARD_TYPES.POWER
 	card_fork.card_rarity = CardData.CARD_RARITIES.UNCOMMON
@@ -656,7 +656,7 @@ static func add_cards_red() -> void:
 	card_circuit_breaker.card_name = "熔断机制"
 	card_circuit_breaker.card_color_id = "color_{0}".format([color])
 	card_circuit_breaker.card_texture_path = "sprites/card/red/card_circuit_breaker.png"
-	card_circuit_breaker.card_description = "战斗开始时获得 [block] 点防火墙和 [status_charge_amount] 层 [status_icon:status_effect_pointy]。打牌时再次触发。消耗品。"
+	card_circuit_breaker.card_description = "战斗开始时获得 [block] 点防火墙和 [status_charge_amount] 层 [status_icon:status_effect_pointy]。打牌时再次触发。"
 	card_circuit_breaker.card_hint = "带有反伤效果的护盾；摸到时自动生效一次，主动打出还能再生效一次；打出后本场战斗不再出现。"
 	card_circuit_breaker.card_type = CardData.CARD_TYPES.POWER
 	card_circuit_breaker.card_rarity = CardData.CARD_RARITIES.RARE
@@ -732,7 +732,7 @@ static func add_cards_red() -> void:
 	card_connection_pool.card_name = "连接池"
 	card_connection_pool.card_color_id = "color_{0}".format([color])
 	card_connection_pool.card_texture_path = "sprites/card/red/card_connection_pool.png"
-	card_connection_pool.card_description = "获得 [block] 点防火墙和 [status_charge_amount] 层 [status_icon:status_effect_damage_increase]。消耗品。"
+	card_connection_pool.card_description = "获得 [block] 点防火墙和 [status_charge_amount] 层 [status_icon:status_effect_damage_increase]。"
 	card_connection_pool.card_hint = "获得护盾，并提高后续攻击的伤害；打出后本场战斗不再出现。"
 	card_connection_pool.card_type = CardData.CARD_TYPES.POWER
 	card_connection_pool.card_rarity = CardData.CARD_RARITIES.UNCOMMON
@@ -965,7 +965,7 @@ static func add_cards_red() -> void:
 	card_compile_opt.card_name = "编译优化"
 	card_compile_opt.card_color_id = "color_{0}".format([color])
 	card_compile_opt.card_texture_path = "sprites/card/red/card_compile_opt.png"
-	card_compile_opt.card_description = "永久减少当前线程中 [card_amount] 个脚本的耗能 [cost_reduction] 点（最低为 0）。消耗品。"
+	card_compile_opt.card_description = "永久减少当前线程中 [card_amount] 个脚本的耗能 [cost_reduction] 点（最低为 0）。"
 	card_compile_opt.card_hint = "永久降低手里牌的费用，最低降到0费；打出后本场战斗不再出现。"
 	card_compile_opt.card_type = CardData.CARD_TYPES.SKILL
 	card_compile_opt.card_rarity = CardData.CARD_RARITIES.RARE
@@ -1354,7 +1354,7 @@ static func add_cards_red() -> void:
 	card_process_hijack.card_name = "进程劫持"
 	card_process_hijack.card_color_id = "color_{0}".format([color])
 	card_process_hijack.card_texture_path = "sprites/card/red/card_process_hijack.png"
-	card_process_hijack.card_description = "从回收站中选择 [card_amount] 个脚本加入当前线程，使其本时钟周期耗能变为 0。消耗。"
+	card_process_hijack.card_description = "从回收站中选择 [card_amount] 个脚本加入当前线程，使其本时钟周期耗能变为 0。"
 	card_process_hijack.card_hint = "从弃牌堆里手动选牌回到手中，并且那些牌本回合免费打出。打出后本场战斗不再出现。"
 	card_process_hijack.card_type = CardData.CARD_TYPES.SKILL
 	card_process_hijack.card_rarity = CardData.CARD_RARITIES.RARE
@@ -1385,8 +1385,8 @@ static func add_cards_red() -> void:
 	card_code_bomb.card_name = "代码炸弹"
 	card_code_bomb.card_color_id = "color_{0}".format([color])
 	card_code_bomb.card_texture_path = "sprites/card/red/card_code_bomb.png"
-	card_code_bomb.card_description = "造成 [damage] 点伤害。打出后永久提升所有[card_name:card_code_bomb]的伤害 [damage_growth] 点。消耗。"
-	card_code_bomb.card_hint = "0费消耗攻击。每次打出后，所有'代码炸弹'的伤害永久提升。用'代码生成'复制出多张可形成恐怖爆发。"
+	card_code_bomb.card_description = "造成 [damage] 点伤害。打出后永久提升所有[card_name:card_code_bomb]的伤害 [damage_growth] 点。"
+	card_code_bomb.card_hint = "0费物理删除攻击。每次打出后，所有'代码炸弹'的伤害永久提升。用'代码生成'复制出多张可形成恐怖爆发。"
 	card_code_bomb.card_type = CardData.CARD_TYPES.ATTACK
 	card_code_bomb.card_rarity = CardData.CARD_RARITIES.COMMON
 	card_code_bomb.card_requires_target = true

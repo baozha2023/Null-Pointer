@@ -773,6 +773,8 @@ func create_card_play_request(card_data: CardData, target: BaseCombatant, copy_c
 			DebugLogger.log_error("create_card_play_request(): No CardData provided to duplicate card_values")
 		else:
 			card_play_request.card_values = card_data.card_values.duplicate(true)
+			if card_data.card_requires_time_snapshot:
+				card_play_request.card_values["locked_run_time"] = Global.player_data.player_run_time
 	if copy_hand:
 		card_play_request.hand_at_play_time = HandManager.player_hand.duplicate(false)
 	

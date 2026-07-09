@@ -95,6 +95,10 @@ const CARD_RARITY_DISPLAY: Dictionary = {
 ## supplied to the CardPlayRequest.
 @export var card_requires_target: bool = true
 
+## If true, the exact game run time will be recorded when the card is played and saved in
+## card_values["locked_run_time"]. Useful for time-based actions.
+@export var card_requires_time_snapshot: bool = false
+
 # Card Values
 ## Calues on the card like attack/block amount.
 ## These are fallback values used by the card's actions and can be modified.

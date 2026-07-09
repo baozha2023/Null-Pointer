@@ -25,6 +25,9 @@ func populate_card_keywords(card_data: CardData) -> void:
 	if card_data.card_end_of_turn_destination == HandManager.EXHAUST_PILE:
 		if not card_keyword_object_ids.has("keyword_ethereal"):
 			card_keyword_object_ids.append("keyword_ethereal")
+	if card_data.card_end_of_turn_destination == HandManager.BANISH_PILE:
+		if not card_keyword_object_ids.has("keyword_fleeting"):
+			card_keyword_object_ids.append("keyword_fleeting")
 	if card_data.card_play_destination == HandManager.EXHAUST_PILE:
 		if not card_keyword_object_ids.has("keyword_exhaust"):
 			card_keyword_object_ids.append("keyword_exhaust")
@@ -52,7 +55,7 @@ func populate_card_keywords(card_data: CardData) -> void:
 	var card_created_card_object_ids: Array[String] = []
 	for action_list in all_action_lists:
 		for action in action_list:
-			_parse_action_recursively(action, card_data, card_status_effect_object_ids, card_created_card_object_ids)
+			_parse_action_recursively(action, card_data, card_status_effect_object_ids, card_created_card_object_ids, card_keyword_object_ids)
 			
 	# Extract explicitly mentioned cards from the description (e.g. [card_name:card_waste])
 	for m in TextParser.card_name_regex.search_all(card_data.card_description):
@@ -109,7 +112,7 @@ func _get_all_recursive_child_keywords(keyword_object_ids: Array[String]) -> Arr
 					
 	return all_child_keywords
 
-func _parse_action_recursively(action: Dictionary, card_data: CardData, status_ids: Array[String], card_ids: Array[String]) -> void:
+func _parse_action_recursively(action: Dictionary, card_data: CardData, status_ids: Array[String], card_ids: Array[String], keyword_ids: Array[String] = []) -> void:
 	for action_key in action.keys():
 		var action_params = action[action_key]
 		if typeof(action_params) != TYPE_DICTIONARY:
@@ -128,6 +131,11 @@ func _parse_action_recursively(action: Dictionary, card_data: CardData, status_i
 			if created_card_id != "" and not card_ids.has(created_card_id):
 				card_ids.append(created_card_id)
 				
+		if action_key == Scripts.ACTION_REMOVE_CARDS_FROM_DECK:
+			if action_params.get("pick_played_card", false) == true:
+				if not keyword_ids.has("keyword_consumable"):
+					keyword_ids.append("keyword_consumable")
+				
 		var nested_keys = ["action_data", "passed_action_data", "failed_action_data", "validator_data"]
 		for nested_key in nested_keys:
 			if action_params.has(nested_key):
@@ -135,7 +143,7 @@ func _parse_action_recursively(action: Dictionary, card_data: CardData, status_i
 				if typeof(nested_actions) == TYPE_ARRAY:
 					for nested_action in nested_actions:
 						if typeof(nested_action) == TYPE_DICTIONARY:
-							_parse_action_recursively(nested_action, card_data, status_ids, card_ids)
+							_parse_action_recursively(nested_action, card_data, status_ids, card_ids, keyword_ids)
 
 func clear_tooltips() -> void:
 	for child in get_children():

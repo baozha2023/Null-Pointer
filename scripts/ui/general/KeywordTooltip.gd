@@ -74,7 +74,18 @@ func init_card(card_object_id: String) -> void:
 		if color_data:
 			color_hex = "#" + color_data.color.to_html(false)
 		
-		var keyword_bbcode: String = "[color=%s]%s[/color]" % [color_hex, card_data.card_name]
+		var display_name: String = card_data.card_name
+		if card_data.card_is_playable:
+			var cost_str: String = ""
+			if card_data.card_energy_cost_is_variable:
+				cost_str = "X"
+				if card_data.card_energy_cost_variable_upper_bound >= 1:
+					cost_str += "-" + str(card_data.card_energy_cost_variable_upper_bound)
+			else:
+				cost_str = str(card_data.card_energy_cost)
+			display_name += "(%s)" % cost_str
+			
+		var keyword_bbcode: String = "[color=%s]%s[/color]" % [color_hex, display_name]
 		
 		var parsed_desc = TextParser.parse(card_data.card_description, card_data.card_values, FONT_SIZE)
 		keyword_bbcode = "{0}\n{1}".format([keyword_bbcode, parsed_desc])

@@ -33,7 +33,7 @@ static func add_cards_white() -> void:
 	card_traffic_sniff.card_name = "端口嗅探"
 	card_traffic_sniff.card_color_id = "color_{0}".format([color])
 	card_traffic_sniff.card_texture_path = "sprites/card/white/card_traffic_sniff.png"
-	card_traffic_sniff.card_description = "读取 [draw_count] 个脚本。消耗。"
+	card_traffic_sniff.card_description = "读取 [draw_count] 个脚本。"
 	card_traffic_sniff.card_hint = "一次性大量抽牌；用后从牌组永久移除。"
 	card_traffic_sniff.card_type = CardData.CARD_TYPES.SKILL
 	card_traffic_sniff.card_rarity = CardData.CARD_RARITIES.COMMON
@@ -54,7 +54,7 @@ static func add_cards_white() -> void:
 	card_firewall_patch.card_name = "防火墙补丁"
 	card_firewall_patch.card_color_id = "color_{0}".format([color])
 	card_firewall_patch.card_texture_path = "sprites/card/white/card_firewall_patch.png"
-	card_firewall_patch.card_description = "获得 [block] 点防火墙。消耗。"
+	card_firewall_patch.card_description = "获得 [block] 点防火墙。"
 	card_firewall_patch.card_hint = "提供一次性高额护盾；用后从牌组永久移除。"
 	card_firewall_patch.card_type = CardData.CARD_TYPES.SKILL
 	card_firewall_patch.card_rarity = CardData.CARD_RARITIES.COMMON
@@ -78,7 +78,7 @@ static func add_cards_white() -> void:
 	card_memory_snapshot.card_name = "内存快照"
 	card_memory_snapshot.card_color_id = "color_{0}".format([color])
 	card_memory_snapshot.card_texture_path = "sprites/card/white/card_memory_snapshot.png"
-	card_memory_snapshot.card_description = "选择复制当前线程中最多 [card_amount] 个脚本。消耗。"
+	card_memory_snapshot.card_description = "选择复制当前线程中最多 [card_amount] 个脚本。"
 	card_memory_snapshot.card_hint = "在战斗中复制核心卡牌；用后从牌组永久移除。"
 	card_memory_snapshot.card_type = CardData.CARD_TYPES.SKILL
 	card_memory_snapshot.card_rarity = CardData.CARD_RARITIES.UNCOMMON
@@ -105,7 +105,7 @@ static func add_cards_white() -> void:
 	card_log_cleanup.card_name = "日志清理"
 	card_log_cleanup.card_color_id = "color_{0}".format([color])
 	card_log_cleanup.card_texture_path = "sprites/card/white/card_log_cleanup.png"
-	card_log_cleanup.card_description = "选择回收站中最多 [number_of_cards] 个脚本物理删除。虚无。"
+	card_log_cleanup.card_description = "选择回收站中最多 [number_of_cards] 个脚本物理删除。"
 	card_log_cleanup.card_hint = "清理弃牌堆中的垃圾牌，精简牌库；若本回合不打出，回合结束也会被永久移除。"
 	card_log_cleanup.card_type = CardData.CARD_TYPES.SKILL
 	card_log_cleanup.card_rarity = CardData.CARD_RARITIES.UNCOMMON
@@ -134,7 +134,7 @@ static func add_cards_white() -> void:
 	card_kernel_reconstruct.card_name = "内核重构"
 	card_kernel_reconstruct.card_color_id = "color_{0}".format([color])
 	card_kernel_reconstruct.card_texture_path = "sprites/card/white/card_kernel_reconstruct.png"
-	card_kernel_reconstruct.card_description = "选择脚本库中最多 [number_of_cards] 个脚本永久升级。消耗。"
+	card_kernel_reconstruct.card_description = "选择脚本库中最多 [number_of_cards] 个脚本永久升级。"
 	card_kernel_reconstruct.card_hint = "极其珍贵的永久强化手段；用后从牌组永久移除。"
 	card_kernel_reconstruct.card_type = CardData.CARD_TYPES.POWER
 	card_kernel_reconstruct.card_rarity = CardData.CARD_RARITIES.RARE
@@ -169,7 +169,8 @@ static func add_cards_white() -> void:
 	card_curse_exception.card_name = "异常报错"
 	card_curse_exception.card_color_id = "color_white"
 	card_curse_exception.card_texture_path = "sprites/card/white/card_curse_exception.png"
-	card_curse_exception.card_description = "无法被打出。 [color=#ff6b6b]抽到此牌时，受到1点伤害。[/color]"
+	card_curse_exception.card_values = {"damage": 1}
+	card_curse_exception.card_description = "无法被打出。 [color=#ff6b6b]抽到此牌时，受到 [damage] 点伤害。[/color]"
 	card_curse_exception.card_hint = "这是一张诅咒卡牌。不仅会污染卡池，某些情况下还会造成负面效果。"
 	card_curse_exception.card_type = CardData.CARD_TYPES.CURSE
 	card_curse_exception.card_rarity = CardData.CARD_RARITIES.GENERATED
@@ -178,7 +179,6 @@ static func add_cards_white() -> void:
 		{
 			Scripts.ACTION_DIRECT_DAMAGE: {
 				"target_override": BaseAction.TARGET_OVERRIDES.PLAYER,
-				"damage": 1,
 				"bypass_block": true
 			}
 		}
@@ -191,7 +191,7 @@ static func add_cards_white() -> void:
 	card_status_dazed.card_name = "垃圾数据"
 	card_status_dazed.card_color_id = "color_white"
 	card_status_dazed.card_texture_path = "sprites/card/white/card_status_dazed.png"
-	card_status_dazed.card_description = "无法被打出。 回合结束时被消耗。"
+	card_status_dazed.card_description = ""
 	card_status_dazed.card_hint = "状态牌。卡在手里占用抽牌空间，回合结束后自动消失。"
 	card_status_dazed.card_type = CardData.CARD_TYPES.STATUS
 	card_status_dazed.card_rarity = CardData.CARD_RARITIES.GENERATED
@@ -232,6 +232,33 @@ static func add_cards_white() -> void:
 	card_forge_fusion.card_type = CardData.CARD_TYPES.SKILL
 	card_forge_fusion.card_rarity = CardData.CARD_RARITIES.GENERATED
 	card_forge_fusion.card_requires_target = false
+	card_forge_fusion.card_play_destination = HandManager.BANISH_PILE
+	card_forge_fusion.card_end_of_turn_destination = HandManager.BANISH_PILE
 	card_forge_fusion.card_energy_cost = 0
 	card_forge_fusion.card_play_actions = []
 	Global.register_rod(card_forge_fusion)
+
+	# 10. 精准打击 (Time Strike)
+	var card_time_strike: CardData = CardData.new("card_time_strike")
+	card_time_strike.card_name = "精准打击"
+	card_time_strike.card_color_id = "color_{0}".format([color])
+	card_time_strike.card_description = "造成当前游戏时间（秒）个位数 x [time_multiplier] 的伤害。"
+	card_time_strike.card_hint = "打出该牌时，会取当前时间秒数的个位数并乘以 [time_multiplier] 结算伤害。"
+	card_time_strike.card_type = CardData.CARD_TYPES.ATTACK
+	card_time_strike.card_rarity = CardData.CARD_RARITIES.UNCOMMON
+	card_time_strike.card_requires_target = true
+	card_time_strike.card_energy_cost = 1
+	card_time_strike.card_requires_time_snapshot = true
+	card_time_strike.card_texture_path = "sprites/card/white/card_time_strike.png"
+	card_time_strike.card_values = {"time_multiplier": 3, "number_of_attacks": 1}
+	card_time_strike.card_upgrade_value_improvements = {"time_multiplier": 1}
+	card_time_strike.card_play_actions = [
+		{
+			Scripts.ACTION_TIME_ATTACK_GENERATOR: {
+				"time_extraction_mode": "ONES_DIGIT",
+				"audio_path": AudioConstants.SFX_GROUP_BLUNT_SMASH,
+				"time_delay": 0.0,
+			},
+		},
+	]
+	Global.register_rod(card_time_strike)

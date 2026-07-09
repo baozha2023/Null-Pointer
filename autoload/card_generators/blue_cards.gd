@@ -546,7 +546,7 @@ static func add_cards_blue() -> void:
 	card_darknet_protocol.card_color_id = "color_{0}".format([color])
 	card_darknet_protocol.card_texture_path = "sprites/card/blue/card_darknet_protocol.png"
 	card_darknet_protocol.card_description = "获得 X 层 [status_icon:status_effect_damage_increase]。"
-	card_darknet_protocol.card_hint = "消耗你当前全部能量（算力），按消耗的点数获得等量 [status_icon:status_effect_damage_increase]（攻击伤害提高）；此牌打出后本场战斗不再出现。"
+	card_darknet_protocol.card_hint = "使用你当前全部能量（算力），按使用的点数获得等量 [status_icon:status_effect_damage_increase]（攻击伤害提高）；此牌打出后本场战斗不再出现。"
 	card_darknet_protocol.card_type = CardData.CARD_TYPES.SKILL
 	card_darknet_protocol.card_rarity = CardData.CARD_RARITIES.RARE
 	card_darknet_protocol.card_requires_target = false
@@ -799,19 +799,22 @@ static func add_cards_blue() -> void:
 	var card_multiplexing: CardData = CardData.new("card_multiplexing")
 	card_multiplexing.card_name = "多路复用"
 	card_multiplexing.card_color_id = "color_{0}".format([color])
-	card_multiplexing.card_description = "选择 1 项协议进程挂载为内存监听。"
-	card_multiplexing.card_hint = "极高自由度的 Buff 牌，根据当前战斗流派选择合适的挂机监听方案。"
+	card_multiplexing.card_values = {"attack_threshold": 3, "attack_gain": 1, "skill_threshold": 3, "skill_gain": 2, "power_threshold": 2, "power_gain": 1}
+	card_multiplexing.card_description = "选择 1 项协议挂载为常驻监听进程：「每打出 [attack_threshold] 张攻击脚本，获得 [attack_gain] 层[status_icon:status_effect_damage_increase]」「每打出 [skill_threshold] 张辅助脚本，获得 [skill_gain] 层[status_icon:status_effect_block_on_turn_end]」「每打出 [power_threshold] 张守护进程，获得 [power_gain] 层[status_icon:status_effect_bonus_energy_per_turn]」"
+	card_multiplexing.card_hint = "三选一永久增益：攻击流获得力量、辅助流获得回合末防火墙、守护进程流获得额外算力。"
+	card_multiplexing.card_texture_path = "sprites/card/blue/card_multiplexing.png"
 	card_multiplexing.card_type = CardData.CARD_TYPES.POWER
 	card_multiplexing.card_rarity = CardData.CARD_RARITIES.RARE
 	card_multiplexing.card_requires_target = false
-	card_multiplexing.card_energy_cost = 1
+	card_multiplexing.card_energy_cost = 3
+	card_multiplexing.card_upgrade_amount_max = 0
 	card_multiplexing.card_play_actions = [
 		{
 			Scripts.ACTION_PICK_OPTIONS: {
 				"options": [
 					{
 						"option_name": "攻击协议",
-						"option_description": "打出 3 张[color=red]攻击卡[/color]时，获得 1 层[status_icon:status_effect_damage_increase]。",
+						"option_description": "打出 [attack_threshold] 张[color=red]攻击脚本[/color]时，获得 [attack_gain] 层[status_icon:status_effect_damage_increase]。",
 						"option_sub_actions": [
 							{
 								Scripts.ACTION_APPLY_STATUS: {
@@ -832,7 +835,7 @@ static func add_cards_blue() -> void:
 					},
 					{
 						"option_name": "防御协议",
-						"option_description": "打出 3 张[color=green]技能卡[/color]时，获得 2 层[status_icon:status_effect_block_on_turn_end]。",
+						"option_description": "打出 [skill_threshold] 张[color=green]辅助脚本[/color]时，获得 [skill_gain] 层[status_icon:status_effect_block_on_turn_end]。",
 						"option_sub_actions": [
 							{
 								Scripts.ACTION_APPLY_STATUS: {
@@ -853,7 +856,7 @@ static func add_cards_blue() -> void:
 					},
 					{
 						"option_name": "资源协议",
-						"option_description": "打出 2 张[color=blue]能力卡[/color]时，获得 1 层[status_icon:status_effect_bonus_energy_per_turn]。",
+						"option_description": "打出 [power_threshold] 张[color=blue]守护进程[/color]时，获得 [power_gain] 层[status_icon:status_effect_bonus_energy_per_turn]。",
 						"option_sub_actions": [
 							{
 								Scripts.ACTION_APPLY_STATUS: {
@@ -877,5 +880,142 @@ static func add_cards_blue() -> void:
 		}
 	]
 	Global.register_rod(card_multiplexing)
+	# 自产生程序
+	var card_quine: CardData = CardData.new("card_quine")
+	card_quine.card_name = "自产生程序"
+	card_quine.card_color_id = "color_blue"
+	card_quine.card_type = CardData.CARD_TYPES.ATTACK
+	card_quine.card_energy_cost = 1
+	card_quine.card_rarity = CardData.CARD_RARITIES.UNCOMMON
+	card_quine.card_values = {"damage": 4, "number_of_cards": 2, "damage_increase": 1}
+	card_quine.card_first_upgrade_value_changes = {"damage": 6}
+	card_quine.card_description = "造成 [damage] 点伤害。将 [number_of_cards] 张[card_name:card_quine]洗入待加载区。本场战斗中所有[card_name:card_quine]的伤害永久 +[damage_increase]。"
+	card_quine.card_hint = "每次打出都会复制自己并全体加伤害，越到后期牌组中的自产生程序越多、越强。"
+	card_quine.card_texture_path = "sprites/card/blue/card_quine.png"
+	card_quine.card_play_actions = [
+		{
+			Scripts.ACTION_PICK_CARDS: {
+				"card_pick_type": HandManager.COMBAT_DECK,
+				"min_card_amount": 999,
+				"max_card_amount": 999,
+				"random_selection": true,
+				"validator_data": [
+					{Scripts.VALIDATOR_CARD_ID: {"card_object_ids": ["card_quine"]}}
+				],
+				"action_data": [
+					{
+						Scripts.ACTION_IMPROVE_CARD_VALUES: {
+							"card_value_improvements": {"damage": 1},
+							"modify_parent_card": false
+						}
+					}
+				]
+			}
+		},
+		{
+			Scripts.ACTION_CREATE_CARDS: {
+				"created_card_object_id": "card_quine",
+				"action_data": [
+					{
+						Scripts.ACTION_ADD_CARDS_TO_DRAW: {
+							"card_destination_strategy": HandManager.PILE_INSERTION_STRATEGIES.RANDOM
+						}
+					}
+				]
+			}
+		},
+		{
+			Scripts.ACTION_ATTACK_GENERATOR: {}
+		}
+	]
+	Global.register_rod(card_quine)
+
+	# 内存地址越界
+	var card_memory_out_of_bounds: CardData = CardData.new("card_memory_out_of_bounds")
+	card_memory_out_of_bounds.card_name = "内存地址越界"
+	card_memory_out_of_bounds.card_color_id = "color_blue"
+	card_memory_out_of_bounds.card_type = CardData.CARD_TYPES.ATTACK
+	card_memory_out_of_bounds.card_energy_cost = 1
+	card_memory_out_of_bounds.card_rarity = CardData.CARD_RARITIES.COMMON
+	card_memory_out_of_bounds.card_values = {"damage": 6, "overflow_damage": 20}
+	card_memory_out_of_bounds.card_first_upgrade_value_changes = {"damage": 9, "overflow_damage": 28}
+	card_memory_out_of_bounds.card_description = "造成 [damage] 点伤害。若此脚本位于当前线程的最右端，改为造成 [overflow_damage] 点伤害。"
+	card_memory_out_of_bounds.card_hint = "位于手牌最右侧时伤害大幅提升，注意出牌顺序。"
+	card_memory_out_of_bounds.card_texture_path = "sprites/card/blue/card_buffer_overflow.png"
+	card_memory_out_of_bounds.card_play_actions = [
+		{
+			Scripts.ACTION_VALIDATOR: {
+				"validator_data": [
+					{Scripts.VALIDATOR_CARD_POSITION_IN_HAND: {"position_in_hand": "right"}}
+				],
+				"passed_action_data": [
+					{
+						Scripts.ACTION_ATTACK_GENERATOR: {
+							"custom_key_names": {"damage": "overflow_damage"}
+						}
+					}
+				],
+				"failed_action_data": [
+					{
+						Scripts.ACTION_ATTACK_GENERATOR: {}
+					}
+				]
+			}
+		}
+	]
+	Global.register_rod(card_memory_out_of_bounds)
+
+	# 时间戳伪造
+	var card_timestamp_spoofing: CardData = CardData.new("card_timestamp_spoofing")
+	card_timestamp_spoofing.card_name = "时间戳伪造"
+	card_timestamp_spoofing.card_color_id = "color_blue"
+	card_timestamp_spoofing.card_type = CardData.CARD_TYPES.SKILL
+	card_timestamp_spoofing.card_requires_target = false
+	card_timestamp_spoofing.card_energy_cost = 2
+	card_timestamp_spoofing.card_rarity = CardData.CARD_RARITIES.RARE
+	card_timestamp_spoofing.card_upgrade_amount_max = 0
+	card_timestamp_spoofing.card_values = {"status_charge_amount": 1, "duration": 5}
+	card_timestamp_spoofing.card_description = "获得 [duration] 秒限时窗口，期间所有脚本费用变为 0。窗口结束后强制结束当前时钟周期。"
+	card_timestamp_spoofing.card_hint = "打出后有 [duration] 秒真实时间让你免费出牌，时间到自动结束回合。手速越快收益越高。"
+	card_timestamp_spoofing.card_texture_path = "sprites/card/blue/card_timestamp_spoofing.png"
+	card_timestamp_spoofing.card_play_actions = [
+		{
+			Scripts.ACTION_APPLY_STATUS: {
+				"status_effect_object_id": "status_effect_timestamp_spoofing",
+				"target_override": BaseAction.TARGET_OVERRIDES.PARENT
+			}
+		}
+	]
+	Global.register_rod(card_timestamp_spoofing)
+
+	# 系统死锁
+	var card_dead_lock: CardData = CardData.new("card_dead_lock")
+	card_dead_lock.card_name = "系统死锁"
+	card_dead_lock.card_color_id = "color_blue"
+	card_dead_lock.card_type = CardData.CARD_TYPES.SKILL
+	card_dead_lock.card_energy_cost = 3
+	card_dead_lock.card_rarity = CardData.CARD_RARITIES.RARE
+	card_dead_lock.card_requires_target = false
+	card_dead_lock.card_upgrade_amount_max = 0
+	card_dead_lock.card_values = {"overshield_amount": 50, "status_charge_amount": 2}
+	card_dead_lock.card_description = "获得 [overshield_amount] 层 [status_icon:status_effect_overshield]。施加 [status_charge_amount] 层 [status_icon:status_effect_deadlock]，下个时钟周期无法打出任何脚本。"
+	card_dead_lock.card_hint = "一次性获得大量过载防火墙（跨回合保留），代价是下回合完全无法出牌。适合在关键回合抵挡致命攻击。"
+	card_dead_lock.card_texture_path = "sprites/card/blue/card_dead_lock.png"
+	card_dead_lock.card_play_actions = [
+		{
+			Scripts.ACTION_APPLY_STATUS: {
+				"status_effect_object_id": "status_effect_overshield",
+				"target_override": BaseAction.TARGET_OVERRIDES.PLAYER,
+				"custom_key_names": {"status_charge_amount": "overshield_amount"}
+			}
+		},
+		{
+			Scripts.ACTION_APPLY_STATUS: {
+				"status_effect_object_id": "status_effect_deadlock",
+				"target_override": BaseAction.TARGET_OVERRIDES.PARENT
+			}
+		}
+	]
+	Global.register_rod(card_dead_lock)
 
 	#endregion

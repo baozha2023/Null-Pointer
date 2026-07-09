@@ -438,7 +438,7 @@ func add_status_effects() -> void:
 	status_effect_curiosity.status_effect_tooltip = "每当玩家打出 [color=yellow][curiosity_trigger_threshold][/color] 张 [color=yellow][curiosity_trigger_card_types][/color] 时，自身获得 [color=yellow][curiosity_reaction_amount][/color] 层 [status_icon:[curiosity_reaction_status_id]]。\n当前已打出：[color=yellow][curiosity_current_counter] / [curiosity_trigger_threshold][/color] 张"
 	status_effect_curiosity.status_effect_texture_path = "sprites/status_effects/icon_curiosity.png"
 	status_effect_curiosity.status_effect_decay_rate = 0
-	status_effect_curiosity.status_effect_type = StatusEffectData.STATUS_EFFECT_TYPES.BUFF
+	status_effect_curiosity.status_effect_type = StatusEffectData.STATUS_EFFECT_TYPES.DEBUFF
 	status_effect_curiosity.status_effect_interceptor_ids = ["interceptor_card_play_reaction"]
 	Global.register_rod(status_effect_curiosity)
 
@@ -477,6 +477,7 @@ func add_status_effects() -> void:
 	status_effect_payload_turbine.status_effect_description = "每回合第一次获得载荷时，额外获得等同于层数的载荷。"
 	status_effect_payload_turbine.status_effect_tooltip = "每回合第一次获得载荷时，额外获得 [color=yellow][charge_amount][/color] 层 载荷。"
 	status_effect_payload_turbine.status_effect_decay_rate = 0
+	status_effect_payload_turbine.status_effect_texture_path = "sprites/status_effects/icon_payload_turbine.png"
 	status_effect_payload_turbine.status_effect_type = StatusEffectData.STATUS_EFFECT_TYPES.BUFF
 	status_effect_payload_turbine.status_effect_is_visible = true
 	status_effect_payload_turbine.status_effect_interceptor_ids = ["interceptor_payload_turbine"]
@@ -1093,6 +1094,28 @@ func add_status_effects() -> void:
 	status_effect_turn_forge_load.status_effect_charge_upper_bound = 999
 	Global.register_rod(status_effect_turn_forge_load)
 
+	var status_effect_timestamp_spoofing: StatusEffectData = StatusEffectData.new("status_effect_timestamp_spoofing")
+	status_effect_timestamp_spoofing.status_effect_name = "时间戳伪造"
+	status_effect_timestamp_spoofing.status_effect_description = "锁定真实时间 5 秒，期间所有卡牌 0 费。5 秒后直接强制结束当前时钟周期。"
+	status_effect_timestamp_spoofing.status_effect_tooltip = "锁定真实时间 5 秒，期间所有卡牌 0 费。5 秒后直接强制结束当前时钟周期。"
+	status_effect_timestamp_spoofing.status_effect_decay_rate = 0
+	status_effect_timestamp_spoofing.status_effect_is_visible = false
+	status_effect_timestamp_spoofing.status_effect_type = StatusEffectData.STATUS_EFFECT_TYPES.BUFF
+	status_effect_timestamp_spoofing.status_effect_script_path = "res://scripts/status_effects/player_status_effects/StatusTimestampSpoofing.gd"
+	status_effect_timestamp_spoofing.status_effect_action_process_times = [StatusEffectData.STATUS_EFFECT_PROCESS_TIMES.POST_DISCARD_PLAYER_END_TURN]
+	status_effect_timestamp_spoofing.status_effect_decay_type = StatusEffectData.STATUS_EFFECT_DECAY_TYPES.ZERO_OUT
+	Global.register_rod(status_effect_timestamp_spoofing)
+
+	var status_effect_deadlock: StatusEffectData = StatusEffectData.new("status_effect_deadlock")
+	status_effect_deadlock.status_effect_name = "死锁"
+	status_effect_deadlock.status_effect_description = "限制你的权限，无法打出任何脚本。"
+	status_effect_deadlock.status_effect_tooltip = "由于系统死锁，你无法打出任何脚本。剩余 [color=yellow][charge_amount][/color] 个回合。"
+	status_effect_deadlock.status_effect_texture_path = "sprites/status_effects/icon_deadlock.png"
+	status_effect_deadlock.status_effect_decay_rate = -1
+	status_effect_deadlock.status_effect_type = StatusEffectData.STATUS_EFFECT_TYPES.DEBUFF
+	status_effect_deadlock.status_effect_interceptor_ids = ["interceptor_deadlock"]
+	Global.register_rod(status_effect_deadlock)
+
 #endregion
 
 #region Acts
@@ -1391,6 +1414,11 @@ func add_action_interceptors() -> void:
 	Global.register_rod(interceptor_packet_sniffer)
 
 
+	var interceptor_deadlock: ActionInterceptorData = ActionInterceptorData.new("interceptor_deadlock")
+	interceptor_deadlock.action_interceptor_modifies_parent = true
+	interceptor_deadlock.action_interceptor_script_path = Scripts.INTERCEPTOR_CARD_PLAY_DEADLOCK
+	interceptor_deadlock.action_intercepted_action_paths = [Scripts.ACTION_CARD_PLAY]
+	Global.register_rod(interceptor_deadlock)
 
 #endregion
 
@@ -1448,14 +1476,26 @@ func add_keywords() -> void:
 	var keyword_top_deck: KeywordData = KeywordData.new("keyword_top_deck")
 	keyword_top_deck.keyword_name = "置顶"
 	keyword_top_deck.keyword_prefix = "[前置] "
-	keyword_top_deck.keyword_text_bb_code = "战斗开始时置于脚本库顶部"
+	keyword_top_deck.keyword_text_bb_code = "必定出现在第一回合的初始线程中（若具有此词条的脚本过多，则优先置于内存队列最顶部）。"
 	Global.register_rod(keyword_top_deck)
 
 	var keyword_bottom_deck: KeywordData = KeywordData.new("keyword_bottom_deck")
 	keyword_bottom_deck.keyword_name = "置底"
 	keyword_bottom_deck.keyword_prefix = "[前置] "
-	keyword_bottom_deck.keyword_text_bb_code = "战斗开始时置于脚本库底部"
+	keyword_bottom_deck.keyword_text_bb_code = "战斗开始时强制沉底，必定处于内存队列的最底层。"
 	Global.register_rod(keyword_bottom_deck)
+
+	var keyword_rebound: KeywordData = KeywordData.new("keyword_rebound")
+	keyword_rebound.keyword_name = "回弹"
+	keyword_rebound.keyword_prefix = "[后置] "
+	keyword_rebound.keyword_text_bb_code = "打出该脚本后，将其置于内存队列顶部。对不会进入回收站的脚本无效。"
+	Global.register_rod(keyword_rebound)
+
+	var keyword_discard: KeywordData = KeywordData.new("keyword_discard")
+	keyword_discard.keyword_name = "丢弃"
+	keyword_discard.keyword_prefix = "[后置] "
+	keyword_discard.keyword_text_bb_code = "将脚本直接放入回收站。"
+	Global.register_rod(keyword_discard)
 
 	var keyword_retain: KeywordData = KeywordData.new("keyword_retain")
 	keyword_retain.keyword_name = "保留"
@@ -1468,18 +1508,6 @@ func add_keywords() -> void:
 	keyword_exhaust.keyword_prefix = "[后置] "
 	keyword_exhaust.keyword_text_bb_code = "使用后进入【坏道区】，本场战斗内无法再次抽取。"
 	Global.register_rod(keyword_exhaust)
-
-	var keyword_rebound: KeywordData = KeywordData.new("keyword_rebound")
-	keyword_rebound.keyword_name = "回弹"
-	keyword_rebound.keyword_prefix = "[后置] "
-	keyword_rebound.keyword_text_bb_code = "打出该脚本后，将其置于脚本库顶部。对不会进入回收站的脚本无效。"
-	Global.register_rod(keyword_rebound)
-
-	var keyword_discard: KeywordData = KeywordData.new("keyword_discard")
-	keyword_discard.keyword_name = "丢弃"
-	keyword_discard.keyword_prefix = "[后置] "
-	keyword_discard.keyword_text_bb_code = "将脚本直接放入回收站。"
-	Global.register_rod(keyword_discard)
 
 	var keyword_ethereal: KeywordData = KeywordData.new("keyword_ethereal")
 	keyword_ethereal.keyword_name = "虚无"
@@ -1494,6 +1522,20 @@ func add_keywords() -> void:
 	keyword_banish.keyword_text_bb_code = "打出后，该脚本从本场战斗中彻底抹除，不再进入任何卡池（包括回收站或坏道区）。"
 	keyword_banish.keyword_child_keyword_object_ids = []
 	Global.register_rod(keyword_banish)
+
+	var keyword_fleeting: KeywordData = KeywordData.new("keyword_fleeting")
+	keyword_fleeting.keyword_name = "瞬态"
+	keyword_fleeting.keyword_prefix = "[前置] "
+	keyword_fleeting.keyword_text_bb_code = "时钟周期结束时，若仍在当前线程中，则会被放逐。"
+	keyword_fleeting.keyword_child_keyword_object_ids = ["keyword_banish"]
+	Global.register_rod(keyword_fleeting)
+
+	var keyword_consumable: KeywordData = KeywordData.new("keyword_consumable")
+	keyword_consumable.keyword_name = "消耗"
+	keyword_consumable.keyword_prefix = "[后置] "
+	keyword_consumable.keyword_text_bb_code = "打出后，该脚本将从你的脚本库中永久删除。"
+	keyword_consumable.keyword_child_keyword_object_ids = []
+	Global.register_rod(keyword_consumable)
 
 	var keyword_unplayable: KeywordData = KeywordData.new("keyword_unplayable")
 	keyword_unplayable.keyword_name = "不可打出"

@@ -15,7 +15,7 @@ func _ready():
 ## Global text parser to parse macros, BBCode, variables, and icon mappings
 func parse(template: String, values: Dictionary = {}, base_font_size: int = 14) -> String:
 	var result: String = template
-	var icon_size: int = base_font_size + 8
+	var icon_size: int = base_font_size + 6
 	var energy_icon_bbcode = "[img width=%d]res://sprites/ui/icon_energy.png[/img]" % icon_size
 	
 	# 1. Base Variables [key] -> values[key]

@@ -113,6 +113,7 @@ func perform_action() -> void:
 				fusion_card.card_rarity = CardData.CARD_RARITIES.GENERATED
 				fusion_card.card_requires_target = requires_target
 				fusion_card.card_play_destination = HandManager.BANISH_PILE
+				fusion_card.card_end_of_turn_destination = HandManager.BANISH_PILE
 				fusion_card.card_hint = TextParser.parse_forge_actions_to_text(taken_actions)
 				
 				# Reverse to ensure FIFO execution

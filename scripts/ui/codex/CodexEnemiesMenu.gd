@@ -194,23 +194,27 @@ func populate_codex_enemy_initial(enemy_data: EnemyData, difficulty: int = 0) ->
 		return
 	
 	if enemy_data.enemy_block > 0:
-		var tooltip: String = "[color=orange]防火墙[/color]\n吸收伤害。"
+		var tooltip: String = "[color=orange]防火墙[/color]\n抵挡 " + str(enemy_data.enemy_block) + " 点伤害"
 		
-		var block_wrapper = Control.new()
-		block_wrapper.custom_minimum_size = Vector2(32, 32)
-		var block_ui = load("res://scenes/combatants/BlockIndicator.tscn").instantiate()
-		block_ui.position = Vector2(16, 16)
-		block_ui.update_block(enemy_data.enemy_block)
-		block_wrapper.add_child(block_ui)
+		var block_ui = TextureRect.new()
+		block_ui.custom_minimum_size = Vector2(24, 24)
+		block_ui.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		block_ui.texture = FileLoader.load_texture("sprites/ui/spr_shield_icon.png")
 		
-		var bg_rect = ColorRect.new()
-		bg_rect.color = Color(0, 0, 0, 0)
-		bg_rect.set_anchors_preset(Control.PRESET_FULL_RECT)
-		bg_rect.mouse_entered.connect(func(): if HandManager.tooltip != null: HandManager.tooltip.display_tooltip(tooltip, true))
-		bg_rect.mouse_exited.connect(func(): if HandManager.tooltip != null: HandManager.tooltip.hide_tooltip())
-		block_wrapper.add_child(bg_rect)
+		var label = Label.new()
+		label.text = str(enemy_data.enemy_block)
+		label.set_anchors_preset(Control.PRESET_FULL_RECT)
+		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		var ls = LabelSettings.new()
+		ls.font_size = 12
+		label.label_settings = ls
+		block_ui.add_child(label)
 		
-		codex_enemy_initial_container.add_child(block_wrapper)
+		block_ui.mouse_entered.connect(func(): if HandManager.tooltip != null: HandManager.tooltip.display_tooltip(tooltip, true))
+		block_ui.mouse_exited.connect(func(): if HandManager.tooltip != null: HandManager.tooltip.hide_tooltip())
+		
+		codex_enemy_initial_container.add_child(block_ui)
 		
 	for status_id: String in enemy_data.enemy_initial_status_effects:
 		var amount: int = enemy_data.enemy_initial_status_effects[status_id]
