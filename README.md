@@ -2,6 +2,17 @@
 
 《Null Pointer》是一款基于 Godot 4.6 引擎开发、深受《杀戮尖塔》（Slay the Spire）启发的 Roguelike 牌组构建（Deckbuilder）游戏。本作基于巨佬 [DesirePathGames 的 Slay-The-Robot 框架](https://github.com/DesirePathGames/Slay-The-Robot) 深度定制与重构开发。或者说，这是一个披着卡牌游戏外衣的代码实验室。
 
+## 📸 游戏预览
+
+<p align="center">
+  <img src="screenshots/main_menu.png" width="48%" alt="大厅界面">
+  <img src="screenshots/combat.png" width="48%" alt="游戏战斗界面">
+</p>
+<p align="center">
+  <img src="screenshots/codex_cards.png" width="48%" alt="脚本图鉴">
+  <img src="screenshots/codex_artifacts.png" width="48%" alt="外设图鉴">
+</p>
+
 ## 🎮 怎么跑起来？
 
 不需要繁琐的构建步骤，如果你头铁，甚至可以不用看文档：
