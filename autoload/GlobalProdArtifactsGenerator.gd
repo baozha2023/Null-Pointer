@@ -69,7 +69,7 @@ static func add_artifacts() -> void:
 	artifact_negate_money_gain.artifact_add_actions = [
 		{
 			Scripts.ACTION_ADD_ENERGY: {
-				"target_overrides": BaseAction.TARGET_OVERRIDES.PLAYER,
+				"target_override": BaseAction.TARGET_OVERRIDES.PLAYER,
 				"energy_amount_max": 1,
 			},
 		},
@@ -77,7 +77,7 @@ static func add_artifacts() -> void:
 	artifact_negate_money_gain.artifact_remove_actions = [
 		{
 			Scripts.ACTION_ADD_ENERGY: {
-				"target_overrides": BaseAction.TARGET_OVERRIDES.PLAYER,
+				"target_override": BaseAction.TARGET_OVERRIDES.PLAYER,
 				"energy_amount_max": -1,
 			},
 		},
@@ -534,7 +534,7 @@ static func add_artifacts() -> void:
 	artifact_overflow_stack.artifact_add_actions = [
 		{
 			Scripts.ACTION_ADD_ENERGY: {
-				"target_overrides": BaseAction.TARGET_OVERRIDES.PLAYER,
+				"target_override": BaseAction.TARGET_OVERRIDES.PLAYER,
 				"energy_amount_max": 1,
 			},
 		},
@@ -542,7 +542,7 @@ static func add_artifacts() -> void:
 	artifact_overflow_stack.artifact_remove_actions = [
 		{
 			Scripts.ACTION_ADD_ENERGY: {
-				"target_overrides": BaseAction.TARGET_OVERRIDES.PLAYER,
+				"target_override": BaseAction.TARGET_OVERRIDES.PLAYER,
 				"energy_amount_max": -1,
 			},
 		},

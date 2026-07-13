@@ -2,14 +2,14 @@
 extends BaseCardsetAction
 
 func perform_action() -> void:
-	var action_interceptor_processors: Array[ActionInterceptorProcessor] = _intercept_action([])
+	var action_interceptor_processors: Array[ActionInterceptorProcessor] = _intercept_cardset_action()
 	for action_interceptor_processor in action_interceptor_processors:
 		var card_energy_cost: int = action_interceptor_processor.get_shadowed_action_values("card_energy_cost", -1)
 		var card_energy_cost_until_combat: int = action_interceptor_processor.get_shadowed_action_values("card_energy_cost_until_combat", -1)
 		var card_energy_cost_until_played: int = action_interceptor_processor.get_shadowed_action_values("card_energy_cost_until_played", -1)
 		var card_energy_cost_until_turn: int = action_interceptor_processor.get_shadowed_action_values("card_energy_cost_until_turn", -1)
 		
-		var picked_cards: Array[CardData] = _get_picked_cards()
+		var picked_cards: Array[CardData] = _get_picked_cards(action_interceptor_processor)
 		
 		for card_data in picked_cards:
 			if card_energy_cost > -1:

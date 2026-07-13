@@ -16,5 +16,5 @@ func is_instant_action() -> bool:
 	return true
 
 func _to_string():
-	var block: int = get_action_value("block", 0)
-	return "Block Action: " + str(block)
+	var animation_name: String = get_action_value("animation_name", AnimationData.ANIMATION_IDLE)
+	return "Play Animation Action: " + animation_name

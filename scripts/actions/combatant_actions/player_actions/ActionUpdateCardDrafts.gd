@@ -40,8 +40,8 @@ func perform_action():
 			if not Global.player_data.player_reward_draft_card_id_whitelist.has(whitelist_card_object_id):
 				Global.player_data.player_reward_draft_card_id_whitelist.append(whitelist_card_object_id)
 			# remove blacklisted cards if whitelisted
-			if Global.player_data.player_event_blacklisted_ids.has(whitelist_card_object_id):
-				Global.player_data.player_event_blacklisted_ids.erase(whitelist_card_object_id)
+			if Global.player_data.player_reward_draft_card_id_blacklist.has(whitelist_card_object_id):
+				Global.player_data.player_reward_draft_card_id_blacklist.erase(whitelist_card_object_id)
 		
 		# blacklist card ids
 		var blacklist_card_object_ids: Array[String] = []

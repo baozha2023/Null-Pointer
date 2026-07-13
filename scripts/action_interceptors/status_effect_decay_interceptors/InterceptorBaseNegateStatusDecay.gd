@@ -13,8 +13,8 @@ func process_action_interception(_action_interceptor_processor: ActionIntercepto
 		#return ACTION_ACCEPTENCES.REJECTED
 	#
 		## modify a status's decay rate
-		#var status_charge_amount: int = _action_interceptor_processor.get_shadowed_action_values("status_charge_amount", 1)
-		#_action_interceptor_processor.set_shadowed_action_values("status_charge_amount", status_charge_amount)
+		#var status_charge_delta: int = _action_interceptor_processor.get_shadowed_action_values("status_charge_delta", -1)
+		#_action_interceptor_processor.set_shadowed_action_values("status_charge_delta", status_charge_delta)
 		#return ACTION_ACCEPTENCES.CONTINUE
 	
 	return ACTION_ACCEPTENCES.CONTINUE

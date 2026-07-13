@@ -10,8 +10,12 @@ func process_action_interception(action_interceptor_processor: ActionInterceptor
 		return ACTION_ACCEPTENCES.CONTINUE
 	
 	var parent_combatant: BaseCombatant = action_interceptor_processor.parent_action.parent_combatant
-	
+	if parent_combatant == null or not parent_combatant.is_alive():
+		return ACTION_ACCEPTENCES.CONTINUE
+
 	var card_play_request: CardPlayRequest = action_interceptor_processor.parent_action.card_play_request
+	if card_play_request == null or card_play_request.card_data == null:
+		return ACTION_ACCEPTENCES.CONTINUE
 	# will not rebound duplicated plays
 	if card_play_request.is_duplicate_play:
 		return ACTION_ACCEPTENCES.CONTINUE

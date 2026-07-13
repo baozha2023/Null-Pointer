@@ -3,10 +3,9 @@
 extends BaseCardsetAction
 
 func perform_action():
-	var picked_cards: Array[CardData] = _get_picked_cards()
-	
-	var action_interceptor_processors: Array[ActionInterceptorProcessor] = _intercept_action([])
-	for action_interceptor_processor in action_interceptor_processors:
+	var action_interceptor_processors: Array[ActionInterceptorProcessor] = _intercept_cardset_action()
+	for action_interceptor_processor: ActionInterceptorProcessor in action_interceptor_processors:
+		var picked_cards: Array[CardData] = _get_picked_cards(action_interceptor_processor)
 		# whether to decorate the combat card or permanent card
 		var decorate_parent_card: bool = action_interceptor_processor.get_shadowed_action_values("decorate_parent_card", true)
 		
@@ -25,7 +24,7 @@ func perform_action():
 		# iterate over the cards, decorating them and/or their parent
 		for card_data: CardData in picked_cards:
 			var selected_card_decorator_object_id: String = card_decorator_object_id
-			var selected_card_decorator_values: Dictionary[String, Variant] = card_decorator_values
+			var selected_card_decorator_values: Dictionary[String, Variant] = card_decorator_values.duplicate(true)
 			# use a random selection if no id defined
 			if selected_card_decorator_object_id == "":
 				if len(random_card_decorators) == 0:
@@ -56,12 +55,10 @@ func perform_action():
 				else:
 					parent_card_data = card_data.parent_card
 			
-			# decorate the card
-			if card_data != null:
-				card_data.add_card_decorator(selected_card_decorator_object_id, card_decorator_values)
+			card_data.add_card_decorator(selected_card_decorator_object_id, selected_card_decorator_values)
 			# decorate parent
 			if parent_card_data != null:
-				parent_card_data.add_card_decorator(selected_card_decorator_object_id, card_decorator_values)
+				parent_card_data.add_card_decorator(selected_card_decorator_object_id, selected_card_decorator_values)
 
 func is_instant_action() -> bool:
 	return true

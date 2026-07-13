@@ -33,3 +33,19 @@ var card_destination_strategy: int = HandManager.PILE_INSERTION_STRATEGIES.TOP
 ## since it will include the played card (if it was played from hand) while it would otherwise exist
 ## in limbo.
 var hand_at_play_time: Array[CardData] = []
+
+## Creates an isolated request for generated child actions. Runtime value wrappers should use this
+## instead of mutating the request shared by sibling actions in the original card play.
+func duplicate_for_child_actions() -> CardPlayRequest:
+	var duplicated_request: CardPlayRequest = CardPlayRequest.new()
+	duplicated_request.card_data = card_data
+	duplicated_request.selected_target = selected_target
+	duplicated_request.card_values = card_values.duplicate(true)
+	duplicated_request.refundable_energy = refundable_energy
+	duplicated_request.input_energy = input_energy
+	duplicated_request.is_duplicate_play = is_duplicate_play
+	duplicated_request.card_origin_pile = card_origin_pile
+	duplicated_request.card_destination_pile = card_destination_pile
+	duplicated_request.card_destination_strategy = card_destination_strategy
+	duplicated_request.hand_at_play_time.assign(hand_at_play_time)
+	return duplicated_request

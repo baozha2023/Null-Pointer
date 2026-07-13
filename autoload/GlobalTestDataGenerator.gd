@@ -65,11 +65,11 @@ func add_test_artifacts() -> void:
 	artifact_negate_money_gain.artifact_texture_path = "sprites/artifacts/artifact_negate_money_gain.png"
 	artifact_negate_money_gain.artifact_description = "每时钟周期获得 [energy_icon]。无法再获得数据币"
 	artifact_negate_money_gain.artifact_add_actions = [{Scripts.ACTION_ADD_ENERGY:{
-		"target_overrides": BaseAction.TARGET_OVERRIDES.PLAYER,
+		"target_override": BaseAction.TARGET_OVERRIDES.PLAYER,
 		"energy_amount_max": 1,
 	}}]
 	artifact_negate_money_gain.artifact_remove_actions = [{Scripts.ACTION_ADD_ENERGY:{
-		"target_overrides": BaseAction.TARGET_OVERRIDES.PLAYER,
+		"target_override": BaseAction.TARGET_OVERRIDES.PLAYER,
 		"energy_amount_max": -1,
 	}}]
 	artifact_negate_money_gain.artifact_interceptor_ids = ["interceptor_negate_add_money"]
@@ -1593,7 +1593,7 @@ func add_test_action_interceptors() -> void:
 	# increases damage done by attackers
 	var interceptor_damage_increase: ActionInterceptorData = ActionInterceptorData.new("interceptor_damage_increase")
 	interceptor_damage_increase.action_interceptor_priority = 10000
-	interceptor_damage_increase.action_interceptor_modifies_parent = true
+	interceptor_damage_increase.action_interceptor_scope = ActionInterceptorData.INTERCEPTOR_SCOPES.PARENT_PER_TARGET
 	interceptor_damage_increase.action_interceptor_script_path = Scripts.INTERCEPTOR_DAMAGE_INCREASE
 	interceptor_damage_increase.action_intercepted_action_paths = [Scripts.ACTION_ATTACK]
 	
@@ -1602,7 +1602,7 @@ func add_test_action_interceptors() -> void:
 	# decreases damage done by attackers
 	var interceptor_weaken: ActionInterceptorData = ActionInterceptorData.new("interceptor_weaken")
 	interceptor_weaken.action_interceptor_priority = 9500
-	interceptor_weaken.action_interceptor_modifies_parent = true
+	interceptor_weaken.action_interceptor_scope = ActionInterceptorData.INTERCEPTOR_SCOPES.PARENT_PER_TARGET
 	interceptor_weaken.action_interceptor_script_path = Scripts.INTERCEPTOR_WEAKEN
 	interceptor_weaken.action_intercepted_action_paths = [Scripts.ACTION_ATTACK]
 	
@@ -1611,7 +1611,7 @@ func add_test_action_interceptors() -> void:
 	# increases damage done to the attacked
 	var interceptor_vulnerable: ActionInterceptorData = ActionInterceptorData.new("interceptor_vulnerable")
 	interceptor_vulnerable.action_interceptor_priority = 9000
-	interceptor_vulnerable.action_interceptor_modifies_parent = false
+	interceptor_vulnerable.action_interceptor_scope = ActionInterceptorData.INTERCEPTOR_SCOPES.TARGET
 	interceptor_vulnerable.action_interceptor_script_path = Scripts.INTERCEPTOR_VULNERABLE
 	interceptor_vulnerable.action_intercepted_action_paths = [Scripts.ACTION_ATTACK]
 	
@@ -1620,7 +1620,7 @@ func add_test_action_interceptors() -> void:
 	# negates incoming non zero damage actions
 	var interceptor_negate_damage: ActionInterceptorData = ActionInterceptorData.new("interceptor_negate_damage")
 	interceptor_negate_damage.action_interceptor_priority = -10000
-	interceptor_negate_damage.action_interceptor_modifies_parent = false
+	interceptor_negate_damage.action_interceptor_scope = ActionInterceptorData.INTERCEPTOR_SCOPES.TARGET
 	interceptor_negate_damage.action_interceptor_script_path = Scripts.INTERCEPTOR_NEGATE_DAMAGE
 	interceptor_negate_damage.action_intercepted_action_paths = [Scripts.ACTION_ATTACK, Scripts.ACTION_DIRECT_DAMAGE]
 	
@@ -1629,7 +1629,7 @@ func add_test_action_interceptors() -> void:
 	# rejects block reset actions
 	var interceptor_preserve_block: ActionInterceptorData = ActionInterceptorData.new("interceptor_preserve_block")
 	interceptor_preserve_block.action_interceptor_priority = 10000
-	interceptor_preserve_block.action_interceptor_modifies_parent = false
+	interceptor_preserve_block.action_interceptor_scope = ActionInterceptorData.INTERCEPTOR_SCOPES.PARENT_PER_TARGET
 	interceptor_preserve_block.action_interceptor_script_path = Scripts.INTERCEPTOR_PRESERVE_BLOCK
 	interceptor_preserve_block.action_intercepted_action_paths = [Scripts.ACTION_RESET_BLOCK]
 	
@@ -1638,7 +1638,7 @@ func add_test_action_interceptors() -> void:
 	# makes the next non-zero attack cost 0
 	var interceptor_next_attack_free: ActionInterceptorData = ActionInterceptorData.new("interceptor_next_attack_free")
 	interceptor_next_attack_free.action_interceptor_priority = 10000
-	interceptor_next_attack_free.action_interceptor_modifies_parent = true
+	interceptor_next_attack_free.action_interceptor_scope = ActionInterceptorData.INTERCEPTOR_SCOPES.PARENT_ONCE
 	interceptor_next_attack_free.action_interceptor_script_path = Scripts.INTERCEPTOR_NEXT_ATTACK_FREE
 	interceptor_next_attack_free.action_intercepted_action_paths = [Scripts.ACTION_CARD_PLAY]
 	
@@ -1647,7 +1647,7 @@ func add_test_action_interceptors() -> void:
 	# rejects debuffing status actions
 	var interceptor_negate_debuff: ActionInterceptorData = ActionInterceptorData.new("interceptor_negate_debuff")
 	interceptor_negate_debuff.action_interceptor_priority = 10000
-	interceptor_negate_debuff.action_interceptor_modifies_parent = false
+	interceptor_negate_debuff.action_interceptor_scope = ActionInterceptorData.INTERCEPTOR_SCOPES.TARGET
 	interceptor_negate_debuff.action_interceptor_script_path = Scripts.INTERCEPTOR_NEGATE_DEBUFF
 	interceptor_negate_debuff.action_intercepted_action_paths = [Scripts.ACTION_APPLY_STATUS]
 	
@@ -1656,7 +1656,7 @@ func add_test_action_interceptors() -> void:
 	# rebounds incoming card plays to the draw pile
 	var interceptor_rebound_card_plays: ActionInterceptorData = ActionInterceptorData.new("interceptor_rebound_card_plays")
 	interceptor_rebound_card_plays.action_interceptor_priority = 10000
-	interceptor_rebound_card_plays.action_interceptor_modifies_parent = true
+	interceptor_rebound_card_plays.action_interceptor_scope = ActionInterceptorData.INTERCEPTOR_SCOPES.PARENT_ONCE
 	interceptor_rebound_card_plays.action_interceptor_script_path = Scripts.INTERCEPTOR_REBOUND_CARD_PLAYS
 	interceptor_rebound_card_plays.action_intercepted_action_paths = [Scripts.ACTION_CARD_PLAY]
 	
@@ -1665,7 +1665,7 @@ func add_test_action_interceptors() -> void:
 	# duplicates incoming card plays
 	var interceptor_duplicate_card_plays: ActionInterceptorData = ActionInterceptorData.new("interceptor_duplicate_card_plays")
 	interceptor_duplicate_card_plays.action_interceptor_priority = 10000
-	interceptor_duplicate_card_plays.action_interceptor_modifies_parent = true
+	interceptor_duplicate_card_plays.action_interceptor_scope = ActionInterceptorData.INTERCEPTOR_SCOPES.PARENT_ONCE
 	interceptor_duplicate_card_plays.action_interceptor_script_path = Scripts.INTERCEPTOR_DUPLICATE_CARD_PLAYS
 	interceptor_duplicate_card_plays.action_intercepted_action_paths = [Scripts.ACTION_CARD_PLAY]
 	
@@ -1674,7 +1674,7 @@ func add_test_action_interceptors() -> void:
 	# duplicates incoming attack card plays
 	var interceptor_duplicate_attacks: ActionInterceptorData = ActionInterceptorData.new("interceptor_duplicate_attacks")
 	interceptor_duplicate_attacks.action_interceptor_priority = 10000
-	interceptor_duplicate_attacks.action_interceptor_modifies_parent = true
+	interceptor_duplicate_attacks.action_interceptor_scope = ActionInterceptorData.INTERCEPTOR_SCOPES.PARENT_ONCE
 	interceptor_duplicate_attacks.action_interceptor_script_path = Scripts.INTERCEPTOR_DUPLICATE_ATTACKS
 	interceptor_duplicate_attacks.action_intercepted_action_paths = [Scripts.ACTION_CARD_PLAY]
 	
@@ -1683,7 +1683,7 @@ func add_test_action_interceptors() -> void:
 	# uses a consumable to prevent player death
 	var interceptor_consumable_auto_revive: ActionInterceptorData = ActionInterceptorData.new("interceptor_consumable_auto_revive")
 	interceptor_consumable_auto_revive.action_interceptor_priority = 10000
-	interceptor_consumable_auto_revive.action_interceptor_modifies_parent = true
+	interceptor_consumable_auto_revive.action_interceptor_scope = ActionInterceptorData.INTERCEPTOR_SCOPES.PARENT_PER_TARGET
 	interceptor_consumable_auto_revive.action_interceptor_script_path = Scripts.INTERCEPTOR_CONSUMABLE_AUTO_REVIVE
 	interceptor_consumable_auto_revive.action_intercepted_action_paths = [Scripts.ACTION_DEATH]
 	
@@ -1692,20 +1692,20 @@ func add_test_action_interceptors() -> void:
 	# prevents gaining money
 	var interceptor_negate_add_money: ActionInterceptorData = ActionInterceptorData.new("interceptor_negate_add_money")
 	interceptor_negate_add_money.action_interceptor_priority = 10000
-	interceptor_negate_add_money.action_interceptor_modifies_parent = true
+	interceptor_negate_add_money.action_interceptor_scope = ActionInterceptorData.INTERCEPTOR_SCOPES.PARENT_PER_TARGET
 	interceptor_negate_add_money.action_interceptor_script_path = Scripts.INTERCEPTOR_NEGATE_ADD_MONEY
 	interceptor_negate_add_money.action_intercepted_action_paths = [Scripts.ACTION_ADD_MONEY]
 	
 	Global.register_rod(interceptor_negate_add_money)
 
 	var interceptor_reduce_add_money: ActionInterceptorData = ActionInterceptorData.new("interceptor_reduce_add_money")
-	interceptor_reduce_add_money.action_interceptor_modifies_parent = true
+	interceptor_reduce_add_money.action_interceptor_scope = ActionInterceptorData.INTERCEPTOR_SCOPES.PARENT_PER_TARGET
 	interceptor_reduce_add_money.action_interceptor_script_path = Scripts.INTERCEPTOR_REDUCE_ADD_MONEY
 	interceptor_reduce_add_money.action_intercepted_action_paths = [Scripts.ACTION_ADD_MONEY]
 	Global.register_rod(interceptor_reduce_add_money)
 
 	var interceptor_increase_shop_price: ActionInterceptorData = ActionInterceptorData.new("interceptor_increase_shop_price")
-	interceptor_increase_shop_price.action_interceptor_modifies_parent = true
+	interceptor_increase_shop_price.action_interceptor_scope = ActionInterceptorData.INTERCEPTOR_SCOPES.PARENT_PER_TARGET
 	interceptor_increase_shop_price.action_interceptor_script_path = Scripts.INTERCEPTOR_INCREASE_SHOP_PRICE
 	interceptor_increase_shop_price.action_intercepted_action_paths = [Scripts.ACTION_GET_SHOP_PRICE, Scripts.ACTION_GET_ENCHANT_PRICE]
 	Global.register_rod(interceptor_increase_shop_price)

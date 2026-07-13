@@ -22,6 +22,8 @@ const ACTION_PLAY_SOUND: String = "res://scripts/actions/audio_actions/ActionPla
 # custom actions, these are used for modding/extensibility purposes
 const ACTION_CUSTOM_UI: String = "res://scripts/actions/custom_actions/ActionCustomUI.gd"
 const ACTION_EMIT_CUSTOM_SIGNAL: String = "res://scripts/actions/custom_actions/ActionEmitCustomSignal.gd"
+const ACTION_SCHEDULE_DELAYED_ACTIONS: String = "res://scripts/actions/custom_actions/ActionScheduleDelayedActions.gd"
+
 
 # debug
 const ACTION_DEBUG_LOG = "res://scripts/actions/debug_actions/ActionDebugLog.gd"
@@ -92,6 +94,7 @@ const ACTION_SHOP_POPULATE_ITEMS: String = "res://scripts/actions/shop_actions/A
 
 # artifact actions
 const ACTION_INCREASE_ARTIFACT_CHARGE: String = "res://scripts/actions/artifact_actions/ActionIncreaseArtifactCharge.gd"
+const ACTION_CHANGE_ARTIFACT_CHARGE: String = "res://scripts/actions/artifact_actions/ActionChangeArtifactCharge.gd"
 const ACTION_CHANGE_ARTIFACT_ENABLED: String = "res://scripts/actions/artifact_actions/ActionChangeArtifactEnabled.gd"
 
 
@@ -99,12 +102,14 @@ const ACTION_CHANGE_ARTIFACT_ENABLED: String = "res://scripts/actions/artifact_a
 # 	card play, special actions that deal with technical aspects of how cards are played internally
 const ACTION_CARD_PLAY: String = "res://scripts/actions/card_actions/card_play_actions/ActionCardPlay.gd"
 const ACTION_CARD_PLAY_END: String = "res://scripts/actions/card_actions/card_play_actions/ActionCardPlayEnd.gd"
+const ACTION_LOW_LEVEL_FORMAT: String = "res://scripts/actions/card_actions/ActionLowLevelFormat.gd"
 const ACTION_CHANGE_CARD_PLAY_DESTINATION: String = "res://scripts/actions/card_actions/card_play_actions/ActionChangeCardPlayDestination.gd"
 # 	pick card actions, used to select cards and typically apply cardset child actions
 const ACTION_PICK_CARDS: String = "res://scripts/actions/card_actions/pick_card_actions/ActionPickCards.gd"
 const ACTION_PICK_UPGRADE_CARDS: String = "res://scripts/actions/card_actions/pick_card_actions/ActionPickUpgradeCards.gd"
 const ACTION_PICK_DUPLICATE_CARDS: String = "res://scripts/actions/card_actions/pick_card_actions/ActionPickDuplicateCards.gd"
 const ACTION_CREATE_CARDS: String = "res://scripts/actions/card_actions/pick_card_actions/ActionCreateCards.gd"
+const ACTION_DUPLICATE_CARDS: String = "res://scripts/actions/card_actions/pick_card_actions/ActionDuplicateCards.gd"
 const ACTION_DEBUG_PICK_ANY_CARD: String = "res://scripts/actions/card_actions/pick_card_actions/ActionDebugPickAnyCard.gd"
 # 	cardset actions; these affect a list of picked cards
 const ACTION_IMPROVE_CARD_VALUES: String = "res://scripts/actions/card_actions/cardset_actions/ActionImproveCardValues.gd"
@@ -260,6 +265,7 @@ const INTERCEPTOR_ZERO_DAY_DB: String = "res://scripts/action_interceptors/Inter
 const INTERCEPTOR_OVERFLOW_STACK: String = "res://scripts/action_interceptors/InterceptorOverflowStack.gd"
 const INTERCEPTOR_PACKET_SNIFFER: String = "res://scripts/action_interceptors/InterceptorPacketSniffer.gd"
 const INTERCEPTOR_CARD_PLAY_DEADLOCK: String = "res://scripts/action_interceptors/player_interceptors/InterceptorCardPlayDeadlock.gd"
+const INTERCEPTOR_ROOT_PRIVILEGE: String = "res://scripts/actions/interceptors/InterceptorRootPrivilege.gd"
 #endregion
 
 #region Run Modifiers

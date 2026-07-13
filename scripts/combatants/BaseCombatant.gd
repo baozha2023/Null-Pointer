@@ -26,15 +26,15 @@ var custom_ui_object_id_to_custom_ui: Dictionary = {} # maps a custom ui id to t
 func _ready():
 	Signals.combat_started.connect(_on_combat_started)
 	Signals.combat_ended.connect(_on_combat_ended)
-	
+
 	block_amount.mouse_filter = Control.MOUSE_FILTER_PASS
 	block_amount.mouse_entered.connect(_on_block_mouse_entered.bind(block_amount))
 	block_amount.mouse_exited.connect(_on_block_mouse_exited.bind(block_amount))
 	Signals.player_turn_started.connect(_on_player_turn_started)
 	Signals.player_turn_ended.connect(_on_player_turn_ended)
-	
+
 	animated_sprite_2d.animation_finished.connect(_on_animation_finished)
-	
+
 	selection_button.button_up.connect(_on_selection_button_up)
 	selection_button.mouse_entered.connect(func(): UIHover.scale_up($Visible/CombatantCenter))
 	selection_button.mouse_exited.connect(func(): UIHover.scale_down($Visible/CombatantCenter))
@@ -82,7 +82,7 @@ func _resize_sprite_to_fixed_size() -> void:
 
 func _on_animation_finished() -> void:
 	play_next_animation()
-	
+
 #endregion
 
 #region Block
@@ -109,7 +109,7 @@ func generate_reset_block_action() -> void:
 			}
 		}
 	]
-	
+
 	var generated_actions: Array = ActionGenerator.create_actions(self, null, [self], actions_data, null)
 	ActionHandler.add_actions(generated_actions)
 
@@ -136,14 +136,14 @@ func add_health(_health_amount: int, _max_health_amount: int) -> void:
 ## Heals the combatant by a given percentage between 0.0 and 1.0.
 func heal_percentage(_health_percent: float) -> void:
 	breakpoint
-	
+
 func set_health(health_amount: int, health_amount_max: int = 1) -> void:
 	breakpoint
 
 func update_health_bar(_as_damage: bool = false) -> void:
 	# as_damage will tell the healthbar to update as though the combatant took some kind of damage
 	breakpoint
-	
+
 func get_combatant_health() -> int:
 	breakpoint
 	return 0
@@ -181,7 +181,7 @@ func unregister_custom_ui(custom_ui_object_id: String) -> void:
 	if custom_ui != null:
 		custom_ui.queue_free()
 		custom_ui_object_id_to_custom_ui.erase(custom_ui_object_id)
-		
+
 func unregister_all_custom_ui() -> void:
 	for custom_ui_object_id: String in custom_ui_object_id_to_custom_ui.keys().duplicate():
 		unregister_custom_ui(custom_ui_object_id)
@@ -225,7 +225,7 @@ func create_effect_animation(animation_id: String) -> void:
 	var animation_data: AnimationData = Global.get_animation_data(animation_id)
 	if animation_data == null:
 		return
-	
+
 	var animated_combat_effect: AnimatedCombatEffect = Scenes.COMBAT_EFFECT_ANIMATION.instantiate()
 	image_fade_container.add_child(animated_combat_effect)
 	animated_combat_effect.init(animation_data)
@@ -244,47 +244,50 @@ func add_status_effect_charges(status_effect_object_id: String, charge_amount: i
 
 	if charge_amount == 0 and secondary_charge_amount == 0:
 		return # charge applications of zero have no effect
-	
+
 	# get status data
 	var status_effect_data: StatusEffectData = Global.get_status_effect_data(status_effect_object_id)
 	if status_effect_data == null:
 		# status effect of given id does not exist
 		DebugLogger.log_error("Status effect {0} does not exist".format([status_effect_object_id]))
 		return
-	
+
 	#  get status effect ui elements corresponding to the status
 	var status_effects: Array[StatusEffect] = []
 	if status_id_to_status_effects.has(status_effect_object_id):
 		status_effects = status_id_to_status_effects[status_effect_object_id]
-	
+
 	# create a new status if none exists
 	if len(status_effects) == 0:
 		var _status_effect: StatusEffect = _create_status_effect(status_effect_object_id)
 		status_effects = status_id_to_status_effects[status_effect_object_id]
-		
+
 		# mutate secondary charges upon creation if KEEP strategy used
 		var status_effect_secondary_charge_collision_strategy: int = _status_effect.status_effect_script.status_effect_data.status_effect_secondary_charge_collision_strategy
 		if  status_effect_secondary_charge_collision_strategy == StatusEffectData.STATUS_EFFECT_SECONDARY_CHARGE_COLLISION_STRATEGIES.KEEP:
 			var status_effect_script: BaseStatusEffect = _status_effect.status_effect_script
 			status_effect_script.status_secondary_charges = secondary_charge_amount
-	
+
 	# iterate over all statuses and apply charges
 	for status_effect in status_effects.duplicate():
+		if not is_instance_valid(status_effect):
+			continue
+
 		var status_effect_script: BaseStatusEffect = status_effect.status_effect_script
-		
+
 		# apply charges and secondary charges
 		status_effect_script.add_status_charges(charge_amount)
 		status_effect_script.add_status_secondary_charges(secondary_charge_amount)
-		
+
 		# delete the effect if zero charges
 		if (status_effect_script.status_charges == 0):
 			_remove_status_effect(status_effect)
 		else:
 			# update ui with charge count
 			status_effect.update_status_charge_display()
-	
+
 	update_health_bar(false)
-	
+
 	Signals.enemy_intent_changed.emit()	# update enemy intent in case statuses affect them
 
 func add_new_status_effect(status_effect_object_id: String, charge_amount: int, secondary_charge_amount: int = 0, custom_values: Dictionary = {}) -> void:
@@ -293,38 +296,38 @@ func add_new_status_effect(status_effect_object_id: String, charge_amount: int, 
 	# will fail if status does not allow multiples and one already exists
 	# see add_status_effect_charges()
 	var status_effect_data: StatusEffectData = Global.get_status_effect_data(status_effect_object_id)
-	
+
 	if charge_amount == 0:
 		return
-	
+
 	var status_effect: StatusEffect = _create_status_effect(status_effect_object_id)
 	if status_effect != null:
 		var status_effect_script: BaseStatusEffect = status_effect.status_effect_script
-		
+
 		# apply charges and secondary charges
 		status_effect_script.add_status_charges(charge_amount)
 		status_effect_script.status_secondary_charges += secondary_charge_amount
-		
+
 		# apply unique values beyond charges
 		status_effect_script.status_custom_values = custom_values
-		
+
 		# delete the effect if zero charges
 		if (status_effect_script.status_charges == 0):
 			_remove_status_effect(status_effect)
 		else:
 			# update ui with charge count
 			status_effect.update_status_charge_display()
-	
+
 	update_health_bar(false)
-	
+
 	Signals.enemy_intent_changed.emit()	# update enemy intent in case statuses affect them
 
 func clear_all_status_effects():
 	for status_effect_object_id in status_id_to_status_effects.keys().duplicate():
-		var status_effects: Array[StatusEffect] = status_id_to_status_effects[status_effect_object_id] 
+		var status_effects: Array[StatusEffect] = status_id_to_status_effects[status_effect_object_id]
 		for status_effect in status_effects.duplicate():
 			_remove_status_effect(status_effect)
-	
+
 	status_id_to_status_effects.clear()
 	update_health_bar(false)
 
@@ -341,10 +344,10 @@ func _decay_status_effect(status_effect_object_id: String) -> void:
 			var status_effect: StatusEffect = status_effects[0]
 			var status_effect_script: BaseStatusEffect = status_effect.status_effect_script
 			var decay_amount: int = status_effect_script.get_status_decay_amount()
-			
+
 			# generate an instant intercepted action to decay the status
 			ActionGenerator.generate_decay_status_effect(self, status_effect_object_id, decay_amount)
-			# 
+			#
 			# add_status_effect_charges(status_effect_object_id, decay_amount, 0)
 
 ## DEPRECATED Left in for being potentially useful, but not used anywhere
@@ -377,19 +380,19 @@ func get_status_secondary_charges(status_effect_object_id: String) -> int:
 func _remove_status_effect(status_effect: StatusEffect) -> void:
 	var status_effect_data: StatusEffectData = status_effect.status_effect_script.status_effect_data
 	var status_effect_object_id: String = status_effect_data.object_id
-	
+
 	# get status list
 	var status_effects: Array[StatusEffect] = status_id_to_status_effects[status_effect_object_id]
 	# remove from lists
 	status_effects.erase(status_effect)
-	
+
 	if len(status_effects) == 0:
 		# remove the status keys if no other effects of that type
-		status_id_to_status_effects.erase(status_effect_object_id)	
+		status_id_to_status_effects.erase(status_effect_object_id)
 		# unregister action interceptors
 		for interceptor_id in status_effect_data.status_effect_interceptor_ids:
-			ActionHandler.unregister_action_interceptor(self, interceptor_id)
-	
+			ActionHandler.unregister_action_interceptor(self, interceptor_id, "status:" + status_effect_object_id)
+
 	status_effect.queue_free()
 
 func _create_status_effect(status_effect_object_id: String) -> StatusEffect:
@@ -403,25 +406,25 @@ func _create_status_effect(status_effect_object_id: String) -> StatusEffect:
 		var status_effect: StatusEffect = Scenes.STATUS_EFFECT.instantiate()
 		var status_effect_script_asset: Resource = load(status_effect_data.status_effect_script_path)
 		var status_effect_script: BaseStatusEffect = status_effect_script_asset.new()
-		
+
 		# set bindings for ui elements
 		if status_id_to_status_effects.has(status_effect_object_id):
 			status_id_to_status_effects[status_effect_object_id].append(status_effect)
 		else:
 			var statuses: Array[StatusEffect] = [status_effect] # ensures typed array passed in
 			status_id_to_status_effects[status_effect_object_id] = statuses
-		
+
 		# initialize status effect
 		status_effect.status_effect_script = status_effect_script
 		status_container.add_child(status_effect)
 		# initialize status effect script
 		status_effect_script.init(status_effect_data, self)
-		
+
 		# register interceptors when creating first instance of effect
 		if not status_exists:
 			for interceptor_id in status_effect_data.status_effect_interceptor_ids:
-				ActionHandler.register_action_interceptor(self, interceptor_id)
-		
+				ActionHandler.register_action_interceptor(self, interceptor_id, "status:" + status_effect_object_id)
+
 		return status_effect
 	return null
 #endregion
@@ -444,23 +447,24 @@ func _on_player_turn_ended():
 ## Processes and then decays all status effects belonging to a given process type (turn phase)
 func perform_status_effect_process_actions(status_effect_process_time: int = StatusEffectData.STATUS_EFFECT_PROCESS_TIMES.PRE_DRAW_PLAYER_START_TURN):
 	var status_effect_ids: Array = _get_status_effects_with_process_time(status_id_to_status_effects.keys(), status_effect_process_time)
-	
+
 	# sort the statuses by their process priority
 	status_effect_ids.sort_custom(_sort_status_effect_priorities)
-	
+
 	for status_effect_object_id in status_effect_ids:
-		var status_effect_data: StatusEffectData = Global.get_status_effect_data(status_effect_object_id)	
+		var status_effect_data: StatusEffectData = Global.get_status_effect_data(status_effect_object_id)
 		# perform the status effect
 		var status_effects: Array[StatusEffect] = status_id_to_status_effects[status_effect_object_id]
-		for status_effect in status_effects:
-			status_effect.status_effect_script.perform_status_effect_process_actions()
-		
+		for status_effect in status_effects.duplicate():
+			if is_instance_valid(status_effect):
+				status_effect.status_effect_script.perform_status_effect_process_actions()
+
 		# NOTE: Uncommenting this will make status related code more stable by forcing
 		# all actions to process before decaying, but
 		# doesn't look as good as statuses decaying instantly.
 		#if ActionHandler.actions_being_performed:
 			#await ActionHandler.actions_ended
-		
+
 		# decay all status effects of given type
 		_decay_status_effect(status_effect_object_id)
 
@@ -475,7 +479,7 @@ func _get_status_effects_with_process_time(status_effect_object_ids: Array, stat
 		if not status_effect_data.status_effect_action_process_times.has(status_effect_process_time):
 			continue
 		returned_status_effect_ids.append(status_effect_object_id)
-		
+
 	return returned_status_effect_ids
 
 ## Helper method. Custom sort method for sorting the priorities of a given list of status effects.

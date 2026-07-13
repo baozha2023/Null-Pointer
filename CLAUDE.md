@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Slay The Robot is a **roguelike deckbuilder framework** for **Godot 4.6** (GDScript, `gl_compatibility` renderer), similar to Slay the Spire. It is designed as a reusable framework so others can build their own deckbuilders on top of it. The main entry scene is `res://scenes/Root.tscn`.
+Slay The Robot is a **roguelike deckbuilder framework** for **Godot 4.6** (GDScript, `gl_compatibility` renderer), similar to Slay the Spire. It is designed as a reusable framework so others can build their own deckbuilders on top of it. The project entry scene is `res://scenes/LoadingScreen.tscn`, which preloads runtime assets before switching to `res://scenes/Root.tscn`.
 
 - [GitHub Wiki](https://github.com/DesirePathGames/Slay-The-Robot/wiki) (WIP)
 - [Terminology translation spreadsheet](https://docs.google.com/spreadsheets/d/1J3o8d5gMbzAwjXUZgvvEui8mhHdSobRWEZeRn1sFmvs/edit) — maps framework concepts to Slay the Spire equivalents
@@ -13,13 +13,13 @@ Slay The Robot is a **roguelike deckbuilder framework** for **Godot 4.6** (GDScr
 ## Running the Game
 
 - Open the project in Godot 4.6 and press F5, or launch via Godot MCP.
-- Main scene: `res://scenes/Root.tscn`
+- Main scene: `res://scenes/LoadingScreen.tscn` (transitions to `res://scenes/Root.tscn`)
 - Window size: 1200×700, non-resizable.
 - **No build step** — run scenes directly in the Godot editor.
 - **No unit tests** — testing is done by running the game with auto-generated data.
-- Test data is generated at startup by `GlobalTestDataGenerator.generate_test_data()` (called in `Global._ready()`). The project ships with zero JSON data files; all game data is generated from code.
+- Production data is generated at startup by `GlobalProdDataGenerator.generate_production_data()` (called in `Global._ready()`). Read-only game definitions are generated from code rather than shipped as JSON data files.
 - To export data as JSON: uncomment `FileLoader.export_read_only_data()` in `Global._ready()`, run once, then re-comment it.
-- To switch to production data: comment `GlobalTestDataGenerator.generate_test_data()` and uncomment `GlobalProdDataGenerator.generate_production_data()`.
+- To switch to test data: comment `GlobalProdDataGenerator.generate_production_data()` and uncomment `GlobalTestDataGenerator.generate_test_data()`.
 - GDScript warnings disabled in project settings: `unused_signal` (signals are often connected dynamically), `integer_division` (intentional use).
 
 ## GDScript Conventions
@@ -101,12 +101,14 @@ Order is critical because later autoloads depend on earlier ones. `Global._ready
 | 13 | `SoundManager` | Audio playback (plugin-based, registered as `uid://`) |
 | 14 | `StatsHandler` | Tracks per-turn, per-combat, per-run statistics; manages profile save/load |
 | 15 | `UIMessage` | Global UI message overlay for floating notifications |
+| 16 | `TextParser` | Rich-text value substitution and card/status/energy macros |
+| 17 | `Platform` | Platform integration registered through a UID-backed autoload |
 
 ### Data Layer (`data/`)
 
 **Schema System** (`Global.SCHEMA`): A central `Array[Array]` mapping each data type's class name, script, lookup table property name, and external folder path. `Global._generate_schema()` builds fast lookup tables from this schema. **Any new data type must be added to SCHEMA.**
 
-- **`data/CardPlayRequest.gd`** — Extends `RefCounted` (not `Resource`/`SerializableData`). A request payload carrying `card_data`, `selected_target`, `card_values`, refund/input energy, and pile routing info. Created by `HandManager` when a player clicks a hand card; flows through the action system as a value/targeting reference. Also used for card-less action payloads via `card_values` alone.
+- **`data/CardPlayRequest.gd`** — Extends `RefCounted` (not `Resource`/`SerializableData`). A request payload carrying `card_data`, `selected_target`, `card_values`, refund/input energy, and pile routing info. Created by `HandManager` when a player clicks a hand card; flows through the action system as a value/targeting reference. Also used for card-less action payloads via `card_values` alone. Runtime wrapper actions must call `duplicate_for_child_actions()` before changing inherited values so sibling action branches remain isolated.
 - **`data/prototype/`** — Read-only template data. Call `Global.get_card_data_from_prototype(id)` (which internally calls `.get_prototype(true)`) to get a mutable copy. `CardData` now includes `card_hint` (new-player hint text), `card_status_effect_object_ids` (explicit status effect tooltip bindings), and `CARD_TYPE_DISPLAY` / `CARD_RARITY_DISPLAY` constants (moved from `Card.gd` to the data layer for reuse across all UI).
 - **`data/readonly/`** — Immutable lookup data (ActData, EventData, DialogueData, KeywordData, ColorData, StatusEffectData, RunModifierData, CustomSignalData, CharacterData, mod configs, etc.).
 - **`data/readonly/embedded/`** — Nested readonly data types embedded inside parent data objects: `DialogueOptionData`, `DialogueStateData` (used by `DialogueData`), `EnemyIntentData` (used by `EnemyData`).
@@ -130,6 +132,8 @@ All game behavior flows through Actions. Inheritance chain: `BaseAction` → `Ba
   - `world_interaction_actions/` — visit locations, start combat, open chests
   - `shop_actions/`, `rewards/`, `artifact_actions/`, `audio_actions/`, `custom_actions/`
 
+Shared card-action helpers include `CardMoveOperation` for discard/exhaust/banish/limbo/retain routing, `BaseVariableActionModifier` for isolated runtime value multiplication, and `ActionScheduleDelayedActions` plus `StatusEffectDelayedExecution` for storing generated action payloads until a later turn phase. All `BaseCardsetAction` implementations must use `_intercept_cardset_action()` and resolve their cardset through `_get_picked_cards(action_interceptor_processor)` so shadowed values are applied consistently.
+
 **Value Hierarchy**: When an Action looks up a parameter via `get_action_value(key, default)`, it searches in order: Action's own `values` → `CardPlayRequest.card_values` → `CardData.card_values` → `PlayerData.player_values` → `default`. This lets cards, players, and individual actions override values at different scopes.
 
 **Card Play Flow**: Click a hand card → `HandManager` creates `CardPlayRequest` (with card data, targets, costs) → enqueued in `card_play_queue` → `_perform_card_plays()` pops each request → `ActionGenerator.generate_card_play()` builds the action tree → actions execute through `ActionHandler` → `card_play_finished` signal fires → resolve next card or end turn.
@@ -140,6 +144,7 @@ All game behavior flows through Actions. Inheritance chain: `BaseAction` → `Ba
 - `[key_name_energy_icons]` — replaced with N energy-icon sprites matching the integer value of `key_name` from the context.
 - `[variable_energy_icons]` — replaced with energy icons matching the player's currently-consumable energy (respects `card_energy_cost_variable_upper_bound` and `multiplier_offset` for X-cost cards).
 - `[energy_icon]` — a standalone macro for a single energy icon.
+- Arrays of `CardData` values are rendered as localized, color-coded card-name lists.
 
 **Card Keywords** (`KeywordData`, `KeywordContainer`, `KeywordTooltip`): Card keyword metadata (e.g., "保留", "物理删除", "虚无") is displayed as keyword chips when hovering over a card — no longer embedded in `CardData.get_card_description()`. `KeywordData.keyword_prefix` (e.g., `[前置] `, `[后置] `) indicates when a keyword triggers (before or after an action), displayed as a prefix on the keyword tooltip. Certain keywords are auto-appended based on card properties or actions: `keyword_unplayable` (if `card_is_playable = false`), `keyword_ethereal` (if `card_end_of_turn_destination = EXHAUST_PILE`), `keyword_fleeting` (if `card_end_of_turn_destination = BANISH_PILE`), `keyword_exhaust` (if `card_play_destination = EXHAUST_PILE`), and `keyword_consumable` (if play actions include removing the played card from deck). `[energy_icon]` placeholders in keyword text are replaced at display time.
 
@@ -149,9 +154,11 @@ Keywords, status effects, and card hints can each be independently toggled on/of
 
 ### Action Interceptors (`scripts/action_interceptors/`)
 
-Interceptors dynamically modify Actions just before they execute. They are the core mechanism behind status effects (Vulnerable, Weaken), relics/artifacts, and other persistent modifiers. Registered via `ActionHandler.register_action_interceptor()` per combatant. Interceptors are data-driven (`ActionInterceptorData`) and can be loaded from JSON.
+Interceptors dynamically modify Actions just before they execute. They are the core mechanism behind status effects (Vulnerable, Weaken), relics/artifacts, and other persistent modifiers. Registration is source-aware: call `ActionHandler.register_action_interceptor(combatant, interceptor_id, source_key)` and unregister with the identical source key. This allows multiple artifacts, statuses, or run modifiers to provide the same interceptor without removing each other's registration. Interceptors are data-driven (`ActionInterceptorData`) and can be loaded from JSON.
 
-Each interceptor returns an `ActionInterceptorProcessor` chain that modifies the Action's values per target. The interceptor preview system drives both enemy intent display AND card description text — the UI uses the exact same interceptor pipeline as game logic, guaranteeing consistency.
+Each interceptor declares one scope: `PARENT_ONCE` runs once for the logical action, `PARENT_PER_TARGET` runs separately for each target, and `TARGET` is supplied by the affected target. Parent-once shadow values are copied into each target processor before the remaining scopes run. Forced interceptors bypass registration only; they still obey ignored IDs, intercepted action paths, and scope filtering.
+
+Each interceptor returns an `ActionInterceptorProcessor` chain that modifies shadowed Action values. Preview chains are projections: they retain a processor even when an interceptor rejects actual execution, and interceptors must not create gameplay side effects in preview mode. The interceptor preview system drives both enemy intent display AND card description text through the same calculation pipeline.
 
 ### Validators (`scripts/validators/`)
 
@@ -289,4 +296,3 @@ All UI scenes are preloaded in the `Scenes` singleton. UI scripts are in `script
 - **`class_name` requirement**: The serialization system resolves class names at runtime through Godot's global class list. New data classes must use a `class_name` matching their filename.
 - **Interceptor previews**: Enemy intents and card description text use the exact same interceptor pipeline as game logic — there is absolutely no separate calculation system.
 - **`.gdignore` in `external/`**: Prevents Godot from scanning external assets on project load. Always keep this file present.
-

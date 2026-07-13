@@ -5,6 +5,9 @@ extends BaseActionInterceptor
 const AUTO_REVIVE_CONSUMAMBLE_ID: String = "consumable_auto_revive"
 
 func process_action_interception(action_interceptor_processor: ActionInterceptorProcessor, preview_mode: bool = false) -> int:
+	if preview_mode:
+		return ACTION_ACCEPTENCES.CONTINUE
+
 	var parent_combatant: BaseCombatant = action_interceptor_processor.parent_action.parent_combatant # should be the player, but generic implementation
 
 	# try to find an auto revive consumable in player's inventory

@@ -11,7 +11,7 @@ func perform_async_action() -> void:
 		var upgrade_count: int = max(0, get_action_value("upgrade_count", 1))
 		var bypass_upgrade_max: bool = get_action_value("bypass_upgrade_max", false)
 		for card in picked_cards:
-			card.upgrade_card()
+			card.upgrade_card(upgrade_count, bypass_upgrade_max)
 			# potentially upgrade parent if it exists
 			if upgrade_parent_card and card.parent_card != null:
 				card.parent_card.upgrade_card(upgrade_count, bypass_upgrade_max)
@@ -29,14 +29,13 @@ func is_card_pickable(_card: CardData, check_max_pick_size: bool = true) -> bool
 	var card: CardData = _card
 	if upgrade_parent_card:
 		if card.parent_card == null:
-			breakpoint 
-			print("No parent card exists")
+			# Combat-only cards have no persistent deck copy and cannot be permanently upgraded.
 			return false
 		else:
 			card = card.parent_card
 	
 	# check if the card can be upgraded
-	if (card.card_upgrade_amount + upgrade_count > _card.card_upgrade_amount_max) and not bypass_upgrade_max:
+	if (card.card_upgrade_amount + upgrade_count > card.card_upgrade_amount_max) and not bypass_upgrade_max:
 		return false
 	
 	if (len(picked_cards) >= max_card_amount) and check_max_pick_size:

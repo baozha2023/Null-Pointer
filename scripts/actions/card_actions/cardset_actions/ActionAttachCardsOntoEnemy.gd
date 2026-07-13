@@ -6,12 +6,17 @@ extends BaseCardsetAction
 const STATUS_EFFECT_ATTACHED_CARD_ID: String = "status_effect_attached_card"
 
 func perform_action() -> void:
-	var picked_cards: Array[CardData] = _get_picked_cards()
-	HandManager.banish_cards(picked_cards, true) # moves all the cards to limbo
-	
-	
-	var action_interceptor_processors: Array[ActionInterceptorProcessor] = _intercept_action()
-	for action_interceptor_processor in action_interceptor_processors:
-		# iterate over the cards, generating a status for each that includes the card
-		for card_data: CardData in picked_cards:
-			action_interceptor_processor.target.add_new_status_effect(STATUS_EFFECT_ATTACHED_CARD_ID, 1, 0, {"card_data": card_data})
+	var action_interceptor_processors: Array[ActionInterceptorProcessor] = _intercept_cardset_action(get_adjusted_action_targets())
+	if action_interceptor_processors.size() != 1:
+		DebugLogger.log_error("ActionAttachCardsOntoEnemy: Requires exactly one accepted target")
+		return
+
+	var action_interceptor_processor: ActionInterceptorProcessor = action_interceptor_processors[0]
+	var target: BaseCombatant = action_interceptor_processor.target
+	if target == null:
+		return
+	var picked_cards: Array[CardData] = _get_picked_cards(action_interceptor_processor)
+	CardMoveOperation.apply(picked_cards, CardMoveOperation.TYPES.LIMBO)
+	# iterate over the cards, generating a status for each that includes the card
+	for card_data: CardData in picked_cards:
+		target.add_new_status_effect(STATUS_EFFECT_ATTACHED_CARD_ID, 1, 0, {"card_data": card_data})

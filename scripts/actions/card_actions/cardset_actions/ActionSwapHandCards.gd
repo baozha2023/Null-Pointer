@@ -3,10 +3,10 @@
 extends BaseCardsetAction
 
 func perform_action() -> void:
-	var action_interceptor_processors: Array[ActionInterceptorProcessor] = _intercept_action([null])
+	var action_interceptor_processors: Array[ActionInterceptorProcessor] = _intercept_cardset_action()
 	
 	for action_interceptor_processor in action_interceptor_processors:
-		var picked_cards: Array[CardData] = _get_picked_cards().duplicate()
+		var picked_cards: Array[CardData] = _get_picked_cards(action_interceptor_processor).duplicate()
 		
 		if len(picked_cards) != 2:
 			DebugLogger.log_error("ActionSwapHandCards: Requires exactly 2 cards. {0} cards provided".format([len(picked_cards)]))

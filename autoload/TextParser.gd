@@ -17,7 +17,7 @@ func parse(template: String, values: Dictionary = {}, base_font_size: int = 14) 
 	var result: String = template
 	var icon_size: int = base_font_size + 6
 	var energy_icon_bbcode = "[img width=%d]res://sprites/ui/icon_energy.png[/img]" % icon_size
-	
+
 	# 1. Base Variables [key] -> values[key]
 	for key in values:
 		var value = values[key]
@@ -59,23 +59,23 @@ func parse(template: String, values: Dictionary = {}, base_font_size: int = 14) 
 			result = result.replace(full_match, replacement)
 		else:
 			result = result.replace(full_match, card_id)
-	
+
 	# 3. Energy icons
 	result = result.replace(ENERGY_ICON_KEYWORD, energy_icon_bbcode)
-	
+
 	for e_key in values:
 		var value = values[e_key]
 		var val_int = 0
 		if typeof(value) == TYPE_FLOAT or typeof(value) == TYPE_INT:
 			val_int = int(abs(value))
-		
+
 		var icons_str: String = ""
 		if val_int <= 0:
 			icons_str = "0 个"
 		else:
 			for i in range(val_int):
 				icons_str += energy_icon_bbcode
-		
+
 		result = result.replace("[" + e_key + "_energy_icons]", icons_str)
 
 	return result
@@ -86,6 +86,17 @@ func format_value(key: String, val: Variant) -> String:
 		for t in val:
 			type_names.append(CardData.CARD_TYPE_DISPLAY.get(t, "未知脚本"))
 		return "、".join(type_names)
+
+	if val is Array and len(val) > 0 and val[0] is CardData:
+		var card_names: Array = []
+		for c in val:
+			var color_hex = "#ffffff"
+			var color_data = Global._id_to_color_data.get(c.card_color_id, null)
+			if color_data:
+				color_hex = "#" + color_data.color.to_html(false)
+			card_names.append("[color=%s][%s][/color]" % [color_hex, c.card_name])
+		return "、".join(card_names)
+
 	return str(val)
 
 func parse_forge_actions_to_text(forge_actions: Array) -> String:
@@ -99,7 +110,7 @@ func parse_forge_actions_to_text(forge_actions: Array) -> String:
 		var action_detail: String = ""
 		for action_path: String in action_data:
 			action_name = action_path.get_file().replace(".gd", "").replace("Action", "")
-			
+
 			if custom_description != "":
 				action_detail = parse(custom_description, action_data[action_path])
 			else:

@@ -14,22 +14,7 @@ func process_action_interception(action_interceptor_processor: ActionInterceptor
 	if not target_combatant.is_alive():
 		return ACTION_ACCEPTENCES.REJECTED
 	
-	var damage: int = action_interceptor_processor.get_shadowed_action_values("damage", 0)
-	if damage <= 0:
-		return ACTION_ACCEPTENCES.CONTINUE
-		
-	var bypass_block: bool = action_interceptor_processor.get_shadowed_action_values("bypass_block", false)
-	var target_block: int = target_combatant.get_block()
-	if bypass_block:
-		target_block = 0
-	
-	# Only actual health damage counts towards the threshold
-	var actual_damage: int = damage
-	if damage > target_block:
-		actual_damage = damage - target_block
-	else:
-		actual_damage = 0
-		
+	var actual_damage: int = action_interceptor_processor.get_incoming_health_damage()
 	if actual_damage > 0:
 		target_combatant.add_status_effect_charges(DAMAGE_THRESHOLD_STATUS_EFFECT_ID, 0, actual_damage)
 		

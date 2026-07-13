@@ -40,8 +40,8 @@ func perform_action():
 			if not Global.player_data.player_reward_draft_consumable_id_whitelist.has(whitelist_consumable_object_id):
 				Global.player_data.player_reward_draft_consumable_id_whitelist.append(whitelist_consumable_object_id)
 			# remove blacklisted consumables if whitelisted
-			if Global.player_data.player_event_blacklisted_ids.has(whitelist_consumable_object_id):
-				Global.player_data.player_event_blacklisted_ids.erase(whitelist_consumable_object_id)
+			if Global.player_data.player_reward_draft_consumable_id_blacklist.has(whitelist_consumable_object_id):
+				Global.player_data.player_reward_draft_consumable_id_blacklist.erase(whitelist_consumable_object_id)
 		
 		# blacklist consumable ids
 		var blacklist_consumable_object_ids: Array[String] = []

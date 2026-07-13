@@ -11,5 +11,5 @@ func perform_action():
 func _to_string():
 	return "Reset Energy Action"
 
-func is_action_instant() -> bool:
+func is_instant_action() -> bool:
 	return true

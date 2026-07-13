@@ -10,5 +10,5 @@ func perform_action():
 		return
 	Signals.rest_action_ended.emit(rest_action_id)
 
-func is_action_instant() -> bool:
+func is_instant_action() -> bool:
 	return true

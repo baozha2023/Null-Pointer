@@ -16,7 +16,7 @@ static func add_enemies() -> void:
 	enemy_easy_1.enemy_name = "废弃无人机"
 	enemy_easy_1.add_health_bounds(10, 14)
 	enemy_easy_1.add_health_bounds(12, 16, DIFFICULTY_STANDARD_ENEMIES_HARDER)
-	enemy_easy_1.enemy_texture_path = ""
+	enemy_easy_1.enemy_texture_path = "sprites/enemies/act1/enemy_scrap_drone.png"
 	enemy_easy_1.add_intent_state(
 		[EnemyIntentData.new(EnemyIntentData.INTENT_INITIAL, DIFFICULTY_STARTING, 0, 0, "", 0, "", {"intent_attack": 1})]
 	)
@@ -26,7 +26,7 @@ static func add_enemies() -> void:
 			EnemyIntentData.new("intent_attack", DIFFICULTY_STANDARD_ENEMIES_HARDER, 4, 1, "", 0, "", {"intent_attack": 1})
 		]
 	)
-	var _enemy_easy_1_anim: AnimationData = enemy_easy_1.add_standard_animations([""])
+	var _enemy_easy_1_anim: AnimationData = enemy_easy_1.add_standard_animations(["sprites/enemies/act1/enemy_scrap_drone.png"])
 	Global.register_rod(enemy_easy_1)
 
 	# 受损炮塔 (Damaged Turret) - Easy
@@ -34,7 +34,7 @@ static func add_enemies() -> void:
 	enemy_easy_2.enemy_name = "受损炮塔"
 	enemy_easy_2.add_health_bounds(15, 18)
 	enemy_easy_2.add_health_bounds(18, 22, DIFFICULTY_STANDARD_ENEMIES_HARDER)
-	enemy_easy_2.enemy_texture_path = ""
+	enemy_easy_2.enemy_texture_path = "sprites/enemies/act1/enemy_damaged_turret.png"
 	enemy_easy_2.add_intent_state(
 		[EnemyIntentData.new(EnemyIntentData.INTENT_INITIAL, DIFFICULTY_STARTING, 0, 0, "", 0, "", {"intent_charge": 1})]
 	)
@@ -47,7 +47,7 @@ static func add_enemies() -> void:
 			EnemyIntentData.new("intent_attack", DIFFICULTY_STANDARD_ENEMIES_HARDER, 8, 1, "", 0, "", {"intent_charge": 1})
 		]
 	)
-	var _enemy_easy_2_anim: AnimationData = enemy_easy_2.add_standard_animations([""])
+	var _enemy_easy_2_anim: AnimationData = enemy_easy_2.add_standard_animations(["sprites/enemies/act1/enemy_damaged_turret.png"])
 	Global.register_rod(enemy_easy_2)
 
 	# 巡逻清扫机 (Patrol Sweeper) - Easy
@@ -55,7 +55,7 @@ static func add_enemies() -> void:
 	enemy_easy_3.enemy_name = "巡逻清扫机"
 	enemy_easy_3.add_health_bounds(12, 15)
 	enemy_easy_3.add_health_bounds(14, 18, DIFFICULTY_STANDARD_ENEMIES_HARDER)
-	enemy_easy_3.enemy_texture_path = ""
+	enemy_easy_3.enemy_texture_path = "sprites/enemies/act1/enemy_patrol_sweeper.png"
 	enemy_easy_3.add_intent_state(
 		[EnemyIntentData.new(EnemyIntentData.INTENT_INITIAL, DIFFICULTY_STARTING, 0, 0, "", 0, "", {"intent_attack": 1})]
 	)
@@ -71,7 +71,7 @@ static func add_enemies() -> void:
 			EnemyIntentData.new("intent_defend", DIFFICULTY_STANDARD_ENEMIES_HARDER, 0, 0, "", 6, "", {"intent_attack": 1})
 		]
 	)
-	var _enemy_easy_3_anim: AnimationData = enemy_easy_3.add_standard_animations([""])
+	var _enemy_easy_3_anim: AnimationData = enemy_easy_3.add_standard_animations(["sprites/enemies/act1/enemy_patrol_sweeper.png"])
 	Global.register_rod(enemy_easy_3)
 
 	# ===== HARD ENEMIES =====
@@ -80,7 +80,7 @@ static func add_enemies() -> void:
 	enemy_hard_1.enemy_name = "内存泄漏者"
 	enemy_hard_1.add_health_bounds(25, 30)
 	enemy_hard_1.add_health_bounds(28, 35, DIFFICULTY_STANDARD_ENEMIES_HARDER)
-	enemy_hard_1.enemy_texture_path = ""
+	enemy_hard_1.enemy_texture_path = "sprites/enemies/act1/enemy_memory_leaker.png"
 	enemy_hard_1.add_intent_state(
 		[EnemyIntentData.new(EnemyIntentData.INTENT_INITIAL, DIFFICULTY_STARTING, 0, 0, "", 0, "", {"intent_attack": 1})]
 	)
@@ -114,7 +114,7 @@ static func add_enemies() -> void:
 			EnemyIntentData.new("intent_buff", DIFFICULTY_STANDARD_ENEMIES_HARDER, 0, 0, "", 0, "", {"intent_attack": 1}, buff_actions_hard_1_asc1)
 		]
 	)
-	var _enemy_hard_1_anim: AnimationData = enemy_hard_1.add_standard_animations([""])
+	var _enemy_hard_1_anim: AnimationData = enemy_hard_1.add_standard_animations(["sprites/enemies/act1/enemy_memory_leaker.png"])
 	Global.register_rod(enemy_hard_1)
 
 	# 流氓进程 (Rogue Process) - Hard
@@ -122,7 +122,7 @@ static func add_enemies() -> void:
 	enemy_hard_2.enemy_name = "流氓进程"
 	enemy_hard_2.add_health_bounds(20, 25)
 	enemy_hard_2.add_health_bounds(24, 28, DIFFICULTY_STANDARD_ENEMIES_HARDER)
-	enemy_hard_2.enemy_texture_path = ""
+	enemy_hard_2.enemy_texture_path = "sprites/enemies/act1/enemy_rogue_process.png"
 	enemy_hard_2.enemy_block = 10
 	enemy_hard_2.add_intent_state(
 		[EnemyIntentData.new(EnemyIntentData.INTENT_INITIAL, DIFFICULTY_STARTING, 0, 0, "", 0, "", {"intent_defend_allies": 1})]
@@ -155,7 +155,7 @@ static func add_enemies() -> void:
 			EnemyIntentData.new("intent_attack", DIFFICULTY_STANDARD_ENEMIES_HARDER, 8, 1, "", 0, "", {"intent_defend_allies": 1})
 		]
 	)
-	var _enemy_hard_2_anim: AnimationData = enemy_hard_2.add_standard_animations([""])
+	var _enemy_hard_2_anim: AnimationData = enemy_hard_2.add_standard_animations(["sprites/enemies/act1/enemy_rogue_process.png"])
 	Global.register_rod(enemy_hard_2)
 
 	# 递归风暴 — 重击型精英（无限递归导致栈溢出般的伤害）
@@ -229,7 +229,7 @@ static func add_enemies() -> void:
 	enemy_miniboss_new_1.add_health_bounds(110, 120, DIFFICULTY_MINIBOSS_ENEMIES_HARDER_2)
 	enemy_miniboss_new_1.enemy_type = EnemyData.ENEMY_TYPES.MINIBOSS
 	enemy_miniboss_new_1.enemy_name = "勒索病毒"
-	enemy_miniboss_new_1.enemy_texture_path = ""
+	enemy_miniboss_new_1.enemy_texture_path = "sprites/enemies/act1/enemy_ransomware.png"
 	enemy_miniboss_new_1.add_intent_state(
 		[EnemyIntentData.new(EnemyIntentData.INTENT_INITIAL, DIFFICULTY_STARTING, 0, 0, "", 0, "", {"intent_attack": 1})]
 	)
@@ -264,7 +264,7 @@ static func add_enemies() -> void:
 	enemy_miniboss_new_1.add_intent_state(
 		[EnemyIntentData.new("intent_buff", DIFFICULTY_STARTING, 0, 0, "", 0, "", {"intent_attack": 1}, buff_actions_ransomware)]
 	)
-	var _enemy_miniboss_new_1_anim: AnimationData = enemy_miniboss_new_1.add_standard_animations([""])
+	var _enemy_miniboss_new_1_anim: AnimationData = enemy_miniboss_new_1.add_standard_animations(["sprites/enemies/act1/enemy_ransomware.png"])
 	Global.register_rod(enemy_miniboss_new_1)
 
 	# INITIALIZE CORE GUARDIAN PROGRAM - Overheat Engine Boss

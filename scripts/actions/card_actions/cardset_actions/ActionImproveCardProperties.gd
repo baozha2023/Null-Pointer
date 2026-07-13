@@ -8,10 +8,10 @@
 extends BaseCardsetAction
 
 func perform_action() -> void:
-	var action_interceptor_processors: Array[ActionInterceptorProcessor] = _intercept_action([null])
+	var action_interceptor_processors: Array[ActionInterceptorProcessor] = _intercept_cardset_action()
 	for action_interceptor_processor in action_interceptor_processors:
 		var modify_parent_card: bool = action_interceptor_processor.get_shadowed_action_values("modify_parent_card", true)
-		var picked_cards: Array[CardData] = _get_picked_cards()
+		var picked_cards: Array[CardData] = _get_picked_cards(action_interceptor_processor)
 		
 		for card_data in picked_cards:
 			var card_property_improvements: Dictionary[String, int] = {}

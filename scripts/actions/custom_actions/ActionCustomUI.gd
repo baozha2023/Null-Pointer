@@ -6,7 +6,10 @@ func perform_action():
 	
 	for action_interceptor_processor in action_interceptor_processors:
 		var enable_custom_ui: bool = action_interceptor_processor.get_shadowed_action_values("enable_custom_ui", true)	# true to enable, false to disable
-		var custom_ui_object_id: String = action_interceptor_processor.get_shadowed_action_values("custom_ui_object_id", true)
+		var custom_ui_object_id: String = action_interceptor_processor.get_shadowed_action_values("custom_ui_object_id", "")
+		if custom_ui_object_id == "":
+			DebugLogger.log_error("ActionCustomUI: No custom_ui_object_id provided")
+			continue
 		var target: BaseCombatant = action_interceptor_processor.target
 		if target != null:
 			if enable_custom_ui:

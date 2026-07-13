@@ -6,10 +6,8 @@ func get_pickable_options() -> Array[OptionData]:
 	# Let's assume the data generator builds OptionData objects and passes them.
 	# Or, if they are strings, we fetch them from Global.
 	var options_data: Array = get_action_value("options", [])
-	print("ActionPickOptions: options_data size = ", len(options_data))
 	var returned_options: Array[OptionData] = []
 	for opt in options_data:
-		print("opt type: ", typeof(opt), " is OptionData: ", opt is OptionData)
 		if opt is OptionData:
 			returned_options.append(opt)
 		elif typeof(opt) == TYPE_STRING:
@@ -37,7 +35,6 @@ func get_pickable_options() -> Array[OptionData]:
 			typed_actions.assign(sub_actions)
 			new_opt.option_sub_actions = typed_actions
 			returned_options.append(new_opt)
-	print("returned_options size = ", len(returned_options))
 	return returned_options
 
 func perform_async_action() -> void:

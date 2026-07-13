@@ -2,10 +2,9 @@
 extends BaseCardsetAction
 
 func perform_action():
-	var picked_cards: Array[CardData] = _get_picked_cards()
-	
-	var action_interceptor_processors: Array[ActionInterceptorProcessor] = _intercept_action([])
-	for action_interceptor_processor in action_interceptor_processors:
+	var action_interceptor_processors: Array[ActionInterceptorProcessor] = _intercept_cardset_action()
+	for action_interceptor_processor: ActionInterceptorProcessor in action_interceptor_processors:
+		var picked_cards: Array[CardData] = _get_picked_cards(action_interceptor_processor)
 		var modify_parent_card: bool = action_interceptor_processor.get_shadowed_action_values("modify_parent_card", true)
 		# get the player's energy and use it to multiply any numbers
 		var card_value_improvements: Dictionary[String, int] = {}
@@ -28,8 +27,7 @@ func perform_action():
 				else:
 					parent_card_data = card_data.parent_card
 			
-			if card_data != null:
-				card_data.improve_card_values(card_value_improvements)
+			card_data.improve_card_values(card_value_improvements)
 			if parent_card_data != null:
 				parent_card_data.improve_card_values(card_value_improvements)
 

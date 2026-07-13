@@ -22,13 +22,21 @@ func _init(_parent_action: BaseAction, _target: BaseCombatant):
 ## Called via BaseAction.intercept_action().
 ## iterates over all interceptors, returning if the chain was accepted or rejected for further processing the action
 ## preview_mode flag is used for things like displaying cards in hand after modifiers or hovering cards over enemies. This tells interceptors to not create actual side effects
-func process_interceptor_chain(preview_mode: bool = false) -> bool:
-	var action_interceptors: Array[BaseActionInterceptor] = _get_action_interceptors_modifying_pair(parent_action, parent_action.parent_combatant, target)
+func process_interceptor_chain(preview_mode: bool = false, interceptor_scopes: Array[int] = []) -> bool:
+	var action_interceptors: Array[BaseActionInterceptor] = _get_action_interceptors_modifying_pair(
+		parent_action,
+		parent_action.parent_combatant,
+		target,
+		interceptor_scopes,
+	)
 	for action_interceptor in action_interceptors:
 		var result: int = action_interceptor.process_action_interception(self, preview_mode)
 		if result == BaseActionInterceptor.ACTION_ACCEPTENCES.STOPPED:
 			break
 		if result == BaseActionInterceptor.ACTION_ACCEPTENCES.REJECTED:
+			# Preview chains are pure projections and must always return a processor to the UI.
+			if preview_mode:
+				continue
 			return false
 	
 	return true
@@ -52,13 +60,40 @@ func set_shadowed_action_values(key: String, value: Variant) -> void:
 	var key_name: String = custom_action_value_keys.get(key, key)
 	shadowed_action_values[key_name] = value
 
+## Returns block which the intercepted damage action will actually use.
+func get_effective_target_block() -> int:
+	if target == null:
+		return 0
+	var bypass_block: bool = get_shadowed_action_values("bypass_block", false)
+	if bypass_block:
+		return 0
+	return max(0, target.get_block())
+
+## Returns the health damage expected after the target's normal block calculation.
+func get_incoming_health_damage() -> int:
+	var damage: int = get_shadowed_action_values("damage", 0)
+	return max(0, damage - get_effective_target_block())
+
+## Writes desired health damage back as pre-block raw damage. This keeps block consumption in the
+## combatant's final damage() call and prevents mitigation interceptors from subtracting it twice.
+func set_incoming_health_damage(health_damage: int) -> void:
+	var raw_damage: int = max(0, health_damage) + get_effective_target_block()
+	set_shadowed_action_values("damage", raw_damage)
+
 ## Returns a priority-sorted array of all interceptors involving an action, its parent, and its target.
 ## Both parent and target can be the same, and one or both can be null.
 ## Additional flags ignore_all_interceptors, ignored_interceptor_ids, and forced_interceptor_ids can
 ## be provided through the action's values to alter which interceptors are allowed to be populated.
-func _get_action_interceptors_modifying_pair(action: BaseAction, parent_combatant: BaseCombatant, target_combatant: BaseCombatant) -> Array[BaseActionInterceptor]:
+func _get_action_interceptors_modifying_pair(
+	action: BaseAction,
+	parent_combatant: BaseCombatant,
+	target_combatant: BaseCombatant,
+	interceptor_scopes: Array[int],
+) -> Array[BaseActionInterceptor]:
 	var returned_action_interceptors: Array[BaseActionInterceptor] = []
-	var interceptor_data_list: Array[ActionInterceptorData] = [] # used to sort by priority before creating returned interceptors
+	var interceptor_data_list: Array[ActionInterceptorData] = []
+	var selected_interceptor_ids: Dictionary[String, bool] = {}
+	var action_script_path: String = action.get_script().resource_path
 	
 	### Get interceptor flags from action data
 	# Use ignore_all_interceptors = true for actions which should always be performed unmodified
@@ -70,71 +105,73 @@ func _get_action_interceptors_modifying_pair(action: BaseAction, parent_combatan
 	var ignored_interceptor_ids: Array[String] = []
 	ignored_interceptor_ids.assign(get_shadowed_action_values("ignored_interceptor_ids", []))
 	
-	# InterceptorData IDs for specific interceptors to always use for this action.
+	# InterceptorData IDs which bypass registration, but still obey ignore, action path, and scope.
 	var forced_interceptor_ids: Array[String] = []
 	forced_interceptor_ids.assign(get_shadowed_action_values("forced_interceptor_ids", []))
-	
+
 	### Parent Interceptors
-	# get ids of all interceptors the parent has
-	var parent_action_interceptor_object_ids: Array[String] = []
-	parent_action_interceptor_object_ids.assign(ActionHandler._registered_action_interceptor_object_ids.get(parent_combatant, []))
-	
-	# get data objects of all corresponding interceptors affecting the parent
+	var parent_action_interceptor_object_ids: Array[String] = ActionHandler.get_registered_action_interceptor_ids(parent_combatant)
 	for action_interceptor_object_id in parent_action_interceptor_object_ids:
-		var action_interceptor_data: ActionInterceptorData = Global.get_action_interceptor_data(action_interceptor_object_id)
-		# filter ignored interceptors
 		if ignored_interceptor_ids.has(action_interceptor_object_id):
 			continue
-		# must modifiy parent
-		if action_interceptor_data.action_interceptor_modifies_parent:
-			# must modifiy this action
-			var action_script_path: String = action.get_script().resource_path
-			if action_interceptor_data.action_intercepted_action_paths.has(action_script_path):
-				interceptor_data_list.append(action_interceptor_data)
-				forced_interceptor_ids.erase(action_interceptor_object_id)
-	
-	### Target Interceptors
-	# get ids of all interceptors the target has
-	var target_action_interceptor_object_ids: Array[String] = []
-	target_action_interceptor_object_ids.assign(ActionHandler._registered_action_interceptor_object_ids.get(target_combatant, []))
-	
-	# get data objects of all corresponding affecting the target
-	for action_interceptor_object_id in target_action_interceptor_object_ids:
 		var action_interceptor_data: ActionInterceptorData = Global.get_action_interceptor_data(action_interceptor_object_id)
-		# filter ignored interceptors
-		if ignored_interceptor_ids.has(action_interceptor_object_id):
+		if not _is_interceptor_compatible(action_interceptor_data, action_script_path, interceptor_scopes):
 			continue
-		
-		# must modifiy target
-		if not action_interceptor_data.action_interceptor_modifies_parent:
-			# must modifiy this action
-			var action_script_path: String = action.get_script().resource_path
-			if action_interceptor_data.action_intercepted_action_paths.has(action_script_path):
-				interceptor_data_list.append(action_interceptor_data)
-				forced_interceptor_ids.erase(action_interceptor_object_id)
-	
-	### Forced Interceptors
-	# apply forced parent interceptors from action data
-	for forced_interceptor_id: String in forced_interceptor_ids:
-		if parent_action_interceptor_object_ids.has(forced_interceptor_id):
-			continue # ignore duplicates
-		if target_action_interceptor_object_ids.has(forced_interceptor_id):
-			continue # ignore duplicates
-		var action_interceptor_data: ActionInterceptorData = Global.get_action_interceptor_data(forced_interceptor_id)
+		if action_interceptor_data.action_interceptor_scope == ActionInterceptorData.INTERCEPTOR_SCOPES.TARGET:
+			continue
 		interceptor_data_list.append(action_interceptor_data)
-	
+		selected_interceptor_ids[action_interceptor_object_id] = true
+
+	### Target Interceptors
+	var target_action_interceptor_object_ids: Array[String] = ActionHandler.get_registered_action_interceptor_ids(target_combatant)
+	for action_interceptor_object_id in target_action_interceptor_object_ids:
+		if ignored_interceptor_ids.has(action_interceptor_object_id):
+			continue
+		var action_interceptor_data: ActionInterceptorData = Global.get_action_interceptor_data(action_interceptor_object_id)
+		if not _is_interceptor_compatible(action_interceptor_data, action_script_path, interceptor_scopes):
+			continue
+		if action_interceptor_data.action_interceptor_scope != ActionInterceptorData.INTERCEPTOR_SCOPES.TARGET:
+			continue
+		if not selected_interceptor_ids.has(action_interceptor_object_id):
+			interceptor_data_list.append(action_interceptor_data)
+			selected_interceptor_ids[action_interceptor_object_id] = true
+
+	### Forced Interceptors
+	for forced_interceptor_id: String in forced_interceptor_ids:
+		if ignored_interceptor_ids.has(forced_interceptor_id):
+			continue
+		if selected_interceptor_ids.has(forced_interceptor_id):
+			continue
+		var action_interceptor_data: ActionInterceptorData = Global.get_action_interceptor_data(forced_interceptor_id)
+		if not _is_interceptor_compatible(action_interceptor_data, action_script_path, interceptor_scopes):
+			continue
+		if action_interceptor_data.action_interceptor_scope == ActionInterceptorData.INTERCEPTOR_SCOPES.TARGET and target_combatant == null:
+			continue
+		interceptor_data_list.append(action_interceptor_data)
+		selected_interceptor_ids[forced_interceptor_id] = true
+
 	### Return
-	# sort interceptor data by their priority
 	interceptor_data_list.sort_custom(_sort_action_interceptor_priorities)
-	
-	# create interceptors from data
+
 	for action_interceptor_data in interceptor_data_list:
-		# create interceptor
 		var action_interceptor_asset = load(action_interceptor_data.action_interceptor_script_path)
 		var action_interceptor: BaseActionInterceptor = action_interceptor_asset.new()
 		returned_action_interceptors.append(action_interceptor)
-	
+
 	return returned_action_interceptors
+
+func _is_interceptor_compatible(
+	action_interceptor_data: ActionInterceptorData,
+	action_script_path: String,
+	interceptor_scopes: Array[int],
+) -> bool:
+	if action_interceptor_data == null:
+		return false
+	if not action_interceptor_data.action_intercepted_action_paths.has(action_script_path):
+		return false
+	if not interceptor_scopes.is_empty() and not interceptor_scopes.has(action_interceptor_data.action_interceptor_scope):
+		return false
+	return true
 
 func _sort_action_interceptor_priorities(action_interceptor_data_1: ActionInterceptorData, action_interceptor_data_2: ActionInterceptorData) -> bool:
 	# custom sort method for sorting the priorities of a given list of interceptors

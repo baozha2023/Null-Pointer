@@ -56,12 +56,7 @@ func perform_action():
 				"target_override": target_override,
 				"actions_on_lethal": actions_on_lethal,
 				"audio_path": audio_path_val,
-				"attack_anim_name": per_attack_animation_name,
 				}}]
-			# add sounds per attack if one exists
-			# this will play before 
-			if typeof(audio_path_val) == TYPE_ARRAY and audio_path_val.size() > 0:
-				action_data.append({Scripts.ACTION_PLAY_SOUND: {"audio_path": audio_path_val}})
 			# add animations per attack
 			# if defined, attack_animation_name should be ANIMATION_NONE
 			if per_attack_animation_name != AnimationData.ANIMATION_NONE:

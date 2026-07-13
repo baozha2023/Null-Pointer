@@ -32,7 +32,7 @@ func generate_production_data() -> void:
 
 	GlobalProdArtifactsGenerator.generate_artifacts()
 	GlobalProdDecoratorsGenerator.generate_decorators()
-	
+
 	add_cards()
 	add_card_packs()
 	add_consumable_packs()
@@ -426,11 +426,38 @@ func add_status_effects() -> void:
 	status_effect_damage_threshold.status_effect_name = "过载阈值"
 	status_effect_damage_threshold.status_effect_description = "累积受到的伤害。若累积量达到阈值，将强制切换意图或触发自定义操作。"
 	status_effect_damage_threshold.status_effect_tooltip = "累积受到的伤害。若累积量达到阈值，将强制切换意图或触发自定义操作。\n当前已累计受到 [color=yellow][secondary_charges]/[charge_amount][/color] 点伤害。"
-	status_effect_damage_threshold.status_effect_texture_path = "sprites/status_effects/icon_damage_threshold.png" 
+	status_effect_damage_threshold.status_effect_texture_path = "sprites/status_effects/icon_damage_threshold.png"
 	status_effect_damage_threshold.status_effect_decay_rate = 0
 	status_effect_damage_threshold.status_effect_type = StatusEffectData.STATUS_EFFECT_TYPES.NEUTRAL
 	status_effect_damage_threshold.status_effect_interceptor_ids = ["interceptor_damage_threshold"]
 	Global.register_rod(status_effect_damage_threshold)
+
+	# ==============================
+	# Custom Status Effects (New Cards)
+	# ==============================
+	var status_effect_delayed_execution: StatusEffectData = StatusEffectData.new("status_effect_delayed_execution")
+	status_effect_delayed_execution.status_effect_name = "挂起"
+	status_effect_delayed_execution.status_effect_description = "目标动作已被挂起（暂存），倒计时归零后将被自动触发。"
+	status_effect_delayed_execution.status_effect_tooltip = "此动作将在 [color=yellow][charge_amount][/color] 个时钟周期后自动触发。\n暂存的脚本：[stored_cards]"
+	status_effect_delayed_execution.status_effect_texture_path = "sprites/status_effects/icon_delayed_execution.png"
+	status_effect_delayed_execution.status_effect_decay_rate = 0
+	status_effect_delayed_execution.status_effect_type = StatusEffectData.STATUS_EFFECT_TYPES.BUFF
+	status_effect_delayed_execution.status_effect_allows_multiples = true
+	status_effect_delayed_execution.status_effect_script_path = "res://scripts/status_effects/custom_status_effects/StatusEffectDelayedExecution.gd"
+	status_effect_delayed_execution.status_effect_action_process_times = [StatusEffectData.STATUS_EFFECT_PROCESS_TIMES.PRE_DRAW_PLAYER_START_TURN]
+	Global.register_rod(status_effect_delayed_execution)
+
+	var status_effect_root_privilege: StatusEffectData = StatusEffectData.new("status_effect_root_privilege")
+	status_effect_root_privilege.status_effect_name = "Root 提权"
+	status_effect_root_privilege.status_effect_description = "可以无视算力限制打出脚本。如果算力不足，每透支等同于主层数的算力，将受到等同于副层数的伤害。"
+	status_effect_root_privilege.status_effect_tooltip = "可以无视算力限制打出脚本。如果打出的脚本费用超过当前剩余算力，每额外透支 [color=yellow][charge_amount][/color] 点算力，将受到 [color=red][secondary_charges][/color] 点伤害。"
+	status_effect_root_privilege.status_effect_texture_path = "sprites/status_effects/icon_root_privilege.png"
+	status_effect_root_privilege.status_effect_decay_rate = 0
+	status_effect_root_privilege.status_effect_type = StatusEffectData.STATUS_EFFECT_TYPES.BUFF
+	status_effect_root_privilege.status_effect_secondary_charge_collision_strategy = StatusEffectData.STATUS_EFFECT_SECONDARY_CHARGE_COLLISION_STRATEGIES.KEEP
+	status_effect_root_privilege.status_effect_interceptor_ids = ["interceptor_root_privilege"]
+	Global.register_rod(status_effect_root_privilege)
+
 
 	var status_effect_curiosity: StatusEffectData = StatusEffectData.new("status_effect_curiosity")
 	status_effect_curiosity.status_effect_name = "内存监听"
@@ -1009,7 +1036,7 @@ func add_status_effects() -> void:
 	# rebounds incoming card plays to the draw pile
 	var interceptor_rebound_card_plays: ActionInterceptorData = ActionInterceptorData.new("interceptor_rebound_card_plays")
 	interceptor_rebound_card_plays.action_interceptor_priority = 10000
-	interceptor_rebound_card_plays.action_interceptor_modifies_parent = true
+	interceptor_rebound_card_plays.action_interceptor_scope = ActionInterceptorData.INTERCEPTOR_SCOPES.PARENT_ONCE
 	interceptor_rebound_card_plays.action_interceptor_script_path = Scripts.INTERCEPTOR_REBOUND_CARD_PLAYS
 	interceptor_rebound_card_plays.action_intercepted_action_paths = [Scripts.ACTION_CARD_PLAY]
 
@@ -1145,37 +1172,44 @@ func add_dialogue() -> void:
 #region Action Interceptors
 func add_action_interceptors() -> void:
 	# boss mechanics
+	var interceptor_root_privilege: ActionInterceptorData = ActionInterceptorData.new("interceptor_root_privilege")
+	interceptor_root_privilege.action_interceptor_priority = 0
+	interceptor_root_privilege.action_interceptor_scope = ActionInterceptorData.INTERCEPTOR_SCOPES.PARENT_ONCE
+	interceptor_root_privilege.action_interceptor_script_path = Scripts.INTERCEPTOR_ROOT_PRIVILEGE
+	interceptor_root_privilege.action_intercepted_action_paths = [Scripts.ACTION_CARD_PLAY]
+	Global.register_rod(interceptor_root_privilege)
+
 	var interceptor_damage_threshold: ActionInterceptorData = ActionInterceptorData.new("interceptor_damage_threshold")
 	interceptor_damage_threshold.action_interceptor_priority = 0
-	interceptor_damage_threshold.action_interceptor_modifies_parent = false
+	interceptor_damage_threshold.action_interceptor_scope = ActionInterceptorData.INTERCEPTOR_SCOPES.TARGET
 	interceptor_damage_threshold.action_interceptor_script_path = Scripts.INTERCEPTOR_DAMAGE_THRESHOLD
 	interceptor_damage_threshold.action_intercepted_action_paths = [Scripts.ACTION_ATTACK, Scripts.ACTION_DIRECT_DAMAGE]
 	Global.register_rod(interceptor_damage_threshold)
 
 	var interceptor_card_play_reaction: ActionInterceptorData = ActionInterceptorData.new("interceptor_card_play_reaction")
 	interceptor_card_play_reaction.action_interceptor_priority = 0
-	interceptor_card_play_reaction.action_interceptor_modifies_parent = false
+	interceptor_card_play_reaction.action_interceptor_scope = ActionInterceptorData.INTERCEPTOR_SCOPES.TARGET
 	interceptor_card_play_reaction.action_interceptor_script_path = Scripts.INTERCEPTOR_CARD_PLAY_REACTION
 	interceptor_card_play_reaction.action_intercepted_action_paths = [Scripts.ACTION_CARD_PLAY]
 	Global.register_rod(interceptor_card_play_reaction)
 
 	var interceptor_card_play_reaction_self: ActionInterceptorData = ActionInterceptorData.new("interceptor_card_play_reaction_self")
 	interceptor_card_play_reaction_self.action_interceptor_priority = 0
-	interceptor_card_play_reaction_self.action_interceptor_modifies_parent = true
+	interceptor_card_play_reaction_self.action_interceptor_scope = ActionInterceptorData.INTERCEPTOR_SCOPES.PARENT_ONCE
 	interceptor_card_play_reaction_self.action_interceptor_script_path = Scripts.INTERCEPTOR_CARD_PLAY_REACTION_SELF
 	interceptor_card_play_reaction_self.action_intercepted_action_paths = [Scripts.ACTION_CARD_PLAY]
 	Global.register_rod(interceptor_card_play_reaction_self)
 
 	var interceptor_firewall_protocol: ActionInterceptorData = ActionInterceptorData.new("interceptor_firewall_protocol")
 	interceptor_firewall_protocol.action_interceptor_priority = 0
-	interceptor_firewall_protocol.action_interceptor_modifies_parent = true
+	interceptor_firewall_protocol.action_interceptor_scope = ActionInterceptorData.INTERCEPTOR_SCOPES.PARENT_ONCE
 	interceptor_firewall_protocol.action_interceptor_script_path = Scripts.INTERCEPTOR_FIREWALL_PROTOCOL
 	interceptor_firewall_protocol.action_intercepted_action_paths = [Scripts.ACTION_CARD_PLAY]
 	Global.register_rod(interceptor_firewall_protocol)
 
 	var interceptor_payload_turbine: ActionInterceptorData = ActionInterceptorData.new("interceptor_payload_turbine")
 	interceptor_payload_turbine.action_interceptor_priority = 0
-	interceptor_payload_turbine.action_interceptor_modifies_parent = true
+	interceptor_payload_turbine.action_interceptor_scope = ActionInterceptorData.INTERCEPTOR_SCOPES.PARENT_PER_TARGET
 	interceptor_payload_turbine.action_interceptor_script_path = "res://scripts/action_interceptors/InterceptorPayloadTurbine.gd"
 	interceptor_payload_turbine.action_intercepted_action_paths = [Scripts.ACTION_APPLY_STATUS]
 	Global.register_rod(interceptor_payload_turbine)
@@ -1183,7 +1217,7 @@ func add_action_interceptors() -> void:
 	# increases damage done by attackers
 	var interceptor_damage_increase: ActionInterceptorData = ActionInterceptorData.new("interceptor_damage_increase")
 	interceptor_damage_increase.action_interceptor_priority = 10000
-	interceptor_damage_increase.action_interceptor_modifies_parent = true
+	interceptor_damage_increase.action_interceptor_scope = ActionInterceptorData.INTERCEPTOR_SCOPES.PARENT_PER_TARGET
 	interceptor_damage_increase.action_interceptor_script_path = Scripts.INTERCEPTOR_DAMAGE_INCREASE
 	interceptor_damage_increase.action_intercepted_action_paths = [Scripts.ACTION_ATTACK]
 
@@ -1192,7 +1226,7 @@ func add_action_interceptors() -> void:
 	# decreases damage done by attackers
 	var interceptor_weaken: ActionInterceptorData = ActionInterceptorData.new("interceptor_weaken")
 	interceptor_weaken.action_interceptor_priority = 9500
-	interceptor_weaken.action_interceptor_modifies_parent = true
+	interceptor_weaken.action_interceptor_scope = ActionInterceptorData.INTERCEPTOR_SCOPES.PARENT_PER_TARGET
 	interceptor_weaken.action_interceptor_script_path = Scripts.INTERCEPTOR_WEAKEN
 	interceptor_weaken.action_intercepted_action_paths = [Scripts.ACTION_ATTACK]
 
@@ -1201,7 +1235,7 @@ func add_action_interceptors() -> void:
 	# increases damage done to the attacked
 	var interceptor_vulnerable: ActionInterceptorData = ActionInterceptorData.new("interceptor_vulnerable")
 	interceptor_vulnerable.action_interceptor_priority = 9000
-	interceptor_vulnerable.action_interceptor_modifies_parent = false
+	interceptor_vulnerable.action_interceptor_scope = ActionInterceptorData.INTERCEPTOR_SCOPES.TARGET
 	interceptor_vulnerable.action_interceptor_script_path = Scripts.INTERCEPTOR_VULNERABLE
 	interceptor_vulnerable.action_intercepted_action_paths = [Scripts.ACTION_ATTACK]
 
@@ -1210,7 +1244,7 @@ func add_action_interceptors() -> void:
 	# increases number of cards drawn
 	var interceptor_increase_turn_draw: ActionInterceptorData = ActionInterceptorData.new("interceptor_increase_turn_draw")
 	interceptor_increase_turn_draw.action_interceptor_priority = 9000
-	interceptor_increase_turn_draw.action_interceptor_modifies_parent = true
+	interceptor_increase_turn_draw.action_interceptor_scope = ActionInterceptorData.INTERCEPTOR_SCOPES.PARENT_PER_TARGET
 	interceptor_increase_turn_draw.action_interceptor_script_path = Scripts.INTERCEPTOR_INCREASE_TURN_DRAW
 	interceptor_increase_turn_draw.action_intercepted_action_paths = [Scripts.ACTION_DRAW_GENERATOR]
 
@@ -1219,7 +1253,7 @@ func add_action_interceptors() -> void:
 	# provides extra health
 	var interceptor_overshield: ActionInterceptorData = ActionInterceptorData.new("interceptor_overshield")
 	interceptor_overshield.action_interceptor_priority = 8000
-	interceptor_overshield.action_interceptor_modifies_parent = false
+	interceptor_overshield.action_interceptor_scope = ActionInterceptorData.INTERCEPTOR_SCOPES.TARGET
 	interceptor_overshield.action_interceptor_script_path = Scripts.INTERCEPTOR_OVERSHIELD
 	interceptor_overshield.action_intercepted_action_paths = [Scripts.ACTION_ATTACK, Scripts.ACTION_DIRECT_DAMAGE]
 
@@ -1228,7 +1262,7 @@ func add_action_interceptors() -> void:
 	# prevents energy from reseting
 	var interceptor_preserve_energy: ActionInterceptorData = ActionInterceptorData.new("interceptor_preserve_energy")
 	interceptor_preserve_energy.action_interceptor_priority = 10000
-	interceptor_preserve_energy.action_interceptor_modifies_parent = true
+	interceptor_preserve_energy.action_interceptor_scope = ActionInterceptorData.INTERCEPTOR_SCOPES.PARENT_PER_TARGET
 	interceptor_preserve_energy.action_interceptor_script_path = Scripts.INTERCEPTOR_PRESERVE_ENERGY
 	interceptor_preserve_energy.action_intercepted_action_paths = [Scripts.ACTION_RESET_ENERGY]
 
@@ -1237,7 +1271,7 @@ func add_action_interceptors() -> void:
 	# prevents overshield from decaying
 	var interceptor_preserve_overshield: ActionInterceptorData = ActionInterceptorData.new("interceptor_preserve_overshield")
 	interceptor_preserve_overshield.action_interceptor_priority = 10000
-	interceptor_preserve_overshield.action_interceptor_modifies_parent = false
+	interceptor_preserve_overshield.action_interceptor_scope = ActionInterceptorData.INTERCEPTOR_SCOPES.TARGET
 	interceptor_preserve_overshield.action_interceptor_script_path = Scripts.INTERCEPTOR_PRESERVE_OVERSHIELD
 	interceptor_preserve_overshield.action_intercepted_action_paths = [Scripts.ACTION_DECAY_STATUS]
 
@@ -1246,7 +1280,7 @@ func add_action_interceptors() -> void:
 	# damages attackers
 	var interceptor_pointy: ActionInterceptorData = ActionInterceptorData.new("interceptor_pointy")
 	interceptor_pointy.action_interceptor_priority = 0
-	interceptor_pointy.action_interceptor_modifies_parent = false
+	interceptor_pointy.action_interceptor_scope = ActionInterceptorData.INTERCEPTOR_SCOPES.TARGET
 	interceptor_pointy.action_interceptor_script_path = Scripts.INTERCEPTOR_POINTY
 	interceptor_pointy.action_intercepted_action_paths = [Scripts.ACTION_ATTACK]
 
@@ -1256,9 +1290,9 @@ func add_action_interceptors() -> void:
 	# typically a forced interceptor
 	var interceptor_damage_from_overshield: ActionInterceptorData = ActionInterceptorData.new("interceptor_damage_from_overshield")
 	interceptor_damage_from_overshield.action_interceptor_priority = 10000
-	interceptor_damage_from_overshield.action_interceptor_modifies_parent = false
+	interceptor_damage_from_overshield.action_interceptor_scope = ActionInterceptorData.INTERCEPTOR_SCOPES.PARENT_PER_TARGET
 	interceptor_damage_from_overshield.action_interceptor_script_path = Scripts.INTERCEPTOR_DAMAGE_FROM_OVERSHIELD
-	interceptor_damage_from_overshield.action_intercepted_action_paths = [Scripts.ACTION_ATTACK]
+	interceptor_damage_from_overshield.action_intercepted_action_paths = [Scripts.ACTION_ATTACK_GENERATOR, Scripts.ACTION_ATTACK]
 
 	Global.register_rod(interceptor_damage_from_overshield)
 
@@ -1266,16 +1300,16 @@ func add_action_interceptors() -> void:
 	# typically a forced interceptor
 	var interceptor_damage_from_block: ActionInterceptorData = ActionInterceptorData.new("interceptor_damage_from_block")
 	interceptor_damage_from_block.action_interceptor_priority = 10000
-	interceptor_damage_from_block.action_interceptor_modifies_parent = false
+	interceptor_damage_from_block.action_interceptor_scope = ActionInterceptorData.INTERCEPTOR_SCOPES.PARENT_PER_TARGET
 	interceptor_damage_from_block.action_interceptor_script_path = Scripts.INTERCEPTOR_DAMAGE_FROM_BLOCK
-	interceptor_damage_from_block.action_intercepted_action_paths = [Scripts.ACTION_ATTACK]
+	interceptor_damage_from_block.action_intercepted_action_paths = [Scripts.ACTION_ATTACK_GENERATOR, Scripts.ACTION_ATTACK]
 
 	Global.register_rod(interceptor_damage_from_block)
 
 	# negates incoming non zero damage actions
 	var interceptor_negate_damage: ActionInterceptorData = ActionInterceptorData.new("interceptor_negate_damage")
 	interceptor_negate_damage.action_interceptor_priority = -10000
-	interceptor_negate_damage.action_interceptor_modifies_parent = false
+	interceptor_negate_damage.action_interceptor_scope = ActionInterceptorData.INTERCEPTOR_SCOPES.TARGET
 	interceptor_negate_damage.action_interceptor_script_path = Scripts.INTERCEPTOR_NEGATE_DAMAGE
 	interceptor_negate_damage.action_intercepted_action_paths = [Scripts.ACTION_ATTACK, Scripts.ACTION_DIRECT_DAMAGE]
 
@@ -1284,7 +1318,7 @@ func add_action_interceptors() -> void:
 	# caps incoming damage to status effect secondary charges
 	var interceptor_cap_damage: ActionInterceptorData = ActionInterceptorData.new("interceptor_cap_damage")
 	interceptor_cap_damage.action_interceptor_priority = -9000
-	interceptor_cap_damage.action_interceptor_modifies_parent = false
+	interceptor_cap_damage.action_interceptor_scope = ActionInterceptorData.INTERCEPTOR_SCOPES.TARGET
 	interceptor_cap_damage.action_interceptor_script_path = Scripts.INTERCEPTOR_CAP_DAMAGE
 	interceptor_cap_damage.action_intercepted_action_paths = [Scripts.ACTION_ATTACK, Scripts.ACTION_DIRECT_DAMAGE]
 
@@ -1293,7 +1327,7 @@ func add_action_interceptors() -> void:
 	# rejects block reset actions
 	var interceptor_temp_preserve_block: ActionInterceptorData = ActionInterceptorData.new("interceptor_temp_preserve_block")
 	interceptor_temp_preserve_block.action_interceptor_priority = 10000
-	interceptor_temp_preserve_block.action_interceptor_modifies_parent = true
+	interceptor_temp_preserve_block.action_interceptor_scope = ActionInterceptorData.INTERCEPTOR_SCOPES.PARENT_PER_TARGET
 	interceptor_temp_preserve_block.action_interceptor_script_path = Scripts.INTERCEPTOR_TEMP_PRESERVE_BLOCK
 	interceptor_temp_preserve_block.action_intercepted_action_paths = [Scripts.ACTION_RESET_BLOCK]
 
@@ -1302,7 +1336,7 @@ func add_action_interceptors() -> void:
 	# rejects block reset actions
 	var interceptor_preserve_block: ActionInterceptorData = ActionInterceptorData.new("interceptor_preserve_block")
 	interceptor_preserve_block.action_interceptor_priority = 10000
-	interceptor_preserve_block.action_interceptor_modifies_parent = true
+	interceptor_preserve_block.action_interceptor_scope = ActionInterceptorData.INTERCEPTOR_SCOPES.PARENT_PER_TARGET
 	interceptor_preserve_block.action_interceptor_script_path = Scripts.INTERCEPTOR_PRESERVE_BLOCK
 	interceptor_preserve_block.action_intercepted_action_paths = [Scripts.ACTION_RESET_BLOCK]
 
@@ -1311,7 +1345,7 @@ func add_action_interceptors() -> void:
 	# rejects debuffing status actions
 	var interceptor_negate_debuff: ActionInterceptorData = ActionInterceptorData.new("interceptor_negate_debuff")
 	interceptor_negate_debuff.action_interceptor_priority = 10000
-	interceptor_negate_debuff.action_interceptor_modifies_parent = false
+	interceptor_negate_debuff.action_interceptor_scope = ActionInterceptorData.INTERCEPTOR_SCOPES.TARGET
 	interceptor_negate_debuff.action_interceptor_script_path = Scripts.INTERCEPTOR_NEGATE_DEBUFF
 	interceptor_negate_debuff.action_intercepted_action_paths = [Scripts.ACTION_APPLY_STATUS]
 
@@ -1320,7 +1354,7 @@ func add_action_interceptors() -> void:
 	# duplicates incoming card plays
 	var interceptor_duplicate_card_plays: ActionInterceptorData = ActionInterceptorData.new("interceptor_duplicate_card_plays")
 	interceptor_duplicate_card_plays.action_interceptor_priority = 10000
-	interceptor_duplicate_card_plays.action_interceptor_modifies_parent = true
+	interceptor_duplicate_card_plays.action_interceptor_scope = ActionInterceptorData.INTERCEPTOR_SCOPES.PARENT_ONCE
 	interceptor_duplicate_card_plays.action_interceptor_script_path = Scripts.INTERCEPTOR_DUPLICATE_CARD_PLAYS
 	interceptor_duplicate_card_plays.action_intercepted_action_paths = [Scripts.ACTION_CARD_PLAY]
 
@@ -1329,7 +1363,7 @@ func add_action_interceptors() -> void:
 	# duplicates incoming attack card plays
 	var interceptor_duplicate_attacks: ActionInterceptorData = ActionInterceptorData.new("interceptor_duplicate_attacks")
 	interceptor_duplicate_attacks.action_interceptor_priority = 10000
-	interceptor_duplicate_attacks.action_interceptor_modifies_parent = true
+	interceptor_duplicate_attacks.action_interceptor_scope = ActionInterceptorData.INTERCEPTOR_SCOPES.PARENT_ONCE
 	interceptor_duplicate_attacks.action_interceptor_script_path = Scripts.INTERCEPTOR_DUPLICATE_ATTACKS
 	interceptor_duplicate_attacks.action_intercepted_action_paths = [Scripts.ACTION_CARD_PLAY]
 
@@ -1338,7 +1372,7 @@ func add_action_interceptors() -> void:
 	# uses a consumable to prevent player death
 	var interceptor_consumable_auto_revive: ActionInterceptorData = ActionInterceptorData.new("interceptor_consumable_auto_revive")
 	interceptor_consumable_auto_revive.action_interceptor_priority = 10000
-	interceptor_consumable_auto_revive.action_interceptor_modifies_parent = true
+	interceptor_consumable_auto_revive.action_interceptor_scope = ActionInterceptorData.INTERCEPTOR_SCOPES.PARENT_PER_TARGET
 	interceptor_consumable_auto_revive.action_interceptor_script_path = Scripts.INTERCEPTOR_CONSUMABLE_AUTO_REVIVE
 	interceptor_consumable_auto_revive.action_intercepted_action_paths = [Scripts.ACTION_DEATH]
 
@@ -1347,75 +1381,75 @@ func add_action_interceptors() -> void:
 	# prevents gaining money
 	var interceptor_negate_add_money: ActionInterceptorData = ActionInterceptorData.new("interceptor_negate_add_money")
 	interceptor_negate_add_money.action_interceptor_priority = 10000
-	interceptor_negate_add_money.action_interceptor_modifies_parent = true
+	interceptor_negate_add_money.action_interceptor_scope = ActionInterceptorData.INTERCEPTOR_SCOPES.PARENT_PER_TARGET
 	interceptor_negate_add_money.action_interceptor_script_path = Scripts.INTERCEPTOR_NEGATE_ADD_MONEY
 	interceptor_negate_add_money.action_intercepted_action_paths = [Scripts.ACTION_ADD_MONEY]
 
 	Global.register_rod(interceptor_negate_add_money)
 
 	var interceptor_reduce_add_money: ActionInterceptorData = ActionInterceptorData.new("interceptor_reduce_add_money")
-	interceptor_reduce_add_money.action_interceptor_modifies_parent = true
+	interceptor_reduce_add_money.action_interceptor_scope = ActionInterceptorData.INTERCEPTOR_SCOPES.PARENT_PER_TARGET
 	interceptor_reduce_add_money.action_interceptor_script_path = Scripts.INTERCEPTOR_REDUCE_ADD_MONEY
 	interceptor_reduce_add_money.action_intercepted_action_paths = [Scripts.ACTION_ADD_MONEY]
 	Global.register_rod(interceptor_reduce_add_money)
-	
+
 	var interceptor_increase_add_money: ActionInterceptorData = ActionInterceptorData.new("interceptor_increase_add_money")
-	interceptor_increase_add_money.action_interceptor_modifies_parent = true
+	interceptor_increase_add_money.action_interceptor_scope = ActionInterceptorData.INTERCEPTOR_SCOPES.PARENT_PER_TARGET
 	interceptor_increase_add_money.action_interceptor_script_path = Scripts.INTERCEPTOR_INCREASE_ADD_MONEY
 	interceptor_increase_add_money.action_intercepted_action_paths = [Scripts.ACTION_ADD_MONEY]
 	Global.register_rod(interceptor_increase_add_money)
-	
+
 	var interceptor_increase_shop_price: ActionInterceptorData = ActionInterceptorData.new("interceptor_increase_shop_price")
-	interceptor_increase_shop_price.action_interceptor_modifies_parent = true
+	interceptor_increase_shop_price.action_interceptor_scope = ActionInterceptorData.INTERCEPTOR_SCOPES.PARENT_PER_TARGET
 	interceptor_increase_shop_price.action_interceptor_script_path = Scripts.INTERCEPTOR_INCREASE_SHOP_PRICE
 	interceptor_increase_shop_price.action_intercepted_action_paths = [Scripts.ACTION_GET_SHOP_PRICE, Scripts.ACTION_GET_ENCHANT_PRICE]
 	Global.register_rod(interceptor_increase_shop_price)
-	
+
 	var interceptor_decrease_shop_price: ActionInterceptorData = ActionInterceptorData.new("interceptor_decrease_shop_price")
-	interceptor_decrease_shop_price.action_interceptor_modifies_parent = true
+	interceptor_decrease_shop_price.action_interceptor_scope = ActionInterceptorData.INTERCEPTOR_SCOPES.PARENT_PER_TARGET
 	interceptor_decrease_shop_price.action_interceptor_script_path = Scripts.INTERCEPTOR_DECREASE_SHOP_PRICE
 	interceptor_decrease_shop_price.action_intercepted_action_paths = [Scripts.ACTION_GET_SHOP_PRICE, Scripts.ACTION_GET_ENCHANT_PRICE]
 	Global.register_rod(interceptor_decrease_shop_price)
 
 	var interceptor_high_latency: ActionInterceptorData = ActionInterceptorData.new("interceptor_high_latency")
-	interceptor_high_latency.action_interceptor_modifies_parent = true
+	interceptor_high_latency.action_interceptor_scope = ActionInterceptorData.INTERCEPTOR_SCOPES.PARENT_PER_TARGET
 	interceptor_high_latency.action_interceptor_script_path = Scripts.INTERCEPTOR_HIGH_LATENCY
 	interceptor_high_latency.action_intercepted_action_paths = [Scripts.ACTION_DRAW_GENERATOR]
 	Global.register_rod(interceptor_high_latency)
 
 	var interceptor_brute_force_attack: ActionInterceptorData = ActionInterceptorData.new("interceptor_brute_force_attack")
-	interceptor_brute_force_attack.action_interceptor_modifies_parent = true
+	interceptor_brute_force_attack.action_interceptor_scope = ActionInterceptorData.INTERCEPTOR_SCOPES.PARENT_PER_TARGET
 	interceptor_brute_force_attack.action_interceptor_script_path = Scripts.INTERCEPTOR_BRUTE_FORCE_ATTACK
 	interceptor_brute_force_attack.action_intercepted_action_paths = [Scripts.ACTION_ATTACK]
 	Global.register_rod(interceptor_brute_force_attack)
 
 	var interceptor_brute_force_draw: ActionInterceptorData = ActionInterceptorData.new("interceptor_brute_force_draw")
-	interceptor_brute_force_draw.action_interceptor_modifies_parent = true
+	interceptor_brute_force_draw.action_interceptor_scope = ActionInterceptorData.INTERCEPTOR_SCOPES.PARENT_PER_TARGET
 	interceptor_brute_force_draw.action_interceptor_script_path = Scripts.INTERCEPTOR_BRUTE_FORCE_DRAW
 	interceptor_brute_force_draw.action_intercepted_action_paths = [Scripts.ACTION_DRAW_GENERATOR]
 	Global.register_rod(interceptor_brute_force_draw)
 
 	var interceptor_zero_day_db: ActionInterceptorData = ActionInterceptorData.new("interceptor_zero_day_db")
-	interceptor_zero_day_db.action_interceptor_modifies_parent = true
+	interceptor_zero_day_db.action_interceptor_scope = ActionInterceptorData.INTERCEPTOR_SCOPES.PARENT_PER_TARGET
 	interceptor_zero_day_db.action_interceptor_script_path = Scripts.INTERCEPTOR_ZERO_DAY_DB
 	interceptor_zero_day_db.action_intercepted_action_paths = [Scripts.ACTION_APPLY_STATUS]
 	Global.register_rod(interceptor_zero_day_db)
 
 	var interceptor_overflow_stack: ActionInterceptorData = ActionInterceptorData.new("interceptor_overflow_stack")
-	interceptor_overflow_stack.action_interceptor_modifies_parent = false
+	interceptor_overflow_stack.action_interceptor_scope = ActionInterceptorData.INTERCEPTOR_SCOPES.TARGET
 	interceptor_overflow_stack.action_interceptor_script_path = Scripts.INTERCEPTOR_OVERFLOW_STACK
 	interceptor_overflow_stack.action_intercepted_action_paths = [Scripts.ACTION_APPLY_STATUS]
 	Global.register_rod(interceptor_overflow_stack)
 
 	var interceptor_packet_sniffer: ActionInterceptorData = ActionInterceptorData.new("interceptor_packet_sniffer")
-	interceptor_packet_sniffer.action_interceptor_modifies_parent = true
+	interceptor_packet_sniffer.action_interceptor_scope = ActionInterceptorData.INTERCEPTOR_SCOPES.PARENT_PER_TARGET
 	interceptor_packet_sniffer.action_interceptor_script_path = Scripts.INTERCEPTOR_PACKET_SNIFFER
 	interceptor_packet_sniffer.action_intercepted_action_paths = [Scripts.ACTION_APPLY_STATUS]
 	Global.register_rod(interceptor_packet_sniffer)
 
 
 	var interceptor_deadlock: ActionInterceptorData = ActionInterceptorData.new("interceptor_deadlock")
-	interceptor_deadlock.action_interceptor_modifies_parent = true
+	interceptor_deadlock.action_interceptor_scope = ActionInterceptorData.INTERCEPTOR_SCOPES.PARENT_ONCE
 	interceptor_deadlock.action_interceptor_script_path = Scripts.INTERCEPTOR_CARD_PLAY_DEADLOCK
 	interceptor_deadlock.action_intercepted_action_paths = [Scripts.ACTION_CARD_PLAY]
 	Global.register_rod(interceptor_deadlock)
@@ -1746,10 +1780,10 @@ func add_characters() -> void:
 			"sprites/characters/character_{0}/character_{0}_idle.png".format([character_color])
 		],
 		[
-			"sprites/characters/character_{0}/attack/character_{0}_attack_1.png".format([character_color]),
+			"sprites/characters/character_{0}/character_{0}_idle.png".format([character_color]),
 		],
 		[
-			"sprites/characters/character_{0}/death/character_{0}_death_1.png".format([character_color]),
+			"sprites/characters/character_{0}/character_{0}_idle.png".format([character_color]),
 		]
 	)
 

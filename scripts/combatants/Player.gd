@@ -197,7 +197,7 @@ func register_run_modifier_interceptors() -> void:
 			DebugLogger.log_error("Player.register_run_modifier_interceptors(): No RunData with id of \"{0}".format([run_modifier_object_id]))
 		else:
 			for interceptor_id: String in run_modifier_data.run_modifier_interceptor_ids:
-				ActionHandler.register_action_interceptor(self, interceptor_id)
+				ActionHandler.register_action_interceptor(self, interceptor_id, "run_modifier:" + run_modifier_object_id)
 
 ## Attaches interceptors from artifacts the player has
 func register_artifact_interceptors() -> void:
@@ -205,15 +205,15 @@ func register_artifact_interceptors() -> void:
 	for artifact_uid in Global.player_data.player_artifact_uid_to_artifact_data:
 		var artifact_data: ArtifactData = Global.player_data.player_artifact_uid_to_artifact_data[artifact_uid]
 		for interceptor_id: String in artifact_data.artifact_interceptor_ids:
-			ActionHandler.register_action_interceptor(self, interceptor_id)
+			ActionHandler.register_action_interceptor(self, interceptor_id, "artifact:" + artifact_data.object_uid)
 
 func _on_artifact_added(artifact_data: ArtifactData) -> void:
 	for action_interceptor_id: String in artifact_data.artifact_interceptor_ids:
-		ActionHandler.register_action_interceptor(self, action_interceptor_id)
+		ActionHandler.register_action_interceptor(self, action_interceptor_id, "artifact:" + artifact_data.object_uid)
 
 func _on_artifact_removed(artifact_data: ArtifactData) -> void:
 	for action_interceptor_id: String in artifact_data.artifact_interceptor_ids:
-		ActionHandler.unregister_action_interceptor(self, action_interceptor_id)
+		ActionHandler.unregister_action_interceptor(self, action_interceptor_id, "artifact:" + artifact_data.object_uid)
 
 #endregion
 

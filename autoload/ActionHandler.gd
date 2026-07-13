@@ -11,7 +11,8 @@ var current_action: BaseAction = null # the current action being invoked
 var actions_being_performed: bool = false	# flag to prevent multiple actions being performed simultaneously and check for blocking
 
 # action interceptors
-var _registered_action_interceptor_object_ids: Dictionary	= {}	# maps an object to a sorted list of registered action interceptor ids used when the object is involved in an action
+# combatant -> interceptor id -> source key -> true
+var _registered_action_interceptor_sources: Dictionary = {}
 
 # signals
 signal actions_ended	# all actions completed, typically signalling the end of an enemy attack or card play
@@ -123,23 +124,44 @@ func clear_all_actions() -> void:
 
 ### Action Interception
 
-func register_action_interceptor(base_combatant: BaseCombatant, action_interceptor_object_id: String) -> void:
-	# registers a given action interceptor for an object
-	# note that generally speaking any interceptor should only ever have one source of registration. Delegate to status effects with charges if you want multiple things to create the same effect
-	var interceptor_ids: Array = _registered_action_interceptor_object_ids.get(base_combatant, [])
-	if not interceptor_ids.has(action_interceptor_object_id):
-		interceptor_ids.append(action_interceptor_object_id)
-	_registered_action_interceptor_object_ids[base_combatant] = interceptor_ids
-	
-func unregister_action_interceptor(base_combatant: BaseCombatant, action_interceptor_object_id: String) -> void:
-	var interceptor_ids: Array = _registered_action_interceptor_object_ids.get(base_combatant, [])
-	interceptor_ids.erase(action_interceptor_object_id)
-	_registered_action_interceptor_object_ids[base_combatant] = interceptor_ids
-	if len(interceptor_ids) == 0:
-		_registered_action_interceptor_object_ids.erase(base_combatant)
+func register_action_interceptor(base_combatant: BaseCombatant, action_interceptor_object_id: String, source_key: String) -> void:
+	if base_combatant == null or action_interceptor_object_id == "" or source_key == "":
+		DebugLogger.log_error("ActionHandler.register_action_interceptor(): combatant, interceptor id, and source key are required")
+		return
+
+	var combatant_sources: Dictionary = _registered_action_interceptor_sources.get(base_combatant, {})
+	var interceptor_sources: Dictionary = combatant_sources.get(action_interceptor_object_id, {})
+	interceptor_sources[source_key] = true
+	combatant_sources[action_interceptor_object_id] = interceptor_sources
+	_registered_action_interceptor_sources[base_combatant] = combatant_sources
+
+func unregister_action_interceptor(base_combatant: BaseCombatant, action_interceptor_object_id: String, source_key: String) -> void:
+	var combatant_sources: Dictionary = _registered_action_interceptor_sources.get(base_combatant, {})
+	if not combatant_sources.has(action_interceptor_object_id):
+		return
+
+	var interceptor_sources: Dictionary = combatant_sources[action_interceptor_object_id]
+	interceptor_sources.erase(source_key)
+	if interceptor_sources.is_empty():
+		combatant_sources.erase(action_interceptor_object_id)
+	else:
+		combatant_sources[action_interceptor_object_id] = interceptor_sources
+
+	if combatant_sources.is_empty():
+		_registered_action_interceptor_sources.erase(base_combatant)
+	else:
+		_registered_action_interceptor_sources[base_combatant] = combatant_sources
+
+func get_registered_action_interceptor_ids(base_combatant: BaseCombatant) -> Array[String]:
+	var interceptor_ids: Array[String] = []
+	if base_combatant == null:
+		return interceptor_ids
+	var combatant_sources: Dictionary = _registered_action_interceptor_sources.get(base_combatant, {})
+	interceptor_ids.assign(combatant_sources.keys())
+	return interceptor_ids
 
 func clear_all_action_interceptors() -> void:
-	_registered_action_interceptor_object_ids.clear()
+	_registered_action_interceptor_sources.clear()
 
 
 func _on_combat_ended():

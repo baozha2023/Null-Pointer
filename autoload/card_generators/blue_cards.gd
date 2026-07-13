@@ -196,7 +196,7 @@ static func add_cards_blue() -> void:
 					}},
 				],
 				"passed_action_data": [
-					{Scripts.ACTION_ATTACK_GENERATOR: { "audio_path": AudioConstants.SFX_GROUP_ENERGY_BURST, 
+					{Scripts.ACTION_ATTACK_GENERATOR: { "audio_path": AudioConstants.SFX_GROUP_ENERGY_BURST,
 						"custom_key_names": {"additional_damage": "bonus_damage"}
 					}}
 				],
@@ -291,7 +291,7 @@ static func add_cards_blue() -> void:
 					}},
 				],
 				"passed_action_data": [
-					{Scripts.ACTION_ATTACK_GENERATOR: { "audio_path": AudioConstants.SFX_GROUP_ENERGY_BURST, 
+					{Scripts.ACTION_ATTACK_GENERATOR: { "audio_path": AudioConstants.SFX_GROUP_ENERGY_BURST,
 						"custom_key_names": {"number_of_attacks": "bonus_attacks"}
 					}}
 				],
@@ -443,7 +443,7 @@ static func add_cards_blue() -> void:
 					}},
 				],
 				"passed_action_data": [
-					{Scripts.ACTION_ATTACK_GENERATOR: { "audio_path": AudioConstants.SFX_GROUP_ENERGY_BURST, 
+					{Scripts.ACTION_ATTACK_GENERATOR: { "audio_path": AudioConstants.SFX_GROUP_ENERGY_BURST,
 						"custom_key_names": {"additional_damage": "bonus_damage"}
 					}}
 				],
@@ -642,7 +642,7 @@ static func add_cards_blue() -> void:
 			},
 		},
 		{
-			Scripts.ACTION_ATTACK_GENERATOR: { "audio_path": AudioConstants.SFX_GROUP_ENERGY_BURST, 
+			Scripts.ACTION_ATTACK_GENERATOR: { "audio_path": AudioConstants.SFX_GROUP_ENERGY_BURST,
 				"target_override": BaseAction.TARGET_OVERRIDES.ALL_ENEMIES,
 			},
 		},
@@ -776,7 +776,7 @@ static func add_cards_blue() -> void:
 	var decorator_botnet_strike: CardDecoratorData = CardDecoratorData.new("decorator_botnet_strike")
 	decorator_botnet_strike.card_decorator_script_path = Scripts.DECORATOR_DYNAMIC_VALUE_MODIFIER
 	Global.register_rod(decorator_botnet_strike)
-	
+
 	card_botnet_strike.card_decorators = {
 		decorator_botnet_strike.object_id: {
 			"stat_enum": CombatStatsData.STATS.CARDS_PLAYED,
@@ -794,7 +794,7 @@ static func add_cards_blue() -> void:
 	]
 
 	Global.register_rod(card_botnet_strike)
-	
+
 	# 蓝卡：多路复用
 	var card_multiplexing: CardData = CardData.new("card_multiplexing")
 	card_multiplexing.card_name = "多路复用"
@@ -941,7 +941,7 @@ static func add_cards_blue() -> void:
 	card_memory_out_of_bounds.card_first_upgrade_value_changes = {"damage": 9, "overflow_damage": 28}
 	card_memory_out_of_bounds.card_description = "造成 [damage] 点伤害。若此脚本位于当前线程的最右端，改为造成 [overflow_damage] 点伤害。"
 	card_memory_out_of_bounds.card_hint = "位于手牌最右侧时伤害大幅提升，注意出牌顺序。"
-	card_memory_out_of_bounds.card_texture_path = "sprites/card/blue/card_buffer_overflow.png"
+	card_memory_out_of_bounds.card_texture_path = "sprites/card/blue/card_memory_out_of_bounds.png"
 	card_memory_out_of_bounds.card_play_actions = [
 		{
 			Scripts.ACTION_VALIDATOR: {
@@ -1017,5 +1017,138 @@ static func add_cards_blue() -> void:
 		}
 	]
 	Global.register_rod(card_dead_lock)
+
+	# ==============================
+	# Custom Cards
+	# ==============================
+	var card_async_execution: CardData = CardData.new("card_async_execution")
+	card_async_execution.card_name = "异步执行"
+	card_async_execution.card_color_id = "color_{0}".format([color])
+	card_async_execution.card_type = CardData.CARD_TYPES.SKILL
+	card_async_execution.card_rarity = CardData.CARD_RARITIES.RARE
+	card_async_execution.card_requires_target = false
+	card_async_execution.card_energy_cost = 1
+	card_async_execution.card_texture_path = "sprites/card/blue/card_async_execution.png"
+	card_async_execution.card_values = {
+		"duration_turns": 2,
+		"pick_amount": 1,
+		"duplicate_amount": 2
+	}
+	card_async_execution.card_description = "选择手牌中的 [pick_amount] 张脚本暂存，并在当前区域将其物理删除。[duration_turns] 个时钟周期后，将该脚本的 [duplicate_amount] 张复制加入当前线程。"
+	card_async_execution.card_hint = "把暂时用不到的核心脚本挂起，几个回合后它会带着双倍的复制体强势回归，非常适合用来提前‘憋大招’。"
+	card_async_execution.card_play_actions = [
+		{
+			Scripts.ACTION_PICK_CARDS: {
+				"card_pick_type": HandManager.HAND_PILE,
+				"custom_key_names": {
+					"min_card_amount": "pick_amount",
+					"max_card_amount": "pick_amount"
+				},
+				"card_pick_message": "选择一张要暂存的卡",
+				"action_data": [
+					{
+						Scripts.ACTION_SCHEDULE_DELAYED_ACTIONS: {
+							"operation": CardMoveOperation.TYPES.EXHAUST,
+							"status_effect_id": "status_effect_delayed_execution",
+							"custom_key_names": {"status_charges": "duration_turns"},
+							"variable_name_to_export": "created_card_data",
+							"action_data": [
+								{
+									Scripts.ACTION_DUPLICATE_CARDS: {
+										"custom_key_names": {"number_of_cards": "duplicate_amount"},
+										"action_data": [
+											{Scripts.ACTION_ADD_CARDS_TO_HAND: {}}
+										]
+									}
+								}
+							]
+						}
+					}
+				]
+			}
+		}
+	]
+	Global.register_rod(card_async_execution)
+
+	var card_root_privilege: CardData = CardData.new("card_root_privilege")
+	card_root_privilege.card_name = "Root 提权"
+	card_root_privilege.card_color_id = "color_{0}".format([color])
+	card_root_privilege.card_type = CardData.CARD_TYPES.POWER
+	card_root_privilege.card_rarity = CardData.CARD_RARITIES.RARE
+	card_root_privilege.card_requires_target = false
+	card_root_privilege.card_energy_cost = 3
+	card_root_privilege.card_texture_path = "sprites/card/blue/card_root_privilege.png"
+	card_root_privilege.card_description = "获得 [status_charge_amount] 层 [status_icon:status_effect_root_privilege] （副层数为 [status_secondary_charge_amount]）。"
+	card_root_privilege.card_hint = "没算力了？拿命填！只要完整度够厚，你可以无视费用疯狂甩牌，但也别一不小心把自己反噬死了。"
+	card_root_privilege.card_values = {"status_charge_amount": 1, "status_secondary_charge_amount": 5}
+	card_root_privilege.card_play_actions = [
+		{
+			Scripts.ACTION_APPLY_STATUS: {
+				"status_effect_object_id": "status_effect_root_privilege",
+				"target_override": BaseAction.TARGET_OVERRIDES.PARENT,
+			}
+		}
+	]
+	Global.register_rod(card_root_privilege)
+
+	var card_ddos_attack: CardData = CardData.new("card_ddos_attack")
+	card_ddos_attack.card_name = "分布式拒绝服务"
+	card_ddos_attack.card_color_id = "color_{0}".format([color])
+	card_ddos_attack.card_type = CardData.CARD_TYPES.ATTACK
+	card_ddos_attack.card_rarity = CardData.CARD_RARITIES.UNCOMMON
+	card_ddos_attack.card_requires_target = true
+	card_ddos_attack.card_energy_cost = 1
+	card_ddos_attack.card_texture_path = "sprites/card/blue/card_ddos_attack.png"
+	card_ddos_attack.card_values = {"damage": 3, "number_of_attacks": 1}
+	card_ddos_attack.card_upgrade_value_improvements = {"damage": 2}
+	card_ddos_attack.card_description = "造成 [damage] 点伤害。本时钟周期你每打出过 1 张辅助脚本，额外触发 1 次。"
+	card_ddos_attack.card_hint = "前面打出的辅助脚本越多，这一下就越痛，完美的连招收尾技。"
+	card_ddos_attack.card_play_actions = [
+		{
+			Scripts.ACTION_VARIABLE_COMBAT_STATS_MODIFIER: {
+				"combat_stat_name": "skill_cards_played_this_turn",
+				"multiplied_values": ["number_of_attacks"],
+				"multiplied_values_bases": {"number_of_attacks": 1},
+				"action_data": [
+					{Scripts.ACTION_ATTACK_GENERATOR: {"audio_path": AudioConstants.SFX_GROUP_ENERGY_BURST}}
+				]
+			}
+		}
+	]
+	Global.register_rod(card_ddos_attack)
+
+	var card_low_level_format: CardData = CardData.new("card_low_level_format")
+	card_low_level_format.card_name = "底层格式化"
+	card_low_level_format.card_color_id = "color_{0}".format([color])
+	card_low_level_format.card_type = CardData.CARD_TYPES.SKILL
+	card_low_level_format.card_rarity = CardData.CARD_RARITIES.RARE
+	card_low_level_format.card_requires_target = true
+	card_low_level_format.card_energy_cost = 2
+	card_low_level_format.card_texture_path = "sprites/card/blue/card_low_level_format.png"
+	card_low_level_format.card_values = {"damage_per_card": 5}
+	card_low_level_format.card_upgrade_value_improvements = {"damage_per_card": 3}
+	card_low_level_format.card_description = "物理删除所有的手牌和弃牌堆中的卡牌。每以此法删除一张牌，对目标造成 [damage_per_card] 点伤害。"
+	card_low_level_format.card_hint = "破釜沉舟的终极爆发！删光手牌换取巨额伤害。如果没能秒掉敌人，接下来的瘫痪副作用会让你欲哭无泪。"
+	card_low_level_format.card_play_actions = [
+		{
+			Scripts.ACTION_LOW_LEVEL_FORMAT: {
+				"source_zones": [HandManager.HAND_PILE, HandManager.DISCARD_PILE],
+				"operation": CardMoveOperation.TYPES.EXHAUST,
+				"variable_name_to_export": "format_count",
+				"action_data": [
+					{
+						Scripts.ACTION_VARIABLE_ACTION_GENERATOR: {
+							"custom_key_names": {"action_count": "format_count"},
+							"time_delay": 0.2,
+							"action_data": [
+								{Scripts.ACTION_ATTACK_GENERATOR: {"custom_key_names": {"damage": "damage_per_card"}, "audio_path": AudioConstants.SFX_GROUP_ENERGY_BURST, "time_delay": 0.2}}
+							]
+						}
+					}
+				]
+			}
+		}
+	]
+	Global.register_rod(card_low_level_format)
 
 	#endregion

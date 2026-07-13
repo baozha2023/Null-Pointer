@@ -247,23 +247,31 @@ func has_action_value(key: String) -> bool:
 ## have no actual targets. In which case an array of a single ActionInterceptorProcessor will be
 ## returned.
 func _intercept_action(_targets: Array[BaseCombatant] = get_adjusted_action_targets(), preview_mode: bool = false) -> Array[ActionInterceptorProcessor]:
-	
-	var accepted_interceptor_processors: Array[ActionInterceptorProcessor] = []	# the returned interceptor chains
-	
+	var accepted_interceptor_processors: Array[ActionInterceptorProcessor] = []
+
 	# get the targets to process
 	# pass [] or [null] for _targets if you want interception processed only for the parent
 	var interceptor_targets: Array[BaseCombatant] = []
 	if len(_targets) == 0:
-		interceptor_targets = [null] 	# there must always be a target, even if its null
+		interceptor_targets = [null]
 	else:
 		interceptor_targets = _targets
-	
-	# iterate over each target, processing a chain of interceptors
+
+	# Parent-once interceptors run in their own phase. Their shadow values are copied to every
+	# target processor so previews and multi-target actions share one committed parent result.
+	var parent_once_processor: ActionInterceptorProcessor = ActionInterceptorProcessor.new(self, null)
+	var parent_once_scopes: Array[int] = [ActionInterceptorData.INTERCEPTOR_SCOPES.PARENT_ONCE]
+	if not parent_once_processor.process_interceptor_chain(preview_mode, parent_once_scopes):
+		return accepted_interceptor_processors
+
 	for target in interceptor_targets:
-		var action_interceptor_processor: ActionInterceptorProcessor = ActionInterceptorProcessor.new(self, target) 
-		var interceptor_chain_accepted: bool = action_interceptor_processor.process_interceptor_chain(preview_mode)
-		# only accepted chains will be returned for processing
+		var action_interceptor_processor: ActionInterceptorProcessor = ActionInterceptorProcessor.new(self, target)
+		action_interceptor_processor.shadowed_action_values = parent_once_processor.shadowed_action_values.duplicate(true)
+		var target_scopes: Array[int] = [ActionInterceptorData.INTERCEPTOR_SCOPES.PARENT_PER_TARGET]
+		if target != null:
+			target_scopes.append(ActionInterceptorData.INTERCEPTOR_SCOPES.TARGET)
+		var interceptor_chain_accepted: bool = action_interceptor_processor.process_interceptor_chain(preview_mode, target_scopes)
 		if interceptor_chain_accepted:
 			accepted_interceptor_processors.append(action_interceptor_processor)
-	
+
 	return accepted_interceptor_processors

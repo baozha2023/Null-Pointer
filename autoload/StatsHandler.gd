@@ -249,9 +249,11 @@ func get_turn_count() -> int:
 	return current_combat_stats.turn_count
 
 func _on_run_ended() -> void:
+	_reset_card_play_history()
 	current_run_stats = null
 
 func _on_combat_started(event_id: String) -> void:
+	_reset_card_play_history()
 	turn_count = 1
 	# derive floor from the current location's floor number
 	var current_floor: int = Global.get_player_current_floor()
@@ -268,6 +270,7 @@ func _on_combat_ended() -> void:
 		current_run_stats.run_combat_stats.append(current_combat_stats)
 	
 	current_combat_stats = null
+	_reset_card_play_history()
 	
 	# track combat victories in run stats
 	if current_run_stats != null:
@@ -295,6 +298,10 @@ func _on_enemy_turn_ended():
 		# move cards played over and reset it
 		cards_played_this_combat.append(cards_played_this_turn)
 		cards_played_this_turn = []
+
+func _reset_card_play_history() -> void:
+	cards_played_this_turn.clear()
+	cards_played_this_combat.clear()
 
 #endregion
 

@@ -1,6 +1,9 @@
 extends BaseActionInterceptor
 
-func process_action_interception(action_interceptor_processor: ActionInterceptorProcessor, _preview_mode: bool = false) -> int:
+func process_action_interception(action_interceptor_processor: ActionInterceptorProcessor, preview_mode: bool = false) -> int:
+	if preview_mode:
+		return ACTION_ACCEPTENCES.CONTINUE
+
 	var parent_combatant: BaseCombatant = action_interceptor_processor.parent_action.parent_combatant
 	if parent_combatant == null or not parent_combatant.is_alive():
 		return ACTION_ACCEPTENCES.REJECTED

@@ -1,5 +1,12 @@
 ## Takes all (or selected) action entries from the forge and creates a fusion card added to hand or executes them directly.
 extends BaseAction
+class_name ActionTakeFromForge
+
+enum TAKE_TYPES {
+	FIRST,
+	LAST,
+	ALL,
+}
 
 func perform_action() -> void:
 	var action_interceptor_processors: Array[ActionInterceptorProcessor] = _intercept_action([])
@@ -20,19 +27,23 @@ func perform_action() -> void:
 				ActionHandler.add_actions(actions)
 			continue
 
-		var take_type: int = action_interceptor_processor.get_shadowed_action_values("take_type", -1)
+		var take_type: int = action_interceptor_processor.get_shadowed_action_values("take_type", TAKE_TYPES.ALL)
 		var clear_after_take: bool = action_interceptor_processor.get_shadowed_action_values("clear_after_take", true)
 		var execute_directly: bool = action_interceptor_processor.get_shadowed_action_values("execute_directly", false)
 		var override_load: int = action_interceptor_processor.get_shadowed_action_values("override_load", -1)
 
 		# Step A: Extract actions
 		var taken_actions: Array = []
-		if take_type == 0:
-			taken_actions.append(forge_actions[0])
-		elif take_type == 1:
-			taken_actions.append(forge_actions[-1])
-		else:
-			taken_actions = forge_actions.duplicate()
+		match take_type:
+			TAKE_TYPES.ALL:
+				taken_actions = forge_actions.duplicate()
+			TAKE_TYPES.FIRST:
+				taken_actions.append(forge_actions[0])
+			TAKE_TYPES.LAST:
+				taken_actions.append(forge_actions[-1])
+			_:
+				DebugLogger.log_error("ActionTakeFromForge: Unsupported take_type {0}".format([take_type]))
+				continue
 
 		# Calculate extracted load
 		var extracted_load: int = 0
@@ -46,9 +57,9 @@ func perform_action() -> void:
 
 		# Step C: Precise clear
 		if clear_after_take:
-			if take_type == 0:
+			if take_type == TAKE_TYPES.FIRST:
 				forge_actions.remove_at(0)
-			elif take_type == 1:
+			elif take_type == TAKE_TYPES.LAST:
 				forge_actions.remove_at(forge_actions.size() - 1)
 			else:
 				forge_actions.clear()

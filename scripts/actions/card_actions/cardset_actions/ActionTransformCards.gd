@@ -3,10 +3,9 @@
 extends BaseCardsetAction
 
 func perform_action():
-	var picked_cards: Array[CardData] = _get_picked_cards()
-	
-	var action_interceptor_processors: Array[ActionInterceptorProcessor] = _intercept_action([])
-	for action_interceptor_processor in action_interceptor_processors:
+	var action_interceptor_processors: Array[ActionInterceptorProcessor] = _intercept_cardset_action()
+	for action_interceptor_processor: ActionInterceptorProcessor in action_interceptor_processors:
+		var picked_cards: Array[CardData] = _get_picked_cards(action_interceptor_processor)
 		# whether to transform the combat card or permanent card
 		var transform_parent_card: bool = action_interceptor_processor.get_shadowed_action_values("transform_parent_card", true)
 		# use this flag for a specific card id. Empty string for random transform
@@ -74,17 +73,16 @@ func perform_action():
 					new_card_object_id = card_object_ids[0]
 			
 			### transform and upgrade the cards
-			if card_data != null:
-				var upgrade_level: int = 0
-				if keep_upgrade_level:
-					upgrade_level = card_data.card_upgrade_amount
-				if force_upgrade_level >= 0:
-					upgrade_level = force_upgrade_level
-				
-				card_data.transform_card(new_card_object_id)
-				
-				for i in upgrade_level:
-					card_data.upgrade_card()
+			var upgrade_level: int = 0
+			if keep_upgrade_level:
+				upgrade_level = card_data.card_upgrade_amount
+			if force_upgrade_level >= 0:
+				upgrade_level = force_upgrade_level
+			
+			card_data.transform_card(new_card_object_id)
+			
+			for i in upgrade_level:
+				card_data.upgrade_card()
 			
 			if parent_card_data != null:
 				var upgrade_level: int = 0

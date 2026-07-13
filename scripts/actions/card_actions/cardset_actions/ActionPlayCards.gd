@@ -3,10 +3,10 @@
 extends BaseCardsetAction
 
 func perform_action() -> void:
-	var action_interceptor_processors: Array[ActionInterceptorProcessor] = _intercept_action([])
+	var action_interceptor_processors: Array[ActionInterceptorProcessor] = _intercept_cardset_action()
 	
 	for action_interceptor_processor in action_interceptor_processors:
-		var picked_cards: Array[CardData] = _get_picked_cards().duplicate()
+		var picked_cards: Array[CardData] = _get_picked_cards(action_interceptor_processor).duplicate()
 		picked_cards.reverse()	# reverse the order so the enqueue is in correct order
 		for card_data in picked_cards:
 			# get a random enemy for each card play

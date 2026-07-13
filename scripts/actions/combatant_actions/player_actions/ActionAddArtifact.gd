@@ -7,13 +7,13 @@ func is_instant_action() -> bool:
 func perform_action():
 	var action_interceptor_processors: Array[ActionInterceptorProcessor] = _intercept_action([])
 	for action_interceptor_processor in action_interceptor_processors:
-		var artifact_id: String = get_action_value("artifact_id", "")
+		var artifact_id: String = action_interceptor_processor.get_shadowed_action_values("artifact_id", "")
 		var artifact_data: ArtifactData = Global.get_artifact_data(artifact_id)
 		if artifact_data == null:
 			breakpoint
 			DebugLogger.log_error("ActionAddArtifact: No artifact with ID of \"{0}\"".format([artifact_id]))
 			return
-		var custom_values: Dictionary = get_action_value("custom_values", {})
+		var custom_values: Dictionary = action_interceptor_processor.get_shadowed_action_values("custom_values", {})
 		Global.player_data.add_artifact(artifact_id, custom_values)
 
 func _to_string():

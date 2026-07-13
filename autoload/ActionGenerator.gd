@@ -141,7 +141,7 @@ func generate_chest_open() -> void:
 			"chest_generates_consumables": true,
 			"chest_generates_cards": true,
 
-			"chest_money_amount": 25,
+			"chest_money": 25,
 			"chest_artifact_count": 1,
 			"chest_consumable_count": 1,
 			"chest_card_amount_draft": Global.player_data.reward_drafts,
@@ -191,7 +191,7 @@ shop_consumable_ids: Array[String], shop_consumable_prices: Array[int]) -> void:
 func generate_add_artifact(artifact_id: String) -> void:
 	var action_data: Array[Dictionary] = [{
 		Scripts.ACTION_ADD_ARTIFACT: {
-			"target_overrides": BaseAction.TARGET_OVERRIDES.PLAYER,
+			"target_override": BaseAction.TARGET_OVERRIDES.PLAYER,
 			"artifact_id": artifact_id
 		}
 		}]
@@ -222,11 +222,11 @@ func generate_consumable(card_play_request: CardPlayRequest) -> BaseAction:
 
 
 ## Generates and instantly performs an action to use a consumable in a given slot.
-func generate_use_consumable(selected_target: BaseCombatant, consumable_slot_index: int, perform_comsumable_actions_instantly: bool = false) -> void:
+func generate_use_consumable(selected_target: BaseCombatant, consumable_slot_index: int, perform_consumable_actions_instantly: bool = false) -> void:
 	var action_data: Array[Dictionary] = [{
 		Scripts.ACTION_USE_CONSUMABLE: {
 			"consumable_slot_index": consumable_slot_index,
-			"perform_comsumable_actions_instantly": perform_comsumable_actions_instantly,
+			"perform_consumable_actions_instantly": perform_consumable_actions_instantly,
 			}
 		}]
 	var generated_action: BaseAction = ActionGenerator.create_actions(Global.get_player(), null, [selected_target], action_data, null)[0]
@@ -248,7 +248,7 @@ func generate_decay_status_effect(selected_target: BaseCombatant, status_effect_
 	var action_data: Array[Dictionary] = [{
 		Scripts.ACTION_DECAY_STATUS: {
 			"status_effect_object_id": status_effect_object_id,
-			"status_charge_amount": decay_amount
+			"status_charge_delta": decay_amount
 			}
 		}]
 	var generated_action: BaseAction = ActionGenerator.create_actions(Global.get_player(), null, [selected_target], action_data, null)[0]

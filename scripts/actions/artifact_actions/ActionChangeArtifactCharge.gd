@@ -27,5 +27,5 @@ func is_instant_action() -> bool:
 	return true
 
 func _to_string():
-	var artifact_charge_increase: int = get_action_value("artifact_charge_increase", 0)
-	return "Increase Artifact Charge Action" + str(artifact_charge_increase)
+	var artifact_charges: int = get_action_value("artifact_charges", 1)
+	return "Change Artifact Charge Action: " + str(artifact_charges)

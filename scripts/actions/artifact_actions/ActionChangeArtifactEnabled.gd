@@ -9,7 +9,7 @@ func perform_action():
 	var action_interceptor_processors: Array[ActionInterceptorProcessor] = _intercept_action([])
 	for action_interceptor_processor in action_interceptor_processors:
 		var artifact_id: String = action_interceptor_processor.get_shadowed_action_values("artifact_id", "")
-		var artifact_disabled: int = action_interceptor_processor.get_shadowed_action_values("artifact_disabled", true)
+		var artifact_disabled: bool = action_interceptor_processor.get_shadowed_action_values("artifact_disabled", true)
 		
 		# (dis)able artifacts of a specific id (technically allows duplicates)
 		if artifact_id != "":
@@ -29,5 +29,5 @@ func is_instant_action() -> bool:
 	return true
 
 func _to_string():
-	var artifact_disabled: bool = get_action_value("artifact_disabled", 0)
+	var artifact_disabled: bool = get_action_value("artifact_disabled", true)
 	return "Enable Artifact Action" + str(artifact_disabled)

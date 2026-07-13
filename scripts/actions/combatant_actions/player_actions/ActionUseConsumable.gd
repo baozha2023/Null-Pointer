@@ -7,12 +7,12 @@ func perform_action():
 		var consumable_slot_index: int = action_interceptor_processor.get_shadowed_action_values("consumable_slot_index", 0)
 		# this flag will force all actions to be processed instantly rather than added to the stack. This has niche use for auto consumables
 		# especially auto-revives which must happen instantly between attacks.
-		var perform_comsumable_actions_instantly: bool = action_interceptor_processor.get_shadowed_action_values("perform_comsumable_actions_instantly", false)
+		var perform_consumable_actions_instantly: bool = action_interceptor_processor.get_shadowed_action_values("perform_consumable_actions_instantly", false)
 		
 		# ensure consumable exists in slot
 		var consumable_data: ConsumableData = Global.get_player_consumable_in_slot_index(consumable_slot_index)
 		if consumable_data == null:
-			DebugLogger.log_error("ActionUseComsumable: No consumable found in slot {0}".format([consumable_slot_index]))
+			DebugLogger.log_error("ActionUseConsumable: No consumable found in slot {0}".format([consumable_slot_index]))
 			breakpoint
 			return
 		else:
@@ -32,7 +32,7 @@ func perform_action():
 				var generated_actions: Array[BaseAction] = ActionGenerator.create_actions(player, _card_play_request, targets, action_data, null)
 				
 				# decide whether to perform instantly or add to stack
-				if perform_comsumable_actions_instantly:
+				if perform_consumable_actions_instantly:
 					# instant
 					for action: BaseAction in generated_actions:
 						action.perform_action()

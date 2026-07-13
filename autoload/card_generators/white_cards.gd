@@ -255,7 +255,7 @@ static func add_cards_white() -> void:
 	card_time_strike.card_play_actions = [
 		{
 			Scripts.ACTION_TIME_ATTACK_GENERATOR: {
-				"time_extraction_mode": "ONES_DIGIT",
+				"time_extraction_mode": ActionTimeAttackGenerator.TIME_EXTRACTION_MODES.ONES_DIGIT,
 				"audio_path": AudioConstants.SFX_GROUP_BLUNT_SMASH,
 				"time_delay": 0.0,
 			},

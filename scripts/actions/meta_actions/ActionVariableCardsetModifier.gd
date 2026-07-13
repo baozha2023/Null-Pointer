@@ -6,8 +6,8 @@ extends BaseCardsetAction
 func is_instant_action() -> bool:
 	return true
 
-func perform_action():
-	var action_interceptor_processors: Array[ActionInterceptorProcessor] = _intercept_action([])
+func perform_action() -> void:
+	var action_interceptor_processors: Array[ActionInterceptorProcessor] = _intercept_cardset_action()
 	
 	for action_interceptor_processor in action_interceptor_processors:
 		var modified_action_data: Array[Dictionary] = []
@@ -16,7 +16,7 @@ func perform_action():
 		var multiplier_offset: int = max(0, action_interceptor_processor.get_shadowed_action_values("multiplier_offset", 0))	# an additional amount to improve the multiplier by. Eg 1 would be X + 1. Must be positive
 		var multiplied_values_bases: Dictionary = action_interceptor_processor.get_shadowed_action_values("multiplied_values_bases", {})	# allows for a base value on top of modified values. eg Base + (X x Value)
 		
-		var picked_cards: Array[CardData] = _get_picked_cards()
+		var picked_cards: Array[CardData] = _get_picked_cards(action_interceptor_processor)
 		var input_energy: int = len(picked_cards)
 		
 		# creates a duplicate of the child action data, then modifies any keys with a multiple of the card play's input energy

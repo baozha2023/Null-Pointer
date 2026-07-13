@@ -1,4 +1,11 @@
 extends BaseAction
+class_name ActionTimeAttackGenerator
+
+enum TIME_EXTRACTION_MODES {
+	ONES_DIGIT,
+	TOTAL_SECONDS,
+	TOTAL_MINUTES,
+}
 
 func is_instant_action() -> bool:
 	return true
@@ -20,16 +27,20 @@ func perform_action():
 		if card_play_request != null:
 			locked_run_time = card_play_request.card_values.get("locked_run_time", 0.0)
 			
-		var time_extraction_mode: String = action_interceptor_processor.get_shadowed_action_values("time_extraction_mode", "ONES_DIGIT")
+		var time_extraction_mode: int = action_interceptor_processor.get_shadowed_action_values("time_extraction_mode", TIME_EXTRACTION_MODES.ONES_DIGIT)
 		var time_multiplier: int = action_interceptor_processor.get_shadowed_action_values("time_multiplier", 1)
 		
 		var extracted_time_value: int = 0
-		if time_extraction_mode == "ONES_DIGIT":
-			extracted_time_value = int(locked_run_time) % 10
-		elif time_extraction_mode == "TOTAL_SECONDS":
-			extracted_time_value = int(locked_run_time)
-		elif time_extraction_mode == "TOTAL_MINUTES":
-			extracted_time_value = int(locked_run_time) / 60
+		match time_extraction_mode:
+			TIME_EXTRACTION_MODES.ONES_DIGIT:
+				extracted_time_value = int(locked_run_time) % 10
+			TIME_EXTRACTION_MODES.TOTAL_SECONDS:
+				extracted_time_value = int(locked_run_time)
+			TIME_EXTRACTION_MODES.TOTAL_MINUTES:
+				extracted_time_value = int(locked_run_time) / 60
+			_:
+				DebugLogger.log_error("ActionTimeAttackGenerator: Unsupported time_extraction_mode {0}".format([time_extraction_mode]))
+				continue
 			
 		var damage: int = extracted_time_value * time_multiplier
 		# --- TIME BASED DAMAGE LOGIC END ---
@@ -64,11 +75,7 @@ func perform_action():
 				"target_override": target_override,
 				"actions_on_lethal": actions_on_lethal,
 				"audio_path": audio_path_val,
-				"attack_anim_name": per_attack_animation_name,
 				}}]
-			
-			if typeof(audio_path_val) == TYPE_ARRAY and audio_path_val.size() > 0:
-				action_data.append({Scripts.ACTION_PLAY_SOUND: {"audio_path": audio_path_val}})
 				
 			if per_attack_animation_name != AnimationData.ANIMATION_NONE:
 				action_data.append({Scripts.ACTION_PLAY_ANIMATION: {
