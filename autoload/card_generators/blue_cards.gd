@@ -115,13 +115,21 @@ static func add_cards_blue() -> void:
 		"card_play_destination": HandManager.DISCARD_PILE,
 		"card_hint": "从弃牌堆（回收站）里选一张已打出的牌拿回手牌，且本回合打出它不花费用。"
 	}
+	card_stack_trace.card_play_validators = [
+		{
+			Scripts.VALIDATOR_COMBAT_PILES_HAVE_VALIDATED_CARDS: {
+				"source_zones": [HandManager.DISCARD_PILE],
+				"comparison_value": 1,
+			}
+		},
+	]
 	card_stack_trace.card_play_actions = [
 		{
 			Scripts.ACTION_PICK_CARDS: {
 				"card_pick_type": HandManager.DISCARD_PILE,
 				"min_card_amount": 1,
 				"max_card_amount": 1,
-				"min_cards_are_required_for_action": false,
+				"min_cards_are_required_for_action": true,
 				"random_selection": false,
 				"card_pick_text": "选择一张脚本，本回合耗能变为 0",
 				"action_data": [
@@ -1036,6 +1044,15 @@ static func add_cards_blue() -> void:
 	}
 	card_async_execution.card_description = "选择手牌中的 [pick_amount] 张脚本暂存，并在当前区域将其物理删除。[duration_turns] 个时钟周期后，将该脚本的 [duplicate_amount] 张复制加入当前线程。"
 	card_async_execution.card_hint = "把暂时用不到的核心脚本挂起，几个回合后它会带着双倍的复制体强势回归，非常适合用来提前‘憋大招’。"
+	card_async_execution.card_play_validators = [
+		{
+			Scripts.VALIDATOR_COMBAT_PILES_HAVE_VALIDATED_CARDS: {
+				"source_zones": [HandManager.HAND_PILE],
+				"exclude_validated_card": true,
+				"comparison_value": 1,
+			}
+		},
+	]
 	card_async_execution.card_play_actions = [
 		{
 			Scripts.ACTION_PICK_CARDS: {
@@ -1044,7 +1061,8 @@ static func add_cards_blue() -> void:
 					"min_card_amount": "pick_amount",
 					"max_card_amount": "pick_amount"
 				},
-				"card_pick_message": "选择一张要暂存的卡",
+				"min_cards_are_required_for_action": true,
+				"card_pick_text": "选择一个要暂存的脚本",
 				"action_data": [
 					{
 						Scripts.ACTION_SCHEDULE_DELAYED_ACTIONS: {

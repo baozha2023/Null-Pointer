@@ -6,6 +6,18 @@ class_name Hand
 
 # Controls the movement speed (time) of cards, making them tween faster or slower around the hand
 const CARD_TWEEN_TIME: float = 0.2
+const CARD_CANCEL_TWEEN_TIME: float = 0.18
+const CARD_DRAG_THRESHOLD: float = 12.0
+const CARD_PLAY_AREA_OFFSET: float = 48.0
+const MOUSE_POINTER_ID: int = -1
+
+enum CARD_INTERACTION_STATES {
+	IDLE,
+	PRESSING,
+	DRAGGING,
+	SELECTED,
+	COMMITTING,
+}
 
 ## During hand related card pick actions, invalid cards will appear transparent.
 const INVALID_CARD_ALPHA: float = 0.3
@@ -16,6 +28,7 @@ var targeting_arrow: TargetingArrow = null
 @onready var player: BaseCombatant = $%Player
 @onready var combat = $%Combat
 @onready var card_container: Control = %CardContainer
+@onready var consumables: Control = get_node("../Consumables")
 
 # a debugging component for displaying hand's physical size
 # should be the same size and position of Hand
@@ -33,16 +46,22 @@ var current_card_pick_action: ActionBasePickCards = null # an action currently r
 # Targeting
 @onready var background_button: TextureButton = $%BackgroundButton
 @onready var select_target_label: Label = $%SelectTargetLabel
-var current_selected_card: Card = null # used for cards with targeting
+var interaction_state: CARD_INTERACTION_STATES = CARD_INTERACTION_STATES.IDLE
+var active_card: Card = null
+var active_pointer_id: int = MOUSE_POINTER_ID
+var active_pointer_is_touch: bool = false
+var pointer_press_position: Vector2 = Vector2.ZERO
+var card_grab_offset: Vector2 = Vector2.ZERO
+var current_target: Enemy = null
 
 # Card Play Queue
 var hand_disabled: bool = false # the player cannot play additional cards manually
-var performing_card_right_click: bool = false # flag used to lock card plays while a right click action happens
 
 # Mapping
 ## Maps a CardData object to the actual Card represented by it in hand.
 ## This is usually mapped in create_cards_in_hand() and unmapped in HandManager.move_card_to_limbo()
 var card_data_to_hand_card: Dictionary[CardData, Card] = { }
+var card_transform_tweens: Dictionary[Card, Tween] = {}
 
 # Card Positions and Rotations
 ## Curve controlling card index in hand to its rotation
@@ -84,6 +103,7 @@ func _ready():
 	Signals.combat_started.connect(_on_combat_started)
 	Signals.combat_ended.connect(_on_combat_ended)
 	Signals.run_ended.connect(_on_run_ended)
+	Signals.player_killed.connect(_on_player_killed)
 
 	Signals.card_pick_requested.connect(_on_card_pick_requested)
 	Signals.card_pick_confirmed.connect(_on_card_pick_confirmed)
@@ -96,8 +116,68 @@ func _ready():
 	background_button.button_up.connect(_on_background_button_up)
 
 
+func _process(_delta: float) -> void:
+	if interaction_state == CARD_INTERACTION_STATES.IDLE:
+		return
+	if not is_instance_valid(active_card) or not HandManager.player_hand.has(active_card.card_data):
+		cancel_card_interaction()
+		return
+	if is_instance_valid(current_target) and not current_target.is_alive():
+		_set_current_target(null)
+
+
+func _input(event: InputEvent) -> void:
+	if interaction_state == CARD_INTERACTION_STATES.IDLE:
+		return
+
+	if event.is_action_pressed("ui_cancel") or (
+		event is InputEventMouseButton
+		and event.button_index == MOUSE_BUTTON_RIGHT
+		and event.pressed
+	):
+		cancel_card_interaction()
+		get_viewport().set_input_as_handled()
+		return
+
+	if event is InputEventMouseButton:
+		var mouse_event: InputEventMouseButton = event
+		if mouse_event.device == InputEvent.DEVICE_ID_EMULATION:
+			return
+		if mouse_event.button_index == MOUSE_BUTTON_LEFT and not mouse_event.pressed:
+			if interaction_state in [CARD_INTERACTION_STATES.PRESSING, CARD_INTERACTION_STATES.DRAGGING]:
+				if not active_pointer_is_touch:
+					_finish_pointer_interaction(mouse_event.global_position)
+			elif interaction_state == CARD_INTERACTION_STATES.SELECTED:
+				_handle_selected_release(mouse_event.global_position)
+		return
+
+	if event is InputEventMouseMotion:
+		var mouse_motion: InputEventMouseMotion = event
+		if mouse_motion.device == InputEvent.DEVICE_ID_EMULATION:
+			return
+		if not active_pointer_is_touch and interaction_state in [CARD_INTERACTION_STATES.PRESSING, CARD_INTERACTION_STATES.DRAGGING]:
+			_update_pointer_interaction(mouse_motion.global_position)
+		return
+
+	if event is InputEventScreenDrag:
+		var screen_drag: InputEventScreenDrag = event
+		if active_pointer_is_touch and screen_drag.index == active_pointer_id:
+			_update_pointer_interaction(screen_drag.position)
+		return
+
+	if event is InputEventScreenTouch:
+		var screen_touch: InputEventScreenTouch = event
+		if screen_touch.pressed:
+			return
+		if interaction_state in [CARD_INTERACTION_STATES.PRESSING, CARD_INTERACTION_STATES.DRAGGING]:
+			if active_pointer_is_touch and screen_touch.index == active_pointer_id:
+				_finish_pointer_interaction(screen_touch.position)
+		elif interaction_state == CARD_INTERACTION_STATES.SELECTED:
+			_handle_selected_release(screen_touch.position)
+
+
 ## Recalculates the transforms of Card objects in hand and tweens them to their new positions.
-func tween_hand():
+func tween_hand(duration: float = CARD_TWEEN_TIME) -> void:
 	var cards_in_hand: Array[Card] = get_player_hand_cards()
 
 	### Figure out the number of cards in hand for figuring out offsets. Picking cards will adjust this number
@@ -170,11 +250,22 @@ func tween_hand():
 			new_rot = 0
 			pick_index += 1
 
+		if card == active_card and interaction_state == CARD_INTERACTION_STATES.DRAGGING:
+			continue
+
 		# interpolate card to new position and rotation
-		var tween: Tween = create_tween()
-		tween.tween_property(card.pivot, "position", new_position, CARD_TWEEN_TIME)
-		var tween_2: Tween = create_tween()
-		tween_2.tween_property(card.pivot, "rotation_degrees", new_rot, CARD_TWEEN_TIME)
+		_kill_card_transform_tween(card)
+		var tween: Tween = create_tween().set_parallel(true)
+		tween.tween_property(card.pivot, "position", new_position, duration)
+		tween.tween_property(card.pivot, "rotation_degrees", new_rot, duration)
+		card_transform_tweens[card] = tween
+
+
+func _kill_card_transform_tween(card: Card) -> void:
+	var tween: Tween = card_transform_tweens.get(card)
+	if tween != null and tween.is_valid():
+		tween.kill()
+	card_transform_tweens.erase(card)
 
 
 func _on_card_hovered(card: Card):
@@ -191,8 +282,13 @@ func update_hand_card_hover(hovered_card: Card = null) -> void:
 		var card_in_hand: Card = card_data_to_hand_card.get(card_data)
 		if card_in_hand == null:
 			continue
+		if card_in_hand == active_card and interaction_state == CARD_INTERACTION_STATES.DRAGGING:
+			card_in_hand.z_index = 100
+			continue
 
-		if hovered_card == card_in_hand or current_selected_card == card_in_hand:
+		if hovered_card == card_in_hand or (
+			interaction_state == CARD_INTERACTION_STATES.SELECTED and active_card == card_in_hand
+		):
 			# hovered card
 			card_in_hand.position.y = CARD_HOVERED_HEIGHT
 			card_in_hand.z_index = 50
@@ -203,84 +299,218 @@ func update_hand_card_hover(hovered_card: Card = null) -> void:
 			z_index_counter += 1
 
 
-func _on_card_selected(card: Card):
-	# card clicked, attempt to do something with it
-	# check if playing or picking cards
+func _on_hand_pointer_pressed(card: Card, pointer_global_position: Vector2, pointer_id: int, is_touch: bool) -> void:
+	if interaction_state == CARD_INTERACTION_STATES.COMMITTING:
+		return
+	if interaction_state == CARD_INTERACTION_STATES.SELECTED:
+		if card == active_card:
+			cancel_card_interaction()
+			return
+		cancel_card_interaction()
+	elif interaction_state != CARD_INTERACTION_STATES.IDLE:
+		return
+
 	if current_card_pick_action == null:
-		### playing
-		# cannot play cards with a disabled hand
 		if hand_disabled:
 			return
-		# cannot play while right click actions happening
-		if performing_card_right_click:
+		if _is_card_queued(card.card_data):
 			return
-		# check if card is generally playable
-		if not card.can_play_card():
+		if not card.can_play_card(null, true):
 			return
-		# cannot play cards already queued
-		for card_play_request in HandManager.card_play_queue:
-			if card_play_request.card_data == card.card_data:
-				return
+		if consumables != null and consumables.consumable_target_requested:
+			consumables.cancel_target_request()
 
-		# check if autoplaying card based on targeting type
-		if card.card_data.card_requires_target:
-			current_selected_card = card
-			_prompt_target(card)
-		else:
-			# generate the card play request and enqueue it
-			var card_data: CardData = card.card_data
-			var card_play_request: CardPlayRequest = HandManager.create_card_play_request(card_data, null, true, true)
-			card_play_request.card_destination_pile = card_data.card_play_destination
-			card_play_request.card_destination_strategy = card_data.card_play_destination_strategy
+	interaction_state = CARD_INTERACTION_STATES.PRESSING
+	active_card = card
+	active_card.begin_hand_interaction()
+	active_pointer_id = pointer_id
+	active_pointer_is_touch = is_touch
+	pointer_press_position = pointer_global_position
+	card_grab_offset = card.pivot.global_position - pointer_global_position
+	_set_current_target(null)
 
-			HandManager.add_card_to_play_queue(card_play_request, true, false)
-			current_selected_card = null
-			_unprompt_target()
+
+func _update_pointer_interaction(pointer_global_position: Vector2) -> void:
+	if not is_instance_valid(active_card):
+		cancel_card_interaction()
+		return
+	if current_card_pick_action != null:
+		return
+
+	if interaction_state == CARD_INTERACTION_STATES.PRESSING:
+		if pointer_press_position.distance_to(pointer_global_position) < CARD_DRAG_THRESHOLD:
+			return
+		interaction_state = CARD_INTERACTION_STATES.DRAGGING
+		_kill_card_transform_tween(active_card)
+		active_card.begin_hand_drag()
+		if active_card.card_data.card_requires_target:
+			_prompt_target(active_card)
+
+	if interaction_state != CARD_INTERACTION_STATES.DRAGGING:
+		return
+	active_card.update_hand_drag_position(pointer_global_position, card_grab_offset)
+	if active_card.card_data.card_requires_target:
+		if is_instance_valid(targeting_arrow):
+			if active_pointer_is_touch:
+				targeting_arrow.set_pointer_position(pointer_global_position)
+			else:
+				targeting_arrow.clear_pointer_position()
+		_set_current_target(_get_alive_enemy_at(pointer_global_position))
 	else:
-		### picking
-		attempt_pick_card(card)
+		active_card.set_card_play_ready_glow(_is_valid_non_target_release(pointer_global_position))
 
 
-func _on_card_right_clicked(card: Card):
-	current_selected_card = null
+func _finish_pointer_interaction(pointer_global_position: Vector2) -> void:
+	if current_card_pick_action != null:
+		var picked_card: Card = active_card
+		_clear_card_interaction(false)
+		if is_instance_valid(picked_card):
+			attempt_pick_card(picked_card)
+		return
+
+	if interaction_state == CARD_INTERACTION_STATES.PRESSING:
+		_select_active_card()
+		return
+	if interaction_state != CARD_INTERACTION_STATES.DRAGGING:
+		return
+
+	if active_card.card_data.card_requires_target:
+		var release_target: Enemy = _get_alive_enemy_at(pointer_global_position)
+		if release_target != null and _try_commit_card(active_card, release_target):
+			return
+	elif _is_valid_non_target_release(pointer_global_position):
+		if _try_commit_card(active_card, null):
+			return
+	cancel_card_interaction()
+
+
+func _select_active_card() -> void:
+	if not is_instance_valid(active_card):
+		cancel_card_interaction()
+		return
+	interaction_state = CARD_INTERACTION_STATES.SELECTED
+	active_card.reset_hand_interaction_visual()
+	update_hand_card_hover(active_card)
+	if active_card.card_data.card_requires_target:
+		_prompt_target(active_card)
+	else:
+		_unprompt_target()
+
+
+func _handle_selected_release(pointer_global_position: Vector2) -> void:
+	if not is_instance_valid(active_card):
+		cancel_card_interaction()
+		return
+	if active_card.card_data.card_requires_target:
+		var release_target: Enemy = _get_alive_enemy_at(pointer_global_position)
+		if release_target != null and _try_commit_card(active_card, release_target):
+			return
+	elif _is_valid_non_target_release(pointer_global_position):
+		if _try_commit_card(active_card, null):
+			return
+	cancel_card_interaction()
+
+
+func _try_commit_card(card: Card, target: Enemy) -> bool:
+	if hand_disabled or not is_instance_valid(card):
+		return false
+	if not HandManager.player_hand.has(card.card_data):
+		return false
+	if card_data_to_hand_card.get(card.card_data) != card:
+		return false
+	if _is_card_queued(card.card_data):
+		return false
+	if card.card_data.card_requires_target and (target == null or not target.is_alive()):
+		return false
+	if not card.can_play_card(target, true):
+		return false
+
+	interaction_state = CARD_INTERACTION_STATES.COMMITTING
+	var card_data: CardData = card.card_data
+	var card_play_request: CardPlayRequest = HandManager.create_card_play_request(card_data, target, true, true)
+	card_play_request.card_destination_pile = card_data.card_play_destination
+	card_play_request.card_destination_strategy = card_data.card_play_destination_strategy
+	_clear_card_interaction(false)
+	HandManager.add_card_to_play_queue(card_play_request, true, false)
+	return true
+
+
+func _is_card_queued(card_data: CardData) -> bool:
+	for card_play_request: CardPlayRequest in HandManager.card_play_queue:
+		if card_play_request.card_data == card_data:
+			return true
+	return false
+
+
+func cancel_card_interaction() -> void:
+	if interaction_state == CARD_INTERACTION_STATES.IDLE:
+		return
+	_clear_card_interaction(true)
+
+
+func _clear_card_interaction(restore_layout: bool) -> void:
+	var card_to_restore: Card = active_card
+	_set_current_target(null, true)
 	_unprompt_target()
+	if is_instance_valid(card_to_restore):
+		card_to_restore.reset_hand_interaction_visual()
+	interaction_state = CARD_INTERACTION_STATES.IDLE
+	active_card = null
+	active_pointer_id = MOUSE_POINTER_ID
+	active_pointer_is_touch = false
+	pointer_press_position = Vector2.ZERO
+	card_grab_offset = Vector2.ZERO
 	update_hand_card_hover()
-	if ActionHandler.actions_being_performed:
-		return # cannot right click while actions happening
-	if hand_disabled:
-		return # cannot right click cards with a disabled hand
-	if len(HandManager.card_play_queue) > 0:
-		return # cannot right click cards while cards queued
-	_perform_card_right_click_actions(card)
+	if restore_layout:
+		tween_hand(CARD_CANCEL_TWEEN_TIME)
+
 
 ### Targeting
 
 
 func _on_background_button_up():
-	current_selected_card = null
-	_unprompt_target()
-	update_hand_card_hover()
+	if interaction_state == CARD_INTERACTION_STATES.SELECTED:
+		cancel_card_interaction()
 
 
 func _on_enemy_clicked(enemy: Enemy):
-	if current_selected_card != null:
-		_unprompt_target()
-
-		# generate the card play request and enqueue it
-		var card_data: CardData = current_selected_card.card_data
-		var card_play_request: CardPlayRequest = HandManager.create_card_play_request(card_data, enemy, true, true)
-		card_play_request.card_destination_pile = card_data.card_play_destination
-		card_play_request.card_destination_strategy = card_data.card_play_destination_strategy
-
-		HandManager.add_card_to_play_queue(card_play_request, true, false)
-		current_selected_card = null
+	if interaction_state == CARD_INTERACTION_STATES.SELECTED and is_instance_valid(active_card):
+		if active_card.card_data.card_requires_target:
+			if not _try_commit_card(active_card, enemy):
+				cancel_card_interaction()
 
 
 func _on_enemy_hovered(enemy: Enemy):
-	if current_selected_card != null:
-		current_selected_card.update_card_display(enemy)
-		if is_instance_valid(targeting_arrow) and targeting_arrow.visible:
-			targeting_arrow.target_enemy = enemy
+	if interaction_state in [CARD_INTERACTION_STATES.DRAGGING, CARD_INTERACTION_STATES.SELECTED]:
+		if is_instance_valid(active_card) and active_card.card_data.card_requires_target:
+			if not active_pointer_is_touch:
+				_set_current_target(enemy)
+
+
+func _set_current_target(enemy: Enemy, force_refresh: bool = false) -> void:
+	if enemy != null and not enemy.is_alive():
+		enemy = null
+	if current_target == enemy and not force_refresh:
+		return
+	current_target = enemy
+	if is_instance_valid(active_card) and active_card.card_data.card_requires_target:
+		active_card.update_card_display(current_target)
+	if is_instance_valid(targeting_arrow) and targeting_arrow.visible:
+		targeting_arrow.target_enemy = current_target
+
+
+func _get_alive_enemy_at(pointer_global_position: Vector2) -> Enemy:
+	for enemy: Enemy in Global.get_alive_enemies():
+		if enemy.selection_button.get_global_rect().has_point(pointer_global_position):
+			return enemy
+	return null
+
+
+func _is_valid_non_target_release(pointer_global_position: Vector2) -> bool:
+	return (
+		background_button.get_global_rect().has_point(pointer_global_position)
+		and pointer_global_position.y < self.global_position.y - CARD_PLAY_AREA_OFFSET
+	)
 
 
 func _prompt_target(_card: Card):
@@ -292,31 +522,19 @@ func _prompt_target(_card: Card):
 	
 	targeting_arrow.visible = true
 	targeting_arrow.start_node = _card
-	
-	targeting_arrow.target_enemy = null
+	if active_pointer_is_touch:
+		targeting_arrow.set_pointer_position(pointer_press_position)
+	else:
+		targeting_arrow.clear_pointer_position()
+	targeting_arrow.target_enemy = current_target
 
 func _unprompt_target():
 	select_target_label.visible = false
 	if is_instance_valid(targeting_arrow):
 		targeting_arrow.visible = false
-		targeting_arrow.target_enemy = null
+		targeting_arrow.clear_pointer_position()
+		targeting_arrow.clear_target()
 
-
-func _perform_card_right_click_actions(card: Card) -> void:
-	# locks further card actions and performs a right click on a card
-	if len(card.card_data.card_right_click_actions) > 0:
-		performing_card_right_click = true # locks further card actions
-		# generate fake card request
-		var card_play_request: CardPlayRequest = HandManager.create_card_play_request(card.card_data, null, true, true)
-
-		# generate card actions
-		var card_right_click_actions: Array[BaseAction] = ActionGenerator.create_actions(player, card_play_request, [], card.card_data.card_right_click_actions, null)
-		ActionHandler.add_actions(card_right_click_actions)
-
-		if ActionHandler.actions_being_performed:
-			await ActionHandler.actions_ended
-
-		performing_card_right_click = false
 
 #region Card Picking
 func update_card_pick_ui():
@@ -370,6 +588,7 @@ func _on_confirm_pick_button_up():
 
 func _on_card_pick_requested(card_selection_action: ActionBasePickCards):
 	if card_selection_action.get_card_pick_type() == HandManager.HAND_PILE:
+		cancel_card_interaction()
 		card_picking.visible = true
 		current_card_pick_action = card_selection_action
 		update_card_pick_ui()
@@ -417,8 +636,7 @@ func create_cards_in_hand(cards: Array[CardData]) -> Array[Card]:
 
 		card.card_hovered.connect(_on_card_hovered)
 		card.card_unhovered.connect(_on_card_unhovered)
-		card.card_selected.connect(_on_card_selected)
-		card.card_right_clicked.connect(_on_card_right_clicked)
+		card.hand_pointer_pressed.connect(_on_hand_pointer_pressed)
 
 		card_data_to_hand_card[card_data] = card
 
@@ -430,6 +648,11 @@ func create_cards_in_hand(cards: Array[CardData]) -> Array[Card]:
 ## Removes the Card UI elements from the hand
 ## NOTE: Typeically called from HandManager.
 func clear_hand_cards() -> void:
+	cancel_card_interaction()
+	for tween: Tween in card_transform_tweens.values():
+		if tween != null and tween.is_valid():
+			tween.kill()
+	card_transform_tweens.clear()
 	for child in card_container.get_children():
 		child.queue_free()
 	card_data_to_hand_card.clear()
@@ -438,25 +661,31 @@ func clear_hand_cards() -> void:
 func disable_hand(_disabled: bool = true):
 	hand_disabled = _disabled
 	if hand_disabled:
-		current_selected_card = null
-		_unprompt_target()
+		cancel_card_interaction()
 
 #endregion
 
 ### Combat/Turns
 
 func _on_combat_started(_event_id: String):
+	cancel_card_interaction()
 	_unprompt_target()
 
 
 func _on_combat_ended():
+	cancel_card_interaction()
 	_unprompt_target()
 	clear_hand_cards()
 
 
 func _on_run_ended():
+	cancel_card_interaction()
 	_unprompt_target()
 	clear_hand_cards()
+
+
+func _on_player_killed(_player: Player) -> void:
+	cancel_card_interaction()
 
 #region Card Trails
 func create_card_trail_from_card(card: Card, card_destination_pile: String, is_combat: bool) -> void:

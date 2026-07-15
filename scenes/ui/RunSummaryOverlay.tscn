@@ -1,0 +1,678 @@
+[gd_scene format=3 uid="uid://cfwv83pkpv06t"]
+
+[ext_resource type="Script" uid="uid://pk2e8kasw6rr" path="res://scripts/ui/RunSummaryOverlay.gd" id="1_summary"]
+
+[sub_resource type="StyleBoxFlat" id="StyleMainPanel"]
+bg_color = Color(0.027, 0.035, 0.055, 0.985)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.16, 0.78, 0.82, 0.8)
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+corner_radius_bottom_right = 20
+corner_radius_bottom_left = 20
+shadow_color = Color(0, 0, 0, 0.65)
+shadow_size = 24
+
+[sub_resource type="StyleBoxFlat" id="StyleBadge"]
+bg_color = Color(0.08, 0.32, 0.36, 0.72)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.25, 0.9, 0.9, 0.8)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleIdentity"]
+bg_color = Color(0.045, 0.057, 0.086, 0.96)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.19, 0.25, 0.36, 0.9)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
+
+[sub_resource type="StyleBoxFlat" id="StylePortrait"]
+bg_color = Color(0.022, 0.028, 0.044, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.18, 0.68, 0.72, 0.75)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleHealthBackground"]
+bg_color = Color(0.018, 0.024, 0.038, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleHealthFill"]
+bg_color = Color(0.82, 0.24, 0.32, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleStatCard"]
+bg_color = Color(0.052, 0.065, 0.096, 0.96)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.16, 0.22, 0.32, 0.9)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleDetailPanel"]
+bg_color = Color(0.038, 0.048, 0.073, 0.92)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.13, 0.18, 0.27, 0.9)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleButtonNormal"]
+bg_color = Color(0.08, 0.39, 0.43, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.3, 0.9, 0.9, 0.85)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+shadow_color = Color(0, 0, 0, 0.35)
+shadow_size = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleButtonPressed"]
+bg_color = Color(0.045, 0.27, 0.3, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.26, 0.78, 0.8, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleButtonHover"]
+bg_color = Color(0.11, 0.53, 0.57, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.48, 1, 0.98, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+shadow_color = Color(0.05, 0.6, 0.65, 0.35)
+shadow_size = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleButtonFocus"]
+bg_color = Color(0, 0, 0, 0)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.68, 1, 0.98, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[node name="RunSummaryOverlay" type="Control" unique_id=832877468]
+process_mode = 1
+visible = false
+z_index = 100
+layout_mode = 3
+anchors_preset = 0
+offset_right = 1200.0
+offset_bottom = 700.0
+script = ExtResource("1_summary")
+
+[node name="Backdrop" type="ColorRect" parent="." unique_id=328166254]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.008, 0.011, 0.02, 0.9)
+
+[node name="BackdropGlow" type="ColorRect" parent="." unique_id=1774155267]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.03, 0.32, 0.34, 0.12)
+
+[node name="TopGlow" type="ColorRect" parent="." unique_id=1178618800]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 4.0
+grow_horizontal = 2
+mouse_filter = 2
+color = Color(0.24, 0.9, 0.88, 0.85)
+
+[node name="MainPanel" type="PanelContainer" parent="." unique_id=1150849849]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -530.0
+offset_top = -300.0
+offset_right = 530.0
+offset_bottom = 300.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(530, 300)
+theme_override_styles/panel = SubResource("StyleMainPanel")
+
+[node name="ContentMargin" type="MarginContainer" parent="MainPanel" unique_id=616032662]
+layout_mode = 2
+theme_override_constants/margin_left = 38
+theme_override_constants/margin_top = 26
+theme_override_constants/margin_right = 38
+theme_override_constants/margin_bottom = 26
+
+[node name="Content" type="VBoxContainer" parent="MainPanel/ContentMargin" unique_id=887534037]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Header" type="HBoxContainer" parent="MainPanel/ContentMargin/Content" unique_id=539972122]
+custom_minimum_size = Vector2(0, 96)
+layout_mode = 2
+theme_override_constants/separation = 24
+
+[node name="TitleBlock" type="VBoxContainer" parent="MainPanel/ContentMargin/Content/Header" unique_id=180789482]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 5
+
+[node name="StatusBadge" type="PanelContainer" parent="MainPanel/ContentMargin/Content/Header/TitleBlock" unique_id=1679574471]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(152, 28)
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_styles/panel = SubResource("StyleBadge")
+
+[node name="BadgeMargin" type="MarginContainer" parent="MainPanel/ContentMargin/Content/Header/TitleBlock/StatusBadge" unique_id=1928567196]
+layout_mode = 2
+theme_override_constants/margin_left = 13
+theme_override_constants/margin_right = 13
+
+[node name="ResultKicker" type="Label" parent="MainPanel/ContentMargin/Content/Header/TitleBlock/StatusBadge/BadgeMargin" unique_id=1533392278]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.72, 1, 0.98, 1)
+theme_override_font_sizes/font_size = 12
+text = "运行完成"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ResultTitle" type="Label" parent="MainPanel/ContentMargin/Content/Header/TitleBlock" unique_id=914202299]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.44, 0.96, 0.9, 1)
+theme_override_colors/font_shadow_color = Color(0.1, 0.8, 0.76, 0.28)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 3
+theme_override_font_sizes/font_size = 42
+text = "胜利"
+
+[node name="EndRunMessageLabel" type="RichTextLabel" parent="MainPanel/ContentMargin/Content/Header/TitleBlock" unique_id=174924068]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 28)
+layout_mode = 2
+theme_override_colors/default_color = Color(0.7, 0.74, 0.82, 1)
+theme_override_font_sizes/normal_font_size = 15
+bbcode_enabled = true
+text = "主进程已完成，本次运行数据已归档。"
+scroll_active = false
+
+[node name="DurationBlock" type="VBoxContainer" parent="MainPanel/ContentMargin/Content/Header" unique_id=767324204]
+custom_minimum_size = Vector2(205, 0)
+layout_mode = 2
+alignment = 1
+
+[node name="DurationCaption" type="Label" parent="MainPanel/ContentMargin/Content/Header/DurationBlock" unique_id=1308883038]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.42, 0.47, 0.57, 1)
+theme_override_font_sizes/font_size = 12
+text = "运行时长"
+horizontal_alignment = 2
+
+[node name="DurationValue" type="Label" parent="MainPanel/ContentMargin/Content/Header/DurationBlock" unique_id=2270398]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.92, 0.96, 1)
+theme_override_font_sizes/font_size = 30
+text = "00:00:00"
+horizontal_alignment = 2
+
+[node name="HeaderSeparator" type="ColorRect" parent="MainPanel/ContentMargin/Content" unique_id=1079274002]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 2)
+layout_mode = 2
+color = Color(0.16, 0.68, 0.7, 0.5)
+
+[node name="Body" type="HBoxContainer" parent="MainPanel/ContentMargin/Content" unique_id=2060841353]
+custom_minimum_size = Vector2(0, 342)
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 20
+
+[node name="IdentityPanel" type="PanelContainer" parent="MainPanel/ContentMargin/Content/Body" unique_id=1676603990]
+custom_minimum_size = Vector2(255, 0)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleIdentity")
+
+[node name="IdentityMargin" type="MarginContainer" parent="MainPanel/ContentMargin/Content/Body/IdentityPanel" unique_id=288821719]
+layout_mode = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 18
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 18
+
+[node name="IdentityContent" type="VBoxContainer" parent="MainPanel/ContentMargin/Content/Body/IdentityPanel/IdentityMargin" unique_id=1938297506]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="IdentityCaption" type="Label" parent="MainPanel/ContentMargin/Content/Body/IdentityPanel/IdentityMargin/IdentityContent" unique_id=1888695360]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.42, 0.48, 0.6, 1)
+theme_override_font_sizes/font_size = 12
+text = "进程档案"
+
+[node name="CharacterRow" type="HBoxContainer" parent="MainPanel/ContentMargin/Content/Body/IdentityPanel/IdentityMargin/IdentityContent" unique_id=217116641]
+custom_minimum_size = Vector2(0, 94)
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="PortraitFrame" type="PanelContainer" parent="MainPanel/ContentMargin/Content/Body/IdentityPanel/IdentityMargin/IdentityContent/CharacterRow" unique_id=1906973009]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(88, 88)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StylePortrait")
+
+[node name="PortraitMargin" type="MarginContainer" parent="MainPanel/ContentMargin/Content/Body/IdentityPanel/IdentityMargin/IdentityContent/CharacterRow/PortraitFrame" unique_id=1381585380]
+layout_mode = 2
+theme_override_constants/margin_left = 7
+theme_override_constants/margin_top = 7
+theme_override_constants/margin_right = 7
+theme_override_constants/margin_bottom = 7
+
+[node name="CharacterIcon" type="TextureRect" parent="MainPanel/ContentMargin/Content/Body/IdentityPanel/IdentityMargin/IdentityContent/CharacterRow/PortraitFrame/PortraitMargin" unique_id=587188635]
+unique_name_in_owner = true
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="CharacterInfo" type="VBoxContainer" parent="MainPanel/ContentMargin/Content/Body/IdentityPanel/IdentityMargin/IdentityContent/CharacterRow" unique_id=101288231]
+layout_mode = 2
+size_flags_horizontal = 3
+alignment = 1
+
+[node name="CharacterName" type="Label" parent="MainPanel/ContentMargin/Content/Body/IdentityPanel/IdentityMargin/IdentityContent/CharacterRow/CharacterInfo" unique_id=1394345210]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.92, 0.97, 1)
+theme_override_font_sizes/font_size = 21
+text = "未知进程"
+text_overrun_behavior = 3
+
+[node name="CharacterStatus" type="Label" parent="MainPanel/ContentMargin/Content/Body/IdentityPanel/IdentityMargin/IdentityContent/CharacterRow/CharacterInfo" unique_id=1588929877]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.35, 0.76, 0.75, 1)
+theme_override_font_sizes/font_size = 12
+text = "进程已归档"
+
+[node name="HealthHeader" type="HBoxContainer" parent="MainPanel/ContentMargin/Content/Body/IdentityPanel/IdentityMargin/IdentityContent" unique_id=1761599589]
+layout_mode = 2
+
+[node name="HealthCaption" type="Label" parent="MainPanel/ContentMargin/Content/Body/IdentityPanel/IdentityMargin/IdentityContent/HealthHeader" unique_id=1759382839]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.5, 0.55, 0.65, 1)
+theme_override_font_sizes/font_size = 12
+text = "最终完整度"
+
+[node name="HealthValue" type="Label" parent="MainPanel/ContentMargin/Content/Body/IdentityPanel/IdentityMargin/IdentityContent/HealthHeader" unique_id=122620033]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.55, 0.58, 1)
+theme_override_font_sizes/font_size = 14
+text = "60 / 75"
+horizontal_alignment = 2
+
+[node name="HealthBar" type="ProgressBar" parent="MainPanel/ContentMargin/Content/Body/IdentityPanel/IdentityMargin/IdentityContent" unique_id=115528554]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 12)
+layout_mode = 2
+theme_override_styles/background = SubResource("StyleHealthBackground")
+theme_override_styles/fill = SubResource("StyleHealthFill")
+value = 80.0
+show_percentage = false
+
+[node name="IdentitySeparator" type="ColorRect" parent="MainPanel/ContentMargin/Content/Body/IdentityPanel/IdentityMargin/IdentityContent" unique_id=581284127]
+custom_minimum_size = Vector2(0, 1)
+layout_mode = 2
+color = Color(0.18, 0.23, 0.33, 0.75)
+
+[node name="DifficultyLabel" type="Label" parent="MainPanel/ContentMargin/Content/Body/IdentityPanel/IdentityMargin/IdentityContent" unique_id=317600843]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.68, 0.72, 0.8, 1)
+theme_override_font_sizes/font_size = 13
+text = "协议等级  0"
+
+[node name="FloorLabel" type="Label" parent="MainPanel/ContentMargin/Content/Body/IdentityPanel/IdentityMargin/IdentityContent" unique_id=74767263]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.68, 0.72, 0.8, 1)
+theme_override_font_sizes/font_size = 13
+text = "终止层数  1"
+
+[node name="SeedLabel" type="Label" parent="MainPanel/ContentMargin/Content/Body/IdentityPanel/IdentityMargin/IdentityContent" unique_id=1203194417]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.42, 0.47, 0.57, 1)
+theme_override_font_sizes/font_size = 11
+text = "SEED  000000"
+text_overrun_behavior = 3
+
+[node name="StatsColumn" type="VBoxContainer" parent="MainPanel/ContentMargin/Content/Body" unique_id=1980912315]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 14
+
+[node name="KeyStats" type="GridContainer" parent="MainPanel/ContentMargin/Content/Body/StatsColumn" unique_id=340002573]
+custom_minimum_size = Vector2(0, 104)
+layout_mode = 2
+theme_override_constants/h_separation = 10
+columns = 4
+
+[node name="CombatCard" type="PanelContainer" parent="MainPanel/ContentMargin/Content/Body/StatsColumn/KeyStats" unique_id=652170033]
+custom_minimum_size = Vector2(160, 104)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleStatCard")
+
+[node name="Margin" type="MarginContainer" parent="MainPanel/ContentMargin/Content/Body/StatsColumn/KeyStats/CombatCard" unique_id=641757703]
+layout_mode = 2
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 10
+
+[node name="Content" type="VBoxContainer" parent="MainPanel/ContentMargin/Content/Body/StatsColumn/KeyStats/CombatCard/Margin" unique_id=1055430863]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MainPanel/ContentMargin/Content/Body/StatsColumn/KeyStats/CombatCard/Margin/Content" unique_id=1662638782]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.45, 0.5, 0.6, 1)
+theme_override_font_sizes/font_size = 12
+text = "完成战斗"
+
+[node name="CombatValue" type="Label" parent="MainPanel/ContentMargin/Content/Body/StatsColumn/KeyStats/CombatCard/Margin/Content" unique_id=1430514928]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.54, 0.94, 0.9, 1)
+theme_override_font_sizes/font_size = 30
+text = "0"
+
+[node name="Label2" type="Label" parent="MainPanel/ContentMargin/Content/Body/StatsColumn/KeyStats/CombatCard/Margin/Content" unique_id=37990609]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.33, 0.38, 0.47, 1)
+theme_override_font_sizes/font_size = 10
+text = ""
+
+[node name="DamageCard" type="PanelContainer" parent="MainPanel/ContentMargin/Content/Body/StatsColumn/KeyStats" unique_id=410692719]
+custom_minimum_size = Vector2(160, 104)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleStatCard")
+
+[node name="Margin" type="MarginContainer" parent="MainPanel/ContentMargin/Content/Body/StatsColumn/KeyStats/DamageCard" unique_id=1067138225]
+layout_mode = 2
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 10
+
+[node name="Content" type="VBoxContainer" parent="MainPanel/ContentMargin/Content/Body/StatsColumn/KeyStats/DamageCard/Margin" unique_id=567017033]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MainPanel/ContentMargin/Content/Body/StatsColumn/KeyStats/DamageCard/Margin/Content" unique_id=495886042]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.45, 0.5, 0.6, 1)
+theme_override_font_sizes/font_size = 12
+text = "造成伤害"
+
+[node name="DamageValue" type="Label" parent="MainPanel/ContentMargin/Content/Body/StatsColumn/KeyStats/DamageCard/Margin/Content" unique_id=1696819435]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.96, 0.62, 0.47, 1)
+theme_override_font_sizes/font_size = 30
+text = "0"
+
+[node name="Label2" type="Label" parent="MainPanel/ContentMargin/Content/Body/StatsColumn/KeyStats/DamageCard/Margin/Content" unique_id=799055902]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.33, 0.38, 0.47, 1)
+theme_override_font_sizes/font_size = 10
+text = ""
+
+[node name="CardsCard" type="PanelContainer" parent="MainPanel/ContentMargin/Content/Body/StatsColumn/KeyStats" unique_id=1304256033]
+custom_minimum_size = Vector2(160, 104)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleStatCard")
+
+[node name="Margin" type="MarginContainer" parent="MainPanel/ContentMargin/Content/Body/StatsColumn/KeyStats/CardsCard" unique_id=1338855911]
+layout_mode = 2
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 10
+
+[node name="Content" type="VBoxContainer" parent="MainPanel/ContentMargin/Content/Body/StatsColumn/KeyStats/CardsCard/Margin" unique_id=627012438]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MainPanel/ContentMargin/Content/Body/StatsColumn/KeyStats/CardsCard/Margin/Content" unique_id=183381957]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.45, 0.5, 0.6, 1)
+theme_override_font_sizes/font_size = 12
+text = "脚本执行"
+
+[node name="CardsValue" type="Label" parent="MainPanel/ContentMargin/Content/Body/StatsColumn/KeyStats/CardsCard/Margin/Content" unique_id=1171429329]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.66, 0.72, 1, 1)
+theme_override_font_sizes/font_size = 30
+text = "0"
+
+[node name="Label2" type="Label" parent="MainPanel/ContentMargin/Content/Body/StatsColumn/KeyStats/CardsCard/Margin/Content" unique_id=111584259]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.33, 0.38, 0.47, 1)
+theme_override_font_sizes/font_size = 10
+text = ""
+
+[node name="MoneyCard" type="PanelContainer" parent="MainPanel/ContentMargin/Content/Body/StatsColumn/KeyStats" unique_id=1398023184]
+custom_minimum_size = Vector2(160, 104)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleStatCard")
+
+[node name="Margin" type="MarginContainer" parent="MainPanel/ContentMargin/Content/Body/StatsColumn/KeyStats/MoneyCard" unique_id=1404631596]
+layout_mode = 2
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 10
+
+[node name="Content" type="VBoxContainer" parent="MainPanel/ContentMargin/Content/Body/StatsColumn/KeyStats/MoneyCard/Margin" unique_id=548489650]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MainPanel/ContentMargin/Content/Body/StatsColumn/KeyStats/MoneyCard/Margin/Content" unique_id=912272613]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.45, 0.5, 0.6, 1)
+theme_override_font_sizes/font_size = 12
+text = "获得数据币"
+
+[node name="MoneyValue" type="Label" parent="MainPanel/ContentMargin/Content/Body/StatsColumn/KeyStats/MoneyCard/Margin/Content" unique_id=45199728]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.79, 0.3, 1)
+theme_override_font_sizes/font_size = 30
+text = "0"
+
+[node name="Label2" type="Label" parent="MainPanel/ContentMargin/Content/Body/StatsColumn/KeyStats/MoneyCard/Margin/Content" unique_id=487262995]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.33, 0.38, 0.47, 1)
+theme_override_font_sizes/font_size = 10
+text = ""
+
+[node name="DetailPanel" type="PanelContainer" parent="MainPanel/ContentMargin/Content/Body/StatsColumn" unique_id=1171536037]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleDetailPanel")
+
+[node name="DetailMargin" type="MarginContainer" parent="MainPanel/ContentMargin/Content/Body/StatsColumn/DetailPanel" unique_id=1213125283]
+layout_mode = 2
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_top = 14
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_bottom = 14
+
+[node name="DetailContent" type="VBoxContainer" parent="MainPanel/ContentMargin/Content/Body/StatsColumn/DetailPanel/DetailMargin" unique_id=353105591]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="DetailCaption" type="Label" parent="MainPanel/ContentMargin/Content/Body/StatsColumn/DetailPanel/DetailMargin/DetailContent" unique_id=2002436640]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.55, 0.61, 0.72, 1)
+theme_override_font_sizes/font_size = 13
+text = "运行记录"
+
+[node name="DetailGrid" type="GridContainer" parent="MainPanel/ContentMargin/Content/Body/StatsColumn/DetailPanel/DetailMargin/DetailContent" unique_id=1112027817]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/h_separation = 20
+theme_override_constants/v_separation = 12
+columns = 3
+
+[node name="StandardLabel" type="Label" parent="MainPanel/ContentMargin/Content/Body/StatsColumn/DetailPanel/DetailMargin/DetailContent/DetailGrid" unique_id=1349930492]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.7, 0.74, 0.82, 1)
+theme_override_font_sizes/font_size = 14
+text = "标准战斗
+[color=#ffffff]0[/color]"
+
+[node name="EliteLabel" type="Label" parent="MainPanel/ContentMargin/Content/Body/StatsColumn/DetailPanel/DetailMargin/DetailContent/DetailGrid" unique_id=1337706458]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.7, 0.74, 0.82, 1)
+theme_override_font_sizes/font_size = 14
+text = "精英战斗
+0"
+
+[node name="BossLabel" type="Label" parent="MainPanel/ContentMargin/Content/Body/StatsColumn/DetailPanel/DetailMargin/DetailContent/DetailGrid" unique_id=1650905595]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.7, 0.74, 0.82, 1)
+theme_override_font_sizes/font_size = 14
+text = "Boss 击破
+0"
+
+[node name="RestLabel" type="Label" parent="MainPanel/ContentMargin/Content/Body/StatsColumn/DetailPanel/DetailMargin/DetailContent/DetailGrid" unique_id=2092539481]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.7, 0.74, 0.82, 1)
+theme_override_font_sizes/font_size = 14
+text = "休息次数
+0"
+
+[node name="UpgradeLabel" type="Label" parent="MainPanel/ContentMargin/Content/Body/StatsColumn/DetailPanel/DetailMargin/DetailContent/DetailGrid" unique_id=2013610652]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.7, 0.74, 0.82, 1)
+theme_override_font_sizes/font_size = 14
+text = "脚本升级
+0"
+
+[node name="DamageTakenLabel" type="Label" parent="MainPanel/ContentMargin/Content/Body/StatsColumn/DetailPanel/DetailMargin/DetailContent/DetailGrid" unique_id=1680822076]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.7, 0.74, 0.82, 1)
+theme_override_font_sizes/font_size = 14
+text = "承受伤害
+0"
+
+[node name="Footer" type="HBoxContainer" parent="MainPanel/ContentMargin/Content" unique_id=1920763745]
+custom_minimum_size = Vector2(0, 58)
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="ArchiveStatusLabel" type="Label" parent="MainPanel/ContentMargin/Content/Footer" unique_id=1733840880]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.38, 0.43, 0.53, 1)
+theme_override_font_sizes/font_size = 12
+text = "✓ 本次运行记录将在返回后写入进程档案"
+vertical_alignment = 1
+
+[node name="EndRunButton" type="Button" parent="MainPanel/ContentMargin/Content/Footer" unique_id=1939180649]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(270, 58)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme_override_colors/font_color = Color(0.94, 1, 1, 1)
+theme_override_colors/font_pressed_color = Color(0.82, 0.92, 0.94, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 20
+theme_override_styles/normal = SubResource("StyleButtonNormal")
+theme_override_styles/pressed = SubResource("StyleButtonPressed")
+theme_override_styles/hover = SubResource("StyleButtonHover")
+theme_override_styles/focus = SubResource("StyleButtonFocus")
+text = "返回根目录   →"

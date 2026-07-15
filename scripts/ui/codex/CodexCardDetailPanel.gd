@@ -227,7 +227,6 @@ func _populate_detail(card_data: CardData) -> void:
 	_add_hook_status("消耗", card_data.card_exhaust_actions)
 	_add_hook_status("抽牌", card_data.card_draw_actions)
 	_add_hook_status("保留", card_data.card_retain_actions)
-	_add_hook_status("右键", card_data.card_right_click_actions)
 	_add_hook_status("初始战斗", card_data.card_initial_combat_actions)
 	_add_hook_status("加入牌组", card_data.card_add_to_deck_actions)
 	_add_hook_status("移除牌组", card_data.card_remove_from_deck_actions)

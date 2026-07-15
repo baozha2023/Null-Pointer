@@ -1,87 +1,296 @@
-[gd_scene load_steps=4 format=3 uid="uid://dk0ka4eceu1y5"]
+[gd_scene load_steps=6 format=3 uid="uid://dk0ka4eceu1y5"]
 
-[ext_resource type="Script" uid="uid://djyo0pjbqox4f" path="res://scripts/ui/profile/CharacterStat.gd" id="1_6og14"]
-[ext_resource type="StyleBox" uid="uid://605w3novehok" path="res://themes/panel_theme.tres" id="2_v6qmn"]
-[ext_resource type="Texture2D" uid="uid://nh32y87hcke5" path="res://icon.svg" id="3_xxfym"]
+[ext_resource type="Script" uid="uid://djyo0pjbqox4f" path="res://scripts/ui/profile/CharacterStat.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://d33u8m744fh03" path="res://icon.svg" id="2_fallback"]
+
+[sub_resource type="StyleBoxFlat" id="StyleCard"]
+bg_color = Color(0.018, 0.032, 0.052, 0.975)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.1, 0.25, 0.34, 0.95)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
+shadow_color = Color(0, 0, 0, 0.38)
+shadow_size = 10
+
+[sub_resource type="StyleBoxFlat" id="StylePortrait"]
+bg_color = Color(0.01, 0.02, 0.035, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.18, 0.62, 0.65, 0.8)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleMini"]
+bg_color = Color(0.028, 0.048, 0.073, 0.95)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.08, 0.16, 0.24, 0.95)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
 
 [node name="CharacterStat" type="Control"]
-custom_minimum_size = Vector2(450, 288)
+custom_minimum_size = Vector2(539, 280)
 layout_mode = 3
 anchors_preset = 0
-script = ExtResource("1_6og14")
+script = ExtResource("1_script")
 
-[node name="Panel" type="Panel" parent="."]
-custom_minimum_size = Vector2(450, 288)
+[node name="Panel" type="PanelContainer" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_styles/panel = ExtResource("2_v6qmn")
+theme_override_styles/panel = SubResource("StyleCard")
 
-[node name="CharacterIcon" type="TextureRect" parent="."]
-layout_mode = 0
-offset_left = 16.0
-offset_top = 12.0
-offset_right = 88.0
-offset_bottom = 84.0
-texture = ExtResource("3_xxfym")
+[node name="Margin" type="MarginContainer" parent="Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_bottom = 16
+
+[node name="Content" type="VBoxContainer" parent="Panel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Header" type="HBoxContainer" parent="Panel/Margin/Content"]
+custom_minimum_size = Vector2(0, 72)
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="PortraitFrame" type="PanelContainer" parent="Panel/Margin/Content/Header"]
+custom_minimum_size = Vector2(72, 72)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StylePortrait")
+
+[node name="PortraitMargin" type="MarginContainer" parent="Panel/Margin/Content/Header/PortraitFrame"]
+layout_mode = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="CharacterIcon" type="TextureRect" parent="Panel/Margin/Content/Header/PortraitFrame/PortraitMargin"]
+unique_name_in_owner = true
+layout_mode = 2
+texture = ExtResource("2_fallback")
 expand_mode = 1
+stretch_mode = 5
 
-[node name="VBoxContainer" type="VBoxContainer" parent="."]
-layout_mode = 0
-offset_left = 104.0
-offset_top = 12.0
-offset_right = 432.0
-offset_bottom = 284.0
-
-[node name="CharacterNameLabel" type="Label" parent="VBoxContainer"]
+[node name="Identity" type="VBoxContainer" parent="Panel/Margin/Content/Header"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 16
+size_flags_horizontal = 3
+alignment = 1
+
+[node name="Kicker" type="Label" parent="Panel/Margin/Content/Header/Identity"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.3, 0.55, 0.62, 1)
+theme_override_font_sizes/font_size = 10
+text = "进程档案"
+
+[node name="CharacterNameLabel" type="Label" parent="Panel/Margin/Content/Header/Identity"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.88, 0.94, 0.98, 1)
+theme_override_font_sizes/font_size = 20
 text = "进程名称"
+text_overrun_behavior = 3
 
-[node name="CharacterPlayTimeLabel" type="Label" parent="VBoxContainer"]
+[node name="WinRate" type="VBoxContainer" parent="Panel/Margin/Content/Header"]
+custom_minimum_size = Vector2(92, 0)
 layout_mode = 2
-theme_override_font_sizes/font_size = 16
-text = "游戏时间: HHHH:MM:SS"
+alignment = 1
 
-[node name="CharacterFastestPlayTimeLabel" type="Label" parent="VBoxContainer"]
+[node name="Caption" type="Label" parent="Panel/Margin/Content/Header/WinRate"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 16
-text = "最快胜利: HH:MM:SS"
+theme_override_colors/font_color = Color(0.38, 0.47, 0.57, 1)
+theme_override_font_sizes/font_size = 10
+text = "胜率"
+horizontal_alignment = 2
 
-[node name="CharacterWinsLabel" type="Label" parent="VBoxContainer"]
+[node name="CharacterWinRateLabel" type="Label" parent="Panel/Margin/Content/Header/WinRate"]
+unique_name_in_owner = true
 layout_mode = 2
-theme_override_font_sizes/font_size = 16
-text = "胜利: 0"
+theme_override_colors/font_color = Color(0.45, 0.94, 0.75, 1)
+theme_override_font_sizes/font_size = 20
+text = "0.00%"
+horizontal_alignment = 2
 
-[node name="CharacterLossesLabel" type="Label" parent="VBoxContainer"]
+[node name="Separator" type="ColorRect" parent="Panel/Margin/Content"]
+custom_minimum_size = Vector2(0, 1)
 layout_mode = 2
-theme_override_font_sizes/font_size = 16
-text = "失败: 0"
+color = Color(0.12, 0.24, 0.32, 0.78)
 
-[node name="CharacterWinRateLabel" type="Label" parent="VBoxContainer"]
+[node name="CoreStats" type="GridContainer" parent="Panel/Margin/Content"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 16
-text = "胜率: XX.XX%"
+theme_override_constants/h_separation = 8
+columns = 3
 
-[node name="CharacterCurrentWinStreakLabel" type="Label" parent="VBoxContainer"]
+[node name="PlayTime" type="PanelContainer" parent="Panel/Margin/Content/CoreStats"]
+custom_minimum_size = Vector2(0, 60)
 layout_mode = 2
-theme_override_font_sizes/font_size = 16
-text = "当前连胜: 0"
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleMini")
+[node name="VBox" type="VBoxContainer" parent="Panel/Margin/Content/CoreStats/PlayTime"]
+layout_mode = 2
+alignment = 1
+[node name="Caption" type="Label" parent="Panel/Margin/Content/CoreStats/PlayTime/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.38, 0.47, 0.57, 1)
+theme_override_font_sizes/font_size = 10
+text = "运行时长"
+horizontal_alignment = 1
+[node name="CharacterPlayTimeLabel" type="Label" parent="Panel/Margin/Content/CoreStats/PlayTime/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.82, 0.96, 1)
+theme_override_font_sizes/font_size = 14
+text = "00:00:00"
+horizontal_alignment = 1
 
-[node name="CharacterHighestWinStreakLabel" type="Label" parent="VBoxContainer"]
+[node name="Wins" type="PanelContainer" parent="Panel/Margin/Content/CoreStats"]
+custom_minimum_size = Vector2(0, 60)
 layout_mode = 2
-theme_override_font_sizes/font_size = 16
-text = "最高连胜: 0"
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleMini")
+[node name="VBox" type="VBoxContainer" parent="Panel/Margin/Content/CoreStats/Wins"]
+layout_mode = 2
+alignment = 1
+[node name="Caption" type="Label" parent="Panel/Margin/Content/CoreStats/Wins/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.38, 0.47, 0.57, 1)
+theme_override_font_sizes/font_size = 10
+text = "胜利"
+horizontal_alignment = 1
+[node name="CharacterWinsLabel" type="Label" parent="Panel/Margin/Content/CoreStats/Wins/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.48, 0.96, 0.64, 1)
+theme_override_font_sizes/font_size = 17
+text = "0"
+horizontal_alignment = 1
 
-[node name="CharacterCurrentLossStreakLabel" type="Label" parent="VBoxContainer"]
+[node name="Losses" type="PanelContainer" parent="Panel/Margin/Content/CoreStats"]
+custom_minimum_size = Vector2(0, 60)
 layout_mode = 2
-theme_override_font_sizes/font_size = 16
-text = "当前连败: 0"
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleMini")
+[node name="VBox" type="VBoxContainer" parent="Panel/Margin/Content/CoreStats/Losses"]
+layout_mode = 2
+alignment = 1
+[node name="Caption" type="Label" parent="Panel/Margin/Content/CoreStats/Losses/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.38, 0.47, 0.57, 1)
+theme_override_font_sizes/font_size = 10
+text = "失败"
+horizontal_alignment = 1
+[node name="CharacterLossesLabel" type="Label" parent="Panel/Margin/Content/CoreStats/Losses/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.94, 0.5, 0.55, 1)
+theme_override_font_sizes/font_size = 17
+text = "0"
+horizontal_alignment = 1
 
-[node name="CharacterHighestLossStreakLabel" type="Label" parent="VBoxContainer"]
+[node name="Streaks" type="GridContainer" parent="Panel/Margin/Content"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 16
-text = "最高连败: 0"
+theme_override_constants/h_separation = 8
+columns = 4
+
+[node name="CurrentWin" type="VBoxContainer" parent="Panel/Margin/Content/Streaks"]
+layout_mode = 2
+size_flags_horizontal = 3
+[node name="Caption" type="Label" parent="Panel/Margin/Content/Streaks/CurrentWin"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.34, 0.42, 0.52, 1)
+theme_override_font_sizes/font_size = 9
+text = "当前连胜"
+horizontal_alignment = 1
+[node name="CharacterCurrentWinStreakLabel" type="Label" parent="Panel/Margin/Content/Streaks/CurrentWin"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.72, 0.82, 0.9, 1)
+theme_override_font_sizes/font_size = 14
+text = "0"
+horizontal_alignment = 1
+
+[node name="HighestWin" type="VBoxContainer" parent="Panel/Margin/Content/Streaks"]
+layout_mode = 2
+size_flags_horizontal = 3
+[node name="Caption" type="Label" parent="Panel/Margin/Content/Streaks/HighestWin"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.34, 0.42, 0.52, 1)
+theme_override_font_sizes/font_size = 9
+text = "最高连胜"
+horizontal_alignment = 1
+[node name="CharacterHighestWinStreakLabel" type="Label" parent="Panel/Margin/Content/Streaks/HighestWin"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.48, 0.96, 0.64, 1)
+theme_override_font_sizes/font_size = 14
+text = "0"
+horizontal_alignment = 1
+
+[node name="CurrentLoss" type="VBoxContainer" parent="Panel/Margin/Content/Streaks"]
+layout_mode = 2
+size_flags_horizontal = 3
+[node name="Caption" type="Label" parent="Panel/Margin/Content/Streaks/CurrentLoss"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.34, 0.42, 0.52, 1)
+theme_override_font_sizes/font_size = 9
+text = "当前连败"
+horizontal_alignment = 1
+[node name="CharacterCurrentLossStreakLabel" type="Label" parent="Panel/Margin/Content/Streaks/CurrentLoss"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.82, 0.7, 0.72, 1)
+theme_override_font_sizes/font_size = 14
+text = "0"
+horizontal_alignment = 1
+
+[node name="HighestLoss" type="VBoxContainer" parent="Panel/Margin/Content/Streaks"]
+layout_mode = 2
+size_flags_horizontal = 3
+[node name="Caption" type="Label" parent="Panel/Margin/Content/Streaks/HighestLoss"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.34, 0.42, 0.52, 1)
+theme_override_font_sizes/font_size = 9
+text = "最高连败"
+horizontal_alignment = 1
+[node name="CharacterHighestLossStreakLabel" type="Label" parent="Panel/Margin/Content/Streaks/HighestLoss"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.94, 0.5, 0.55, 1)
+theme_override_font_sizes/font_size = 14
+text = "0"
+horizontal_alignment = 1
+
+[node name="FastestRow" type="HBoxContainer" parent="Panel/Margin/Content"]
+layout_mode = 2
+[node name="Caption" type="Label" parent="Panel/Margin/Content/FastestRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.32, 0.4, 0.5, 1)
+theme_override_font_sizes/font_size = 10
+text = "最快胜利"
+[node name="CharacterFastestPlayTimeLabel" type="Label" parent="Panel/Margin/Content/FastestRow"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.64, 0.75, 0.92, 1)
+theme_override_font_sizes/font_size = 12
+text = "--:--:--"
+horizontal_alignment = 2

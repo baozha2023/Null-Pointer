@@ -122,23 +122,11 @@ func _on_search_text_changed(new_text: String) -> void:
 	_filter_and_populate_cards()
 
 func _filter_and_populate_cards() -> void:
-	var filtered_cards: Array[CardData] = []
-	for card in all_pickable_cards:
-		var color_match = false
-		if selected_card_pack_data == null or selected_card_pack_data.object_id == "card_pack_all":
-			color_match = true
-		elif card.card_color_id == selected_card_pack_data.card_pack_color_id:
-			color_match = true
-			
-		var search_match = false
-		if current_search_text == "":
-			search_match = true
-		elif current_search_text in card.card_name.to_lower():
-			search_match = true
-			
-		if color_match and search_match:
-			filtered_cards.append(card)
-			
+	var filtered_cards: Array[CardData] = Global.get_cards_for_browser(
+		all_pickable_cards,
+		selected_card_pack_data,
+		current_search_text
+	)
 	populate_cards(filtered_cards)
 
 func _on_card_hovered(_card: Card):

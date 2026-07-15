@@ -171,9 +171,6 @@ static func add_cards_red() -> void:
 	card_binary_search.card_energy_cost = 1
 	card_binary_search.card_values = {"damage": 7, "bonus_damage": 5, "number_of_attacks": 1, "impact_vfx_animation_id": "animation_vfx_slash_red",}
 	card_binary_search.card_upgrade_value_improvements = {"damage": 3, "bonus_damage": 3}
-	card_binary_search.card_glow_validators = [
-		{Scripts.VALIDATOR_ENEMY_ATTACKING: {"invert_validation": true}},
-	]
 	card_binary_search.card_play_actions = [
 		{
 			Scripts.ACTION_VALIDATOR: {
@@ -412,9 +409,6 @@ static func add_cards_red() -> void:
 	card_try_catch.card_energy_cost = 1
 	card_try_catch.card_values = {"block": 8, "block_bonus": 6}
 	card_try_catch.card_upgrade_value_improvements = {"block": 3, "block_bonus": 3}
-	card_try_catch.card_glow_validators = [
-		{Scripts.VALIDATOR_ENEMY_ATTACKING: {}},
-	]
 	card_try_catch.card_play_actions = [
 		{
 			Scripts.ACTION_BLOCK: {
@@ -448,7 +442,7 @@ static func add_cards_red() -> void:
 	card_refactor.card_name = "重构"
 	card_refactor.card_color_id = "color_{0}".format([color])
 	card_refactor.card_texture_path = "sprites/card/red/card_refactor.png"
-	card_refactor.card_description = "永久升级当前线程中的 [card_amount] 个脚本。"
+	card_refactor.card_description = "永久升级当前线程中最多 [card_amount] 个脚本。"
 	card_refactor.card_hint = "选择手里的牌永久升级，整场战斗都有效。"
 	card_refactor.card_type = CardData.CARD_TYPES.SKILL
 	card_refactor.card_rarity = CardData.CARD_RARITIES.UNCOMMON
@@ -458,18 +452,40 @@ static func add_cards_red() -> void:
 	card_refactor.card_values = {"card_amount": 1, "upgrade_parent_card": true}
 	card_refactor.card_upgrade_value_improvements = {}
 	card_refactor.card_first_upgrade_value_changes = {"card_amount": 2}
-	card_refactor.card_first_upgrade_property_changes = {"card_description": "永久升级当前线程中的 [card_amount] 个脚本。"}
+	card_refactor.card_first_upgrade_property_changes = {"card_description": "永久升级当前线程中最多 [card_amount] 个脚本。"}
 	card_refactor.card_upgrade_amount_max = 1
+	var refactor_target_validators: Array[Dictionary] = [
+		{Scripts.VALIDATOR_CARD_UPGRADEABLE: {}},
+		{
+			Scripts.VALIDATOR_CARD_PROPERTIES: {
+				"card_property_name": "parent_card",
+				"operator": "!=",
+				"comparison_value": null,
+			}
+		},
+	]
+	card_refactor.card_play_validators = [
+		{
+			Scripts.VALIDATOR_COMBAT_PILES_HAVE_VALIDATED_CARDS: {
+				"source_zones": [HandManager.HAND_PILE],
+				"validator_data": refactor_target_validators,
+				"exclude_validated_card": true,
+				"comparison_value": 1,
+			}
+		},
+	]
 	card_refactor.card_play_actions = [
 		{
 			Scripts.ACTION_PICK_UPGRADE_CARDS: {
-				"custom_key_names": {"max_card_amount": "card_amount", "min_card_amount": "card_amount"},
-				"min_cards_are_required_for_action": false,
+				"custom_key_names": {"max_card_amount": "card_amount"},
+				"min_card_amount": 1,
+				"min_cards_are_required_for_action": true,
 				"card_pick_type": HandManager.HAND_PILE,
 				"card_pick_text": "选择要重构的脚本",
 				"random_selection": false,
 				"upgrade_parent_card": true,
 				"bypass_upgrade_max": false,
+				"validator_data": refactor_target_validators,
 			},
 		},
 	]
@@ -480,7 +496,7 @@ static func add_cards_red() -> void:
 	card_template.card_name = "代码生成"
 	card_template.card_color_id = "color_{0}".format([color])
 	card_template.card_texture_path = "sprites/card/red/card_template.png"
-	card_template.card_description = "选择当前线程中的 [card_amount] 个脚本进行复制。"
+	card_template.card_description = "选择当前线程中最多 [card_amount] 个脚本进行复制。"
 	card_template.card_hint = "复制手里的牌。"
 	card_template.card_type = CardData.CARD_TYPES.SKILL
 	card_template.card_rarity = CardData.CARD_RARITIES.COMMON
@@ -489,11 +505,21 @@ static func add_cards_red() -> void:
 	card_template.card_play_destination = HandManager.EXHAUST_PILE
 	card_template.card_values = {"card_amount": 1}
 	card_template.card_upgrade_value_improvements = {"card_amount": 1}
-	card_template.card_first_upgrade_property_changes = {"card_play_destination": HandManager.DISCARD_PILE, "card_description": "选择当前线程中的 [card_amount] 个脚本进行复制。"}
+	card_template.card_first_upgrade_property_changes = {"card_play_destination": HandManager.DISCARD_PILE, "card_description": "选择当前线程中最多 [card_amount] 个脚本进行复制。"}
+	card_template.card_play_validators = [
+		{
+			Scripts.VALIDATOR_COMBAT_PILES_HAVE_VALIDATED_CARDS: {
+				"source_zones": [HandManager.HAND_PILE],
+				"exclude_validated_card": true,
+				"comparison_value": 1,
+			}
+		},
+	]
 	card_template.card_play_actions = [
 		{
 			Scripts.ACTION_PICK_DUPLICATE_CARDS: {
-				"custom_key_names": {"max_card_amount": "card_amount", "min_card_amount": "card_amount"},
+				"custom_key_names": {"max_card_amount": "card_amount"},
+				"min_card_amount": 1,
 				"min_cards_are_required_for_action": true,
 				"card_pick_type": HandManager.HAND_PILE,
 				"card_pick_text": "选择要复制模板的脚本",
@@ -846,7 +872,7 @@ static func add_cards_red() -> void:
 	card_rollback.card_name = "回滚操作"
 	card_rollback.card_color_id = "color_{0}".format([color])
 	card_rollback.card_texture_path = "sprites/card/red/card_rollback.png"
-	card_rollback.card_description = "将回收站顶部的 [card_amount] 个脚本置入当前线程。"
+	card_rollback.card_description = "将回收站顶部最多 [card_amount] 个脚本置入当前线程。"
 	card_rollback.card_hint = "把刚扔进弃牌堆（回收站）的牌重新拿回手里。"
 	card_rollback.card_type = CardData.CARD_TYPES.SKILL
 	card_rollback.card_rarity = CardData.CARD_RARITIES.UNCOMMON
@@ -855,11 +881,20 @@ static func add_cards_red() -> void:
 	card_rollback.card_values = {"card_amount": 1}
 	card_rollback.card_upgrade_value_improvements = {"card_amount": 1}
 	card_rollback.card_first_upgrade_property_changes = {"card_energy_cost": 0}
+	card_rollback.card_play_validators = [
+		{
+			Scripts.VALIDATOR_COMBAT_PILES_HAVE_VALIDATED_CARDS: {
+				"source_zones": [HandManager.DISCARD_PILE],
+				"comparison_value": 1,
+			}
+		},
+	]
 	card_rollback.card_play_actions = [
 		{
 			Scripts.ACTION_PICK_CARDS: {
-				"custom_key_names": {"max_card_amount": "card_amount", "min_card_amount": "card_amount"},
-				"min_cards_are_required_for_action": false,
+				"custom_key_names": {"max_card_amount": "card_amount"},
+				"min_card_amount": 1,
+				"min_cards_are_required_for_action": true,
 				"card_pick_type": HandManager.DISCARD_PILE,
 				"random_selection": true,
 				"action_data": [
@@ -965,7 +1000,7 @@ static func add_cards_red() -> void:
 	card_compile_opt.card_name = "编译优化"
 	card_compile_opt.card_color_id = "color_{0}".format([color])
 	card_compile_opt.card_texture_path = "sprites/card/red/card_compile_opt.png"
-	card_compile_opt.card_description = "永久减少当前线程中 [card_amount] 个脚本的耗能 [cost_reduction] 点（最低为 0）。"
+	card_compile_opt.card_description = "永久减少当前线程中最多 [card_amount] 个脚本的耗能 [cost_reduction] 点（最低为 0）。"
 	card_compile_opt.card_hint = "永久降低手里牌的费用，最低降到0费；打出后本场战斗不再出现。"
 	card_compile_opt.card_type = CardData.CARD_TYPES.SKILL
 	card_compile_opt.card_rarity = CardData.CARD_RARITIES.RARE
@@ -976,6 +1011,32 @@ static func add_cards_red() -> void:
 	card_compile_opt.card_upgrade_value_improvements = {"card_amount": 1}
 	card_compile_opt.card_first_upgrade_property_changes = {"card_energy_cost": 1}
 	card_compile_opt.card_upgrade_amount_max = 1
+	var compile_opt_target_validators: Array[Dictionary] = [
+		{
+			Scripts.VALIDATOR_CARD_PROPERTIES: {
+				"card_property_name": "card_energy_cost",
+				"operator": ">",
+				"comparison_value": 0,
+			}
+		},
+		{
+			Scripts.VALIDATOR_CARD_PROPERTIES: {
+				"card_property_name": "parent_card",
+				"operator": "!=",
+				"comparison_value": null,
+			}
+		},
+	]
+	card_compile_opt.card_play_validators = [
+		{
+			Scripts.VALIDATOR_COMBAT_PILES_HAVE_VALIDATED_CARDS: {
+				"source_zones": [HandManager.HAND_PILE],
+				"validator_data": compile_opt_target_validators,
+				"exclude_validated_card": true,
+				"comparison_value": 1,
+			}
+		},
+	]
 	card_compile_opt.card_play_actions = [
 		{
 			Scripts.ACTION_REMOVE_CARDS_FROM_DECK: {
@@ -984,20 +1045,13 @@ static func add_cards_red() -> void:
 		},
 		{
 			Scripts.ACTION_PICK_CARDS: {
-				"custom_key_names": {"max_card_amount": "card_amount", "min_card_amount": "card_amount"},
-				"min_cards_are_required_for_action": false,
+				"custom_key_names": {"max_card_amount": "card_amount"},
+				"min_card_amount": 1,
+				"min_cards_are_required_for_action": true,
 				"card_pick_text": "选择要优化的脚本",
 				"card_pick_type": HandManager.HAND_PILE,
 				"random_selection": false,
-				"validator_data": [
-					{
-						Scripts.VALIDATOR_CARD_PROPERTIES: {
-							"card_property_name": "card_energy_cost",
-							"operator": ">",
-							"comparison_value": 0,
-						},
-					},
-				],
+				"validator_data": compile_opt_target_validators,
 				"action_data": [
 					{
 						Scripts.ACTION_IMPROVE_CARD_PROPERTIES: {
@@ -1165,11 +1219,20 @@ static func add_cards_red() -> void:
 	card_dependency_injection.card_values = {"card_amount": 1}
 	card_dependency_injection.card_upgrade_value_improvements = {}
 	card_dependency_injection.card_first_upgrade_property_changes = {"card_energy_cost": 0}
+	card_dependency_injection.card_play_validators = [
+		{
+			Scripts.VALIDATOR_COMBAT_PILES_HAVE_VALIDATED_CARDS: {
+				"source_zones": [HandManager.HAND_PILE],
+				"exclude_validated_card": true,
+				"comparison_value": 1,
+			}
+		},
+	]
 	card_dependency_injection.card_play_actions = [
 		{
 			Scripts.ACTION_PICK_CARDS: {
 				"custom_key_names": {"max_card_amount": "card_amount", "min_card_amount": "card_amount"},
-				"min_cards_are_required_for_action": false,
+				"min_cards_are_required_for_action": true,
 				"card_pick_type": HandManager.HAND_PILE,
 				"card_pick_text": "选择要删除的脚本",
 				"random_selection": false,
@@ -1278,7 +1341,7 @@ static func add_cards_red() -> void:
 	card_resource_release.card_name = "资源释放"
 	card_resource_release.card_color_id = "color_{0}".format([color])
 	card_resource_release.card_texture_path = "sprites/card/red/card_resource_release.png"
-	card_resource_release.card_description = "物理删除当前线程中的 [card_amount] 个脚本。每删除 1 个，获得 [block_per_exhaust] 点防火墙和 [energy_per_exhaust] 点算力。"
+	card_resource_release.card_description = "物理删除当前线程中最多 [card_amount] 个脚本。每删除 1 个，获得 [block_per_exhaust] 点防火墙和 [energy_per_exhaust] 点算力。"
 	card_resource_release.card_hint = "选择手牌物理删除掉，每删一张就获得护盾和能量。适合清理垃圾牌并换取资源。"
 	card_resource_release.card_type = CardData.CARD_TYPES.SKILL
 	card_resource_release.card_rarity = CardData.CARD_RARITIES.UNCOMMON
@@ -1286,24 +1349,49 @@ static func add_cards_red() -> void:
 	card_resource_release.card_energy_cost = 1
 	card_resource_release.card_values = {"card_amount": 1, "block_per_exhaust": 6, "energy_per_exhaust": 1}
 	card_resource_release.card_upgrade_value_improvements = {"card_amount": 1, "block_per_exhaust": 2}
+	card_resource_release.card_play_validators = [
+		{
+			Scripts.VALIDATOR_COMBAT_PILES_HAVE_VALIDATED_CARDS: {
+				"source_zones": [HandManager.HAND_PILE],
+				"exclude_validated_card": true,
+				"comparison_value": 1,
+			}
+		},
+	]
 	card_resource_release.card_play_actions = [
 		{
 			Scripts.ACTION_PICK_CARDS: {
-				"custom_key_names": {"max_card_amount": "card_amount", "min_card_amount": "card_amount"},
-				"min_cards_are_required_for_action": false,
+				"custom_key_names": {"max_card_amount": "card_amount"},
+				"min_card_amount": 1,
+				"min_cards_are_required_for_action": true,
 				"card_pick_type": HandManager.HAND_PILE,
 				"card_pick_text": "选择要释放的脚本",
 				"random_selection": false,
 				"action_data": [
-					{Scripts.ACTION_ADD_ENERGY: {
-						"custom_key_names": {"energy_amount": "energy_per_exhaust"},
-					}},
-					{Scripts.ACTION_BLOCK: {
-						"custom_key_names": {"block": "block_per_exhaust"},
-						"target_override": BaseAction.TARGET_OVERRIDES.PARENT,
-						"audio_path": AudioConstants.SFX_GROUP_SHIELD_UP,
-						"time_delay": 0.2,
-					}},
+					{
+						Scripts.ACTION_VARIABLE_CARDSET_MODIFIER: {
+							"multiplied_values": ["energy_per_exhaust", "block_per_exhaust"],
+							"multiplied_values_bases": {
+								"energy_per_exhaust": 0,
+								"block_per_exhaust": 0,
+							},
+							"action_data": [
+								{
+									Scripts.ACTION_ADD_ENERGY: {
+										"custom_key_names": {"energy_amount": "energy_per_exhaust"},
+									}
+								},
+								{
+									Scripts.ACTION_BLOCK: {
+										"custom_key_names": {"block": "block_per_exhaust"},
+										"target_override": BaseAction.TARGET_OVERRIDES.PARENT,
+										"audio_path": AudioConstants.SFX_GROUP_SHIELD_UP,
+										"time_delay": 0.2,
+									}
+								},
+							],
+						}
+					},
 					{Scripts.ACTION_EXHAUST_CARDS: {}},
 				],
 			},
@@ -1324,9 +1412,6 @@ static func add_cards_red() -> void:
 	card_assert_failure.card_energy_cost = 2
 	card_assert_failure.card_values = {"damage": 8, "aoe_damage": 6, "number_of_attacks": 1, "impact_vfx_animation_id": "animation_vfx_magic_red"}
 	card_assert_failure.card_upgrade_value_improvements = {"damage": 3, "aoe_damage": 2}
-	card_assert_failure.card_glow_validators = [
-		{Scripts.VALIDATOR_ENEMY_ATTACKING: {}},
-	]
 	card_assert_failure.card_play_actions = [
 		{
 			Scripts.ACTION_VALIDATOR: {
@@ -1354,7 +1439,7 @@ static func add_cards_red() -> void:
 	card_process_hijack.card_name = "进程劫持"
 	card_process_hijack.card_color_id = "color_{0}".format([color])
 	card_process_hijack.card_texture_path = "sprites/card/red/card_process_hijack.png"
-	card_process_hijack.card_description = "从回收站中选择 [card_amount] 个脚本加入当前线程，使其本时钟周期耗能变为 0。"
+	card_process_hijack.card_description = "从回收站中选择最多 [card_amount] 个脚本加入当前线程，使其本时钟周期耗能变为 0。"
 	card_process_hijack.card_hint = "从弃牌堆里手动选牌回到手中，并且那些牌本回合免费打出。打出后本场战斗不再出现。"
 	card_process_hijack.card_type = CardData.CARD_TYPES.SKILL
 	card_process_hijack.card_rarity = CardData.CARD_RARITIES.RARE
@@ -1363,11 +1448,20 @@ static func add_cards_red() -> void:
 	card_process_hijack.card_play_destination = HandManager.EXHAUST_PILE
 	card_process_hijack.card_values = {"card_amount": 1}
 	card_process_hijack.card_upgrade_value_improvements = {"card_amount": 1}
+	card_process_hijack.card_play_validators = [
+		{
+			Scripts.VALIDATOR_COMBAT_PILES_HAVE_VALIDATED_CARDS: {
+				"source_zones": [HandManager.DISCARD_PILE],
+				"comparison_value": 1,
+			}
+		},
+	]
 	card_process_hijack.card_play_actions = [
 		{
 			Scripts.ACTION_PICK_CARDS: {
-				"custom_key_names": {"max_card_amount": "card_amount", "min_card_amount": "card_amount"},
-				"min_cards_are_required_for_action": false,
+				"custom_key_names": {"max_card_amount": "card_amount"},
+				"min_card_amount": 1,
+				"min_cards_are_required_for_action": true,
 				"card_pick_type": HandManager.DISCARD_PILE,
 				"card_pick_text": "选择要劫持的脚本",
 				"random_selection": false,

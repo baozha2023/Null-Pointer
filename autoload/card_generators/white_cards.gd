@@ -87,10 +87,20 @@ static func add_cards_white() -> void:
 	card_memory_snapshot.card_play_destination = HandManager.EXHAUST_PILE
 	card_memory_snapshot.card_values = { "card_amount": 1 }
 	card_memory_snapshot.card_upgrade_value_improvements = { "card_amount": 1 }
+	card_memory_snapshot.card_play_validators = [
+		{
+			Scripts.VALIDATOR_COMBAT_PILES_HAVE_VALIDATED_CARDS: {
+				"source_zones": [HandManager.HAND_PILE],
+				"exclude_validated_card": true,
+				"comparison_value": 1,
+			}
+		},
+	]
 	card_memory_snapshot.card_play_actions = [
 		{
 			Scripts.ACTION_PICK_DUPLICATE_CARDS: {
-				"custom_key_names": {"max_card_amount": "card_amount", "min_card_amount": "card_amount"},
+				"custom_key_names": {"max_card_amount": "card_amount"},
+				"min_card_amount": 1,
 				"min_cards_are_required_for_action": true,
 				"card_pick_type": HandManager.HAND_PILE,
 				"card_pick_text": "选择要复制的脚本",
@@ -114,12 +124,20 @@ static func add_cards_white() -> void:
 	card_log_cleanup.card_end_of_turn_destination = HandManager.EXHAUST_PILE
 	card_log_cleanup.card_values = { "number_of_cards": 3 }
 	card_log_cleanup.card_upgrade_value_improvements = { "number_of_cards": 2 }
+	card_log_cleanup.card_play_validators = [
+		{
+			Scripts.VALIDATOR_COMBAT_PILES_HAVE_VALIDATED_CARDS: {
+				"source_zones": [HandManager.DISCARD_PILE],
+				"comparison_value": 1,
+			}
+		},
+	]
 	card_log_cleanup.card_play_actions = [
 		{
 			Scripts.ACTION_PICK_CARDS: {
 				"custom_key_names": {"max_card_amount": "number_of_cards"},
-				"min_card_amount": 0,
-				"min_cards_are_required_for_action": false,
+				"min_card_amount": 1,
+				"min_cards_are_required_for_action": true,
 				"random_selection": false,
 				"card_pick_type": HandManager.DISCARD_PILE,
 				"card_pick_text": "选择 [number_of_cards] 个脚本物理删除。已选 {1} 个",
@@ -143,19 +161,30 @@ static func add_cards_white() -> void:
 	card_kernel_reconstruct.card_play_destination = HandManager.EXHAUST_PILE
 	card_kernel_reconstruct.card_values = { "number_of_cards": 1 }
 	card_kernel_reconstruct.card_upgrade_value_improvements = { "number_of_cards": 1 }
+	var kernel_reconstruct_target_validators: Array[Dictionary] = [
+		{Scripts.VALIDATOR_CARD_UPGRADEABLE: {}},
+	]
+	card_kernel_reconstruct.card_play_validators = [
+		{
+			Scripts.VALIDATOR_COMBAT_PILES_HAVE_VALIDATED_CARDS: {
+				"source_zones": [HandManager.UPGRADE_DECK],
+				"validator_data": kernel_reconstruct_target_validators,
+				"comparison_value": 1,
+			}
+		},
+	]
 	card_kernel_reconstruct.card_play_actions = [
 		{
 			Scripts.ACTION_PICK_CARDS: {
-				"custom_key_names": {"max_card_amount": "number_of_cards", "min_card_amount": "number_of_cards"},
+				"custom_key_names": {"max_card_amount": "number_of_cards"},
+				"min_card_amount": 1,
 				"min_cards_are_required_for_action": true,
 				"random_selection": false,
 				"can_back_out": true,
 				"quick_pick": false,
 				"card_pick_type": HandManager.UPGRADE_DECK,
 				"card_pick_text": "选择最多 {0} 个脚本永久升级。已选 {1} 个",
-				"validator_data": [
-					{ Scripts.VALIDATOR_CARD_UPGRADEABLE: { } },
-				],
+				"validator_data": kernel_reconstruct_target_validators,
 				"action_data": [
 					{ Scripts.ACTION_UPGRADE_CARDS: { "upgrade_parent_card": true } },
 				],

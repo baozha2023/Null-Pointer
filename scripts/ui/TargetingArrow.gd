@@ -11,6 +11,8 @@ extends Node2D
 var start_pos: Vector2 = Vector2.ZERO
 var target_enemy: Enemy = null
 var start_node: Control = null
+var pointer_position: Vector2 = Vector2.ZERO
+var use_pointer_position: bool = false
 
 var _anim_offset: float = 0.0
 var current_bracket: Node = null
@@ -48,15 +50,29 @@ func _process(delta: float) -> void:
 			if current_bracket:
 				current_bracket.show_brackets()
 	else:
-		if is_instance_valid(current_bracket):
-			current_bracket.hide_brackets()
-			current_bracket = null
+		_clear_bracket()
+
+func set_pointer_position(pointer_global_position: Vector2) -> void:
+	pointer_position = pointer_global_position
+	use_pointer_position = true
+
+func clear_pointer_position() -> void:
+	use_pointer_position = false
+
+func clear_target() -> void:
+	target_enemy = null
+	_clear_bracket()
+
+func _clear_bracket() -> void:
+	if is_instance_valid(current_bracket):
+		current_bracket.hide_brackets()
+	current_bracket = null
 
 func _draw() -> void:
 	var p2: Vector2
 	var current_color: Color
 	
-	p2 = get_global_mouse_position()
+	p2 = pointer_position if use_pointer_position else get_global_mouse_position()
 	
 	if is_instance_valid(target_enemy):
 		current_color = targeted_color

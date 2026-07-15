@@ -657,6 +657,46 @@ func get_all_cards() -> Array[CardData]:
 		all_cards.append(card_data)
 	return all_cards
 
+## 图鉴、万能调试仪等卡牌浏览界面共用的过滤入口。
+## 浏览逻辑刻意忽略 card_appears_in_card_packs；该字段只控制局内可获取卡池，
+## 不应阻止玩家查看已经注册的卡牌内容。
+func get_cards_for_browser(
+	input_cards: Array[CardData],
+	card_pack_data: CardPackData = null,
+	search_text: String = ""
+) -> Array[CardData]:
+	var candidate_cards: Array[CardData] = []
+	candidate_cards.assign(input_cards)
+
+	if card_pack_data != null and card_pack_data.object_id != "card_pack_all":
+		var card_filter: CardFilter = CardFilter.new(candidate_cards)
+		if card_pack_data.card_pack_color_id != "":
+			card_filter.filter_colors([card_pack_data.card_pack_color_id])
+		card_filter.filter_card_validators(card_pack_data.card_pack_validators)
+		candidate_cards = card_filter.filtered_cards
+
+		# 卡包显式列出的卡牌可绕过颜色和验证器，但不能引入输入集合之外的卡牌。
+		var candidate_ids: Dictionary[String, Variant] = {}
+		for card_data: CardData in candidate_cards:
+			candidate_ids[card_data.object_id] = null
+		for card_data: CardData in input_cards:
+			if card_pack_data.card_pack_card_ids.has(card_data.object_id) and not candidate_ids.has(card_data.object_id):
+				candidate_cards.append(card_data)
+				candidate_ids[card_data.object_id] = null
+
+	var normalized_search_text: String = search_text.strip_edges().to_lower()
+	if normalized_search_text == "":
+		return candidate_cards
+
+	var search_results: Array[CardData] = []
+	for card_data: CardData in candidate_cards:
+		if (
+			normalized_search_text in card_data.card_name.to_lower()
+			or normalized_search_text in card_data.object_id.to_lower()
+		):
+			search_results.append(card_data)
+	return search_results
+
 ## 根据给定的只读 CardData 原型，生成一份可变的（Mutable）卡牌数据拷贝。
 func get_card_data_from_prototype(card_object_id: String) -> CardData:
 	var card_data: CardData = get_card_data(card_object_id)

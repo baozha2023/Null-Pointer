@@ -61,9 +61,9 @@ const CARD_RARITY_DISPLAY: Dictionary = {
 }
 @export var card_rarity: int = CARD_RARITIES.COMMON
 
-## Make false to prevent cards with this object_id from appearing in card packs. This only takes effect
-## once during initial runtime and is useful to prevent cards from appearing without giving them GENERATED rarity
-## or explicitly listing them by ID in packs. Essentially just an extensibility feature with niche application.
+## 设为 false 可阻止此卡进入局内可获取卡池。
+## 卡牌浏览界面刻意忽略此字段，确保所有已注册卡牌均可查看。
+## 此字段仅在 CardPackData 启动时缓存局内卡池过滤器时生效。
 ## See: CardPackData.create_card_pack_card_filter()
 @export var card_appears_in_card_packs: bool = true
 
@@ -123,7 +123,6 @@ const CARD_RARITY_DISPLAY: Dictionary = {
 @export var card_exhaust_actions: Array[Dictionary] = []	# actions that trigger when card is exhausted
 @export var card_draw_actions: Array[Dictionary] = []	# actions that trigger when card is drawn and added to hand
 @export var card_retain_actions: Array[Dictionary] = []	# actions that trigger when card is retained at the end of turn
-@export var card_right_click_actions: Array[Dictionary] = []	# actions that trigger when card is right clicked while in hand
 @export var card_initial_combat_actions: Array[Dictionary] = []	# actions that trigger at the start of combat for each card in the deck
 
 @export var card_add_to_deck_actions: Array[Dictionary] = []	# actions that trigger when card is added to player's permanent deck 
@@ -134,10 +133,6 @@ const CARD_RARITY_DISPLAY: Dictionary = {
 @export var card_play_validators: Array[Dictionary] = [
 	#{"validator_script_path.gd": {"validator_value_1": Variant}}
 ]
-## Validators that make the card glow. If empty then card_play_validators will be used for glow.
-## Useful for cards with bonus conditional effects.
-@export var card_glow_validators: Array[Dictionary] = []
-
 ## Maps CardDecoratorData object_ids to the values of the decorator if any.
 ## NOTE: These values are used as behavioral parameters into the BaseCardDecorator script, allowing
 ## for configurable/reusable scripts between multiple decorators. This is not the same as
@@ -404,7 +399,6 @@ func add_card_decorator(card_decorator_id: String, decorator_script_values: Dict
 		card_exhaust_actions = card_decorator_data.card_decorator_post_exhaust_actions + card_exhaust_actions + card_decorator_data.card_decorator_pre_exhaust_actions
 		card_draw_actions = card_decorator_data.card_decorator_post_draw_actions + card_draw_actions + card_decorator_data.card_decorator_pre_draw_actions
 		card_retain_actions = card_decorator_data.card_decorator_post_retain_actions + card_retain_actions + card_decorator_data.card_decorator_pre_retain_actions
-		card_right_click_actions = card_decorator_data.card_decorator_post_right_click_actions + card_right_click_actions + card_decorator_data.card_decorator_pre_right_click_actions
 		card_initial_combat_actions = card_decorator_data.card_decorator_post_initial_combat_actions + card_initial_combat_actions + card_decorator_data.card_decorator_pre_initial_combat_actions
 		
 		# add keywords

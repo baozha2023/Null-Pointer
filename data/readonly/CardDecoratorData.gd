@@ -52,9 +52,6 @@ class_name CardDecoratorData
 # retain
 @export var card_decorator_pre_retain_actions: Array[Dictionary] = []
 @export var card_decorator_post_retain_actions: Array[Dictionary] = []
-# right click
-@export var card_decorator_pre_right_click_actions: Array[Dictionary] = []
-@export var card_decorator_post_right_click_actions: Array[Dictionary] = []
 # initial combat
 @export var card_decorator_pre_initial_combat_actions: Array[Dictionary] = []	
 @export var card_decorator_post_initial_combat_actions: Array[Dictionary] = []

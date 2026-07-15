@@ -883,7 +883,7 @@ static func add_cards_green() -> void:
 	card_fusion_cannon.card_energy_cost = 4
 	card_fusion_cannon.card_requires_target = true
 	card_fusion_cannon.card_values = {
-		"damage": 6,
+		"damage": 4,
 		"number_of_attacks": 1,
 		"number_of_cards": 3,
 		"created_card_object_id": "card_waste",
@@ -1071,16 +1071,27 @@ static func add_cards_green() -> void:
 	card_garbage_collection.card_energy_cost = 1
 	card_garbage_collection.card_values = { "exhaust_amount": 1, "block": 5, "draw_count": 1 }
 	card_garbage_collection.card_upgrade_value_improvements = { "block": 3, "draw_count": 1 }
+	var garbage_collection_target_validators: Array[Dictionary] = [
+		{Scripts.VALIDATOR_CARD_ID: {"card_object_ids": ["card_waste"]}},
+	]
+	card_garbage_collection.card_play_validators = [
+		{
+			Scripts.VALIDATOR_COMBAT_PILES_HAVE_VALIDATED_CARDS: {
+				"source_zones": [HandManager.HAND_PILE],
+				"validator_data": garbage_collection_target_validators,
+				"exclude_validated_card": true,
+				"comparison_value": 1,
+			}
+		},
+	]
 	card_garbage_collection.card_play_actions = [
 		{
 			Scripts.ACTION_PICK_CARDS: {
 				"custom_key_names": {"max_card_amount": "exhaust_amount", "min_card_amount": "exhaust_amount"},
-				"min_cards_are_required_for_action": false,
+				"min_cards_are_required_for_action": true,
 				"card_pick_type": HandManager.HAND_PILE,
 				"card_pick_text": "选择要加入坏道区的冗余数据",
-				"validator_data": [
-					{ Scripts.VALIDATOR_CARD_ID: { "card_object_ids": ["card_waste"] } },
-				],
+				"validator_data": garbage_collection_target_validators,
 				"action_data": [
 					{ Scripts.ACTION_EXHAUST_CARDS: {} },
 				],
@@ -1097,6 +1108,423 @@ static func add_cards_green() -> void:
 		},
 	]
 	Global.register_rod(card_garbage_collection)
+
+	#region 扩展牌组：适应、循环与进化改写
+
+	# 应激性角质层 — 受伤后获得额外的持久防御
+	var card_stress_cuticle: CardData = CardData.new("card_stress_cuticle")
+	card_stress_cuticle.card_name = "应激性角质层"
+	card_stress_cuticle.card_texture_path = "sprites/card/green/card_stress_cuticle.png"
+	card_stress_cuticle.card_color_id = "color_{0}".format([color])
+	card_stress_cuticle.card_description = "获得 [block] 点防火墙。若你在上个时钟周期内损失过完整度，额外获得 [bonus_overshield] 层 [status_icon:status_effect_overshield]。"
+	card_stress_cuticle.card_hint = "总会获得防火墙；若你在上回合受到过未被防火墙抵消的伤害，还会获得可跨回合保留的过载防火墙。"
+	card_stress_cuticle.card_type = CardData.CARD_TYPES.SKILL
+	card_stress_cuticle.card_rarity = CardData.CARD_RARITIES.COMMON
+	card_stress_cuticle.card_requires_target = false
+	card_stress_cuticle.card_energy_cost = 1
+	card_stress_cuticle.card_values = {"block": 7, "bonus_overshield": 5}
+	card_stress_cuticle.card_upgrade_value_improvements = {"block": 3, "bonus_overshield": 2}
+	var stress_cuticle_bonus_validators: Array[Dictionary] = [
+		{
+			Scripts.VALIDATOR_COMBAT_STATS: {
+				"stat_enum": CombatStatsData.STATS.PLAYER_DAMAGED_AMOUNT,
+				"turn_stat_type": 1,
+				"operator": ">",
+				"comparison_value": 0,
+			}
+		},
+	]
+	card_stress_cuticle.card_play_actions = [
+		{
+			Scripts.ACTION_VALIDATOR: {
+				"validator_data": stress_cuticle_bonus_validators,
+				"passed_action_data": [
+					{
+						Scripts.ACTION_APPLY_STATUS: {
+							"custom_key_names": {"status_charge_amount": "bonus_overshield"},
+							"status_effect_object_id": "status_effect_overshield",
+							"target_override": BaseAction.TARGET_OVERRIDES.PARENT,
+						}
+					},
+				],
+			}
+		},
+		{
+			Scripts.ACTION_BLOCK: {
+				"target_override": BaseAction.TARGET_OVERRIDES.PARENT,
+				"audio_path": AudioConstants.SFX_GROUP_SHIELD_UP,
+			}
+		},
+	]
+	Global.register_rod(card_stress_cuticle)
+
+	# 坏道萌发 — 将一张已经物理删除的牌带回手牌
+	var card_bad_sector_germination: CardData = CardData.new("card_bad_sector_germination")
+	card_bad_sector_germination.card_name = "坏道萌发"
+	card_bad_sector_germination.card_texture_path = "sprites/card/green/card_bad_sector_germination.png"
+	card_bad_sector_germination.card_color_id = "color_{0}".format([color])
+	card_bad_sector_germination.card_description = "选择坏道区中的 1 个脚本，将其加入当前线程，并使其在本时钟周期内耗能变为 0。获得 [status_charge_amount] 层 [status_icon:status_effect_overheat]。"
+	card_bad_sector_germination.card_hint = "坏道区中有可选脚本时才能打出。选中的脚本会回到手牌，且本回合耗能为 0；作为代价，你会获得内核过热。"
+	card_bad_sector_germination.card_type = CardData.CARD_TYPES.SKILL
+	card_bad_sector_germination.card_rarity = CardData.CARD_RARITIES.UNCOMMON
+	card_bad_sector_germination.card_requires_target = false
+	card_bad_sector_germination.card_energy_cost = 1
+	card_bad_sector_germination.card_play_destination = HandManager.BANISH_PILE
+	card_bad_sector_germination.card_values = {"status_charge_amount": 3, "recovered_card_energy_cost": 0}
+	card_bad_sector_germination.card_first_upgrade_property_changes = {"card_energy_cost": 0}
+	card_bad_sector_germination.card_play_validators = [
+		{
+			Scripts.VALIDATOR_COMBAT_PILES_HAVE_VALIDATED_CARDS: {
+				"source_zones": [HandManager.EXHAUST_PILE],
+				"comparison_value": 1,
+			}
+		},
+	]
+	card_bad_sector_germination.card_play_actions = [
+		{
+			Scripts.ACTION_APPLY_STATUS: {
+				"status_effect_object_id": "status_effect_overheat",
+				"target_override": BaseAction.TARGET_OVERRIDES.PARENT,
+			}
+		},
+		{
+			Scripts.ACTION_PICK_CARDS: {
+				"card_pick_type": HandManager.EXHAUST_PILE,
+				"card_pick_text": "选择一个要从坏道区恢复的脚本",
+				"min_card_amount": 1,
+				"max_card_amount": 1,
+				"min_cards_are_required_for_action": true,
+				"action_data": [
+					{Scripts.ACTION_ADD_CARDS_TO_HAND: {}},
+					{
+						Scripts.ACTION_CHANGE_CARD_ENERGIES: {
+							"custom_key_names": {"card_energy_cost_until_turn": "recovered_card_energy_cost"},
+						}
+					},
+				],
+			}
+		},
+	]
+	Global.register_rod(card_bad_sector_germination)
+
+	# 热能堆肥 — 将所有战斗牌区中的冗余数据转化为防御并降温
+	var card_thermal_compost: CardData = CardData.new("card_thermal_compost")
+	card_thermal_compost.card_name = "热能堆肥"
+	card_thermal_compost.card_texture_path = "sprites/card/green/card_thermal_compost.png"
+	card_thermal_compost.card_color_id = "color_{0}".format([color])
+	card_thermal_compost.card_description = "物理删除当前线程、内存队列和回收站中的所有 [card_name:card_waste]。每物理删除 1 个，以此法获得 [overshield_per_waste] 层 [status_icon:status_effect_overshield]，并移除 [overheat_decay_per_waste] 层 [status_icon:status_effect_overheat]。"
+	card_thermal_compost.card_hint = "物理删除手牌、抽牌堆和弃牌堆中的全部冗余数据。每删除 1 张，都会获得可跨回合保留的过载防火墙，并减少内核过热。"
+	card_thermal_compost.card_type = CardData.CARD_TYPES.SKILL
+	card_thermal_compost.card_rarity = CardData.CARD_RARITIES.COMMON
+	card_thermal_compost.card_requires_target = false
+	card_thermal_compost.card_energy_cost = 0
+	card_thermal_compost.card_values = {
+		"overshield_per_waste": 3,
+		"overheat_decay_per_waste": 2,
+		"overheat_decay_delta": -2,
+	}
+	card_thermal_compost.card_first_upgrade_value_changes = {
+		"overshield_per_waste": 4,
+		"overheat_decay_per_waste": 3,
+		"overheat_decay_delta": -3,
+	}
+	card_thermal_compost.card_play_actions = [
+		{
+			Scripts.ACTION_LOW_LEVEL_FORMAT: {
+				"source_zones": [HandManager.HAND_PILE, HandManager.DRAW_PILE, HandManager.DISCARD_PILE],
+				"filter_card_ids": ["card_waste"],
+				"operation": CardMoveOperation.TYPES.EXHAUST,
+				"variable_name_to_export": "format_count",
+				"action_data": [
+					{
+						Scripts.ACTION_VARIABLE_ACTION_GENERATOR: {
+							"custom_key_names": {"action_count": "format_count"},
+							"action_data": [
+								{
+									Scripts.ACTION_DECAY_STATUS: {
+										"custom_key_names": {"status_charge_delta": "overheat_decay_delta"},
+										"status_effect_object_id": "status_effect_overheat",
+										"target_override": BaseAction.TARGET_OVERRIDES.PARENT,
+									}
+								},
+								{
+									Scripts.ACTION_APPLY_STATUS: {
+										"custom_key_names": {"status_charge_amount": "overshield_per_waste"},
+										"status_effect_object_id": "status_effect_overshield",
+										"target_override": BaseAction.TARGET_OVERRIDES.PARENT,
+									}
+								},
+							],
+						}
+					},
+				],
+			}
+		},
+	]
+	Global.register_rod(card_thermal_compost)
+
+	# 休眠孢子 — 使用专门的 Action 延迟状态保存下回合效果
+	var card_dormant_spore: CardData = CardData.new("card_dormant_spore")
+	card_dormant_spore.card_name = "休眠孢子"
+	card_dormant_spore.card_texture_path = "sprites/card/green/card_dormant_spore.png"
+	card_dormant_spore.card_color_id = "color_{0}".format([color])
+	card_dormant_spore.card_description = "下个时钟周期开始、读取脚本前，获得 [block] 点防火墙并读取 [draw_count] 个脚本。"
+	card_dormant_spore.card_hint = "打出后不会立即获得防火墙或抽牌；这两个效果会在下回合正常抽牌前自动执行。"
+	card_dormant_spore.card_type = CardData.CARD_TYPES.SKILL
+	card_dormant_spore.card_rarity = CardData.CARD_RARITIES.COMMON
+	card_dormant_spore.card_requires_target = false
+	card_dormant_spore.card_energy_cost = 1
+	card_dormant_spore.card_play_destination = HandManager.EXHAUST_PILE
+	card_dormant_spore.card_values = {"block": 8, "draw_count": 2}
+	card_dormant_spore.card_first_upgrade_value_changes = {"draw_count": 3}
+	card_dormant_spore.card_play_actions = [
+		{
+			Scripts.ACTION_SCHEDULE_DELAYED_ACTIONS: {
+				"status_effect_id": "status_effect_delayed_action_execution",
+				"status_charges": 1,
+				"action_data": [
+					{Scripts.ACTION_DRAW_GENERATOR: {}},
+					{
+						Scripts.ACTION_BLOCK: {
+							"target_override": BaseAction.TARGET_OVERRIDES.PARENT,
+							"audio_path": AudioConstants.SFX_GROUP_SHIELD_UP,
+						}
+					},
+				],
+			}
+		},
+	]
+	Global.register_rod(card_dormant_spore)
+
+	# 逆境选择 — 主动弃置会永久培养伤害
+	var card_adversity_selection: CardData = CardData.new("card_adversity_selection")
+	card_adversity_selection.card_name = "逆境选择"
+	card_adversity_selection.card_texture_path = "sprites/card/green/card_adversity_selection.png"
+	card_adversity_selection.card_color_id = "color_{0}".format([color])
+	card_adversity_selection.card_description = "造成 [damage] 点伤害。此脚本被其他卡牌的效果丢弃时，其伤害永久提高 [damage_growth] 点。"
+	card_adversity_selection.card_hint = "让其他卡牌主动丢弃此牌，可以永久提高它的伤害。回合结束时的自然弃牌，以及打出后进入弃牌堆，均不会触发该效果。"
+	card_adversity_selection.card_type = CardData.CARD_TYPES.ATTACK
+	card_adversity_selection.card_rarity = CardData.CARD_RARITIES.UNCOMMON
+	card_adversity_selection.card_requires_target = true
+	card_adversity_selection.card_energy_cost = 1
+	card_adversity_selection.card_is_retained = true
+	card_adversity_selection.card_keyword_object_ids = ["keyword_retain"]
+	card_adversity_selection.card_values = {
+		"damage": 9,
+		"damage_growth": 4,
+		"card_value_improvements": {"damage": 4},
+		"number_of_attacks": 1,
+	}
+	card_adversity_selection.card_first_upgrade_value_changes = {
+		"damage_growth": 6,
+		"card_value_improvements": {"damage": 6},
+	}
+	card_adversity_selection.card_play_actions = [
+		{Scripts.ACTION_ATTACK_GENERATOR: {"audio_path": AudioConstants.SFX_GROUP_DAGGER_STAB}},
+	]
+	card_adversity_selection.card_discard_actions = [
+		{
+			Scripts.ACTION_IMPROVE_CARD_VALUES: {
+				"pick_played_card": true,
+				"modify_parent_card": true,
+			}
+		},
+	]
+	Global.register_rod(card_adversity_selection)
+
+	# 表观遗传 — 给一张永久牌组卡随机施加兼容附魔
+	var card_epigenetic_editing: CardData = CardData.new("card_epigenetic_editing")
+	card_epigenetic_editing.card_name = "表观遗传"
+	card_epigenetic_editing.card_texture_path = "sprites/card/green/card_epigenetic_editing.png"
+	card_epigenetic_editing.card_color_id = "color_{0}".format([color])
+	card_epigenetic_editing.card_description = "选择当前线程中 1 个拥有空附魔槽的非生成脚本，为其永久施加 1 个随机兼容附魔。"
+	card_epigenetic_editing.card_hint = "手牌中有符合条件的非生成牌时才能打出。选中的牌会随机获得一种与其兼容的附魔，且该附魔在本局游戏中永久保留。"
+	card_epigenetic_editing.card_type = CardData.CARD_TYPES.SKILL
+	card_epigenetic_editing.card_rarity = CardData.CARD_RARITIES.RARE
+	card_epigenetic_editing.card_requires_target = false
+	card_epigenetic_editing.card_energy_cost = 3
+	card_epigenetic_editing.card_play_destination = HandManager.EXHAUST_PILE
+	card_epigenetic_editing.card_first_upgrade_property_changes = {"card_energy_cost": 2}
+	var epigenetic_decorators: Dictionary[String, Dictionary] = {
+		"card_decorator_block_on_play": {},
+		"card_decorator_remove_exhaust": {},
+		"card_decorator_extra_draw": {},
+		"card_decorator_damage_on_play": {},
+		"card_decorator_energy_on_play": {},
+		"card_decorator_add_retain": {},
+		"card_decorator_heal_on_play": {},
+	}
+	var epigenetic_validator_data: Array[Dictionary] = [
+		{
+			Scripts.VALIDATOR_CARD_IS_DECORATABLE: {
+				"card_decorator_ids": epigenetic_decorators.keys(),
+			}
+		},
+		{
+			Scripts.VALIDATOR_CARD_RARITY: {
+				"card_rarities_exclude": [CardData.CARD_RARITIES.GENERATED],
+			}
+		},
+		{
+			Scripts.VALIDATOR_CARD_PROPERTIES: {
+				"card_property_name": "parent_card",
+				"operator": "!=",
+				"comparison_value": null,
+			}
+		},
+	]
+	card_epigenetic_editing.card_play_validators = [
+		{
+			Scripts.VALIDATOR_COMBAT_PILES_HAVE_VALIDATED_CARDS: {
+				"source_zones": [HandManager.HAND_PILE],
+				"validator_data": epigenetic_validator_data,
+				"exclude_validated_card": true,
+			}
+		},
+	]
+	card_epigenetic_editing.card_play_actions = [
+		{
+			Scripts.ACTION_PICK_CARDS: {
+				"card_pick_type": HandManager.HAND_PILE,
+				"card_pick_text": "选择一个要进行表观遗传改造的脚本",
+				"min_card_amount": 1,
+				"max_card_amount": 1,
+				"min_cards_are_required_for_action": true,
+				"validator_data": epigenetic_validator_data,
+				"action_data": [
+					{
+						Scripts.ACTION_DECORATE_CARDS: {
+							"decorate_parent_card": true,
+							"random_card_decorators": epigenetic_decorators,
+						}
+					},
+				],
+			}
+		},
+	]
+	Global.register_rod(card_epigenetic_editing)
+
+	# 菌丝网络 — 通过不可见专属状态监听物理删除事件
+	var card_mycelial_network: CardData = CardData.new("card_mycelial_network")
+	card_mycelial_network.card_name = "菌丝网络"
+	card_mycelial_network.card_texture_path = "sprites/card/green/card_mycelial_network.png"
+	card_mycelial_network.card_color_id = "color_{0}".format([color])
+	card_mycelial_network.card_description = "打出后，每当一个脚本被物理删除，获得 [status_charge_amount] 层 [status_icon:status_effect_overshield]。若该脚本是 [card_name:card_waste]，再读取 1 个脚本。重复打出时，获得的过载防火墙可以叠加，但读取数量不会叠加。"
+	card_mycelial_network.card_hint = "打出后持续生效。重复打出会提高每次物理删除脚本时获得的过载防火墙；物理删除冗余数据时始终只额外抽 1 张牌。"
+	card_mycelial_network.card_type = CardData.CARD_TYPES.POWER
+	card_mycelial_network.card_rarity = CardData.CARD_RARITIES.UNCOMMON
+	card_mycelial_network.card_requires_target = false
+	card_mycelial_network.card_energy_cost = 2
+	card_mycelial_network.card_values = {"status_charge_amount": 3}
+	card_mycelial_network.card_upgrade_value_improvements = {"status_charge_amount": 1}
+	card_mycelial_network.card_play_actions = [
+		{
+			Scripts.ACTION_APPLY_STATUS: {
+				"status_effect_object_id": "status_effect_mycelial_network",
+				"target_override": BaseAction.TARGET_OVERRIDES.PARENT,
+			}
+		},
+	]
+	Global.register_rod(card_mycelial_network)
+
+	# 指数培养 — X 费同时缩放持久防御与冗余数据数量
+	var card_exponential_culture: CardData = CardData.new("card_exponential_culture")
+	card_exponential_culture.card_name = "指数培养"
+	card_exponential_culture.card_texture_path = "sprites/card/green/card_exponential_culture.png"
+	card_exponential_culture.card_color_id = "color_{0}".format([color])
+	card_exponential_culture.card_description = "消耗所有当前可消耗的算力。每消耗 1 点算力，获得 [status_charge_amount] 层 [status_icon:status_effect_overshield]，并将 1 个 [card_name:card_waste] 加入回收站。"
+	card_exponential_culture.card_hint = "这是可变耗能牌，会消耗你当前所有可用算力。实际消耗多少点算力，就会获得对应倍数的过载防火墙，并生成同等数量的冗余数据进入弃牌堆；消耗 0 点时没有效果。"
+	card_exponential_culture.card_type = CardData.CARD_TYPES.SKILL
+	card_exponential_culture.card_rarity = CardData.CARD_RARITIES.UNCOMMON
+	card_exponential_culture.card_requires_target = false
+	card_exponential_culture.card_energy_cost = 0
+	card_exponential_culture.card_energy_cost_is_variable = true
+	card_exponential_culture.card_values = {
+		"status_charge_amount": 4,
+		"number_of_cards": 1,
+	}
+	card_exponential_culture.card_first_upgrade_value_changes = {
+		"status_charge_amount": 5,
+	}
+	card_exponential_culture.card_play_actions = [
+		{
+			Scripts.ACTION_VARIABLE_COST_MODIFIER: {
+				"multiplied_values": ["status_charge_amount", "number_of_cards"],
+				"multiplied_values_bases": {"status_charge_amount": 0, "number_of_cards": 0},
+				"action_data": [
+					{
+						Scripts.ACTION_CREATE_CARDS: {
+							"created_card_object_id": "card_waste",
+							"action_data": [
+								{Scripts.ACTION_DISCARD_CARDS: {"is_manual_discard": false}},
+							],
+						}
+					},
+					{
+						Scripts.ACTION_APPLY_STATUS: {
+							"status_effect_object_id": "status_effect_overshield",
+							"target_override": BaseAction.TARGET_OVERRIDES.PARENT,
+						}
+					},
+				],
+			}
+		},
+	]
+	Global.register_rod(card_exponential_culture)
+
+	# 灾变演替 — 消耗全部冗余数据，对所有敌人重复造成伤害
+	var card_catastrophic_succession: CardData = CardData.new("card_catastrophic_succession")
+	card_catastrophic_succession.card_name = "灾变演替"
+	card_catastrophic_succession.card_texture_path = "sprites/card/green/card_catastrophic_succession.png"
+	card_catastrophic_succession.card_color_id = "color_{0}".format([color])
+	card_catastrophic_succession.card_description = "物理删除当前线程、内存队列和回收站中的所有 [card_name:card_waste]。每物理删除 1 个，以此法对所有敌人造成 [damage] 点伤害。上述区域中至少有 1 个 [card_name:card_waste] 时才能打出。"
+	card_catastrophic_succession.card_hint = "物理删除手牌、抽牌堆和弃牌堆中的全部冗余数据；每删除 1 张，就对所有敌人造成 1 次伤害。没有冗余数据时无法打出。"
+	card_catastrophic_succession.card_type = CardData.CARD_TYPES.ATTACK
+	card_catastrophic_succession.card_rarity = CardData.CARD_RARITIES.RARE
+	card_catastrophic_succession.card_requires_target = false
+	card_catastrophic_succession.card_energy_cost = 3
+	card_catastrophic_succession.card_play_destination = HandManager.EXHAUST_PILE
+	card_catastrophic_succession.card_values = {"damage": 6, "number_of_attacks": 1}
+	card_catastrophic_succession.card_upgrade_value_improvements = {"damage": 2}
+	card_catastrophic_succession.card_play_validators = [
+		{
+			Scripts.VALIDATOR_COMBAT_PILES_HAVE_VALIDATED_CARDS: {
+				"source_zones": [HandManager.HAND_PILE, HandManager.DRAW_PILE, HandManager.DISCARD_PILE],
+				"validator_data": [
+					{Scripts.VALIDATOR_CARD_ID: {"card_object_ids": ["card_waste"]}},
+				],
+				"comparison_value": 1,
+			}
+		},
+	]
+	card_catastrophic_succession.card_play_actions = [
+		{
+			Scripts.ACTION_LOW_LEVEL_FORMAT: {
+				"source_zones": [HandManager.HAND_PILE, HandManager.DRAW_PILE, HandManager.DISCARD_PILE],
+				"filter_card_ids": ["card_waste"],
+				"operation": CardMoveOperation.TYPES.EXHAUST,
+				"variable_name_to_export": "format_count",
+				"action_data": [
+					{
+						Scripts.ACTION_VARIABLE_ACTION_GENERATOR: {
+							"custom_key_names": {"action_count": "format_count"},
+							"action_data": [
+								{
+									Scripts.ACTION_ATTACK_GENERATOR: {
+										"target_override": BaseAction.TARGET_OVERRIDES.ALL_ENEMIES,
+										"audio_path": AudioConstants.SFX_GROUP_ENERGY_BURST,
+									}
+								},
+							],
+						}
+					},
+				],
+			}
+		},
+	]
+	Global.register_rod(card_catastrophic_succession)
+
+	#endregion
 
 	#endregion
 

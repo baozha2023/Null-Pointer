@@ -99,7 +99,21 @@ func format_value(key: String, val: Variant) -> String:
 
 	return str(val)
 
-func parse_forge_actions_to_text(forge_actions: Array) -> String:
+## Formats an elapsed duration without wrapping after 24 hours.
+## `zero_placeholder` is useful for records such as a fastest win that does not exist yet.
+func format_duration(seconds_value: float, zero_placeholder: String = "") -> String:
+	if seconds_value <= 0.0 and zero_placeholder != "":
+		return zero_placeholder
+	var total_seconds: int = max(0, int(seconds_value))
+	var hours: int = total_seconds / 3600
+	var minutes: int = total_seconds % 3600 / 60
+	var seconds: int = total_seconds % 60
+	return "%02d:%02d:%02d" % [hours, minutes, seconds]
+
+## Converts forge-style action entries into readable text. `fallback_values` follows the same
+## value fallback idea used by card actions, which also makes this renderer reusable for delayed
+## actions whose values were captured from a CardPlayRequest.
+func parse_forge_actions_to_text(forge_actions: Array, fallback_values: Dictionary = {}) -> String:
 	var display_text: String = ""
 	for i in forge_actions.size():
 		var entry: Dictionary = forge_actions[i]
@@ -110,42 +124,52 @@ func parse_forge_actions_to_text(forge_actions: Array) -> String:
 		var action_detail: String = ""
 		for action_path: String in action_data:
 			action_name = action_path.get_file().replace(".gd", "").replace("Action", "")
+			var action_values: Dictionary = action_data[action_path]
+			var display_values: Dictionary = fallback_values.duplicate(true)
+			display_values.merge(action_values, true)
 
 			if custom_description != "":
-				action_detail = parse(custom_description, action_data[action_path])
+				action_detail = parse(custom_description, display_values)
 			else:
 				if action_path == Scripts.ACTION_ATTACK_GENERATOR or action_path == Scripts.ACTION_ATTACK:
-					var damage = action_data[action_path].get("damage", 0)
-					var amount = action_data[action_path].get("number_of_attacks", 1)
+					var damage: int = _get_action_display_value(action_values, fallback_values, "damage", 0)
+					var amount: int = _get_action_display_value(action_values, fallback_values, "number_of_attacks", 1)
 					if amount > 1:
 						action_detail = "造成 %d 点伤害 %d 次" % [damage, amount]
 					else:
 						action_detail = "造成 %d 点伤害" % damage
 				elif action_path == Scripts.ACTION_ADD_HEALTH:
-					var health = action_data[action_path].get("health_amount", 0)
+					var health: int = _get_action_display_value(action_values, fallback_values, "health_amount", 0)
 					action_detail = "恢复 %d 点完整度" % health
 				elif action_path == Scripts.ACTION_BLOCK:
-					var block = action_data[action_path].get("block", 0)
+					var block: int = _get_action_display_value(action_values, fallback_values, "block", 0)
 					action_detail = "获得 %d 点防火墙" % block
 				elif action_path == Scripts.ACTION_DRAW or action_path == Scripts.ACTION_DRAW_GENERATOR:
-					var amount = action_data[action_path].get("draw_count", 1)
+					var amount: int = _get_action_display_value(action_values, fallback_values, "draw_count", 1)
 					action_detail = "抽取 %d 张卡牌" % amount
 				elif action_path == Scripts.ACTION_DIRECT_DAMAGE:
-					var damage = action_data[action_path].get("damage", 1)
+					var damage: int = _get_action_display_value(action_values, fallback_values, "damage", 1)
 					action_detail = "造成 %d 点真实伤害" % damage
 				elif action_path == Scripts.ACTION_APPLY_STATUS:
-					var status_id = action_data[action_path].get("status_effect_object_id", "")
-					var amount = action_data[action_path].get("status_charge_amount", 1)
+					var status_id: String = _get_action_display_value(action_values, fallback_values, "status_effect_object_id", "")
+					var amount: int = _get_action_display_value(action_values, fallback_values, "status_charge_amount", 1)
 					var raw_text = "施加 %d 层 [status_icon:%s]" % [amount, status_id]
 					action_detail = parse(raw_text)
 				elif action_path == Scripts.ACTION_ADD_ENERGY:
-					var amount = action_data[action_path].get("energy_amount", 1)
+					var amount: int = _get_action_display_value(action_values, fallback_values, "energy_amount", 1)
 					var raw_text = "获得 [amount_energy_icons]"
 					action_detail = parse(raw_text, {"amount": amount})
 				else:
-					action_detail = JSON.stringify(action_data[action_path])
+					action_detail = JSON.stringify(action_values)
 
 		display_text += "[color=orange][%d][/color] %s\n" % [i, action_name]
 		display_text += "    [color=gray]%s[/color]\n" % action_detail
 
 	return display_text.strip_edges()
+
+func _get_action_display_value(action_values: Dictionary, fallback_values: Dictionary, key: String, default_value: Variant) -> Variant:
+	var custom_key_names: Dictionary = action_values.get("custom_key_names", {})
+	var resolved_key: String = custom_key_names.get(key, key)
+	if action_values.has(resolved_key):
+		return action_values[resolved_key]
+	return fallback_values.get(resolved_key, default_value)

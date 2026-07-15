@@ -132,7 +132,7 @@ All game behavior flows through Actions. Inheritance chain: `BaseAction` → `Ba
   - `world_interaction_actions/` — visit locations, start combat, open chests
   - `shop_actions/`, `rewards/`, `artifact_actions/`, `audio_actions/`, `custom_actions/`
 
-Shared card-action helpers include `CardMoveOperation` for discard/exhaust/banish/limbo/retain routing, `BaseVariableActionModifier` for isolated runtime value multiplication, and `ActionScheduleDelayedActions` plus `StatusEffectDelayedExecution` for storing generated action payloads until a later turn phase. All `BaseCardsetAction` implementations must use `_intercept_cardset_action()` and resolve their cardset through `_get_picked_cards(action_interceptor_processor)` so shadowed values are applied consistently.
+Shared card-action helpers include `CardMoveOperation` for discard/exhaust/banish/limbo/retain routing, `BaseVariableActionModifier` for isolated runtime value multiplication, and `ActionScheduleDelayedActions` plus `StatusEffectDelayedExecution` for storing generated action payloads until a later turn phase. Card-only delayed payloads use `status_effect_delayed_execution`; action-only payloads use `status_effect_delayed_action_execution`, which captures the originating `CardPlayRequest.card_values` and renders the pending actions in its tooltip. All `BaseCardsetAction` implementations must use `_intercept_cardset_action()` and resolve their cardset through `_get_picked_cards(action_interceptor_processor)` so shadowed values are applied consistently.
 
 **Value Hierarchy**: When an Action looks up a parameter via `get_action_value(key, default)`, it searches in order: Action's own `values` → `CardPlayRequest.card_values` → `CardData.card_values` → `PlayerData.player_values` → `default`. This lets cards, players, and individual actions override values at different scopes.
 
@@ -162,7 +162,7 @@ Each interceptor returns an `ActionInterceptorProcessor` chain that modifies sha
 
 ### Validators (`scripts/validators/`)
 
-Validators drive conditional logic: "Can this card be played?", "Should this effect trigger?". Called via `Global.validate(validators, card_data, action)`. Organized by domain: card properties, card plays, deck state, hand state, combat stats, enemy state, player state.
+Validators drive conditional logic: "Can this card be played?", "Should this effect trigger?". Called via `Global.validate(validators, card_data, action)`. Organized by domain: card properties, card plays, deck state, hand state, combat stats, enemy state, player state. `ValidatorCombatPilesHaveValidatedCards` is the shared preflight validator for selection cards: it checks one or more combat piles with the normal card-validator pipeline, can exclude the card being played, and prevents mandatory selection actions from opening with no valid target.
 
 ### Content Packs
 
@@ -273,9 +273,10 @@ Single shader: `scripts/ui/outline.gdshader` — a `canvas_item` shader drawing 
 ### UI Architecture
 
 All UI scenes are preloaded in the `Scenes` singleton. UI scripts are in `scripts/ui/`. The root scene (`Root.tscn`) has three top-level children: **TitleScreen** (menus), **RunScreen** (in-game HUD), and **Tooltips** (global tooltip layer, Z-index 1000). Key subsystems:
-- **Card display**: `Card.tscn` + `CardDecorator.tscn` (for enchantment-like card visual modifications)
-- **Codex**: Browseable content encyclopedia with five tabs: Cards, Artifacts, Consumables, Enemies, and Glossary (keywords + status effects with descriptions). Card tab supports pack filtering, text searching, sorting by rarity/cost/type and **double-click** on any card opens `CodexCardDetailPanel` — a full overlay showing all card data: basic info, flags, pile routing, numeric values, upgrade paths, decorators, action hooks, keywords, and tags.
-- **Card Selection**: `CardSelectionOverlay.tscn` supports browsing, selecting cards, filtering by card packs, and text search.
+- **Card display**: `Card.tscn` + `CardDecorator.tscn` (for enchantment-like card visual modifications). Hand input is owned by the `Hand.gd` interaction state machine (`IDLE`, `PRESSING`, `DRAGGING`, `SELECTED`, `COMMITTING`); `Card.gd` only emits pointer input and manages visual feedback. Mouse and touch share the same commit/cancel path, and consumable targeting cancels active card interaction.
+- **Codex**: Browseable content encyclopedia with five tabs: Cards, Artifacts, Consumables, Enemies, and Glossary (keywords + status effects with descriptions). Card tab supports pack filtering, text searching, sorting by rarity/cost/type and **double-click** on any card opens `CodexCardDetailPanel` — a full overlay showing all card data: basic info, flags, pile routing, numeric values, upgrade paths, decorators, action hooks, keywords, and tags. Codex and other browser-style selectors share `Global.get_cards_for_browser()`; it intentionally ignores `card_appears_in_card_packs`, which controls run acquisition only.
+- **Card Selection**: `CardSelectionOverlay.tscn` supports browsing, selecting cards, filtering by card packs, and text search through the same `Global.get_cards_for_browser()` path used by the Codex.
+- **Run/profile summaries**: `RunSummaryOverlay.tscn`, `ProfileStatsMenu.tscn`, and `CharacterStat.tscn` are standalone reusable scenes rather than embedded `Root.tscn` subtrees. Elapsed-time labels use `TextParser.format_duration()` so durations do not wrap after 24 hours.
 - **Map**: `MapLocation.tscn` with `Line2D` connections for Act navigation
 - **Rewards**: Card draft, artifact, and money reward screens
 - **Shop**: Purchase cards, artifacts, and consumables

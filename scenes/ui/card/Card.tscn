@@ -13,6 +13,13 @@ shader_parameter/width = 0.0
 shader_parameter/outline_color = Color(1, 0.84, 0, 1)
 shader_parameter/brightness = 1.0
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_play_ready_glow"]
+resource_local_to_scene = true
+shader = ExtResource("4_shader")
+shader_parameter/width = 4.0
+shader_parameter/outline_color = Color(0.15, 0.95, 0.85, 0.82)
+shader_parameter/brightness = 1.0
+
 [sub_resource type="Animation" id="Animation_qe6gy"]
 length = 0.001
 tracks/0/type = "value"
@@ -97,6 +104,40 @@ _data = {
 &"condition_glow": SubResource("Animation_condition_glow")
 }
 
+[sub_resource type="Animation" id="Animation_play_ready_glow"]
+resource_name = "play_ready_glow"
+length = 1.2
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Pivot/CardVisual/CardPlayReadyGlow:material:shader_parameter/width")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.6, 1.2),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [4.0, 6.0, 4.0]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Pivot/CardVisual/CardPlayReadyGlow:material:shader_parameter/outline_color")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.6, 1.2),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Color(0.15, 0.95, 0.85, 0.78), Color(0.32, 1, 0.92, 1), Color(0.15, 0.95, 0.85, 0.78)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_play_ready"]
+_data = {
+&"play_ready_glow": SubResource("Animation_play_ready_glow")
+}
+
 [node name="Card" type="Control" unique_id=644929853 groups=["cards"]]
 custom_minimum_size = Vector2(188, 245)
 layout_mode = 3
@@ -136,6 +177,19 @@ offset_left = 1.0
 offset_top = 1.0
 offset_right = 189.0
 offset_bottom = 246.0
+expand_mode = 1
+stretch_mode = 5
+
+[node name="CardPlayReadyGlow" type="TextureRect" parent="Pivot/CardVisual"]
+unique_name_in_owner = true
+visible = false
+material = SubResource("ShaderMaterial_play_ready_glow")
+layout_mode = 0
+offset_left = 1.0
+offset_top = 1.0
+offset_right = 189.0
+offset_bottom = 246.0
+mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
@@ -270,6 +324,9 @@ theme_override_constants/separation = 4
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=544461908]
 libraries/ = SubResource("AnimationLibrary_156sy")
+
+[node name="PlayReadyAnimationPlayer" type="AnimationPlayer" parent="."]
+libraries/ = SubResource("AnimationLibrary_play_ready")
 
 [node name="KeywordTimer" type="Timer" parent="." unique_id=653621155]
 one_shot = true

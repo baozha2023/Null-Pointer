@@ -96,26 +96,14 @@ func _clear_codex_card_packs() ->  void:
 # creates display cards in codex
 func _populate_codex_cards(card_pack_data: CardPackData = null) -> void:
 	var card_args: Array[Array] = [] # used to instantiate cards in container
-	var card_object_ids: Array = Global._id_to_card_data.keys()
-	if card_pack_data == null or card_pack_data.object_id == "card_pack_all":
-		# creates all cards in the game to display
-		card_object_ids = Global._id_to_card_data.keys()
-	else:
-		# create cards from pack but include all rarities and types for the codex display
-		var card_filter: CardFilter = CardFilter.new().filter_appears_in_card_packs(true)
-		if card_pack_data.card_pack_color_id != "":
-			card_filter = card_filter.filter_colors([card_pack_data.card_pack_color_id])
-		card_filter = card_filter.filter_card_validators(card_pack_data.card_pack_validators)
-		card_filter = card_filter.include_card_object_ids(card_pack_data.card_pack_card_ids)
-		card_object_ids = card_filter.filtered_card_unique_object_ids.keys()
+	var displayed_cards: Array[CardData] = Global.get_cards_for_browser(
+		Global.get_all_cards(),
+		card_pack_data,
+		current_search_text
+	)
 	
 	# generate data to make cards
-	for card_object_id: String in card_object_ids:
-		var card_data: CardData = Global.get_card_data(card_object_id)
-		
-		if current_search_text != "" and not (current_search_text in card_data.card_name.to_lower()):
-			continue
-			
+	for card_data: CardData in displayed_cards:
 		card_args.append([card_data, 0, false, true, true])
 	
 	if len(card_args) > 1:

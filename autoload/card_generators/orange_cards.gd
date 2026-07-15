@@ -707,7 +707,7 @@ static func add_cards_orange() -> void:
 	card_force_run.card_play_actions = [
 		{
 			Scripts.ACTION_TAKE_FROM_FORGE: {
-				"take_type": 2,
+				"take_type": ActionTakeFromForge.TAKE_TYPES.ALL,
 				"clear_after_take": true,
 				"execute_directly": false,
 				"override_load": 0,
@@ -937,7 +937,7 @@ static func add_cards_orange() -> void:
 	card_code_audit.card_play_actions = [
 		{
 			Scripts.ACTION_TAKE_FROM_FORGE: {
-				"take_type": 2,
+				"take_type": ActionTakeFromForge.TAKE_TYPES.ALL,
 				"clear_after_take": false,
 				"execute_directly": false,
 				"override_load": -1,
@@ -1067,7 +1067,7 @@ static func add_cards_orange() -> void:
 	card_final_run.card_play_actions = [
 		{Scripts.ACTION_DIRECT_DAMAGE: {}},
 		{Scripts.ACTION_TAKE_FROM_FORGE: {
-			"take_type": 2,
+			"take_type": ActionTakeFromForge.TAKE_TYPES.ALL,
 			"clear_after_take": true,
 			"execute_directly": false,
 			"override_load": 0

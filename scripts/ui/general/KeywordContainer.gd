@@ -47,7 +47,6 @@ func populate_card_keywords(card_data: CardData) -> void:
 		card_data.card_retain_actions,
 		card_data.card_end_of_turn_actions,
 		card_data.card_initial_combat_actions,
-		card_data.card_right_click_actions,
 		card_data.card_add_to_deck_actions,
 		card_data.card_remove_from_deck_actions,
 		card_data.card_transform_in_deck_actions,

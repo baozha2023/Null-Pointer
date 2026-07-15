@@ -10,6 +10,7 @@ var card_decorator_id_to_card_decorator: Dictionary[String, CardDecorator] = {}
 const CARDS_RERENDER_LAZILY: bool = true # throttles card display generation to next frame
 var _card_is_rerendering: bool = false
 var _is_in_codex: bool = false
+var _hand_input_enabled: bool = false
 
 
 ## The label text for energy will be displayed in this color if the player has enough energy
@@ -38,15 +39,17 @@ var tooltip_left_side: bool = false # if tooltip should display to the left of t
 @onready var card_decorator_container: VBoxContainer = %CardDecoratorContainer
 
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
+@onready var play_ready_animation_player: AnimationPlayer = $PlayReadyAnimationPlayer
 @onready var card_glow: ColorRect = %CardGlow
 @onready var card_condition_glow: TextureRect = %CardConditionGlow
+@onready var card_play_ready_glow: TextureRect = %CardPlayReadyGlow
 
 @onready var keyword_timer = $KeywordTimer
 
 const KEYWORD_HOVER_DELAY: float = 0.5
 
 signal card_selected(Card)
-signal card_right_clicked(Card)
+signal hand_pointer_pressed(card: Card, global_position: Vector2, pointer_id: int, is_touch: bool)
 signal card_hovered(Card)
 signal card_unhovered(Card)
 
@@ -54,6 +57,7 @@ func init(_card_data: CardData, angular_offset: float, connect_combat_signals: b
 	card_data = _card_data
 	pivot.rotation_degrees = angular_offset
 	_is_in_codex = is_in_codex
+	_hand_input_enabled = connect_combat_signals
 	
 	if not _is_in_codex:
 		Global.discover_card(card_data.object_id)
@@ -65,6 +69,7 @@ func init(_card_data: CardData, angular_offset: float, connect_combat_signals: b
 		Signals.card_exhausted.connect(_on_card_exhausted)
 		Signals.card_banished.connect(_on_card_banished)
 		Signals.card_drawn.connect(_on_card_drawn)
+		Signals.card_added_to_hand.connect(_on_card_added_to_hand)
 		Signals.card_added_to_draw.connect(_on_card_added_to_draw)
 		Signals.card_properties_changed.connect(_on_card_properties_changed)
 		Signals.card_turn_energy_changed.connect(_on_card_turn_energy_changed)
@@ -104,6 +109,7 @@ func update_card_display(selected_enemy: Enemy = null) -> void:
 	var border_name: String = card_data.card_color_id.replace("color_", "border_")
 	card_background.texture = FileLoader.load_texture("sprites/card-borders/" + border_name + ".png")
 	card_condition_glow.texture = card_background.texture
+	card_play_ready_glow.texture = card_background.texture
 	
 	# updates the card's display
 	var card_name_text: String = card_data.get_card_name()
@@ -122,6 +128,7 @@ func update_card_display(selected_enemy: Enemy = null) -> void:
 	
 	# update energy
 	_update_energy_display(selected_enemy)
+	_attempt_hand_glow()
 
 ## Specifically updates the energy cost display of the card. This is seperated from  because it
 ## can be messed with depending on interception and card play validation
@@ -167,8 +174,41 @@ func set_card_condition_glow(_visible: bool) -> void:
 		animation_player.stop()
 		card_condition_glow.visible = false
 
+func set_card_play_ready_glow(_visible: bool) -> void:
+	if _visible:
+		if card_play_ready_glow.visible:
+			return
+		card_play_ready_glow.visible = true
+		play_ready_animation_player.play("play_ready_glow")
+	else:
+		play_ready_animation_player.stop()
+		card_play_ready_glow.visible = false
+
 func toggle_card_glow() -> void:
 	card_glow.visible = !card_glow.visible
+
+## Applies visual-only feedback while a hand card is being dragged.
+func begin_hand_drag() -> void:
+	begin_hand_interaction()
+	pivot.rotation_degrees = 0.0
+	pivot.scale = Vector2.ONE * 1.04
+	z_index = 100
+
+func begin_hand_interaction() -> void:
+	keyword_timer.stop()
+	if HandManager.tooltip != null:
+		HandManager.tooltip.hide_tooltip()
+
+## Moves the card pivot without coupling Card to any combat or play logic.
+func update_hand_drag_position(pointer_position: Vector2, grab_offset: Vector2) -> void:
+	pivot.global_position = pointer_position + grab_offset
+
+## Clears transient drag/selection visuals. Hand remains responsible for layout.
+func reset_hand_interaction_visual() -> void:
+	keyword_timer.stop()
+	card_button.set_pressed_no_signal(false)
+	pivot.scale = Vector2.ONE
+	set_card_play_ready_glow(false)
 
 ## Returns if a card can be played, factoring in intercepted energy costs, validators, and other
 ## factors. Must pass all checks to be considered playable.
@@ -316,15 +356,10 @@ func _validate_card() -> bool:
 	return Global.validate(card_data.card_play_validators, card_data, null)
 
 func _glow_validation() -> bool:
-	# determines glow logic
-	if len(card_data.card_glow_validators) == 0:
-		if len(card_data.card_play_validators) > 0:
-			return _validate_card() # if no glow validators use play validators
-		else:
-			return false
-	else:
-		# use glow validators
-		return Global.validate(card_data.card_glow_validators, card_data, null)
+	# Only cards with satisfied play requirements use the condition glow.
+	if len(card_data.card_play_validators) > 0:
+		return _validate_card()
+	return false
 
 func _is_card_in_hand() -> bool:
 	return Global.is_run and HandManager.player_hand.has(card_data)
@@ -334,11 +369,25 @@ func _attempt_hand_glow() -> void:
 	if _is_card_in_hand():
 		set_card_condition_glow(_glow_validation())
 
-func _on_button_gui_input(event: InputEvent):
+func _on_button_gui_input(event: InputEvent) -> void:
+	if _hand_input_enabled:
+		if event is InputEventMouseButton:
+			var mouse_event: InputEventMouseButton = event
+			if mouse_event.button_index == MOUSE_BUTTON_LEFT and mouse_event.pressed:
+				# Godot marks mouse events synthesized from touch with the emulation device id.
+				# The native touch event is handled instead so one gesture cannot be submitted twice.
+				if mouse_event.device != InputEvent.DEVICE_ID_EMULATION:
+					hand_pointer_pressed.emit(self, mouse_event.global_position, -1, false)
+				card_button.accept_event()
+		elif event is InputEventScreenTouch:
+			var touch_event: InputEventScreenTouch = event
+			if touch_event.pressed:
+				hand_pointer_pressed.emit(self, touch_event.position, touch_event.index, true)
+				card_button.accept_event()
+		return
+
 	if event.is_action_released("left_click"):
 		card_selected.emit(self)
-	if event.is_action_released("right_click"):
-		card_right_clicked.emit(self)
 
 func _on_mouse_entered():
 	keyword_timer.start(KEYWORD_HOVER_DELAY)
@@ -412,4 +461,7 @@ func _on_card_banished(_card_data: CardData, _in_limbo: bool):
 		_attempt_hand_glow()
 
 func _on_card_drawn(_card_data: CardData):
+	_attempt_hand_glow()
+
+func _on_card_added_to_hand(_card_data: CardData):
 	_attempt_hand_glow()

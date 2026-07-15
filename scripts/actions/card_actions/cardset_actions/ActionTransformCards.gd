@@ -85,15 +85,15 @@ func perform_action():
 				card_data.upgrade_card()
 			
 			if parent_card_data != null:
-				var upgrade_level: int = 0
+				var parent_upgrade_level: int = 0
 				if keep_upgrade_level:
-					upgrade_level = parent_card_data.card_upgrade_amount
+					parent_upgrade_level = parent_card_data.card_upgrade_amount
 				if force_upgrade_level >= 0:
-					upgrade_level = force_upgrade_level
+					parent_upgrade_level = force_upgrade_level
 				
 				Global.player_data.transform_card_in_deck(parent_card_data, new_card_object_id)
 				
-				for i in upgrade_level:
+				for i in parent_upgrade_level:
 					parent_card_data.upgrade_card()
 
 func _to_string():

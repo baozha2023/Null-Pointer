@@ -447,6 +447,29 @@ func add_status_effects() -> void:
 	status_effect_delayed_execution.status_effect_action_process_times = [StatusEffectData.STATUS_EFFECT_PROCESS_TIMES.PRE_DRAW_PLAYER_START_TURN]
 	Global.register_rod(status_effect_delayed_execution)
 
+	var status_effect_delayed_action_execution: StatusEffectData = StatusEffectData.new("status_effect_delayed_action_execution")
+	status_effect_delayed_action_execution.status_effect_name = "指令挂起"
+	status_effect_delayed_action_execution.status_effect_texture_path = "sprites/status_effects/icon_delayed_action_execution.png"
+	status_effect_delayed_action_execution.status_effect_description = "动作指令已被挂起，倒计时归零后将被自动触发。"
+	status_effect_delayed_action_execution.status_effect_tooltip = "这些指令将在 [color=yellow][charge_amount][/color] 个时钟周期后自动触发。\n延迟效果：\n[delayed_actions_text]"
+	status_effect_delayed_action_execution.status_effect_decay_rate = 0
+	status_effect_delayed_action_execution.status_effect_type = StatusEffectData.STATUS_EFFECT_TYPES.BUFF
+	status_effect_delayed_action_execution.status_effect_allows_multiples = true
+	status_effect_delayed_action_execution.status_effect_script_path = "res://scripts/status_effects/custom_status_effects/StatusEffectDelayedActionExecution.gd"
+	status_effect_delayed_action_execution.status_effect_action_process_times = [StatusEffectData.STATUS_EFFECT_PROCESS_TIMES.PRE_DRAW_PLAYER_START_TURN]
+	Global.register_rod(status_effect_delayed_action_execution)
+
+	var status_effect_mycelial_network: StatusEffectData = StatusEffectData.new("status_effect_mycelial_network")
+	status_effect_mycelial_network.status_effect_name = "【系统专用】菌丝网络监听进程"
+	status_effect_mycelial_network.status_effect_description = "监听脚本物理删除事件，并将回收物转化为过载防火墙。"
+	status_effect_mycelial_network.status_effect_script_path = "res://scripts/status_effects/StatusEffectMycelialNetwork.gd"
+	status_effect_mycelial_network.status_effect_is_visible = false
+	status_effect_mycelial_network.status_effect_type = StatusEffectData.STATUS_EFFECT_TYPES.NEUTRAL
+	status_effect_mycelial_network.status_effect_decay_rate = 0
+	status_effect_mycelial_network.status_effect_action_process_times = []
+	status_effect_mycelial_network.status_effect_healthbar_reserve_type = StatusEffectData.STATUS_EFFECT_HEALTHBAR_RESERVE_TYPES.ZERO
+	Global.register_rod(status_effect_mycelial_network)
+
 	var status_effect_root_privilege: StatusEffectData = StatusEffectData.new("status_effect_root_privilege")
 	status_effect_root_privilege.status_effect_name = "Root 提权"
 	status_effect_root_privilege.status_effect_description = "可以无视算力限制打出脚本。如果算力不足，每透支等同于主层数的算力，将受到等同于副层数的伤害。"

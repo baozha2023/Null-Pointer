@@ -47,7 +47,7 @@
 [ext_resource type="PackedScene" uid="uid://cftk22jibfvcc" path="res://ui/components/volume_slider/VolumeSlider.tscn" id="18_plfau"]
 [ext_resource type="PackedScene" uid="uid://ccwweknxxvks" path="res://scenes/ui/codex/CodexConsumable.tscn" id="19_o7n0g"]
 [ext_resource type="Script" uid="uid://bydljvbv1j5j3" path="res://scripts/ui/codex/CodexEnemiesMenu.gd" id="20_jsyke"]
-[ext_resource type="Script" uid="uid://pk2e8kasw6rr" path="res://scripts/ui/RunSummaryOverlay.gd" id="21_fj66g"]
+[ext_resource type="PackedScene" path="res://scenes/ui/RunSummaryOverlay.tscn" id="21_fj66g"]
 [ext_resource type="PackedScene" uid="uid://c3p3waeyddith" path="res://scenes/ui/codex/CodexActNameLabel.tscn" id="22_gs3rm"]
 [ext_resource type="PackedScene" uid="uid://crgv8ihu0ojrw" path="res://scenes/ui/codex/CodexEnemyButton.tscn" id="23_bl3tx"]
 [ext_resource type="PackedScene" uid="uid://c75lxyqfus0oq" path="res://scenes/ui/codex/CodexEnemyIntent.tscn" id="24_gs3rm"]
@@ -55,10 +55,8 @@
 [ext_resource type="Script" uid="uid://s7lqf6p66yti" path="res://scripts/ui/RunStartOptions.gd" id="25_ll3o0"]
 [ext_resource type="Script" uid="uid://b2t515tpjrija" path="res://addons/smooth_scroll_container/SmoothScrollContainer.gd" id="25_t3i5t"]
 [ext_resource type="Script" uid="uid://ci6oby4hmnfg6" path="res://scripts/ui/DialogueOverlay.gd" id="25_tn5yy"]
-[ext_resource type="Script" uid="uid://dft4xbh3vmt3m" path="res://scripts/ui/menus/ProfileStatsMenu.gd" id="25_yjgj2"]
+[ext_resource type="PackedScene" path="res://scenes/ui/profile/ProfileStatsMenu.tscn" id="25_yjgj2"]
 [ext_resource type="Script" uid="uid://b3nvcsku8u75w" path="res://addons/smooth_scroll_container/scroll_damper/expo_scroll_damper.gd" id="26_08sam"]
-[ext_resource type="StyleBox" uid="uid://605w3novehok" path="res://themes/panel_theme.tres" id="26_yjgj2"]
-[ext_resource type="PackedScene" uid="uid://dk0ka4eceu1y5" path="res://scenes/ui/profile/CharacterStat.tscn" id="27_edqbv"]
 [ext_resource type="Script" uid="uid://6xsavir53fvp" path="res://scripts/ui/PauseOverlay.gd" id="29_p8axl"]
 [ext_resource type="Script" uid="uid://cwt4a5keff86t" path="res://scripts/ui/RunTimer.gd" id="30_plfau"]
 [ext_resource type="Script" uid="uid://cv2h3ccb6uytr" path="res://scripts/ui/Tooltips.gd" id="40_wtekq"]
@@ -1562,7 +1560,7 @@ size_flags_vertical = 3
 
 [node name="ModMenu" parent="TitleScreen" instance=ExtResource("mod_menu_scene")]
 
-[node name="ProfileStatsMenu" type="Control" parent="TitleScreen" unique_id=187253601 node_paths=PackedStringArray("navigation_button_to_menu")]
+[node name="ProfileStatsMenu" parent="TitleScreen" unique_id=187253601 node_paths=PackedStringArray("navigation_button_to_menu") instance=ExtResource("25_yjgj2")]
 visible = false
 layout_mode = 1
 anchors_preset = 15
@@ -1570,140 +1568,9 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("25_yjgj2")
 navigation_button_to_menu = {
-NodePath("MainMenuButton"): NodePath("../MainMenu")
+NodePath("Header/MainMenuButton"): NodePath("../MainMenu")
 }
-
-[node name="MainMenuButton" type="Button" parent="TitleScreen/ProfileStatsMenu" unique_id=1785387049]
-layout_mode = 0
-offset_left = 24.0
-offset_top = 88.0
-offset_right = 168.0
-offset_bottom = 136.0
-theme_override_styles/normal = SubResource("StyleBoxTexture_btn_common_normal")
-theme_override_styles/pressed = SubResource("StyleBoxTexture_btn_common_pressed")
-theme_override_styles/hover = SubResource("StyleBoxTexture_btn_common_hover")
-text = "返回上一级"
-
-[node name="SmoothScrollContainer" type="ScrollContainer" parent="TitleScreen/ProfileStatsMenu" unique_id=2102862504]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 184.0
-offset_top = 48.0
-offset_right = -80.0
-offset_bottom = -28.0
-grow_horizontal = 2
-grow_vertical = 2
-script = ExtResource("25_t3i5t")
-metadata/_custom_type_script = "uid://b2t515tpjrija"
-
-[node name="VBoxContainer" type="VBoxContainer" parent="TitleScreen/ProfileStatsMenu/SmoothScrollContainer" unique_id=1047401339]
-custom_minimum_size = Vector2(900, 0)
-layout_mode = 2
-theme_override_constants/separation = 8
-alignment = 1
-
-[node name="Label" type="Label" parent="TitleScreen/ProfileStatsMenu/SmoothScrollContainer/VBoxContainer" unique_id=851969620]
-layout_mode = 2
-theme_override_font_sizes/font_size = 24
-text = "个人统计"
-horizontal_alignment = 1
-
-[node name="ProfileStats" type="Control" parent="TitleScreen/ProfileStatsMenu/SmoothScrollContainer/VBoxContainer" unique_id=1637222903]
-custom_minimum_size = Vector2(600, 120)
-layout_mode = 2
-
-[node name="ColorRect2" type="Panel" parent="TitleScreen/ProfileStatsMenu/SmoothScrollContainer/VBoxContainer/ProfileStats" unique_id=177906991]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_styles/panel = ExtResource("26_yjgj2")
-
-[node name="CenterContainer" type="CenterContainer" parent="TitleScreen/ProfileStatsMenu/SmoothScrollContainer/VBoxContainer/ProfileStats" unique_id=469609314]
-layout_mode = 0
-offset_right = 904.0
-offset_bottom = 118.0
-
-[node name="GridContainer" type="GridContainer" parent="TitleScreen/ProfileStatsMenu/SmoothScrollContainer/VBoxContainer/ProfileStats/CenterContainer" unique_id=458384484]
-layout_mode = 2
-theme_override_constants/h_separation = 32
-columns = 3
-
-[node name="ProfileWinsLabel" type="Label" parent="TitleScreen/ProfileStatsMenu/SmoothScrollContainer/VBoxContainer/ProfileStats/CenterContainer/GridContainer" unique_id=643452300]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_font_sizes/font_size = 18
-text = "胜利: 0"
-
-[node name="ProfileLossesLabel" type="Label" parent="TitleScreen/ProfileStatsMenu/SmoothScrollContainer/VBoxContainer/ProfileStats/CenterContainer/GridContainer" unique_id=539442114]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_font_sizes/font_size = 18
-text = "失败: 0"
-
-[node name="ProfileWinRateLabel" type="Label" parent="TitleScreen/ProfileStatsMenu/SmoothScrollContainer/VBoxContainer/ProfileStats/CenterContainer/GridContainer" unique_id=287249939]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_font_sizes/font_size = 18
-text = "胜率: XX.XX%"
-
-[node name="ProfileCurrentWinStreakLabel" type="Label" parent="TitleScreen/ProfileStatsMenu/SmoothScrollContainer/VBoxContainer/ProfileStats/CenterContainer/GridContainer" unique_id=1978181270]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_font_sizes/font_size = 18
-text = "当前连胜: 0"
-
-[node name="ProfileHighestWinStreakLabel" type="Label" parent="TitleScreen/ProfileStatsMenu/SmoothScrollContainer/VBoxContainer/ProfileStats/CenterContainer/GridContainer" unique_id=277560648]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_font_sizes/font_size = 18
-text = "最高连胜: 0"
-
-[node name="ProfilePlayTimeLabel" type="Label" parent="TitleScreen/ProfileStatsMenu/SmoothScrollContainer/VBoxContainer/ProfileStats/CenterContainer/GridContainer" unique_id=397748388]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_font_sizes/font_size = 18
-text = "游戏时间: HHHH:MM:SS"
-
-[node name="ProfileCurrentLossStreakLabel" type="Label" parent="TitleScreen/ProfileStatsMenu/SmoothScrollContainer/VBoxContainer/ProfileStats/CenterContainer/GridContainer" unique_id=1897494379]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_font_sizes/font_size = 18
-text = "当前连败: 0"
-
-[node name="ProfileHighestLossStreakLabel" type="Label" parent="TitleScreen/ProfileStatsMenu/SmoothScrollContainer/VBoxContainer/ProfileStats/CenterContainer/GridContainer" unique_id=1511849071]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_font_sizes/font_size = 18
-text = "最高连败: 0"
-
-[node name="ProfileFastestRunTime" type="Label" parent="TitleScreen/ProfileStatsMenu/SmoothScrollContainer/VBoxContainer/ProfileStats/CenterContainer/GridContainer" unique_id=216947908]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_font_sizes/font_size = 18
-text = "最快胜利: HH:MM:SS"
-
-[node name="Label2" type="Label" parent="TitleScreen/ProfileStatsMenu/SmoothScrollContainer/VBoxContainer" unique_id=1037753955]
-layout_mode = 2
-theme_override_font_sizes/font_size = 24
-text = "进程统计"
-horizontal_alignment = 1
-
-[node name="StatContainer" type="GridContainer" parent="TitleScreen/ProfileStatsMenu/SmoothScrollContainer/VBoxContainer" unique_id=1215377295]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_constants/h_separation = 8
-theme_override_constants/v_separation = 8
-columns = 2
-
-[node name="CharacterStat" parent="TitleScreen/ProfileStatsMenu/SmoothScrollContainer/VBoxContainer/StatContainer" unique_id=1265953893 instance=ExtResource("27_edqbv")]
-layout_mode = 2
 
 [node name="RunHistoryMenu" type="Control" parent="TitleScreen" unique_id=1001962548 node_paths=PackedStringArray("navigation_button_to_menu")]
 visible = false
@@ -2680,99 +2547,16 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/separation = 20
 
-[node name="RunSummaryOverlay" type="Control" parent="RunScreen" unique_id=2107005201]
+[node name="RunSummaryOverlay" parent="RunScreen" unique_id=2107005201 instance=ExtResource("21_fj66g")]
 unique_name_in_owner = true
-process_mode = 1
-visible = false
-z_index = 10
+layout_mode = 0
 anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
 offset_right = 1200.0
 offset_bottom = 700.0
-script = ExtResource("21_fj66g")
-
-[node name="Background" type="ColorRect" parent="RunScreen/RunSummaryOverlay" unique_id=1204848117]
-layout_mode = 0
-offset_right = 1200.0
-offset_bottom = 700.0
-color = Color(0.203922, 0.188235, 0.215686, 0.635294)
-
-[node name="Background2" type="ColorRect" parent="RunScreen/RunSummaryOverlay" unique_id=1916268882]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -568.0
-offset_top = -286.0
-offset_right = 568.0
-offset_bottom = 290.0
-grow_horizontal = 2
-grow_vertical = 2
-color = Color(0.0941176, 0.0862745, 0.101961, 0.67451)
-
-[node name="VictoryLabel" type="Label" parent="RunScreen/RunSummaryOverlay" unique_id=1467440131]
-unique_name_in_owner = true
-layout_mode = 0
-offset_left = 32.0
-offset_top = 64.0
-offset_right = 1168.0
-offset_bottom = 184.0
-theme_override_font_sizes/font_size = 50
-text = "胜利"
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="DefeatLabel" type="Label" parent="RunScreen/RunSummaryOverlay" unique_id=594696988]
-unique_name_in_owner = true
-layout_mode = 0
-offset_left = 32.0
-offset_top = 64.0
-offset_right = 1168.0
-offset_bottom = 184.0
-theme_override_font_sizes/font_size = 50
-text = "失败"
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="EndRunMessageLabel" type="RichTextLabel" parent="RunScreen/RunSummaryOverlay" unique_id=1150052011]
-unique_name_in_owner = true
-layout_mode = 0
-offset_left = 32.0
-offset_top = 203.0
-offset_right = 1168.0
-offset_bottom = 240.0
-bbcode_enabled = true
-text = "死亡或胜利信息"
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="StatsSummaryAutosizeLabel" type="RichTextLabel" parent="RunScreen/RunSummaryOverlay" unique_id=1871345544]
-unique_name_in_owner = true
-layout_mode = 1
-anchors_preset = 14
-anchor_top = 0.5
-anchor_right = 1.0
-anchor_bottom = 0.5
-offset_top = -102.0
-offset_bottom = 138.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_font_sizes/normal_font_size = 16
-scroll_active = false
-script = ExtResource("43_gs3rm")
-_max_size = 16
-_current_font_size = 16
-_editor_defaults_set = true
-
-[node name="EndRunButton" type="Button" parent="RunScreen/RunSummaryOverlay" unique_id=403156587]
-layout_mode = 0
-offset_left = 352.0
-offset_top = 528.0
-offset_right = 856.0
-offset_bottom = 609.0
-theme_override_font_sizes/font_size = 32
-text = "返回根目录"
+grow_horizontal = 1
+grow_vertical = 1
 
 [node name="RunStartOptions" type="Control" parent="RunScreen" unique_id=330842242]
 unique_name_in_owner = true

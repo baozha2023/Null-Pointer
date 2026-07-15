@@ -1,7 +1,7 @@
 [gd_scene load_steps=6 format=3 uid="uid://b6xm2g0ckfkmg"]
 
 [ext_resource type="Script" uid="uid://s7utj3mj1vyc" path="res://scripts/combatants/fades/ImageFade.gd" id="1_hcieg"]
-[ext_resource type="Texture2D" uid="uid://nh32y87hcke5" path="res://icon.svg" id="2_umo3a"]
+[ext_resource type="Texture2D" uid="uid://d33u8m744fh03" path="res://icon.svg" id="2_umo3a"]
 
 [sub_resource type="Animation" id="Animation_umo3a"]
 length = 0.001

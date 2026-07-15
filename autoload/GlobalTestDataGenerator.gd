@@ -1906,7 +1906,6 @@ func add_test_characters() -> void:
 		# "card_block_without_attacks",
 		"card_weaken_enemies", "card_vulnerable_enemies", "card_grant_energy",
 		#"card_add_consumable", "card_upgrade_entire_deck", "card_attack_increase_cost_on_damage_taken",
-		"card_right_click_transform_mode_a",
 	]
 	character_red.character_starting_card_draft_card_pack_ids = ["card_pack_red"]
 	
@@ -3457,9 +3456,6 @@ func add_test_cards() -> void:
 	card_attack_with_conditional_block.card_energy_cost = 1
 	card_attack_with_conditional_block.card_values = {"damage": 10, "block": 5, "number_of_attacks": 1, "impact_vfx_animation_id": "animation_vfx_impact_default",}
 	card_attack_with_conditional_block.card_upgrade_value_improvements = {"damage": 3, "block": 3}
-	card_attack_with_conditional_block.card_glow_validators = [
-		{Scripts.VALIDATOR_ENEMY_ATTACKING: {}}
-	]
 	card_attack_with_conditional_block.card_play_actions = [
 	{
 	Scripts.ACTION_ATTACK_GENERATOR: { "audio_path": AudioConstants.SFX_GROUP_SWORD_SLASH, 
@@ -3982,57 +3978,6 @@ func add_test_cards() -> void:
 	]
 	
 	Global.register_rod(card_transform_hand)
-	
-	# Card that transforms into a B variant when right clicked
-	var card_right_click_transform_mode_a: CardData = CardData.new("card_right_click_transform_mode_a")
-	card_right_click_transform_mode_a.card_name = "模式 A"
-	card_right_click_transform_mode_a.card_color_id = "color_red"
-	card_right_click_transform_mode_a.card_texture_path = "external/sprites/cards/red/card_red.png"
-	card_right_click_transform_mode_a.card_description = "造成 [damage] 点伤害 右键点击转换为 B 形态"
-	card_right_click_transform_mode_a.card_type = CardData.CARD_TYPES.ATTACK
-	card_right_click_transform_mode_a.card_rarity = CardData.CARD_RARITIES.COMMON
-	card_right_click_transform_mode_a.card_color_id = "color_red"
-	card_right_click_transform_mode_a.card_requires_target = true
-	card_right_click_transform_mode_a.card_values = {
-		"damage": 7,
-		"number_of_attacks": 1,
-		"impact_vfx_animation_id": "animation_vfx_impact_default",
-		"transform_parent_card": false,
-		"keep_upgrade_level": true,
-		"pick_played_card": true,
-		"transform_into_card_object_id": "card_right_click_transform_mode_b",
-		}
-	card_right_click_transform_mode_a.card_upgrade_value_improvements = {"damage": 4}
-	card_right_click_transform_mode_a.card_play_actions = [{Scripts.ACTION_ATTACK_GENERATOR: { "audio_path": AudioConstants.SFX_GROUP_SWORD_SLASH, }}]
-	card_right_click_transform_mode_a.card_right_click_actions = [{Scripts.ACTION_TRANSFORM_CARDS: {}}]
-	
-	Global.register_rod(card_right_click_transform_mode_a)
-	
-	# Card that transforms into a A variant when right clicked
-	# this card cannot appear in card packs and thus not draftable
-	var card_right_click_transform_mode_b: CardData = CardData.new("card_right_click_transform_mode_b")
-	card_right_click_transform_mode_b.card_name = "模式 B"
-	card_right_click_transform_mode_b.card_color_id = "color_red"
-	card_right_click_transform_mode_b.card_texture_path = "external/sprites/cards/red/card_red.png"
-	card_right_click_transform_mode_b.card_description = "获得 [block] 点防火墙 右键点击转换为 A 形态"
-	card_right_click_transform_mode_b.card_type = CardData.CARD_TYPES.SKILL
-	card_right_click_transform_mode_b.card_rarity = CardData.CARD_RARITIES.COMMON
-	card_right_click_transform_mode_b.card_appears_in_card_packs = false
-	card_right_click_transform_mode_b.card_color_id = "color_red"
-	card_right_click_transform_mode_b.card_requires_target = false
-	card_right_click_transform_mode_b.card_values = {
-		"block": 5,
-		"target_override": BaseAction.TARGET_OVERRIDES.PARENT,
-		"transform_parent_card": false,
-		"keep_upgrade_level": true,
-		"pick_played_card": true,
-		"transform_into_card_object_id": "card_right_click_transform_mode_a",
-		}
-	card_right_click_transform_mode_b.card_upgrade_value_improvements = {"block": 3}
-	card_right_click_transform_mode_b.card_play_actions = [{Scripts.ACTION_BLOCK: {}}]
-	card_right_click_transform_mode_b.card_right_click_actions = [{Scripts.ACTION_TRANSFORM_CARDS: {}}]
-	
-	Global.register_rod(card_right_click_transform_mode_b)
 	
 	# draw cards and randomize cost of cards in hand
 	var card_randomize_hand_energy_costs: CardData = CardData.new("card_randomize_hand_energy_costs")

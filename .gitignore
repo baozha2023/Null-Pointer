@@ -13,6 +13,7 @@ export_presets.cfg
 external/profile.json
 .idea/
 .claude/
+.codex/
 
 # Logs and IDEs
 *.log

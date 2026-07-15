@@ -23,7 +23,6 @@
 		"card_first_upgrade_property_changes": {
 
 		},
-		"card_glow_validators": [],
 		"card_initial_combat_actions": [],
 		"card_is_ethereal": false,
 		"card_is_playable": true,
@@ -43,7 +42,6 @@
 		"card_remove_from_deck_actions": [],
 		"card_requires_target": false,
 		"card_retain_actions": [],
-		"card_right_click_actions": [],
 		"card_texture_path": "",
 		"card_transform_in_deck_actions": [],
 		"card_type": 1,

@@ -31,6 +31,12 @@ func perform_action() -> void:
 			for c in picked_cards:
 				duplicated_cards.append(c.get_prototype(true))
 
+		var original_card_values: Dictionary = card_play_request.card_values.duplicate(true) if card_play_request else {}
+		var delayed_action_entries: Array = []
+		for action_dict: Dictionary in delayed_action_data:
+			delayed_action_entries.append({"action_data": action_dict})
+		var delayed_actions_text: String = TextParser.parse_forge_actions_to_text(delayed_action_entries, original_card_values)
+
 		# Apply the delayed status effect to the parent combatant
 		var apply_status_action: Dictionary = {
 			Scripts.ACTION_APPLY_STATUS: {
@@ -40,9 +46,10 @@ func perform_action() -> void:
 				"status_force_apply_new_effect": true,
 				"status_custom_values": {
 					"delayed_actions": delayed_action_data,
+					"delayed_actions_text": delayed_actions_text,
 					"stored_cards": duplicated_cards,
 					"variable_name_to_export": variable_name_to_export,
-					"original_card_values": card_play_request.card_values.duplicate(true) if card_play_request else {}
+					"original_card_values": original_card_values
 				}
 			}
 		}

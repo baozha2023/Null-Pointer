@@ -315,7 +315,7 @@ static func add_artifacts() -> void:
 	]
 	artifact_forge.artifact_turn_start_actions = [
 		{Scripts.ACTION_TAKE_FROM_FORGE: {
-			"take_type": -1,
+			"take_type": ActionTakeFromForge.TAKE_TYPES.ALL,
 			"clear_after_take": true,
 			"execute_directly": false
 		}}

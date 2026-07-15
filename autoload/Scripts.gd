@@ -176,6 +176,7 @@ const VALIDATOR_DECK_HAS_REMOVABLE_CARD: String = "res://scripts/validators/deck
 const VALIDATOR_DECK_HAS_UPGRADEABLE_CARD: String = "res://scripts/validators/deck/ValidatorDeckHasUpgradeableCard.gd"
 const VALIDATOR_DECK_HAS_DECORATABLE_CARD: String = "res://scripts/validators/deck/ValidatorDeckHasDecoratableCard.gd"
 const VALIDATOR_DECK_HAS_VALIDATED_CARDS: String = "res://scripts/validators/deck/ValidatorDeckHasValidatedCards.gd"
+const VALIDATOR_COMBAT_PILES_HAVE_VALIDATED_CARDS: String = "res://scripts/validators/deck/ValidatorCombatPilesHaveValidatedCards.gd"
 const VALIDATOR_PILE_SIZE: String = "res://scripts/validators/deck/ValidatorPileSize.gd"
 
 # hand validators

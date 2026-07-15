@@ -113,6 +113,8 @@ func _on_use_consumable_button_up():
 	if not ActionHandler.actions_being_performed:
 		if len(HandManager.card_play_queue) == 0:
 			if is_consumable_selected():
+				if HandManager.hand != null:
+					HandManager.hand.cancel_card_interaction()
 				# check if consumable requires a target
 				var consumable_data: ConsumableData = get_selected_consumable_data()
 				if consumable_data != null:
@@ -182,10 +184,13 @@ func discard_consumable(consumable_slot_index: int) -> void:
 		deselect_consumable()
 
 func deselect_consumable() -> void:
-	select_target_label.hide()
-	consumable_target_requested = false
+	cancel_target_request()
 	selected_consumable_slot_index = NO_CONSUMABLE
 	hide_consumable_dropdown()
+
+func cancel_target_request() -> void:
+	select_target_label.hide()
+	consumable_target_requested = false
 
 func _on_add_consumable_requested(consumable_object_id: String):
 	add_consumable(consumable_object_id)

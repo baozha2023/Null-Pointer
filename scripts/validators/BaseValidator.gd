@@ -4,7 +4,7 @@
 
 ## These can be attached to a card to prevent it from
 ## being manually played by the player, restrict certain card actions, or highlight cards
-## See CardData.card_play_validators and card_glow_validators.
+## See CardData.card_play_validators.
 
 ## These are not stored, and instead created and destroyed as needed
 extends RefCounted
