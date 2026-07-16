@@ -15,12 +15,16 @@ var damage_tween: Tween = null
 var old_health: float = 0 # used for tweening
 var new_health: float = 0 # used for tweening
 var old_health_max: float = 0 # used for tweening
+var new_health_max: float = 0 # used for tweening
 
 const DAMAGE_DELAY: float = 0.75 # delay before health will start tweening
 const DAMAGE_TWEEN_TIME: float = 0.25
 
 const HEALTH_RERENDERS_LAZILY: bool = true
 var _health_is_rerendering: bool = false
+var _pending_health: int = 0
+var _pending_health_max: int = 1
+var _pending_status_id_to_status_effects: Dictionary = {}
 
 func _ready():
 	damage_timer.timeout.connect(_on_damage_delay_timeout)
@@ -32,6 +36,7 @@ func _ready():
 func init(health: int, health_max: int) -> void:
 	new_health = health
 	old_health = health
+	new_health_max = health_max
 	old_health_max = health_max
 	health_bar_text.text = str(health) + "/" + str(health_max)
 	health_layer.anchor_right = 0.0
@@ -45,28 +50,44 @@ func apply_damage(health: int, health_max: int, status_id_to_status_effects: Dic
 		return # no changes
 
 	new_health = health
-	health_max = health_max
-	
-	if damage_timer.time_left > 0:
-		damage_timer.start(DAMAGE_DELAY)
-	else:
-		damage_timer.start(DAMAGE_DELAY)
+	new_health_max = health_max
+
+	if damage_timer.time_left <= 0.0:
 		damage_layer.visible = true
-		var right_anchor: float = float(old_health) / max(1, float(health_max))
+		var right_anchor: float = float(old_health) / max(1, old_health_max)
 		damage_layer.anchor_right = right_anchor
-	
-	update_health_layers(health, health_max, status_id_to_status_effects)
+	damage_timer.start(DAMAGE_DELAY)
+
+	_queue_health_layer_update(health, health_max, status_id_to_status_effects)
 
 func update_health_layers(health: int, health_max: int, status_id_to_status_effects: Dictionary) -> void:
+	# Non-damage changes (healing, maximum-health changes, status layers) become the
+	# new animation baseline so the next damage tween starts from the visible state.
+	old_health = health
+	new_health = health
+	old_health_max = health_max
+	new_health_max = health_max
+	_queue_health_layer_update(health, health_max, status_id_to_status_effects)
+
+func _queue_health_layer_update(health: int, health_max: int, status_id_to_status_effects: Dictionary) -> void:
 	# visually updates the health and status layers
 	# does not change state
-	
+	# Always retain the newest state. Multiple health changes can happen in the same
+	# frame (for example, an initial deck shuffle damaging newly spawned enemies).
+	_pending_health = health
+	_pending_health_max = health_max
+	_pending_status_id_to_status_effects = status_id_to_status_effects
+
 	if _health_is_rerendering:
 		return
+	_health_is_rerendering = true
 	if HEALTH_RERENDERS_LAZILY:
-		_health_is_rerendering = true
 		await get_tree().process_frame
-		_health_is_rerendering = false
+
+	# Use the latest queued state rather than the values captured by the first call.
+	health = _pending_health
+	health_max = _pending_health_max
+	status_id_to_status_effects = _pending_status_id_to_status_effects
 	
 	# main health bar
 	_update_normal_health(health, health_max)
@@ -76,8 +97,8 @@ func update_health_layers(health: int, health_max: int, status_id_to_status_effe
 		layer.queue_free()
 	
 	# generate new layers
-	var health_right_endpoint: int = new_health
-	var health_left_endpoint: int = new_health
+	var health_right_endpoint: int = health
+	var health_left_endpoint: int = health
 	for status_effect_object_id: String in status_id_to_status_effects.keys():
 		var status_effect_data: StatusEffectData = Global.get_status_effect_data(status_effect_object_id)
 		var status_effects: Array[StatusEffect] = status_id_to_status_effects[status_effect_object_id]
@@ -91,19 +112,21 @@ func update_health_layers(health: int, health_max: int, status_id_to_status_effe
 		if layer_width <= 0:
 			continue
 		if health_right_endpoint <= 0:
-			return # can't move past zero, don't display any more layers
+			break # can't move past zero, don't display any more layers
 		# adjust left endpoint leftward
 		health_left_endpoint = max(0, health_left_endpoint - layer_width)
 		# generate the layer
 		var status_layer = Scenes.HEALTH_LAYER.instantiate()
 		status_layers.add_child(status_layer)
 		status_layer.init(status_effect_data.status_effect_healthbar_layer_color)
-		var right_anchor = float(health_right_endpoint) / max(1, float(old_health_max))
-		var left_anchor = float(health_left_endpoint) / max(1, float(old_health_max))
+		var right_anchor = float(health_right_endpoint) / max(1, float(health_max))
+		var left_anchor = float(health_left_endpoint) / max(1, float(health_max))
 		status_layer.anchor_right = right_anchor
 		status_layer.anchor_left = left_anchor
 		
 		health_right_endpoint = health_left_endpoint # right endpoint becomes old left endpoint
+
+	_health_is_rerendering = false
 
 func _update_normal_health(health: int, health_max: int):
 	var right_anchor: float = float(health) / max(1, float(health_max))
@@ -112,13 +135,17 @@ func _update_normal_health(health: int, health_max: int):
 
 func _on_damage_delay_timeout():
 	# damage bar will tween to match new health
-	damage_layer.anchor_right = float(old_health) / max(1, float(old_health_max))
-	var new_anchor_right: float = float(new_health) / max(1, float(old_health_max))
+	damage_layer.anchor_right = float(old_health) / max(1, old_health_max)
+	var new_anchor_right: float = float(new_health) / max(1, new_health_max)
 	old_health = new_health
-	
-	var damage_tween: Tween = create_tween()
+	old_health_max = new_health_max
+
+	if damage_tween != null and damage_tween.is_valid():
+		damage_tween.kill()
+	damage_tween = create_tween()
 	damage_tween.tween_property(damage_layer, "anchor_right", new_anchor_right, DAMAGE_TWEEN_TIME)
 	damage_tween.tween_callback(_on_damage_tween_ended)
 	
 func _on_damage_tween_ended():
+	damage_tween = null
 	damage_layer.visible = false

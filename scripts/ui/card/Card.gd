@@ -382,7 +382,8 @@ func _on_button_gui_input(event: InputEvent) -> void:
 		elif event is InputEventScreenTouch:
 			var touch_event: InputEventScreenTouch = event
 			if touch_event.pressed:
-				hand_pointer_pressed.emit(self, touch_event.position, touch_event.index, true)
+				var touch_global_position: Vector2 = card_button.get_global_transform() * touch_event.position
+				hand_pointer_pressed.emit(self, touch_global_position, touch_event.index, true)
 				card_button.accept_event()
 		return
 

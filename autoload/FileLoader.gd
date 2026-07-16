@@ -30,9 +30,6 @@ const SAVE_FILE_NAME: String = "save.json" # filename of the current run's save
 var USER_SETTINGS_DIR_PATH: String = EXTERNAL_DIR_PATH # you may wish to change this to OS.get_user_data_dir()
 const USER_SETTINGS_FILE_NAME: String = "user_settings.json"
 
-var PROFILE_DIR_PATH: String = EXTERNAL_DIR_PATH # you may wish to change this to OS.get_user_data_dir()
-const PROFILE_FILE_NAME: String = "profile.json"
-
 const AUTOSAVING_ENABLED: bool = true # disabling this makes testing easier
 
 var _cached_audio: Dictionary	= {}	# maps an audio path to a loaded sound
@@ -82,10 +79,10 @@ func _ready():
 	if OS.has_feature("mobile") or OS.has_feature("web") or OS.has_feature("macos"):
 		SAVE_DIR_PATH = "user://saves/"
 		USER_SETTINGS_DIR_PATH = "user://"
-		PROFILE_DIR_PATH = "user://"
 		
 	if not AUTOSAVING_ENABLED:
 		DebugLogger.log_line("FileLoader: Autosaving disabled", Color.RED)
+
 
 ## Given a partial filepath, return the full one, which will change based on the build.
 ## Debug will start with res:// while exported builds will use the game's file directory.
@@ -119,7 +116,7 @@ func load_audio(audio_partial_path, is_absolute: bool = false, audio_loops: bool
 			if audio != null:
 				self._cached_audio[full_path] = audio
 				return audio
-				
+
 		if FileAccess.file_exists(full_path):
 			var audio: AudioStream = null
 			if full_path.ends_with(".wav"):
@@ -235,6 +232,10 @@ func save_json(directory_partial_path: String, filename: String, data_dict: Dict
 ## NOTE: Base game assets are counted as a "mod", so this takes place regardless of if actual
 ## mods exist.
 func _load_mod_list_data() -> ModListData:
+	var mod_list_path: String = _get_modified_filepath(EXTERNAL_DIR_PATH + MOD_LIST_FILE_NAME)
+	if not FileAccess.file_exists(mod_list_path):
+		DebugLogger.log_line("FileLoader: No external mod list found; mod loading skipped.")
+		return ModListData.new()
 	var mod_list_dict_repr: Dictionary = load_json(EXTERNAL_DIR_PATH, MOD_LIST_FILE_NAME)
 	var mod_list_data: ModListData = ModListData.new()
 	mod_list_data.set_serializable_properties_from_json_patch(mod_list_dict_repr)
@@ -249,7 +250,7 @@ func load_read_only_data() -> void:
 	
 	# iterate over all mod folders found in mod list
 	for mod_base_directory: String in sorted_mod_folders:
-		var mod_info: Dictionary = mod_list_data.mod_load_data[mod_base_directory]
+		var is_base_game_data_overlay: bool = mod_base_directory == EXTERNAL_DIR_PATH
 		# load mod info from mod info file
 		var mod_data: ModData = ModData.new()
 		var mod_dict_repr: Dictionary = load_json(mod_base_directory, MOD_INFO_FILE_NAME)
@@ -258,19 +259,22 @@ func load_read_only_data() -> void:
 		# take over script paths
 		# NOTE: Comment out this section if you want to completely disable
 		# loading scripts from external sources.
-		for mod_script_file_path: String in mod_data.mod_script_file_paths.keys():
-			var full_script_path: String = _get_modified_filepath(mod_script_file_path)
-			var old_script_path: String = mod_data.mod_script_file_paths[mod_script_file_path]
-			
-			var new_script: Script = load(full_script_path)
-			if new_script:
-				if old_script_path != "":
-					new_script.take_over_path(old_script_path)
-			else:
-				DebugLogger.log_line("FileLoader: Failed to load script at " + full_script_path, Color.RED, DebugLogger.Severities.ERROR)
+		if not is_base_game_data_overlay:
+			for mod_script_file_path: String in mod_data.mod_script_file_paths.keys():
+				var full_script_path: String = _get_modified_filepath(mod_script_file_path)
+				var old_script_path: String = mod_data.mod_script_file_paths[mod_script_file_path]
+
+				var new_script: Script = load(full_script_path)
+				if new_script:
+					if old_script_path != "":
+						new_script.take_over_path(old_script_path)
+				else:
+					DebugLogger.log_line("FileLoader: Failed to load script at " + full_script_path, Color.RED, DebugLogger.Severities.ERROR)
 		
 		# iterate over every subdirectory listed in mod info's folders
 		for mod_sub_directory: String in mod_data.mod_folder_to_load_data.keys():
+			if is_base_game_data_overlay and not mod_sub_directory.begins_with(EXTERNAL_DIR_DATA_PATH):
+				continue
 			# get kind of data to load for each folder
 			var sub_directory_data: Dictionary = mod_data.mod_folder_to_load_data[mod_sub_directory]
 			
@@ -305,6 +309,9 @@ func load_read_only_data() -> void:
 				
 				# patch the object
 				read_only_data.set_serializable_properties_from_json_patch(file_data)
+				if read_only_data is AchievementData and not exists_in_table:
+					var achievement_data: AchievementData = read_only_data
+					achievement_data.set_mod_source(mod_data.object_id, mod_data.mod_name)
 				# (re)store in corresponding dictionary
 				data_table[read_only_data.object_id] = read_only_data
 				
@@ -452,9 +459,6 @@ func test_serialization() -> void:
 func save_game(file_dir: String = SAVE_DIR_PATH, file_name: String = SAVE_FILE_NAME) -> void:
 	var player_dict: Dictionary = Global.player_data.get_serializable_properties_to_json_patch()
 	save_json(file_dir, file_name, player_dict)
-	
-	# Checkpoint saving: also explicitly save the profile when the game is saved
-	save_profile()
 
 ## Takes json file and converts it back into player data
 ## start_game automatically continues the run rather than simply load into memory. false used to load
@@ -479,14 +483,12 @@ func load_game(start_game: bool = true, file_dir: String = SAVE_DIR_PATH, file_n
 			Signals.run_started.emit()
 			Signals.map_location_selected.emit(Global.get_player_location_data())
 
-## Wrapper for saving the game. It automatically determines the file name
-## TODO: Profile implementation
+## Wrapper for saving the active run. Profile persistence is handled by ProfileStore.
 func autosave() -> void:
 	if AUTOSAVING_ENABLED:
 		save_game()
 
-## Wrapper for loading the game automatically.
-## TODO: Profile implementation
+## Wrapper for loading the active run automatically.
 func autoload() -> void:
 	load_game()
 
@@ -515,20 +517,3 @@ func load_user_settings() -> void:
 func save_user_settings() -> void:
 	var dict_repr: Dictionary = Global.user_settings_data.get_serializable_properties(true)
 	save_json(USER_SETTINGS_DIR_PATH, USER_SETTINGS_FILE_NAME, dict_repr)
-
-### Profile
-
-func has_profile_file() -> bool:
-	return get_files_in_directory(PROFILE_DIR_PATH).has(PROFILE_FILE_NAME)
-	
-func load_profile() -> void:
-	if has_profile_file():
-		var dict_repr: Dictionary = load_json(PROFILE_DIR_PATH, PROFILE_FILE_NAME)
-		Global.profile_data.set_serializable_properties(dict_repr, true)
-	else:
-		save_profile()
-
-func save_profile() -> void:
-	Global._profile_save_timer = 0.0 # Clear any pending time-based saves
-	var dict_repr: Dictionary = Global.profile_data.get_serializable_properties(true)
-	save_json(PROFILE_DIR_PATH, PROFILE_FILE_NAME, dict_repr)

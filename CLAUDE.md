@@ -16,10 +16,9 @@ Slay The Robot is a **roguelike deckbuilder framework** for **Godot 4.6** (GDScr
 - Main scene: `res://scenes/LoadingScreen.tscn` (transitions to `res://scenes/Root.tscn`)
 - Window size: 1200×700, non-resizable.
 - **No build step** — run scenes directly in the Godot editor.
-- **No unit tests** — testing is done by running the game with auto-generated data.
+- **No built-in test content** — development-only cards, artifacts, and scenarios must be supplied through a mod.
 - Production data is generated at startup by `GlobalProdDataGenerator.generate_production_data()` (called in `Global._ready()`). Read-only game definitions are generated from code rather than shipped as JSON data files.
 - To export data as JSON: uncomment `FileLoader.export_read_only_data()` in `Global._ready()`, run once, then re-comment it.
-- To switch to test data: comment `GlobalProdDataGenerator.generate_production_data()` and uncomment `GlobalTestDataGenerator.generate_test_data()`.
 - GDScript warnings disabled in project settings: `unused_signal` (signals are often connected dynamically), `integer_division` (intentional use).
 
 ## GDScript Conventions
@@ -36,14 +35,14 @@ Slay The Robot is a **roguelike deckbuilder framework** for **Godot 4.6** (GDScr
 
 | Directory | Purpose |
 |---|---|
-| `autoload/` | 14 singleton scripts (see loading order below) — global state, factories, managers |
+| `autoload/` | Singleton scripts (see loading order below) — global state, factories, managers |
 | `autoload/act/` | Per-act content generators (`act_one.gd`, `act_two.gd`, `act_three.gd`) + `global_enemies.gd` (shared enemies) |
 | `autoload/card_generators/` | Per-color card set generators (`blue_cards.gd`, `green_cards.gd`, `red_cards.gd`, `orange_cards.gd`, `white_cards.gd`) |
 | `autoload/event_generators/` | Global event and dialogue generators (`global_dialogues.gd`) |
 | `data/` | Data layer — `SerializableData` base class, prototype templates, readonly config, mutable runtime state, filters |
 | `data/prototype/` | Read-only template data (`CardData`, `EnemyData`, etc.) — cloned via `.get_prototype(true)` for mutable runtime copies |
 | `data/readonly/` | Immutable dictionary configs (keywords, colors, acts, events, run modifiers, card packs, etc.) |
-| `data/mutable/` | Runtime-mutable containers (`CombatStats`, `ShopData`, `RunStatsData`, `ProfileData`, etc.) |
+| `data/mutable/` | Runtime-mutable containers and typed snapshots (`CombatStats`, `ShopData`, `RunStatsData`, profile summaries, etc.) |
 | `data/filters/` | `CardFilter`, `ArtifactFilter`, `ConsumableFilter` — method-chaining query builders with cache support |
 | `scripts/actions/` | All game behaviors — card operations, combat, status effects, shop, world gen, rewards, etc. |
 | `scripts/action_interceptors/` | Dynamically modify actions before execution (status effects, relics, modifiers) |
@@ -90,19 +89,20 @@ Order is critical because later autoloads depend on earlier ones. `Global._ready
 | 2 | `Scenes` | Registry of all `PackedScene` preloads (cards, enemies, UI elements, etc.) |
 | 3 | `Scripts` | Registry of hardcoded `const String` script paths for Actions, Validators, Interceptors, Decorators, and Run Modifiers |
 | 4 | `FileLoader` | External file loading (sprites, audio, JSON), save/load, mod loading & caching |
-| 5 | `Random` | Deterministic RNG — all randomness flows through player-seed-based RNG tracks |
-| 6 | `Global` | Central data hub — schema generation, data lookup tables, caching, run management, validator dispatch |
-| 7 | `GlobalTestDataGenerator` | Generates test data via code (cards, enemies, artifacts, etc.) |
+| 5 | `ProfileStore` | SQLite-backed profile progression and run history |
+| 6 | `Random` | Deterministic RNG — all randomness flows through player-seed-based RNG tracks |
+| 7 | `Global` | Central data hub — schema generation, data lookup tables, caching, run management, validator dispatch |
 | 8 | `GlobalProdDataGenerator` | Generates production data via code |
 | 9 | `ActionHandler` | Action stack & queue processor — manages execution order, timing, and interception |
 | 10 | `ActionGenerator` | Factory that creates Action instances from data |
 | 11 | `DebugLogger` | Centralized logging |
 | 12 | `HandManager` | Manages the player's hand cards |
-| 13 | `SoundManager` | Audio playback (plugin-based, registered as `uid://`) |
-| 14 | `StatsHandler` | Tracks per-turn, per-combat, per-run statistics; manages profile save/load |
+| 13 | `StatsHandler` | Tracks per-turn, per-combat, and per-run statistics |
+| 14 | `SoundManager` | Audio playback (plugin-based, registered as `uid://`) |
 | 15 | `UIMessage` | Global UI message overlay for floating notifications |
 | 16 | `TextParser` | Rich-text value substitution and card/status/energy macros |
 | 17 | `Platform` | Platform integration registered through a UID-backed autoload |
+| 18 | `AchievementManager` | Achievement triggers, local unlocks, and native platform synchronization |
 
 ### Data Layer (`data/`)
 
@@ -113,7 +113,7 @@ Order is critical because later autoloads depend on earlier ones. `Global._ready
 - **`data/readonly/`** — Immutable lookup data (ActData, EventData, DialogueData, KeywordData, ColorData, StatusEffectData, RunModifierData, CustomSignalData, CharacterData, mod configs, etc.).
 - **`data/readonly/embedded/`** — Nested readonly data types embedded inside parent data objects: `DialogueOptionData`, `DialogueStateData` (used by `DialogueData`), `EnemyIntentData` (used by `EnemyData`).
 - **`data/readonly/modding/`** — Mod support data types. Notably `CustomSignal.gd` extends `RefCounted` (not `SerializableData`) — it's the only data type that doesn't participate in serialization; it's a runtime observer-pattern signal carrier.
-- **`data/mutable/`** — Runtime-mutable data (PlayerData, CombatStatsData, RunStatsData, ShopData, LocationData, ProfileData, UserSettingsData).
+- **`data/mutable/`** — Runtime-mutable data and typed query snapshots (PlayerData, CombatStatsData, RunStatsData, ShopData, LocationData, profile summaries, UserSettingsData).
 - **`data/filters/`** — CardFilter, ArtifactFilter, ConsumableFilter — content packs use these to query and cache filtered subsets.
 
 ### Action System (`scripts/actions/`)
@@ -178,14 +178,14 @@ CardFilter, ArtifactFilter, and ConsumableFilter use **method chaining**. Build 
 
 ### Save/Load System
 
-Managed by `FileLoader`. **Single save slot** at `external/saves/save.json`. Key methods:
+The active run and settings remain JSON-based and are managed by `FileLoader`. **Single save slot** at `external/saves/save.json`. Key methods:
 - `save_game()` / `load_game()` — JSON serialize/deserialize `Global.player_data`
 - `autosave()` / `autoload()` — convenience wrappers controlled by `AUTOSAVING_ENABLED`
 - `has_save_file()` / `delete_save()` — save slot management
 - `save_user_settings()` / `load_user_settings()` — persistent settings at `external/user_settings.json`
-- `save_profile()` / `load_profile()` — cross-run progression at `external/profile.json`
+- `ProfileStore` — the sole SQLite persistence/query API for cross-run progression at `external/profile.sqlite3`
 
-In exported builds, paths switch from `res://` to the executable's sibling directory. Multi-save-slot UI is not yet supported (code has `TODO: Profile implementation` comments).
+In exported desktop builds, paths switch from `res://` to the executable's sibling directory; macOS, mobile, and Web profiles use `user://profile.sqlite3`. Multi-save-slot UI is not yet supported.
 
 ### PlayerData (`data/prototype/PlayerData.gd`)
 

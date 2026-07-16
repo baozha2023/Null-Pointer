@@ -4,9 +4,11 @@
 	"settings_audio_master_volume": 1.0,
 	"settings_audio_music_volume": 0.1,
 	"settings_audio_mute_on_window_lose_focus": false,
+	"settings_display_fps": true,
 	"settings_enable_card_hints": true,
 	"settings_enable_card_keywords": true,
 	"settings_enable_card_status_effects": true,
+	"settings_frame_rate_limit": 120,
 	"settings_language": "en",
 	"settings_window_size": [
 		1200.0,

@@ -29,6 +29,7 @@ func generate_production_data() -> void:
 
 	add_custom_ui()
 	add_custom_signals()
+	add_achievements()
 
 	GlobalProdArtifactsGenerator.generate_artifacts()
 	GlobalProdDecoratorsGenerator.generate_decorators()
@@ -36,6 +37,105 @@ func generate_production_data() -> void:
 	add_cards()
 	add_card_packs()
 	add_consumable_packs()
+
+
+#region Achievements
+func add_achievements() -> void:
+	var definitions: Array[Dictionary] = [
+		{
+			"id": "achievement_first_kill",
+			"name": "首次回收",
+			"description": "击败一个敌方进程。",
+			"trigger_script": Scripts.ACHIEVEMENT_TRIGGER_ENEMY_KILLED,
+		},
+		{
+			"id": "achievement_first_miniboss",
+			"name": "权限提升",
+			"description": "击败一个精英进程。",
+			"trigger_script": Scripts.ACHIEVEMENT_TRIGGER_COMBAT_COMPLETED,
+			"trigger_values": {"location_type": LocationData.LOCATION_TYPES.MINIBOSS},
+		},
+		{
+			"id": "achievement_first_boss",
+			"name": "突破防火墙",
+			"description": "击败一个 Boss 进程。",
+			"trigger_script": Scripts.ACHIEVEMENT_TRIGGER_COMBAT_COMPLETED,
+			"trigger_values": {"location_type": LocationData.LOCATION_TYPES.BOSS},
+		},
+		{
+			"id": "achievement_first_victory",
+			"name": "空指针",
+			"description": "获得一次胜利。",
+			"trigger_script": Scripts.ACHIEVEMENT_TRIGGER_RUN_VICTORY,
+		},
+		{
+			"id": "achievement_victory_red",
+			"name": "代码即武器",
+			"description": "使用码农获得一次胜利。",
+			"trigger_script": Scripts.ACHIEVEMENT_TRIGGER_RUN_VICTORY,
+			"trigger_values": {"character_id": "character_red"},
+		},
+		{
+			"id": "achievement_victory_blue",
+			"name": "无痕渗透",
+			"description": "使用渗透专家获得一次胜利。",
+			"trigger_script": Scripts.ACHIEVEMENT_TRIGGER_RUN_VICTORY,
+			"trigger_values": {"character_id": "character_blue"},
+		},
+		{
+			"id": "achievement_victory_green",
+			"name": "野蛮生长",
+			"description": "使用赛博植物学家获得一次胜利。",
+			"trigger_script": Scripts.ACHIEVEMENT_TRIGGER_RUN_VICTORY,
+			"trigger_values": {"character_id": "character_green"},
+		},
+		{
+			"id": "achievement_victory_orange",
+			"name": "重构完成",
+			"description": "使用重构工匠获得一次胜利。",
+			"trigger_script": Scripts.ACHIEVEMENT_TRIGGER_RUN_VICTORY,
+			"trigger_values": {"character_id": "character_orange"},
+		},
+		{
+			"id": "achievement_victory_difficulty_5",
+			"name": "内核级危机",
+			"description": "在难度 5 获得一次胜利。",
+			"trigger_script": Scripts.ACHIEVEMENT_TRIGGER_RUN_VICTORY,
+			"trigger_values": {"minimum_difficulty": 5},
+		},
+		{
+			"id": "achievement_all_characters",
+			"name": "全栈执行",
+			"description": "使用全部四个原生角色分别获得一次胜利。",
+			"trigger_script": Scripts.ACHIEVEMENT_TRIGGER_ALL_CHARACTERS,
+			"trigger_values": {
+				"required_achievement_ids": [
+					"achievement_victory_red",
+					"achievement_victory_blue",
+					"achievement_victory_green",
+					"achievement_victory_orange",
+				],
+			},
+			"hidden": true,
+		},
+	]
+
+	for index: int in definitions.size():
+		var definition: Dictionary = definitions[index]
+		var achievement_data: AchievementData = AchievementData.new(str(definition["id"]))
+		achievement_data.achievement_name = str(definition["name"])
+		achievement_data.achievement_description = str(definition["description"])
+		achievement_data.achievement_icon_texture_path = "sprites/achievements/%s.png" % achievement_data.object_id
+		achievement_data.achievement_is_hidden = bool(definition.get("hidden", false))
+		achievement_data.achievement_display_order = index
+		achievement_data.achievement_trigger_script_path = str(definition["trigger_script"])
+		var trigger_values: Dictionary[String, Variant] = {}
+		trigger_values.assign(definition.get("trigger_values", {}))
+		achievement_data.achievement_trigger_values = trigger_values
+		achievement_data.achievement_disallows_custom_runs = true
+		achievement_data.mark_as_vanilla()
+		Global.register_rod(achievement_data)
+#endregion
 
 
 #region Consumables

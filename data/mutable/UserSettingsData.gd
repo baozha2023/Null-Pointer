@@ -20,6 +20,8 @@ class_name UserSettingsData
 @export var settings_enable_card_keywords: bool = true
 @export var settings_enable_card_status_effects: bool = true
 @export var settings_enable_card_hints: bool = true
+@export var settings_display_fps: bool = true
+@export var settings_frame_rate_limit: int = 120
 
 func _get_native_properties() -> Dictionary:
 	return {

@@ -244,5 +244,7 @@ func _on_player_death_animation_finished(_player: Player) -> void:
 
 func _on_end_run_button_up() -> void:
 	end_run_button.disabled = true
-	visible = false
-	Global.end_run(player_run_end_state)
+	if Global.end_run(player_run_end_state):
+		visible = false
+	else:
+		end_run_button.disabled = false

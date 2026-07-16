@@ -4,7 +4,6 @@
 ## - 维护数据模式（Schema），用于动态加载和映射数据。
 ## - 存储已生成对象的缓存（Cache），提高检索效率。
 
-## 注意（NOTE）：关于测试数据和生产数据的管理，请参阅 GlobalTestDataGenerator 和 GlobalProdDataGenerator。
 extends Node
 
 #region Schema and Data Management
@@ -38,6 +37,7 @@ extends Node
 	["ConsumablePackData", ConsumablePackData, "_id_to_consumable_pack_data", ["consumable_packs/"]],
 	["CustomUIData", CustomUIData, "_id_to_custom_ui_data", ["custom_ui/"]],
 	["CustomSignalData", CustomSignalData, "_id_to_custom_signal_data", ["custom_signals/"]],
+	["AchievementData", AchievementData, "_id_to_achievement_data", ["achievements/"]],
 	# 原型数据 (Prototype data) - 游戏运行时会基于这些原型克隆出可修改的实例数据
 	["EnemyData", EnemyData,"_id_to_enemy_data", ["enemies/"]],
 	["CardData", CardData, "_id_to_card_data", ["cards/"]],
@@ -80,6 +80,7 @@ var _id_to_artifact_pack_data: Dictionary[String, ArtifactPackData] = {}
 var _id_to_consumable_pack_data: Dictionary[String, ConsumablePackData] = {}
 var _id_to_custom_ui_data: Dictionary[String, CustomUIData] = {}
 var _id_to_custom_signal_data: Dictionary[String, CustomSignalData] = {}
+var _id_to_achievement_data: Dictionary[String, AchievementData] = {}
 
 # 原型数据（Prototyped data）；这些也是只读的，它们的作用是作为模板，在需要时被克隆（Duplicate）成可变的数据实例。
 var _id_to_enemy_data: Dictionary[String, EnemyData] = {}
@@ -90,8 +91,8 @@ var _id_to_player_data: Dictionary[String, PlayerData] = {}
 # 可变数据（Mutable data）；这些对象在游戏进程中是可以被随意修改的。
 var player_data: PlayerData = PlayerData.new() # 当前游戏进程的玩家数据（这是从原型克隆出的实例）
 var user_settings_data: UserSettingsData = UserSettingsData.new() # 玩家的本地设置（音量、全屏等）
-var profile_data: ProfileData = ProfileData.new() # 玩家的总体存档进度（历史记录、总胜率等）
 var is_run: bool = false # 简单的状态标记，用来检查当前是否正在进行一局游戏
+var _pending_completed_run: RunStatsData = null
 
 ## 记录标准难度修改器（Difficulty Modifiers）的对象 ID。
 ## 它们会被用在“新建进程”界面的难度选择器上。
@@ -171,25 +172,22 @@ func _ready():
 	# 这也必须在一切操作之前完成，否则你将无法从外部文件加载对象。
 	SerializableData.build_serializable_script_cache()
 	
-	### 加载存档进度和用户本地设置
-	FileLoader.load_profile()
+	### 加载用户本地设置。ProfileStore 在 Global 之前初始化 SQLite 档案。
 	FileLoader.load_user_settings()
 	
 	var master_vol: float = user_settings_data.settings_audio_master_volume
 	SoundManager.set_music_volume(user_settings_data.settings_audio_music_volume * master_vol)
 	SoundManager.set_sound_volume(user_settings_data.settings_audio_effects_volume * master_vol)
+	Engine.max_fps = user_settings_data.settings_frame_rate_limit
 	
 	### 生成生产环境数据（真实游戏内容）
 	GlobalProdDataGenerator.generate_production_data()
 
-	### 生成测试环境数据（用于开发调试）
-	#GlobalTestDataGenerator.generate_test_data()
-
 	### 测试专用标识/作弊开关
-	ProfileData.ENABLE_ALL_DIFFICULTIES = false
-	ProfileData.UNLOCK_ALL_CARDS_IN_CODEX = false
-	ProfileData.ENABLE_ONE_CLICK_BOSS = false
-	ProfileData.REQUIRE_BZ_GAMES_LAUNCH = false
+	GameConfig.ENABLE_ALL_DIFFICULTIES = false
+	GameConfig.UNLOCK_ALL_CARDS_IN_CODEX = false
+	GameConfig.ENABLE_ONE_CLICK_BOSS = false
+	GameConfig.REQUIRE_BZ_GAMES_LAUNCH = false
 	StatsHandler.TRACK_RUN_HISTORY = true
 	
 	### Mod 支持和外部文件加载
@@ -214,11 +212,17 @@ func _ready():
 
 func _on_node_added_global(node: Node) -> void:
 	if node is BaseButton:
-		if node.mouse_default_cursor_shape == Control.CURSOR_ARROW:
-			node.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+		call_deferred("_apply_button_cursor", node)
 			
 	# Dynamic Mod Support: Automatically convert all built-in resources to FileLoader
 	_apply_fileloader_to_node(node)
+
+func _apply_button_cursor(node: Node) -> void:
+	if not is_instance_valid(node) or not node is BaseButton or not node.is_inside_tree():
+		return
+	var button: BaseButton = node
+	if button.mouse_default_cursor_shape == Control.CURSOR_ARROW:
+		button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 
 func _apply_fileloader_to_node(node: Node) -> void:
 	if not Engine.is_editor_hint(): # Ensure we don't interfere with the Godot editor
@@ -246,6 +250,7 @@ func _apply_cursor_to_tree(node: Node) -> void:
 #region Run
 ## 使用指定的种子（Seed）和角色，开始新的一局游戏进程（Run）。
 func start_run(character_object_id: String, run_seed: int, difficulty_level: int = 0, custom_run_modifier_object_ids: Array[String] = []) -> void:
+	_pending_completed_run = null
 	var character_data: CharacterData = get_character_data(character_object_id)
 	
 	# 根据所选角色，从原型数据中初始化一局新的玩家数据（Player Data）
@@ -304,11 +309,6 @@ func start_run(character_object_id: String, run_seed: int, difficulty_level: int
 	StatsHandler.current_run_stats = player_data.player_run_stats # 更新单例的引用指向当前局
 	
 	
-	# 取消下面这些注释可以给玩家强行塞入测试卡牌/插件/物品（官方外挂）
-	# GlobalTestDataGenerator.add_test_cards_to_player_deck()
-	# GlobalTestDataGenerator.add_test_artifacts_to_player()
-	# GlobalTestDataGenerator.add_test_consumables_to_player()
-	
 	# 连接信号并生成这局游戏的缓存
 	player_data.init()
 	
@@ -332,28 +332,50 @@ func start_run(character_object_id: String, run_seed: int, difficulty_level: int
 enum RUN_ENDS {QUIT, LOSS, VICTORY}
 
 ## 以前面给定的状态（放弃、失败、胜利）强行结束玩家当前的游戏进程。
-func end_run(run_end_state: int = RUN_ENDS.QUIT) -> void:
-	match run_end_state:
-		RUN_ENDS.QUIT:
-			pass # 无变化，当前进度应该已经被自动存档过了，玩家可以下次继续
-		RUN_ENDS.LOSS:
-			FileLoader.delete_save()
-			StatsHandler.lose_run() # 输了，将失败记录写进总存档
-			FileLoader.save_profile()
-		RUN_ENDS.VICTORY:
-			FileLoader.delete_save()
-			StatsHandler.win_run() # 赢了，将胜利记录写进总存档
-			FileLoader.save_profile()
-	
+func end_run(run_end_state: int = RUN_ENDS.QUIT) -> bool:
+	if run_end_state != RUN_ENDS.QUIT:
+		var completed_run: RunStatsData = _pending_completed_run
+		if completed_run == null:
+			if run_end_state == RUN_ENDS.VICTORY:
+				completed_run = StatsHandler.win_run()
+			else:
+				completed_run = StatsHandler.lose_run()
+			_pending_completed_run = completed_run
+		if completed_run == null or not ProfileStore.record_completed_run(completed_run):
+			UIMessage.show_message(
+				"档案数据库写入失败，当前进程存档已保留。",
+				3.0,
+				null,
+				"保存失败",
+				UIMessage.MESSAGE_TYPES.ERROR,
+			)
+			return false
+		FileLoader.delete_save()
+		_pending_completed_run = null
+		Signals.run_completed.emit(completed_run)
+	else:
+		_pending_completed_run = null
+
 	is_run = false
 	Signals.run_ended.emit()
+	return true
 
 ## 在玩家的存档进度中记录一次失败，并删除当前游戏的存档，不会开始新一局游戏。
-func forfeit_run_from_title() -> void:
-	FileLoader.load_game(false)
+func forfeit_run_from_title() -> bool:
+	var completed_run: RunStatsData = _pending_completed_run
+	if completed_run == null:
+		FileLoader.load_game(false)
+		completed_run = StatsHandler.lose_run()
+		_pending_completed_run = completed_run
+	if completed_run == null or not ProfileStore.record_completed_run(completed_run):
+		UIMessage.show_message("档案数据库写入失败，当前进程存档已保留。", 3.0)
+		return false
 	FileLoader.delete_save()
-	StatsHandler.lose_run()
-	FileLoader.save_profile()
+	_pending_completed_run = null
+	Signals.run_completed.emit(completed_run)
+	is_run = false
+	Signals.run_ended.emit()
+	return true
 
 ## 返回当前游戏进程是否应该结束。
 func is_end_of_run() -> bool:
@@ -547,6 +569,16 @@ func get_custom_ui_data(custom_ui_object_id: String) -> CustomUIData:
 #region Custom Signals
 func get_custom_signal_data(custom_signal_object_id: String) -> CustomSignalData:
 	return _id_to_custom_signal_data.get(custom_signal_object_id, null)
+#endregion
+
+#region Achievements
+func get_achievement_data(achievement_object_id: String) -> AchievementData:
+	return _id_to_achievement_data.get(achievement_object_id, null)
+
+func get_all_achievement_data() -> Array[AchievementData]:
+	var achievements: Array[AchievementData] = []
+	achievements.assign(_id_to_achievement_data.values())
+	return achievements
 #endregion
 
 #region Locations
@@ -780,21 +812,6 @@ func validate(validators: Array[Dictionary], card_data: CardData = null, action:
 	return true
 #endregion
 
-var _profile_save_timer: float = 0.0
-
-func _process(delta: float) -> void:
-	if _profile_save_timer > 0.0:
-		_profile_save_timer -= delta
-		if _profile_save_timer <= 0.0:
-			FileLoader.save_profile()
-
 ## Marks a card as discovered in the profile
 func discover_card(card_id: String) -> void:
-	if profile_data == null:
-		return
-	if not profile_data.profile_discovered_cards.has(card_id):
-		profile_data.profile_discovered_cards[card_id] = true
-		
-		# Time-based debounce: wait 3 seconds before saving to disk
-		# If another card is discovered within 3s, the timer resets
-		_profile_save_timer = 3.0
+	ProfileStore.discover_card(card_id)

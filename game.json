@@ -7,6 +7,57 @@
   "platformVersion": ">=3.0.0",
   "entry": "Null Pointer.exe",
   "type": "singleplayer",
-  "achievements": [],
+  "achievements": [
+    {
+      "id": "achievement_first_kill",
+      "title": "首次回收",
+      "description": "击败一个敌方进程。"
+    },
+    {
+      "id": "achievement_first_miniboss",
+      "title": "权限提升",
+      "description": "击败一个精英进程。"
+    },
+    {
+      "id": "achievement_first_boss",
+      "title": "突破防火墙",
+      "description": "击败一个 Boss 进程。"
+    },
+    {
+      "id": "achievement_first_victory",
+      "title": "空指针",
+      "description": "获得一次胜利。"
+    },
+    {
+      "id": "achievement_victory_red",
+      "title": "代码即武器",
+      "description": "使用码农获得一次胜利。"
+    },
+    {
+      "id": "achievement_victory_blue",
+      "title": "无痕渗透",
+      "description": "使用渗透专家获得一次胜利。"
+    },
+    {
+      "id": "achievement_victory_green",
+      "title": "野蛮生长",
+      "description": "使用赛博植物学家获得一次胜利。"
+    },
+    {
+      "id": "achievement_victory_orange",
+      "title": "重构完成",
+      "description": "使用重构工匠获得一次胜利。"
+    },
+    {
+      "id": "achievement_victory_difficulty_5",
+      "title": "内核级危机",
+      "description": "在难度 5 获得一次胜利。"
+    },
+    {
+      "id": "achievement_all_characters",
+      "title": "全栈执行",
+      "description": "使用全部四个原生角色分别获得一次胜利。"
+    }
+  ],
   "statistics": []
 }

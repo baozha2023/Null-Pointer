@@ -7,11 +7,13 @@ extends BaseMenu
 @onready var master_volume_slider: HSlider = %MasterVolumeSlider
 @onready var effects_volume_slider: HSlider = %EffectsVolumeSlider
 @onready var music_volume_slider: HSlider = %MusicVolumeSlider
+@onready var frame_rate_limit_slider: FrameRateLimitSlider = %FrameRateLimitSlider
 
 @onready var mute_background_check_button: CheckButton = %MuteBackgroundCheckButton
 @onready var enable_card_hints_check_button: CheckButton = %EnableCardHintsCheckButton
 @onready var enable_card_keywords_check_button: CheckButton = %EnableCardKeywordsCheckButton
 @onready var enable_card_status_effects_check_button: CheckButton = %EnableCardStatusEffectsCheckButton
+@onready var display_fps_check_button: CheckButton = %DisplayFPSCheckButton
 
 func _ready():
 	super()
@@ -19,10 +21,12 @@ func _ready():
 	enable_card_hints_check_button.toggled.connect(_on_enable_card_hints_button_toggled)
 	enable_card_keywords_check_button.toggled.connect(_on_enable_card_keywords_button_toggled)
 	enable_card_status_effects_check_button.toggled.connect(_on_enable_card_status_effects_button_toggled)
+	display_fps_check_button.toggled.connect(_on_display_fps_button_toggled)
 	
 	master_volume_slider.value_changed.connect(_on_volume_slider_changed)
 	effects_volume_slider.value_changed.connect(_on_volume_slider_changed)
 	music_volume_slider.value_changed.connect(_on_volume_slider_changed)
+	frame_rate_limit_slider.value_changed.connect(_on_frame_rate_limit_slider_changed)
 	#
 	## wait a frame to ensure settings load on game start
 	#await get_tree().process_frame
@@ -34,11 +38,13 @@ func _save_settings() -> void:
 	Global.user_settings_data.settings_audio_master_volume = master_volume_slider.value
 	Global.user_settings_data.settings_audio_effects_volume = effects_volume_slider.value
 	Global.user_settings_data.settings_audio_music_volume = music_volume_slider.value
+	Global.user_settings_data.settings_frame_rate_limit = frame_rate_limit_slider.get_frame_rate_limit()
 	
 	Global.user_settings_data.settings_audio_mute_on_window_lose_focus = mute_background_check_button.button_pressed
 	Global.user_settings_data.settings_enable_card_hints = enable_card_hints_check_button.button_pressed
 	Global.user_settings_data.settings_enable_card_keywords = enable_card_keywords_check_button.button_pressed
 	Global.user_settings_data.settings_enable_card_status_effects = enable_card_status_effects_check_button.button_pressed
+	Global.user_settings_data.settings_display_fps = display_fps_check_button.button_pressed
 	
 	FileLoader.save_user_settings()
 
@@ -48,11 +54,13 @@ func populate_menu() -> void:
 	master_volume_slider.value = Global.user_settings_data.settings_audio_master_volume
 	effects_volume_slider.value = Global.user_settings_data.settings_audio_effects_volume
 	music_volume_slider.value = Global.user_settings_data.settings_audio_music_volume
+	frame_rate_limit_slider.set_frame_rate_limit_no_signal(Global.user_settings_data.settings_frame_rate_limit)
 	# mute in background
 	mute_background_check_button.set_pressed_no_signal(Global.user_settings_data.settings_audio_mute_on_window_lose_focus)
 	enable_card_hints_check_button.set_pressed_no_signal(Global.user_settings_data.settings_enable_card_hints)
 	enable_card_keywords_check_button.set_pressed_no_signal(Global.user_settings_data.settings_enable_card_keywords)
 	enable_card_status_effects_check_button.set_pressed_no_signal(Global.user_settings_data.settings_enable_card_status_effects)
+	display_fps_check_button.set_pressed_no_signal(Global.user_settings_data.settings_display_fps)
 
 ## Save settings before going to the next menu
 func _navigate_to_next_menu(next_menu: BaseMenu) -> void:
@@ -71,6 +79,11 @@ func _on_volume_slider_changed(_val: float):
 	SoundManager.set_music_volume(modified_music_volume)
 	SoundManager.set_sound_volume(modified_effects)
 
+func _on_frame_rate_limit_slider_changed(_value: float) -> void:
+	var frame_rate_limit: int = frame_rate_limit_slider.get_frame_rate_limit()
+	Global.user_settings_data.settings_frame_rate_limit = frame_rate_limit
+	Engine.max_fps = frame_rate_limit
+
 func _on_mute_background_button_toggled(toggle: bool):
 	Global.user_settings_data.settings_audio_mute_on_window_lose_focus = toggle
 
@@ -82,5 +95,8 @@ func _on_enable_card_keywords_button_toggled(toggle: bool):
 
 func _on_enable_card_status_effects_button_toggled(toggle: bool):
 	Global.user_settings_data.settings_enable_card_status_effects = toggle
+
+func _on_display_fps_button_toggled(toggle: bool) -> void:
+	Global.user_settings_data.settings_display_fps = toggle
 
 #endregion

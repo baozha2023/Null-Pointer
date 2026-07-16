@@ -482,11 +482,9 @@ func does_card_banish() -> bool:
 func is_discovered() -> bool:
 	if card_rarity == CARD_RARITIES.BASIC:
 		return true
-	if ProfileData.UNLOCK_ALL_CARDS_IN_CODEX:
+	if GameConfig.UNLOCK_ALL_CARDS_IN_CODEX:
 		return true
-	if Global.profile_data == null:
-		return false
-	return Global.profile_data.profile_discovered_cards.has(object_id)
+	return ProfileStore.is_card_discovered(object_id)
 
 #region Engine Bug Fixes
 ## Overrides get_prototype to properly deep copy nested generic arrays inside the untyped dictionary `card_decorators`

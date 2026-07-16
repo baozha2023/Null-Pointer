@@ -6,6 +6,7 @@ extends BaseMenu
 @onready var exit_game_button: Button = %ExitGameButton
 
 @onready var new_run_button: Button = $VBoxContainer/NewRunButton
+@onready var mod_button: Button = $VBoxContainer/ModButton
 
 const LOBBY_BGM: AudioStream = preload("res://sounds/bgm/bgm_lobby.mp3")
 
@@ -16,6 +17,7 @@ func _ready():
 	continue_button.button_up.connect(_on_continue_button_up)
 	forfeit_run_button.button_up.connect(_on_forfeit_run_button_up)
 	exit_game_button.button_up.connect(_on_exit_game_button_up)
+	mod_button.visible = not OS.has_feature("android")
 	
 	Signals.run_ended.connect(_on_run_ended)
 	
@@ -29,7 +31,8 @@ func _on_continue_button_up():
 	FileLoader.autoload()
 
 func _on_forfeit_run_button_up():
-	Global.forfeit_run_from_title()
+	if Global.forfeit_run_from_title():
+		visible = true
 	update_continue_button_visibility()
 
 func _on_exit_game_button_up():

@@ -10,7 +10,10 @@ export_presets.cfg
 # Mono-specific ignores
 .mono/
 /external/saves
-external/profile.json
+external/profile.sqlite3
+external/profile.sqlite3-wal
+external/profile.sqlite3-shm
+addons/godot-sqlite/bin/~*
 .idea/
 .claude/
 .codex/

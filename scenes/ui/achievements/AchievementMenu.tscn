@@ -1,0 +1,130 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/menus/AchievementMenu.gd" id="1_script"]
+[ext_resource type="Theme" uid="uid://cd5rw86bhiyn" path="res://themes/title_screen_theme.tres" id="2_theme"]
+[ext_resource type="Texture2D" uid="uid://dxw60api31ik2" path="res://sprites/title_screen_background.png" id="3_background"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBack"]
+bg_color = Color(0.035, 0.07, 0.095, 0.96)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.18, 0.68, 0.68, 0.82)
+corner_radius_top_left = 9
+corner_radius_top_right = 9
+corner_radius_bottom_right = 9
+corner_radius_bottom_left = 9
+
+[sub_resource type="StyleBoxFlat" id="StyleSummary"]
+bg_color = Color(0.025, 0.065, 0.085, 0.95)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.2, 0.72, 0.68, 0.8)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[node name="AchievementMenu" type="Control"]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("2_theme")
+script = ExtResource("1_script")
+
+[node name="Background" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("3_background")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="Tint" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.004, 0.01, 0.018, 0.52)
+
+[node name="Header" type="HBoxContainer" parent="."]
+layout_mode = 0
+offset_left = 42.0
+offset_top = 28.0
+offset_right = 1158.0
+offset_bottom = 94.0
+theme_override_constants/separation = 22
+
+[node name="MainMenuButton" type="Button" parent="Header"]
+custom_minimum_size = Vector2(160, 54)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = SubResource("StyleBack")
+text = "←  返回"
+
+[node name="Title" type="VBoxContainer" parent="Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Kicker" type="Label" parent="Header/Title"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.34, 0.74, 0.76, 1)
+theme_override_font_sizes/font_size = 12
+text = "本地档案 / ACHIEVEMENTS"
+
+[node name="Label" type="Label" parent="Header/Title"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.84, 0.96, 0.94, 1)
+theme_override_font_sizes/font_size = 28
+text = "成就"
+
+[node name="Summary" type="PanelContainer" parent="Header"]
+custom_minimum_size = Vector2(220, 54)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_styles/panel = SubResource("StyleSummary")
+
+[node name="Completion" type="Label" parent="Header/Summary"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.5, 0.94, 0.72, 1)
+theme_override_font_sizes/font_size = 15
+text = "总体完成度  0 / 0"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ScrollContainer" type="ScrollContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 42.0
+offset_top = 112.0
+offset_right = 1158.0
+offset_bottom = 676.0
+horizontal_scroll_mode = 0
+
+[node name="Margin" type="MarginContainer" parent="ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 20
+
+[node name="GroupContainer" type="VBoxContainer" parent="ScrollContainer/Margin"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 24

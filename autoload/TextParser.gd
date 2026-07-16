@@ -6,11 +6,15 @@ const ENERGY_ICON_BBCODE: String = "[img width=20]res://sprites/ui/icon_energy.p
 var status_icon_regex: RegEx = RegEx.new()
 var status_name_regex: RegEx = RegEx.new()
 var card_name_regex: RegEx = RegEx.new()
+var artifact_name_regex: RegEx = RegEx.new()
+var percent_regex: RegEx = RegEx.new()
 
 func _ready():
 	status_icon_regex.compile("\\[status_icon:([^\\]]+)\\]")
 	status_name_regex.compile("\\[status_name:([^\\]]+)\\]")
 	card_name_regex.compile("\\[card_name:([^\\]]+)\\]")
+	artifact_name_regex.compile("\\[artifact_name:([^\\]]+)\\]")
+	percent_regex.compile("\\[percent:([^\\]]+)\\]")
 
 ## Global text parser to parse macros, BBCode, variables, and icon mappings
 func parse(template: String, values: Dictionary = {}, base_font_size: int = 14) -> String:
@@ -25,6 +29,20 @@ func parse(template: String, values: Dictionary = {}, base_font_size: int = 14) 
 		if typeof(value) == TYPE_FLOAT or typeof(value) == TYPE_INT:
 			val_str = str(abs(value))
 		result = result.replace("[" + key + "]", val_str)
+	# 1.5 Percentage mappings [percent:key]
+	for m in percent_regex.search_all(result):
+		var full_match: String = m.get_string()
+		var value_key: String = m.get_string(1)
+		if not values.has(value_key):
+			continue
+		var percent_value: Variant = values[value_key]
+		if typeof(percent_value) != TYPE_FLOAT and typeof(percent_value) != TYPE_INT:
+			DebugLogger.log_error("TextParser.parse(): Percentage key \"{0}\" is not numeric".format([value_key]))
+			continue
+		var scaled_value: float = abs(float(percent_value)) * 100.0
+		var replacement: String = str(int(scaled_value)) if is_equal_approx(scaled_value, round(scaled_value)) else str(snappedf(scaled_value, 0.01))
+		result = result.replace(full_match, replacement + "%")
+
 	# 2. Status icon and name mappings [status_icon:status_id], [status_name:status_id]
 	for m in status_icon_regex.search_all(result):
 		var full_match = m.get_string()
@@ -45,10 +63,11 @@ func parse(template: String, values: Dictionary = {}, base_font_size: int = 14) 
 		else:
 			result = result.replace(full_match, status_id)
 
-	# 2.5 Card name mappings [card_name:card_id]
+	# 2.5 Card name mappings [card_name:card_id_or_value_key]
 	for m in card_name_regex.search_all(result):
-		var full_match = m.get_string()
-		var card_id = m.get_string(1)
+		var full_match: String = m.get_string()
+		var token: String = m.get_string(1)
+		var card_id: String = str(values.get(token, token))
 		var card_data = Global.get_card_data(card_id)
 		if card_data:
 			var color_hex = "#ffffff"
@@ -58,7 +77,20 @@ func parse(template: String, values: Dictionary = {}, base_font_size: int = 14) 
 			var replacement = "[color=%s][%s][/color]" % [color_hex, card_data.card_name]
 			result = result.replace(full_match, replacement)
 		else:
+			DebugLogger.log_error("TextParser.parse(): No card with ID of \"{0}\"".format([card_id]))
 			result = result.replace(full_match, card_id)
+
+	# 2.6 Artifact name mappings [artifact_name:artifact_id_or_value_key]
+	for m in artifact_name_regex.search_all(result):
+		var full_match: String = m.get_string()
+		var token: String = m.get_string(1)
+		var artifact_id: String = str(values.get(token, token))
+		var artifact_data: ArtifactData = Global.get_artifact_data(artifact_id)
+		if artifact_data:
+			result = result.replace(full_match, artifact_data.artifact_name)
+		else:
+			DebugLogger.log_error("TextParser.parse(): No artifact with ID of \"{0}\"".format([artifact_id]))
+			result = result.replace(full_match, artifact_id)
 
 	# 3. Energy icons
 	result = result.replace(ENERGY_ICON_KEYWORD, energy_icon_bbcode)
@@ -81,6 +113,18 @@ func parse(template: String, values: Dictionary = {}, base_font_size: int = 14) 
 	return result
 
 func format_value(key: String, val: Variant) -> String:
+	if "artifact_rarities" in key and val is Array:
+		var rarity_names: Array[String] = []
+		for rarity: int in val:
+			rarity_names.append(ArtifactData.ARTIFACT_RARITY_DISPLAY.get(rarity, "未知"))
+		return "、".join(rarity_names)
+
+	if "card_rarities" in key and val is Array:
+		var rarity_names: Array[String] = []
+		for rarity: int in val:
+			rarity_names.append(CardData.CARD_RARITY_DISPLAY.get(rarity, "未知"))
+		return "、".join(rarity_names)
+
 	if "card_types" in key and val is Array:
 		var type_names: Array = []
 		for t in val:
@@ -126,6 +170,7 @@ func parse_forge_actions_to_text(forge_actions: Array, fallback_values: Dictiona
 			action_name = action_path.get_file().replace(".gd", "").replace("Action", "")
 			var action_values: Dictionary = action_data[action_path]
 			var display_values: Dictionary = fallback_values.duplicate(true)
+			display_values.merge(entry.get("display_values", {}), true)
 			display_values.merge(action_values, true)
 
 			if custom_description != "":

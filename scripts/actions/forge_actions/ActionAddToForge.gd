@@ -2,6 +2,7 @@
 ## Values:
 ##   forge_action_data: Dictionary - the action config dict to store (e.g. {Scripts.ACTION_ATTACK: {"damage": 1}})
 ##   forge_action_load: int - the load value contribution of this entry (default 0)
+## Each stored entry also snapshots the originating CardPlayRequest values for description rendering.
 extends BaseAction
 
 func perform_action() -> void:
@@ -19,8 +20,10 @@ func perform_action() -> void:
 			continue
 
 		var evaluated_action_data = forge_action_data.duplicate(true)
+		var display_values: Dictionary = {}
 		if card_play_request != null:
 			var card_values = card_play_request.card_values
+			display_values = card_values.duplicate(true)
 			for action_path in evaluated_action_data:
 				var params = evaluated_action_data[action_path]
 				for key in params:
@@ -31,7 +34,8 @@ func perform_action() -> void:
 		forge_actions.append({
 			"action_data": evaluated_action_data,
 			"load": forge_action_load,
-			"description": forge_action_description
+			"description": forge_action_description,
+			"display_values": display_values
 		})
 		Global.player_data.player_values["forge_actions"] = forge_actions
 		

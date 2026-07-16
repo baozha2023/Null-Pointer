@@ -1,47 +1,45 @@
 extends CanvasLayer
 
+enum MESSAGE_TYPES {NORMAL, SUCCESS, WARNING, ERROR, ACHIEVEMENT}
+
+const MESSAGE_ITEM_SCENE: PackedScene = preload("res://scenes/ui/UIMessageItem.tscn")
+
 var container: VBoxContainer
 
+
 func _ready() -> void:
-	layer = 100 # Ensure it is always on top
-	
+	layer = 100
 	container = VBoxContainer.new()
 	container.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	container.set_anchors_preset(Control.PRESET_TOP_WIDE)
-	container.offset_top = 10
+	container.offset_top = 14.0
 	container.alignment = BoxContainer.ALIGNMENT_CENTER
-	
-	# Small gap between messages
 	container.add_theme_constant_override("separation", 10)
-	
 	add_child(container)
+	Signals.achievement_unlocked.connect(show_achievement_unlocked)
 
-## Globally show a toast message, similar to Vue's Message component
-func show_message(text: String, duration: float = 2.0) -> void:
-	var item_scene = preload("res://scenes/ui/UIMessageItem.tscn")
-	var item_node = item_scene.instantiate()
-	
-	# Pass the text to the item. Either it has a set_message method, or we try to find a Label child.
-	if item_node.has_method("set_message"):
-		item_node.set_message(text)
-	else:
-		var label = item_node.find_child("Label", true, false)
-		if label != null and "text" in label:
-			label.text = text
-			
-	if item_node is Control:
-		item_node.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-		
-	container.add_child(item_node)
-	
-	# If the item handles its own animation (has a show_animation method), let it handle it.
-	# Otherwise, we provide a default fade animation.
-	if item_node.has_method("show_animation"):
-		item_node.show_animation(duration)
-	else:
-		item_node.modulate.a = 0.0
-		var tween = create_tween()
-		tween.tween_property(item_node, "modulate:a", 1.0, 0.2)
-		tween.tween_interval(duration)
-		tween.tween_property(item_node, "modulate:a", 0.0, 0.3)
-		tween.tween_callback(item_node.queue_free)
+
+## Globally show a typed toast. Icon and title are optional.
+func show_message(
+	text: String,
+	duration: float = 2.0,
+	icon: Texture2D = null,
+	title: String = "",
+	message_type: int = MESSAGE_TYPES.NORMAL,
+) -> void:
+	var item: UIMessageItem = MESSAGE_ITEM_SCENE.instantiate()
+	item.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	container.add_child(item)
+	item.configure(text, icon, title, message_type)
+	item.show_animation(duration)
+
+
+func show_achievement_unlocked(achievement_data: AchievementData) -> void:
+	var icon: Texture2D = FileLoader.load_texture(achievement_data.achievement_icon_texture_path)
+	show_message(
+		achievement_data.achievement_description,
+		3.0,
+		icon,
+		"成就解锁 · %s" % achievement_data.achievement_name,
+		MESSAGE_TYPES.ACHIEVEMENT,
+	)

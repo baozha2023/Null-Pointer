@@ -66,8 +66,13 @@ signal card_purchased(card_data: CardData)
 signal game_paused
 signal game_unpaused
 
+# achievements
+signal achievement_unlocked(achievement_data: AchievementData)
+
 #region Run
 signal run_started # player has started or continued a run
+## Emitted only after a won/lost run and its aggregate profile changes commit to SQLite.
+signal run_completed(run_stats: RunStatsData)
 signal run_ended # player has ended a run (does not necessarily mean victory/defeat)
 signal run_victory # player has won a run
 signal player_killed(player: Player)

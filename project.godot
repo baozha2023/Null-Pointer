@@ -15,7 +15,7 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 [application]
 
 config/name="Null Pointer"
-config/version="2.8"
+config/version="2.9"
 run/main_scene="res://scenes/LoadingScreen.tscn"
 config/features=PackedStringArray("4.6")
 boot_splash/bg_color=Color(0, 0, 0, 1)
@@ -32,9 +32,9 @@ Signals="*res://autoload/Signals.gd"
 Scenes="*res://autoload/Scenes.gd"
 Scripts="*res://autoload/Scripts.gd"
 FileLoader="*res://autoload/FileLoader.gd"
+ProfileStore="*res://autoload/ProfileStore.gd"
 Random="*res://autoload/Random.gd"
 Global="*res://autoload/Global.gd"
-GlobalTestDataGenerator="*res://autoload/GlobalTestDataGenerator.gd"
 GlobalProdDataGenerator="*res://autoload/GlobalProdDataGenerator.gd"
 ActionHandler="*res://autoload/ActionHandler.gd"
 ActionGenerator="*res://autoload/ActionGenerator.gd"
@@ -45,6 +45,7 @@ SoundManager="*uid://bjkhgdroa1wwd"
 UIMessage="*res://autoload/UIMessage.gd"
 TextParser="*res://autoload/TextParser.gd"
 Platform="*uid://bm7iteog3dwv5"
+AchievementManager="*res://autoload/AchievementManager.gd"
 
 [debug]
 
@@ -56,10 +57,11 @@ gdscript/warnings/integer_division=0
 window/size/viewport_width=1200
 window/size/viewport_height=700
 window/stretch/mode="canvas_items"
+window/stretch/aspect="keep"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/sound_manager/plugin.cfg")
+enabled=PackedStringArray("res://addons/godot-sqlite/plugin.cfg", "res://addons/sound_manager/plugin.cfg")
 
 [input]
 

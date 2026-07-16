@@ -138,16 +138,6 @@ func display_decorator_tooltip(decorator_name: String, decorator_description: St
 func display_artifact_tooltip(artifact: BaseArtifact) -> void:
 	display_codex_artifact_tooltip(artifact.artifact_data)
 
-const ARTIFACT_RARITY_DISPLAY: Dictionary = {
-	ArtifactData.ARTIFACT_RARITIES.BASIC: "内置",
-	ArtifactData.ARTIFACT_RARITIES.COMMON: "开源",
-	ArtifactData.ARTIFACT_RARITIES.UNCOMMON: "闭源",
-	ArtifactData.ARTIFACT_RARITIES.RARE: "零日",
-	ArtifactData.ARTIFACT_RARITIES.BOSS: "动态生成",
-	ArtifactData.ARTIFACT_RARITIES.SHOP: "暗网",
-	ArtifactData.ARTIFACT_RARITIES.EVENT: "异常",
-}
-
 const CONSUMABLE_RARITY_DISPLAY: Dictionary = {
 	ConsumableData.CONSUMABLE_RARITIES.COMMON: "内置",
 	ConsumableData.CONSUMABLE_RARITIES.UNCOMMON: "开源",
@@ -158,7 +148,7 @@ const CONSUMABLE_RARITY_DISPLAY: Dictionary = {
 func display_codex_artifact_tooltip(artifact_data: ArtifactData) -> void:
 	if artifact_data != null:
 		var rarity_text: String = "\n"
-		rarity_text += "[" + ARTIFACT_RARITY_DISPLAY.get(artifact_data.artifact_rarity, "???") + "]"
+		rarity_text += "[" + ArtifactData.ARTIFACT_RARITY_DISPLAY.get(artifact_data.artifact_rarity, "???") + "]"
 		
 		var context: Dictionary = {
 			"artifact_counter": artifact_data.artifact_counter,
@@ -169,6 +159,51 @@ func display_codex_artifact_tooltip(artifact_data: ArtifactData) -> void:
 			artifact_data.artifact_name, rarity_text, parsed_desc
 		])
 		display_tooltip(artifact_tooltip_bbcode, true, false, false, 0.0, 0.0, null)
+
+## Displays one combined tooltip for all concrete cards/artifacts referenced by a run-start option.
+func display_run_start_option_tooltip(references: Array[Dictionary]) -> void:
+	var sections: Array[String] = []
+	var seen_references: Dictionary = {}
+	for reference: Dictionary in references:
+		var reference_type: String = reference.get("type", "")
+		var object_id: String = reference.get("object_id", "")
+		var dedupe_key: String = reference_type + ":" + object_id
+		if seen_references.has(dedupe_key):
+			continue
+		seen_references[dedupe_key] = true
+		if reference_type == "card":
+			var card_data: CardData = Global.get_card_data(object_id)
+			if card_data == null:
+				DebugLogger.log_error("Tooltip.display_run_start_option_tooltip(): No card of id \"{0}\" found".format([object_id]))
+				continue
+			var color_hex: String = "#ffffff"
+			var color_data: ColorData = Global.get_color_data(card_data.card_color_id)
+			if color_data != null:
+				color_hex = "#" + color_data.color.to_html(false)
+			var display_name: String = card_data.card_name
+			if card_data.card_is_playable:
+				var cost_text: String = "X" if card_data.card_energy_cost_is_variable else str(card_data.card_energy_cost)
+				if card_data.card_energy_cost_is_variable and card_data.card_energy_cost_variable_upper_bound >= 1:
+					cost_text += "-" + str(card_data.card_energy_cost_variable_upper_bound)
+				display_name += "(" + cost_text + ")"
+			var card_description: String = TextParser.parse(card_data.card_description, card_data.card_values)
+			sections.append("[color={0}]{1}[/color]\n{2}".format([color_hex, display_name, card_description]))
+		elif reference_type == "artifact":
+			var artifact_data: ArtifactData = Global.get_artifact_data_from_prototype(object_id)
+			if artifact_data == null:
+				DebugLogger.log_error("Tooltip.display_run_start_option_tooltip(): No artifact of id \"{0}\" found".format([object_id]))
+				continue
+			var custom_values: Dictionary = reference.get("custom_values", {})
+			for key: Variant in custom_values:
+				artifact_data.set(key, custom_values[key])
+			var artifact_context: Dictionary = custom_values.duplicate(true)
+			artifact_context["artifact_counter"] = artifact_data.artifact_counter
+			artifact_context["artifact_counter_max"] = artifact_data.artifact_counter_max
+			var artifact_description: String = TextParser.parse(artifact_data.artifact_description, artifact_context)
+			var rarity_name: String = ArtifactData.ARTIFACT_RARITY_DISPLAY.get(artifact_data.artifact_rarity, "???")
+			sections.append("[color=orange]{0}[/color]\n[{1}]\n{2}".format([artifact_data.artifact_name, rarity_name, artifact_description]))
+	if not sections.is_empty():
+		display_tooltip("\n\n".join(sections), true, false, false, 10.0, 10.0, null)
 
 func display_codex_consumable_tooltip(consumable_data: ConsumableData) -> void:
 	if consumable_data != null:
@@ -226,4 +261,3 @@ func _process(_delta: float) -> void:
 		global_position.y = clamp(target_y, 0, max(0, screen_size.y - tooltip_size.y))
 
 ## Globally formats a metadata variable (like card types array or status ID) into a localized string representation.
-

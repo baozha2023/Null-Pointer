@@ -9,9 +9,11 @@ var is_host: bool = false
 
 var ws: WebSocketPeer = WebSocketPeer.new()
 var is_connected_to_platform: bool = false
+var is_authenticated: bool = false
 var _pending_requests: Dictionary = {}
 
 signal platform_connected
+signal platform_authenticated
 signal platform_disconnected
 signal platform_event_received(event_data)
 
@@ -25,7 +27,7 @@ func _ready() -> void:
 	if api_port == "" or token == "":
 		DebugLogger.log_line("Platform: 未检测到 BZ-Games 平台环境，运行在离线模式 (Offline Mode)。")
 		set_process(false)
-		if ProfileData.REQUIRE_BZ_GAMES_LAUNCH:
+		if GameConfig.REQUIRE_BZ_GAMES_LAUNCH:
 			call_deferred("_show_require_bz_games_screen")
 		return
 		
@@ -63,6 +65,7 @@ func _process(_delta: float) -> void:
 	elif state == WebSocketPeer.STATE_CLOSED:
 		if is_connected_to_platform:
 			is_connected_to_platform = false
+			is_authenticated = false
 			platform_disconnected.emit()
 			DebugLogger.log_line("Platform: WebSocket 连接已关闭。")
 			set_process(false)
@@ -75,16 +78,19 @@ func _on_connected() -> void:
 
 func _on_auth_response(payload: Dictionary, error: Dictionary) -> void:
 	if error.size() > 0:
+		is_authenticated = false
 		DebugLogger.log_error("Platform: 鉴权失败: %s" % JSON.stringify(error))
-		if ProfileData.REQUIRE_BZ_GAMES_LAUNCH:
+		if GameConfig.REQUIRE_BZ_GAMES_LAUNCH:
 			_show_require_bz_games_screen()
 		return
 		
 	var p_data: Dictionary = payload.get("player", {})
+	is_authenticated = true
 	DebugLogger.log_line("Platform: 鉴权成功！当前玩家: %s" % p_data.get("name", "Unknown"))
 	
 	# Notify platform that the game client is fully loaded and ready
 	send_request("game.ready", {})
+	platform_authenticated.emit()
 
 func send_request(action: String, payload: Dictionary, callback: Callable = Callable()) -> void:
 	if ws.get_ready_state() != WebSocketPeer.STATE_OPEN:
@@ -139,9 +145,10 @@ func _generate_uuid() -> String:
 # -----------------
 
 ## 解锁成就
-func unlock_achievement(achievement_id: String) -> void:
-	if not is_connected_to_platform: return
-	send_request("achievement.unlock", {"achievementId": achievement_id})
+func unlock_achievement(achievement_id: String, callback: Callable = Callable()) -> void:
+	if not is_authenticated:
+		return
+	send_request("achievement.unlock", {"achievementId": achievement_id}, callback)
 
 ## 提报统计数据（例如: {"gamesPlayed": 1, "gamesWon": 1}）
 func report_stats(stats: Dictionary) -> void:

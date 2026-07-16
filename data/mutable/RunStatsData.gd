@@ -4,6 +4,9 @@
 extends SerializableData
 class_name RunStatsData
 
+## SQLite history row ID. Runtime-only: the active run save does not serialize it.
+var run_history_id: int = -1
+
 ## Stats specific to a run
 ## NOTE: This is not all tracked stats. See run_total_stats comment.
 enum STATS {

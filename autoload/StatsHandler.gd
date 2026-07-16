@@ -21,9 +21,6 @@ var current_run_stats: RunStatsData = null
 # These are organized as a hierarchy with top being more general and bottom more specific
 ## Set false to completely disable all run tracking. Useful for development.
 var TRACK_RUN_HISTORY: bool = true
-## Max number of entries that will be saved to profile. Older entries will be removed.
-## Negative values for no maximum.
-var RUN_HISTORY_ENTRIES_MAX: int = -1
 ## Disabling this will delete all CombatStats objects at the end of a run.
 var TRACK_COMBAT: bool = true
 ## Tracking of run related STATS. Will track during the run for API purposes,
@@ -88,104 +85,30 @@ func _disconnect_signals():
 		connection.signal.disconnect(connection.callable)
 #endregion
 
-## Marks the current run as won and stores it in player run history
-func win_run() -> void:
-	_complete_run(true)
+## Finalizes a won run. Persistence is owned exclusively by ProfileStore.
+func win_run() -> RunStatsData:
+	return _complete_run(true)
 
-## Marks the current run as lost and stores it in player run history
-func lose_run() -> void:
-	_complete_run(false)
 
-## Marks the run as finished and stores it in player run history
-func _complete_run(is_victory: bool) -> void:
-	# no tracking, ignore this run
+## Finalizes a lost run. Persistence is owned exclusively by ProfileStore.
+func lose_run() -> RunStatsData:
+	return _complete_run(false)
+
+
+func _complete_run(is_victory: bool) -> RunStatsData:
 	if not TRACK_RUN_HISTORY:
 		current_combat_stats = null
 		current_run_stats = null
-		return 
-	
-	# cannot be called twice in a row
+		return null
 	if current_run_stats == null:
-		breakpoint
-		return
-	
-	# store win/loss in profile and run history
+		DebugLogger.log_error("StatsHandler._complete_run(): No active run statistics")
+		return null
+
 	current_run_stats.run_victory = is_victory
-	
-	var profile_data: ProfileData = Global.profile_data
 	var character_id: String = Global.player_data.player_character_object_id
-	
-	# total run time
 	var run_time: float = Global.player_data.player_run_time
-	profile_data.profile_total_run_time += run_time
-	
-	# character run time
-	var character_run_time: float = profile_data.profile_character_id_to_total_run_time.get(character_id, 0.0)
-	character_run_time += run_time
-	profile_data.profile_character_id_to_total_run_time[character_id] = character_run_time
-	
-	if is_victory:
-		# highest character difficulty win. Default to -1 so winning on 0 distinguishes from never winning.
-		var profile_character_highest_difficulty: int = profile_data.profile_character_id_to_highest_difficulty.get(character_id, -1)
-		var current_difficulty_level: int = Global.player_data.player_run_difficulty_level
-		profile_character_highest_difficulty = max(current_difficulty_level, profile_character_highest_difficulty)
-		profile_data.profile_character_id_to_highest_difficulty[character_id] = profile_character_highest_difficulty
-		# fastest profile win
-		if profile_data.profile_fastest_win_run_time > 0.0:
-			# take min of existing run time
-			profile_data.profile_fastest_win_run_time = min(run_time, profile_data.profile_fastest_win_run_time)
-		else:
-			# no existing fastest, assign to current
-			profile_data.profile_fastest_win_run_time = run_time
-		# fastest character win
-		if profile_data.profile_character_id_to_fastest_run_time.has(character_id):
-			# take min of existing run time
-			var fastest_character_run_time: float = profile_data.profile_character_id_to_fastest_run_time.get(character_id, 0.0)
-			fastest_character_run_time = min(run_time, fastest_character_run_time)
-			profile_data.profile_character_id_to_fastest_run_time[character_id] = fastest_character_run_time
-		else:
-			# no existing fastest, assign to current
-			profile_data.profile_character_id_to_fastest_run_time[character_id] = run_time
-		
-		# profile and character wins
-		profile_data.profile_total_wins += 1
-		var character_wins: int = profile_data.profile_character_id_to_wins.get(character_id, 0)
-		character_wins += 1
-		profile_data.profile_character_id_to_wins[character_id] = character_wins
-		# profile win streaks
-		profile_data.profile_current_win_streak += 1
-		profile_data.profile_highest_win_streak = max(profile_data.profile_current_win_streak, profile_data.profile_highest_win_streak)
-		# profile loss streaks
-		profile_data.profile_current_loss_streak = 0
-		# character win streaks
-		var character_current_win_streak: int = profile_data.profile_character_id_to_current_win_streak.get(character_id, 0)
-		var character_highest_win_streak: int = profile_data.profile_character_id_to_highest_loss_streak.get(character_id, 0)
-		character_current_win_streak += 1
-		profile_data.profile_character_id_to_current_win_streak[character_id] = character_current_win_streak
-		profile_data.profile_character_id_to_highest_win_streak[character_id] = max(character_current_win_streak, character_highest_win_streak)
-		# character loss streaks
-		profile_data.profile_character_id_to_current_loss_streak[character_id] = 0
-	else:
-		# profile and character losses
-		profile_data.profile_total_losses += 1
-		var character_losses: int = profile_data.profile_character_id_to_losses.get(character_id, 0)
-		character_losses += 1
-		profile_data.profile_character_id_to_losses[character_id] = character_losses
-		# profile loss streaks
-		profile_data.profile_current_loss_streak += 1
-		profile_data.profile_highest_loss_streak = max(profile_data.profile_current_loss_streak, profile_data.profile_highest_loss_streak)
-		# profile win streaks
-		profile_data.profile_current_win_streak = 0
-		# character loss streaks
-		var character_current_loss_streak: int = profile_data.profile_character_id_to_current_loss_streak.get(character_id, 0)
-		var character_highest_loss_streak: int = profile_data.profile_character_id_to_highest_win_streak.get(character_id, 0)
-		character_current_loss_streak += 1
-		profile_data.profile_character_id_to_current_loss_streak[character_id] = character_current_loss_streak
-		profile_data.profile_character_id_to_highest_loss_streak[character_id] = max(character_current_loss_streak, character_highest_loss_streak)
-		# character win streaks
-		profile_data.profile_character_id_to_current_win_streak[character_id] = 0
-	
-	# store run stats from player data in history
+
+	# Store final run state. Profile aggregates are updated atomically by ProfileStore.
 	current_run_stats.run_seed = Global.player_data.player_run_seed
 	current_run_stats.run_character_id = character_id
 	current_run_stats.run_difficulty_level = Global.player_data.player_run_difficulty_level
@@ -217,7 +140,7 @@ func _complete_run(is_victory: bool) -> void:
 		if current_event_data != null: # can be null if not an event
 			current_run_stats.run_defeat_event_id = current_event_data.object_id
 	
-	# reset values and store current RunStatsData in ProfileData run history
+	# Finalize the last combat and prune disabled detail levels.
 	_on_combat_ended() # treats combat as finished and adds last combat to run stats
 	
 	if not TRACK_COMBAT:
@@ -231,13 +154,9 @@ func _complete_run(is_victory: bool) -> void:
 	if not TRACK_RUN_STATS:
 		current_run_stats.run_total_stats.clear()
 		
-	# add run to profile
-	Global.profile_data.profile_run_history.append(current_run_stats)
-	# remove oldest entries if over max tracking
-	if len(Global.profile_data.profile_run_history) > RUN_HISTORY_ENTRIES_MAX and RUN_HISTORY_ENTRIES_MAX > 0:
-		Global.profile_data.profile_run_history.pop_front()
-	
-	current_run_stats = null # null out for next run
+	var completed_run_stats: RunStatsData = current_run_stats
+	current_run_stats = null
+	return completed_run_stats
 
 #region Turns/Combat
 

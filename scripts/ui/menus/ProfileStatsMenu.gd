@@ -17,24 +17,21 @@ extends BaseMenu
 
 func populate_menu() -> void:
 	super()
-	var profile_data: ProfileData = Global.profile_data
-	if profile_data == null:
-		return
-
-	var total_runs: int = profile_data.profile_total_wins + profile_data.profile_total_losses
-	var win_rate: float = float(profile_data.profile_total_wins) / float(max(total_runs, 1))
+	var profile_data: ProfileSummaryData = ProfileStore.get_profile_summary()
+	var total_runs: int = profile_data.total_wins + profile_data.total_losses
+	var win_rate: float = float(profile_data.total_wins) / float(max(total_runs, 1))
 
 	profile_total_runs_label.text = str(total_runs)
-	profile_wins_label.text = str(profile_data.profile_total_wins)
-	profile_losses_label.text = str(profile_data.profile_total_losses)
+	profile_wins_label.text = str(profile_data.total_wins)
+	profile_losses_label.text = str(profile_data.total_losses)
 	profile_win_rate_label.text = "%0.2f%%" % (win_rate * 100.0)
-	profile_current_win_streak_label.text = str(profile_data.profile_current_win_streak)
-	profile_highest_win_streak_label.text = str(profile_data.profile_highest_win_streak)
-	profile_current_loss_streak_label.text = str(profile_data.profile_current_loss_streak)
-	profile_highest_loss_streak_label.text = str(profile_data.profile_highest_loss_streak)
-	profile_play_time_label.text = TextParser.format_duration(profile_data.profile_total_run_time)
+	profile_current_win_streak_label.text = str(profile_data.current_win_streak)
+	profile_highest_win_streak_label.text = str(profile_data.highest_win_streak)
+	profile_current_loss_streak_label.text = str(profile_data.current_loss_streak)
+	profile_highest_loss_streak_label.text = str(profile_data.highest_loss_streak)
+	profile_play_time_label.text = TextParser.format_duration(profile_data.total_run_time)
 	profile_fastest_run_time.text = TextParser.format_duration(
-		profile_data.profile_fastest_win_run_time,
+		profile_data.fastest_win_run_time,
 		"--:--:--",
 	)
 

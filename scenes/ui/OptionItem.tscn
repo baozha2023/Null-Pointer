@@ -1,15 +1,15 @@
 [gd_scene format=3 uid="uid://dxuwyfjejgxgi"]
 
-[ext_resource type="Script" path="res://scripts/ui/OptionItem.gd" id="1_opitem"]
+[ext_resource type="Script" uid="uid://b2fq5x2r4rah" path="res://scripts/ui/OptionItem.gd" id="1_opitem"]
 
-[node name="OptionItem" type="PanelContainer"]
+[node name="OptionItem" type="PanelContainer" unique_id=1820004027]
 custom_minimum_size = Vector2(400, 80)
 offset_right = 400.0
 offset_bottom = 80.0
 size_flags_horizontal = 4
 script = ExtResource("1_opitem")
 
-[node name="MarginContainer" type="MarginContainer" parent="."]
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=784186420]
 layout_mode = 2
 mouse_filter = 2
 theme_override_constants/margin_left = 10
@@ -17,12 +17,12 @@ theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 10
 
-[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer" unique_id=1212688344]
 layout_mode = 2
 mouse_filter = 2
 theme_override_constants/separation = 15
 
-[node name="IconRect" type="TextureRect" parent="MarginContainer/HBoxContainer"]
+[node name="IconRect" type="TextureRect" parent="MarginContainer/HBoxContainer" unique_id=641741281]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(60, 60)
 layout_mode = 2
@@ -30,7 +30,7 @@ mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="RichTextLabel" type="RichTextLabel" parent="MarginContainer/HBoxContainer"]
+[node name="RichTextLabel" type="RichTextLabel" parent="MarginContainer/HBoxContainer" unique_id=1552084970]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3

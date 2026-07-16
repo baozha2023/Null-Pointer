@@ -19,6 +19,10 @@
 				"class_name": "AnimationData",
 				"table_name": "_id_to_animation_data"
 			},
+			"external/data/achievements/": {
+				"class_name": "AchievementData",
+				"table_name": "_id_to_achievement_data"
+			},
 			"external/data/artifact_packs/": {
 				"class_name": "ArtifactPackData",
 				"table_name": "_id_to_artifact_pack_data"

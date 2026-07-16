@@ -31,7 +31,8 @@ func _on_return_to_title_button_pressed() -> void:
 
 func _on_forfeit_run_button_pressed() -> void:
 	Global.unpause_game()
-	Global.end_run(Global.RUN_ENDS.LOSS)
+	if not Global.end_run(Global.RUN_ENDS.LOSS):
+		Global.pause_game()
 
 func _on_game_paused() -> void:
 	visible = true

@@ -5,11 +5,12 @@ class_name DialogueOption
 
 @onready var rich_text_label = $RichTextLabel
 
-## The dialogue option this button represents. Run start option buttons will have this as empty.
+## The dialogue or run-start option this button represents.
 var dialogue_option_object_id: String = ""
 
 var action_data: Array[Dictionary] = []
 var validators: Array[Dictionary] = []
+var tooltip_references: Array[Dictionary] = []
 var option_enabled: bool = false
 
 signal dialogue_option_clicked(dialogue_option: DialogueOption)
@@ -24,10 +25,11 @@ func _ready():
 	mouse_entered.connect(_on_mouse_entered)
 	mouse_exited.connect(_on_mouse_exited)
 
-func init(_dialogue_option_object_id: String, option_bbcode: String, option_failed_validator_bbcode: String, _action_data: Array[Dictionary], _validators: Array[Dictionary]) -> void:
+func init(_dialogue_option_object_id: String, option_bbcode: String, option_failed_validator_bbcode: String, _action_data: Array[Dictionary], _validators: Array[Dictionary], _tooltip_references: Array[Dictionary] = []) -> void:
 	dialogue_option_object_id = _dialogue_option_object_id
 	action_data = _action_data
 	validators = _validators
+	tooltip_references = _tooltip_references
 	option_enabled = validate_dialogue_option()
 	if option_enabled:
 		set_dialogue_bb_code(option_bbcode)
@@ -46,11 +48,21 @@ func _on_gui_input(event: InputEvent):
 		return
 	if event.is_action_pressed("left_click"):
 		add_theme_stylebox_override("panel", style_pressed)
+		if HandManager.tooltip != null:
+			HandManager.tooltip.hide_tooltip()
 		dialogue_option_clicked.emit(self)
 
 func _on_mouse_entered() -> void:
 	if option_enabled:
 		add_theme_stylebox_override("panel", style_hover)
+	if not tooltip_references.is_empty() and HandManager.tooltip != null:
+		HandManager.tooltip.display_run_start_option_tooltip(tooltip_references)
 
 func _on_mouse_exited() -> void:
 	add_theme_stylebox_override("panel", style_normal)
+	if not tooltip_references.is_empty() and HandManager.tooltip != null:
+		HandManager.tooltip.hide_tooltip()
+
+func _exit_tree() -> void:
+	if not tooltip_references.is_empty() and HandManager.tooltip != null:
+		HandManager.tooltip.hide_tooltip()

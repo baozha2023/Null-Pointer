@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://ckfi22o2jit0b" path="res://scripts/Root.gd" id="1_ak6de"]
 [ext_resource type="PackedScene" path="res://scenes/ui/menus/ModMenu.tscn" id="mod_menu_scene"]
+[ext_resource type="PackedScene" path="res://scenes/ui/achievements/AchievementMenu.tscn" id="achievement_menu_scene"]
 [ext_resource type="PackedScene" uid="uid://dfb0l2x5vqxyz" path="res://scenes/ui/CardSelectionOverlay.tscn" id="100_cso"]
 [ext_resource type="Theme" uid="uid://cd5rw86bhiyn" path="res://themes/title_screen_theme.tres" id="2_bi5lp"]
 [ext_resource type="Script" uid="uid://dw0xyfu580mkb" path="res://scripts/ui/menus/TitleScreen.gd" id="2_m6atk"]
@@ -45,6 +46,7 @@
 [ext_resource type="Script" uid="uid://cw6tfwitjoo0i" path="res://scripts/ui/ShopOverlay.gd" id="17_stqr4"]
 [ext_resource type="Script" uid="uid://bwx7uuvrugqlu" path="res://scripts/ui/codex/CodexConsumablesMenu.gd" id="18_4u6xb"]
 [ext_resource type="PackedScene" uid="uid://cftk22jibfvcc" path="res://ui/components/volume_slider/VolumeSlider.tscn" id="18_plfau"]
+[ext_resource type="PackedScene" path="res://ui/components/frame_rate_limit_slider/FrameRateLimitSlider.tscn" id="frame_rate_limit_slider"]
 [ext_resource type="PackedScene" uid="uid://ccwweknxxvks" path="res://scenes/ui/codex/CodexConsumable.tscn" id="19_o7n0g"]
 [ext_resource type="Script" uid="uid://bydljvbv1j5j3" path="res://scripts/ui/codex/CodexEnemiesMenu.gd" id="20_jsyke"]
 [ext_resource type="PackedScene" path="res://scenes/ui/RunSummaryOverlay.tscn" id="21_fj66g"]
@@ -59,6 +61,7 @@
 [ext_resource type="Script" uid="uid://b3nvcsku8u75w" path="res://addons/smooth_scroll_container/scroll_damper/expo_scroll_damper.gd" id="26_08sam"]
 [ext_resource type="Script" uid="uid://6xsavir53fvp" path="res://scripts/ui/PauseOverlay.gd" id="29_p8axl"]
 [ext_resource type="Script" uid="uid://cwt4a5keff86t" path="res://scripts/ui/RunTimer.gd" id="30_plfau"]
+[ext_resource type="Script" path="res://scripts/ui/FPSDisplay.gd" id="fps_display"]
 [ext_resource type="Script" uid="uid://cv2h3ccb6uytr" path="res://scripts/ui/Tooltips.gd" id="40_wtekq"]
 [ext_resource type="Theme" uid="uid://2714jm71pkv4" path="res://themes/keyword_tooltip_theme.tres" id="41_0h1ar"]
 [ext_resource type="Script" uid="uid://d2fxhtmdfmtdf" path="res://scripts/ui/general/KeywordContainer.gd" id="42_wtekq"]
@@ -290,7 +293,8 @@ NodePath("VBoxContainer/CodexButton"): NodePath("../CodexMenu"),
 NodePath("VBoxContainer/RunHistoryButton"): NodePath("../RunHistoryMenu"),
 NodePath("VBoxContainer/SettingsButton"): NodePath("../SettingsMenu"),
 NodePath("VBoxContainer/ProfileStatsButton"): NodePath("../ProfileStatsMenu"),
-NodePath("VBoxContainer/ModButton"): NodePath("../ModMenu")
+NodePath("VBoxContainer/ModButton"): NodePath("../ModMenu"),
+NodePath("VBoxContainer/AchievementButton"): NodePath("../AchievementMenu")
 }
 
 [node name="TextureRect" type="TextureRect" parent="TitleScreen/MainMenu" unique_id=467371030]
@@ -455,6 +459,20 @@ theme_override_styles/normal = SubResource("StyleBoxTexture_ug4o1")
 theme_override_styles/pressed = SubResource("StyleBoxTexture_8b2qk")
 theme_override_styles/hover = SubResource("StyleBoxTexture_gdi3b")
 text = "模组"
+
+[node name="AchievementButton" type="Button" parent="TitleScreen/MainMenu/VBoxContainer"]
+custom_minimum_size = Vector2(295, 71)
+layout_mode = 0
+offset_left = 346.0
+offset_top = 193.0
+offset_right = 641.0
+offset_bottom = 264.0
+size_flags_horizontal = 4
+theme = ExtResource("2_bi5lp")
+theme_override_styles/normal = SubResource("StyleBoxTexture_ug4o1")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_8b2qk")
+theme_override_styles/hover = SubResource("StyleBoxTexture_gdi3b")
+text = "成就"
 
 [node name="NewRunMenu" type="Control" parent="TitleScreen" unique_id=1700370497 node_paths=PackedStringArray("navigation_button_to_menu")]
 visible = false
@@ -857,6 +875,15 @@ offset_right = 750.0
 offset_bottom = 200.0
 text = "显示状态效果"
 
+[node name="DisplayFPSCheckButton" type="CheckButton" parent="TitleScreen/SettingsMenu"]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 766.0
+offset_top = 152.0
+offset_right = 930.0
+offset_bottom = 200.0
+text = "显示 FPS"
+
 [node name="Label" type="Label" parent="TitleScreen/SettingsMenu" unique_id=1362980258]
 layout_mode = 0
 offset_left = 224.0
@@ -907,6 +934,23 @@ offset_left = 344.0
 offset_top = 440.0
 offset_right = 696.0
 offset_bottom = 512.0
+
+[node name="FrameRateLimitLabel" type="Label" parent="TitleScreen/SettingsMenu"]
+layout_mode = 0
+offset_left = 224.0
+offset_top = 528.0
+offset_right = 328.0
+offset_bottom = 600.0
+text = "帧数上限"
+vertical_alignment = 1
+
+[node name="FrameRateLimitSlider" parent="TitleScreen/SettingsMenu" instance=ExtResource("frame_rate_limit_slider")]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 344.0
+offset_top = 528.0
+offset_right = 696.0
+offset_bottom = 600.0
 
 [node name="CodexMenu" type="Control" parent="TitleScreen" unique_id=184224315 node_paths=PackedStringArray("navigation_button_to_menu", "navigation_button_to_sub_menu", "default_sub_menu")]
 visible = false
@@ -1568,6 +1612,11 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+navigation_button_to_menu = {
+NodePath("Header/MainMenuButton"): NodePath("../MainMenu")
+}
+
+[node name="AchievementMenu" parent="TitleScreen" node_paths=PackedStringArray("navigation_button_to_menu") instance=ExtResource("achievement_menu_scene")]
 navigation_button_to_menu = {
 NodePath("Header/MainMenuButton"): NodePath("../MainMenu")
 }
@@ -2334,6 +2383,18 @@ text = "HH:MM:SS"
 horizontal_alignment = 1
 vertical_alignment = 1
 script = ExtResource("30_plfau")
+
+[node name="FPSDisplay" type="Label" parent="RunScreen/Combat"]
+layout_mode = 0
+offset_left = 848.0
+offset_top = 8.0
+offset_right = 1000.0
+offset_bottom = 56.0
+theme_override_font_sizes/font_size = 26
+text = "FPS: 60"
+horizontal_alignment = 2
+vertical_alignment = 1
+script = ExtResource("fps_display")
 
 [node name="RestOverlay" type="Control" parent="RunScreen" unique_id=15522777]
 unique_name_in_owner = true

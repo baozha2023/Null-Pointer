@@ -49,5 +49,8 @@ var CODEX_ENEMY_BUTTON: PackedScene = load("res://scenes/ui/codex/CodexEnemyButt
 var CODEX_ENEMY_INTENT: PackedScene = load("res://scenes/ui/codex/CodexEnemyIntent.tscn")
 # profile stats
 var CHARACTER_STAT: PackedScene = load("res://scenes/ui/profile/CharacterStat.tscn")
+# achievements
+var ACHIEVEMENT_CARD: PackedScene = load("res://scenes/ui/achievements/AchievementCard.tscn")
+var ACHIEVEMENT_GROUP: PackedScene = load("res://scenes/ui/achievements/AchievementGroup.tscn")
 # run history
 var RUN_HISTORY_CARD: PackedScene = load("res://scenes/ui/run_summary/RunHistoryCard.tscn")

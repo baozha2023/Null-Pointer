@@ -129,8 +129,9 @@ func _on_seed_input_text_changed(new_text: String):
 func set_selected_difficulty_level(value: int) -> void:
 	if selected_character_object_id != "":
 		# Get highest won difficulty, default to -1 if never won
-		var character_highest_difficulty_win: int = Global.profile_data.profile_character_id_to_highest_difficulty.get(selected_character_object_id, -1)
-		if ProfileData.ENABLE_ALL_DIFFICULTIES:
+		var character_stats: CharacterProfileStatsData = ProfileStore.get_character_stats(selected_character_object_id)
+		var character_highest_difficulty_win: int = character_stats.highest_difficulty
+		if GameConfig.ENABLE_ALL_DIFFICULTIES:
 			selected_difficulty_level = value
 		else:
 			# Player can select up to (highest win + 1)

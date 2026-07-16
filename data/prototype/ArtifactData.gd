@@ -31,6 +31,15 @@ class_name ArtifactData
 
 enum ARTIFACT_RARITIES {BASIC, COMMON, UNCOMMON, RARE, BOSS, SHOP, EVENT}
 const STANDARD_ARTIFACT_RARITIES: Array[int] = [ARTIFACT_RARITIES.COMMON, ARTIFACT_RARITIES.UNCOMMON, ARTIFACT_RARITIES.RARE]
+const ARTIFACT_RARITY_DISPLAY: Dictionary = {
+	ARTIFACT_RARITIES.BASIC: "内置",
+	ARTIFACT_RARITIES.COMMON: "开源",
+	ARTIFACT_RARITIES.UNCOMMON: "闭源",
+	ARTIFACT_RARITIES.RARE: "零日",
+	ARTIFACT_RARITIES.BOSS: "动态生成",
+	ARTIFACT_RARITIES.SHOP: "暗网",
+	ARTIFACT_RARITIES.EVENT: "异常",
+}
 @export var artifact_rarity: int = ARTIFACT_RARITIES.COMMON
 
 ## Actions take when the artifact counter equals the max charge amount. See artifact_counter_wraparound.

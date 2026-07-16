@@ -1074,3 +1074,181 @@ static func add_cards_orange() -> void:
 		}}
 	]
 	Global.register_rod(card_final_run)
+
+	# 35. 交叉编译 (Cross Compile)
+	var card_cross_compile: CardData = CardData.new("card_cross_compile")
+	card_cross_compile.card_name = "交叉编译"
+	card_cross_compile.card_texture_path = "sprites/card/orange/card_cross_compile.png"
+	card_cross_compile.card_color_id = "color_{0}".format([color])
+	card_cross_compile.card_description = "获得 [block] 点防火墙。锻造台中每有一段攻击代码，额外获得 [additional_block] 点防火墙。造成 [damage] 点伤害。锻造台中每有一段防御代码，额外造成 [additional_damage] 点伤害。"
+	card_cross_compile.card_hint = "攻击代码会转化为防御，防御代码会转化为攻击；混合构筑的锻造台能同时放大两种收益。"
+	card_cross_compile.card_type = CardData.CARD_TYPES.ATTACK
+	card_cross_compile.card_rarity = CardData.CARD_RARITIES.UNCOMMON
+	card_cross_compile.card_requires_target = true
+	card_cross_compile.card_energy_cost = 1
+	card_cross_compile.card_values = {
+		"damage": 3,
+		"additional_damage": 3,
+		"block": 3,
+		"additional_block": 2,
+		"impact_vfx_animation_id": "animation_vfx_magic_orange",
+	}
+	card_cross_compile.card_upgrade_value_improvements = {
+		"additional_damage": 1,
+		"additional_block": 1,
+	}
+	card_cross_compile.card_play_actions = [
+		{
+			Scripts.ACTION_VARIABLE_COMBAT_STATS_MODIFIER: {
+				"combat_stat_name": "actions_in_forge",
+				"action_types": ActionTypeGroups.DEFENSE_ACTIONS,
+				"multiplied_values": ["additional_damage"],
+				"multiplied_values_bases": {"additional_damage": 0},
+				"action_data": [
+					{Scripts.ACTION_ATTACK_GENERATOR: {}}
+				]
+			}
+		},
+		{
+			Scripts.ACTION_VARIABLE_COMBAT_STATS_MODIFIER: {
+				"combat_stat_name": "actions_in_forge",
+				"action_types": ActionTypeGroups.ATTACK_ACTIONS,
+				"multiplied_values": ["additional_block"],
+				"multiplied_values_bases": {"additional_block": 0},
+				"action_data": [
+					{Scripts.ACTION_BLOCK: {
+						"target_override": BaseAction.TARGET_OVERRIDES.PLAYER,
+						"audio_path": AudioConstants.SFX_GROUP_SHIELD_UP,
+					}}
+				]
+			}
+		}
+	]
+	Global.register_rod(card_cross_compile)
+
+	# 36. 分支预测 (Branch Prediction)
+	var card_branch_prediction: CardData = CardData.new("card_branch_prediction")
+	card_branch_prediction.card_name = "分支预测"
+	card_branch_prediction.card_texture_path = "sprites/card/orange/card_branch_prediction.png"
+	card_branch_prediction.card_color_id = "color_{0}".format([color])
+	card_branch_prediction.card_description = "选择锻造台中的第一段或最后一段代码，将其复制并封装为一张0费融合牌加入手牌，不移除原代码。若锻造台为空，读取1个脚本。"
+	card_branch_prediction.card_hint = "首尾代码代表两条执行分支。复制不会改变锻造台，适合反复利用关键代码段。"
+	card_branch_prediction.card_type = CardData.CARD_TYPES.SKILL
+	card_branch_prediction.card_rarity = CardData.CARD_RARITIES.UNCOMMON
+	card_branch_prediction.card_requires_target = false
+	card_branch_prediction.card_energy_cost = 1
+	card_branch_prediction.card_first_upgrade_property_changes = {"card_energy_cost": 0}
+	card_branch_prediction.card_play_actions = [
+		{
+			Scripts.ACTION_PICK_OPTIONS: {
+				"can_back_out": true,
+				"options": [
+					{
+						"option_name": "预测首分支",
+						"option_description": "复制锻造台中的第一段代码，并封装为0费融合牌。",
+						"option_sub_actions": [
+							{Scripts.ACTION_TAKE_FROM_FORGE: {
+								"take_type": ActionTakeFromForge.TAKE_TYPES.FIRST,
+								"clear_after_take": false,
+								"execute_directly": false,
+								"override_load": 0,
+								"fallback_action_data": [
+									{Scripts.ACTION_DRAW_GENERATOR: {"draw_count": 1}}
+								]
+							}}
+						]
+					},
+					{
+						"option_name": "预测尾分支",
+						"option_description": "复制锻造台中的最后一段代码，并封装为0费融合牌。",
+						"option_sub_actions": [
+							{Scripts.ACTION_TAKE_FROM_FORGE: {
+								"take_type": ActionTakeFromForge.TAKE_TYPES.LAST,
+								"clear_after_take": false,
+								"execute_directly": false,
+								"override_load": 0,
+								"fallback_action_data": [
+									{Scripts.ACTION_DRAW_GENERATOR: {"draw_count": 1}}
+								]
+							}}
+						]
+					}
+				]
+			}
+		}
+	]
+	Global.register_rod(card_branch_prediction)
+
+	# 37. 热重载 (Hot Reload)
+	var card_hot_reload: CardData = CardData.new("card_hot_reload")
+	card_hot_reload.card_name = "热重载"
+	card_hot_reload.card_texture_path = "sprites/card/orange/card_hot_reload.png"
+	card_hot_reload.card_color_id = "color_{0}".format([color])
+	card_hot_reload.card_description = "造成 [damage] 点伤害。立即执行锻造台中的最后一段代码，不移除该代码且不产生额外费用。"
+	card_hot_reload.card_hint = "用较低费用再次调用锻造台末尾的核心代码。攻击代码需要当前选中的敌人，因此此牌始终需要指定目标。"
+	card_hot_reload.card_type = CardData.CARD_TYPES.ATTACK
+	card_hot_reload.card_rarity = CardData.CARD_RARITIES.RARE
+	card_hot_reload.card_requires_target = true
+	card_hot_reload.card_energy_cost = 1
+	card_hot_reload.card_play_destination = HandManager.EXHAUST_PILE
+	card_hot_reload.card_values = {
+		"damage": 6,
+		"impact_vfx_animation_id": "animation_vfx_slash_orange",
+	}
+	card_hot_reload.card_upgrade_value_improvements = {"damage": 3}
+	card_hot_reload.card_play_actions = [
+		{Scripts.ACTION_TAKE_FROM_FORGE: {
+			"take_type": ActionTakeFromForge.TAKE_TYPES.LAST,
+			"clear_after_take": false,
+			"execute_directly": true,
+			"override_load": 0,
+		}},
+		{Scripts.ACTION_ATTACK_GENERATOR: {}}
+	]
+	Global.register_rod(card_hot_reload)
+
+	# 38. 并行流水线 (Parallel Pipeline)
+	var card_parallel_pipeline: CardData = CardData.new("card_parallel_pipeline")
+	card_parallel_pipeline.card_name = "并行流水线"
+	card_parallel_pipeline.card_texture_path = "sprites/card/orange/card_parallel_pipeline.png"
+	card_parallel_pipeline.card_color_id = "color_{0}".format([color])
+	card_parallel_pipeline.card_description = "[color=orange]向锻造台加入「对随机敌人造成 [forge_damage] 点伤害，载荷1」[/color]。然后锻造台中每有一段代码，对随机敌人造成 [damage] 点伤害。"
+	card_parallel_pipeline.card_hint = "新加入的代码也会计入本次并行打击。代码段越多，攻击次数越多，目标分别随机选择。"
+	card_parallel_pipeline.card_type = CardData.CARD_TYPES.ATTACK
+	card_parallel_pipeline.card_rarity = CardData.CARD_RARITIES.UNCOMMON
+	card_parallel_pipeline.card_requires_target = false
+	card_parallel_pipeline.card_energy_cost = 1
+	card_parallel_pipeline.card_values = {
+		"damage": 3,
+		"number_of_attacks": 1,
+		"forge_damage": 4,
+		"impact_vfx_animation_id": "animation_vfx_slash_orange",
+	}
+	card_parallel_pipeline.card_upgrade_value_improvements = {
+		"damage": 1,
+		"forge_damage": 1,
+	}
+	card_parallel_pipeline.card_play_actions = [
+		{
+			Scripts.ACTION_VARIABLE_COMBAT_STATS_MODIFIER: {
+				"combat_stat_name": "actions_in_forge",
+				"multiplied_values": ["number_of_attacks"],
+				"multiplied_values_bases": {"number_of_attacks": 0},
+				"action_data": [
+					{Scripts.ACTION_ATTACK_GENERATOR: {
+						"target_override": BaseAction.TARGET_OVERRIDES.RANDOM_ENEMY,
+					}}
+				]
+			}
+		},
+		{Scripts.ACTION_ADD_TO_FORGE: {
+			"forge_action_data": {Scripts.ACTION_ATTACK: {
+				"damage": "forge_damage",
+				"target_override": BaseAction.TARGET_OVERRIDES.RANDOM_ENEMY,
+				"time_delay": 0.2,
+			}},
+			"forge_action_load": 1,
+			"forge_action_description": "对随机敌人造成 [forge_damage] 点伤害",
+		}}
+	]
+	Global.register_rod(card_parallel_pipeline)

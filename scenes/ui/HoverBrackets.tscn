@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://bibi0twthi17u"]
 
-[ext_resource type="Script" uid="uid://hoverbrackets02" path="res://scripts/ui/HoverBrackets.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://bobore7e2fb1d" path="res://scripts/ui/HoverBrackets.gd" id="1_script"]
 
 [node name="HoverBrackets" type="Control" unique_id=123456789]
 layout_mode = 3
