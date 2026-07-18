@@ -38,6 +38,7 @@ func _ready():
 	seed_input.text_changed.connect(_on_seed_input_text_changed)
 	
 	Signals.run_ended.connect(_on_run_ended)
+	Signals.run_forfeited_from_title.connect(_on_run_forfeited_from_title)
 	
 	set_selected_difficulty_level(0)
 
@@ -206,5 +207,8 @@ func _on_run_ended():
 		populate_menu()
 	else:
 		clear_menu()
+
+func _on_run_forfeited_from_title() -> void:
+	clear_menu()
 
 #endregion

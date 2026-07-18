@@ -35,11 +35,11 @@ func show_message(
 
 
 func show_achievement_unlocked(achievement_data: AchievementData) -> void:
-	var icon: Texture2D = FileLoader.load_texture(achievement_data.achievement_icon_texture_path)
+	var icon: Texture2D = FileLoader.load_texture(achievement_data.get_display_icon_path())
 	show_message(
-		achievement_data.achievement_description,
+		achievement_data.get_display_description(),
 		3.0,
 		icon,
-		"成就解锁 · %s" % achievement_data.achievement_name,
+		"成就解锁 · %s" % achievement_data.get_display_name(),
 		MESSAGE_TYPES.ACHIEVEMENT,
 	)

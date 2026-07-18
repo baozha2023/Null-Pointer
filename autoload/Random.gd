@@ -150,16 +150,43 @@ const CARD_DRAFT_RARITY_WEIGHTS: Dictionary = {
 	
 }	# affects the chances of a card being seen during a rarity weighted draft
 
-func generate_rarity_weighted_card_draft(rng: RandomNumberGenerator, number_of_cards, card_draft_table_type: int = CARD_DRAFT_TABLE_TYPES.STANDARD, use_pity_system: bool = true) -> Array[CardData]:
+func generate_rarity_weighted_card_draft(rng: RandomNumberGenerator, number_of_cards: int, card_draft_table_type: int = CARD_DRAFT_TABLE_TYPES.STANDARD, use_pity_system: bool = true) -> Array[CardData]:
+	return _generate_rarity_weighted_card_draft_from_cache(
+		rng,
+		number_of_cards,
+		Global.player_data.player_reward_card_rarity_cache,
+		card_draft_table_type,
+		use_pity_system,
+	)
+
+## Uses the same rarity and duplicate rules as normal card drafts, but draws from an explicit filter.
+func generate_rarity_weighted_card_draft_from_filter(rng: RandomNumberGenerator, number_of_cards: int, card_filter: CardFilter, card_draft_table_type: int = CARD_DRAFT_TABLE_TYPES.STANDARD, use_pity_system: bool = false) -> Array[CardData]:
+	if card_filter == null:
+		DebugLogger.log_error("Random.generate_rarity_weighted_card_draft_from_filter(): Card filter is null")
+		return []
+
+	var rarity_cache: Dictionary[int, Array] = {}
+	for card_data: CardData in card_filter.filtered_cards:
+		var rarity_bucket: Array = rarity_cache.get(card_data.card_rarity, [])
+		rarity_bucket.append(card_data.object_id)
+		rarity_cache[card_data.card_rarity] = rarity_bucket
+
+	return _generate_rarity_weighted_card_draft_from_cache(
+		rng,
+		number_of_cards,
+		rarity_cache,
+		card_draft_table_type,
+		use_pity_system,
+	)
+
+func _generate_rarity_weighted_card_draft_from_cache(rng: RandomNumberGenerator, number_of_cards: int, source_rarity_cache: Dictionary[int, Array], card_draft_table_type: int, use_pity_system: bool) -> Array[CardData]:
 	# randomly gets a number of cards from the card pool and returns a list of them
 	# factors in card rarity and a pity system
-	var returned_cards: Array[CardData] = []
-	
 	# get the desired loot table weights
 	var loot_table: Dictionary[Variant, int] = {}
 	loot_table.assign(CARD_DRAFT_RARITY_WEIGHTS[card_draft_table_type].duplicate(true))
-	# get cards available to player sorted by rarity, duplicated to allow mutation
-	var player_reward_card_rarity_cache: Dictionary[int, Array] = Global.player_data.player_reward_card_rarity_cache.duplicate(true)
+	# duplicate the source cache so selecting cards never mutates the caller's pool
+	var card_rarity_cache: Dictionary[int, Array] = source_rarity_cache.duplicate(true)
 	var card_ids_in_draft: Array[String] = []
 	
 	if use_pity_system:
@@ -171,19 +198,16 @@ func generate_rarity_weighted_card_draft(rng: RandomNumberGenerator, number_of_c
 		loot_table[common] = loot_table[common] - player_rare_card_modifier_current
 	
 	
-	var rarity_to_card_pool: Dictionary = {} # cached card pools per rarity ensures no duplicates
-	var rare_card_found: bool = false
-	
 	# get all the card ids for this draft, using randomly weighted selection of rarity buckets
-	for i in number_of_cards:
+	for _i: int in number_of_cards:
 		# determine what bucket of rarity the roll falls in
 		var selected_card_rarity: int = CardData.CARD_RARITIES.COMMON
 		selected_card_rarity = get_weighted_selection(rng, loot_table)
 		
 		
-		if player_reward_card_rarity_cache.has(selected_card_rarity):
+		if card_rarity_cache.has(selected_card_rarity):
 			# get the cards in the selected rarity bucket
-			var card_id_bucket: Array = player_reward_card_rarity_cache[selected_card_rarity]
+			var card_id_bucket: Array = card_rarity_cache[selected_card_rarity]
 			shuffle_array(rng, card_id_bucket)
 			var selected_card_id: String = ""
 			
@@ -200,16 +224,12 @@ func generate_rarity_weighted_card_draft(rng: RandomNumberGenerator, number_of_c
 			
 				# pity system
 				if use_pity_system:
-					if selected_card_rarity == CardData.CARD_RARITIES.RARE:
-						rare_card_found = true
 					if selected_card_rarity == CardData.CARD_RARITIES.COMMON:
 						# finding a common card increases the pity weighting
 						Global.player_data.player_rare_card_modifier_current += Global.player_data.player_rare_card_increment_rate
 	
 	# convert card ids into card prototypes
-	returned_cards = Global.get_card_data_from_prototypes(card_ids_in_draft)
-	
-	return returned_cards
+	return Global.get_card_data_from_prototypes(card_ids_in_draft)
 
 
 ### Artifacts
@@ -329,8 +349,7 @@ func get_shop_card_prices(cards: Array[CardData], rng: RandomNumberGenerator = G
 	var returned_prices: Array[int] = []
 	for card_data: CardData in cards:
 		var card_price_range_values: Array = ShopData.CARD_RARITY_TO_PRICE_RANGE.get(card_data.card_rarity, [0,1])
-		var item_price_range: int = card_price_range_values[1] - card_price_range_values[0]
-		var card_price: int = card_price_range_values[0] + (rng.randi() % item_price_range)
+		var card_price: int = rng.randi_range(card_price_range_values[0], card_price_range_values[1])
 		returned_prices.append(card_price)
 	return returned_prices
 
@@ -344,8 +363,7 @@ func get_shop_artifact_prices(artifact_object_ids: Array[String], rng: RandomNum
 			breakpoint
 		else:
 			var artifact_price_range_values: Array = ShopData.ARTIFACT_RARITY_TO_PRICE_RANGE.get(artifact_data.artifact_rarity, [0,1])
-			var item_price_range: int = artifact_price_range_values[1] - artifact_price_range_values[0]
-			var artifact_price: int = artifact_price_range_values[0] + (rng.randi() % item_price_range)
+			var artifact_price: int = rng.randi_range(artifact_price_range_values[0], artifact_price_range_values[1])
 			returned_prices.append(artifact_price)
 	return returned_prices
 
@@ -359,7 +377,6 @@ func get_shop_consumable_prices(consumable_object_ids: Array[String], rng: Rando
 			breakpoint
 		else:
 			var consumable_price_range_values: Array = ShopData.CONSUMABLE_RARITY_TO_PRICE_RANGE.get(consumable_data.consumable_rarity, [0,1])
-			var item_price_range: int = consumable_price_range_values[1] - consumable_price_range_values[0]
-			var consumable_price: int = consumable_price_range_values[0] + (rng.randi() % item_price_range)
+			var consumable_price: int = rng.randi_range(consumable_price_range_values[0], consumable_price_range_values[1])
 			returned_prices.append(consumable_price)
 	return returned_prices

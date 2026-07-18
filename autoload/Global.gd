@@ -259,6 +259,7 @@ func start_run(character_object_id: String, run_seed: int, difficulty_level: int
 	
 	# 初始化这局游戏的随机数种子
 	player_data.player_run_seed = run_seed
+	player_data.player_achievement_run_scope_key = "run:%d:%d" % [int(Time.get_unix_time_from_system() * 1000000.0), run_seed]
 	
 	#region 游戏进程数据初始化
 	# 为这局游戏生成外设插件池
@@ -375,6 +376,7 @@ func forfeit_run_from_title() -> bool:
 	Signals.run_completed.emit(completed_run)
 	is_run = false
 	Signals.run_ended.emit()
+	Signals.run_forfeited_from_title.emit()
 	return true
 
 ## 返回当前游戏进程是否应该结束。

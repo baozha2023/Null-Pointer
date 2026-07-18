@@ -49,14 +49,109 @@
       "description": "使用重构工匠获得一次胜利。"
     },
     {
+      "id": "achievement_victory_difficulty_0",
+      "title": "难度0",
+      "description": "在难度 0 获得一次标准局胜利。"
+    },
+    {
+      "id": "achievement_victory_difficulty_1",
+      "title": "难度1",
+      "description": "在难度 1 获得一次标准局胜利。"
+    },
+    {
+      "id": "achievement_victory_difficulty_2",
+      "title": "难度2",
+      "description": "在难度 2 获得一次标准局胜利。"
+    },
+    {
+      "id": "achievement_victory_difficulty_3",
+      "title": "难度3",
+      "description": "在难度 3 获得一次标准局胜利。"
+    },
+    {
+      "id": "achievement_victory_difficulty_4",
+      "title": "难度4",
+      "description": "在难度 4 获得一次标准局胜利。"
+    },
+    {
       "id": "achievement_victory_difficulty_5",
-      "title": "内核级危机",
-      "description": "在难度 5 获得一次胜利。"
+      "title": "难度5",
+      "description": "在难度 5 获得一次标准局胜利。"
     },
     {
       "id": "achievement_all_characters",
       "title": "全栈执行",
       "description": "使用全部四个原生角色分别获得一次胜利。"
+    },
+    {
+      "id": "achievement_enemy_kills_100",
+      "title": "垃圾回收器",
+      "description": "在标准局中累计击败 100 个敌方进程。"
+    },
+    {
+      "id": "achievement_victories_10",
+      "title": "十次上线",
+      "description": "累计获得 10 次标准局胜利。"
+    },
+    {
+      "id": "achievement_minibosses_25",
+      "title": "精英猎手",
+      "description": "在标准局中累计击败 25 个精英进程。"
+    },
+    {
+      "id": "achievement_flawless_combat",
+      "title": "无损握手",
+      "description": "在一场战斗中不受到生命伤害并获胜。"
+    },
+    {
+      "id": "achievement_cards_played_turn_10",
+      "title": "线程风暴",
+      "description": "在一个回合内打出至少 10 张牌。"
+    },
+    {
+      "id": "achievement_damage_blocked_turn_50",
+      "title": "绝对防御",
+      "description": "在一个回合内用格挡抵消至少 50 点伤害。"
+    },
+    {
+      "id": "achievement_damage_dealt_turn_100",
+      "title": "带宽压制",
+      "description": "在一个回合内对敌人造成至少 100 点有效生命伤害。"
+    },
+    {
+      "id": "achievement_cards_exhausted_combat_10",
+      "title": "内存清理",
+      "description": "在一场战斗中消耗至少 10 张牌。"
+    },
+    {
+      "id": "achievement_victory_small_deck",
+      "title": "最小化构建",
+      "description": "以不超过 7 张牌的牌组获得标准局胜利。"
+    },
+    {
+      "id": "achievement_victory_artifacts_10",
+      "title": "插件生态",
+      "description": "持有至少 10 件遗物并获得标准局胜利。"
+    },
+    {
+      "id": "achievement_victory_money_500",
+      "title": "资源囤积",
+      "description": "持有至少 500 数据币并获得标准局胜利。"
+    },
+    {
+      "id": "achievement_victory_full_health",
+      "title": "完整镜像",
+      "description": "以满生命值获得标准局胜利。"
+    },
+    {
+      "id": "achievement_victory_under_45_minutes",
+      "title": "极速部署",
+      "description": "在 45 分钟内获得标准局胜利。"
+    },
+    {
+      "id": "achievement_victory_no_shop",
+      "title": "离线部署",
+      "description": "整局不选择任何商店地图节点并获得标准局胜利。"
     }
   ],
   "statistics": []

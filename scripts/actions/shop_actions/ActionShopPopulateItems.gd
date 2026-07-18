@@ -4,6 +4,14 @@
 ## See: ShopData.visit_shop() and ActionGenerator.generate_populate_shop_items() 
 extends BaseAction
 
+func _get_paired_item_count(item_type: String, item_count: int, price_count: int) -> int:
+	if item_count != price_count:
+		DebugLogger.log_error(
+			"ActionShopPopulateItems: {0} count ({1}) does not match price count ({2}); only valid pairs will be added."
+			.format([item_type, item_count, price_count])
+		)
+	return mini(item_count, price_count)
+
 func perform_action():
 	# check if shop at player location
 	var shop_data: ShopData = Global.get_shop_at_player_location()
@@ -24,17 +32,20 @@ func perform_action():
 		var shop_consumable_prices: Array[int] = action_interceptor_processor.get_shadowed_action_values("shop_consumable_prices", [] as Array[int])
 		
 		# add cards
-		for i: int in len(shop_cards):
+		var card_count: int = _get_paired_item_count("card", len(shop_cards), len(shop_card_prices))
+		for i: int in card_count:
 			var card_data: CardData = shop_cards[i]
 			var card_price: int = shop_card_prices[i]
 			shop_data.add_shop_card(card_data, card_price)
 		# add artifacts
-		for i: int in len(shop_artifact_ids):
+		var artifact_count: int = _get_paired_item_count("artifact", len(shop_artifact_ids), len(shop_artifact_prices))
+		for i: int in artifact_count:
 			var shop_artifact_id: String = shop_artifact_ids[i]
 			var shop_artifact_price: int = shop_artifact_prices[i]
 			shop_data.add_shop_artifact(shop_artifact_id, shop_artifact_price)
 		# add consumables
-		for i: int in len(shop_consumable_ids):
+		var consumable_count: int = _get_paired_item_count("consumable", len(shop_consumable_ids), len(shop_consumable_prices))
+		for i: int in consumable_count:
 			var shop_consumable_id: String = shop_consumable_ids[i]
 			var shop_consumable_price: int = shop_consumable_prices[i]
 			shop_data.add_shop_consumable(shop_consumable_id, shop_consumable_price)

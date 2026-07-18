@@ -19,12 +19,13 @@ class_name ShopData
 @export var shop_artifact_prices: Array[int] = []
 @export var shop_consumable_slot_to_consumable_price: Dictionary = {}
 
-const GENERATED_CARD_COUNT: int = 6
+const GENERATED_CHARACTER_CARD_COUNT: int = 6
+const GENERATED_WHITE_CARD_COUNT: int = 2
 const GENERATED_ARTIFACT_COUNT: int = 2
 const GENERATED_SHOP_SPECIFIC_ARTIFACT_COUNT: int = 1
 const GENERATED_CONSUMABLE_COUNT: int = 3
 
-# price ranges
+# Inclusive price ranges.
 const CARD_RARITY_TO_PRICE_RANGE: Dictionary = {
 	CardData.CARD_RARITIES.COMMON: [50,80],
 	CardData.CARD_RARITIES.UNCOMMON: [85,115],
@@ -55,8 +56,26 @@ func visit_shop() -> void:
 		var rng_shop: RandomNumberGenerator = Global.player_data.get_player_rng("rng_shop")
 		
 		### Generate Items
-		# generates shop cards
-		var generated_cards: Array[CardData] = Random.generate_rarity_weighted_card_draft(rng_shop, ShopData.GENERATED_CARD_COUNT, Random.CARD_DRAFT_TABLE_TYPES.SHOP, false)
+		# Generate character cards without white cards, including when all-color drafting is active.
+		var character_shop_filter: CardFilter = CardFilter.new(Global.player_data.player_reward_card_filter_cache.filtered_cards.duplicate())
+		character_shop_filter.filter_colors(["color_white"], false)
+		var generated_cards: Array[CardData] = Random.generate_rarity_weighted_card_draft_from_filter(
+			rng_shop,
+			GENERATED_CHARACTER_CARD_COUNT,
+			character_shop_filter,
+			Random.CARD_DRAFT_TABLE_TYPES.SHOP,
+			false,
+		)
+		# White cards get two independent attempts with the exact same rarity rules.
+		var white_shop_filter: CardFilter = Global.get_cached_card_filter("card_pack_white")
+		var generated_white_cards: Array[CardData] = Random.generate_rarity_weighted_card_draft_from_filter(
+			rng_shop,
+			GENERATED_WHITE_CARD_COUNT,
+			white_shop_filter,
+			Random.CARD_DRAFT_TABLE_TYPES.SHOP,
+			false,
+		)
+		generated_cards.append_array(generated_white_cards)
 		
 		# generate regular artifacts from player artifact pool
 		var artifact_ids: Array[String] = Global.player_data.get_next_shop_standard_artifacts_from_pool(GENERATED_ARTIFACT_COUNT, true)
@@ -94,11 +113,10 @@ func add_shop_card(card_data: CardData, price: int = -1):
 	# adds a card and randomizes the price, if no price is given
 	if card_data != null:
 		var card_price_range_values: Array = CARD_RARITY_TO_PRICE_RANGE.get(card_data.card_rarity)
-		var item_price_range: int = card_price_range_values[1] - card_price_range_values[0]
 		var card_price: int = price
 		if price < 0:
 			var rng_shop: RandomNumberGenerator = Global.player_data.get_player_rng("rng_shop")
-			card_price = card_price_range_values[0] + (rng_shop.randi() % item_price_range)
+			card_price = rng_shop.randi_range(card_price_range_values[0], card_price_range_values[1])
 		
 		shop_card_prices.append(card_price)
 		shop_cards.append(card_data)
@@ -131,11 +149,10 @@ func add_shop_artifact(artifact_id: String, price: int = -1) -> void:
 	var artifact_data: ArtifactData = Global.get_artifact_data(artifact_id)
 	if artifact_data != null:
 		var artifact_price_range_values: Array = ARTIFACT_RARITY_TO_PRICE_RANGE.get(artifact_data.artifact_rarity)
-		var item_price_range: int = artifact_price_range_values[1] - artifact_price_range_values[0]
 		var artifact_price: int = price
 		if price < 0:
 			var rng_shop: RandomNumberGenerator = Global.player_data.get_player_rng("rng_shop")
-			artifact_price = artifact_price_range_values[0] + (rng_shop.randi() % item_price_range)
+			artifact_price = rng_shop.randi_range(artifact_price_range_values[0], artifact_price_range_values[1])
 		
 		shop_artifact_prices.append(artifact_price)
 		shop_artifact_ids.append(artifact_data.object_id)
@@ -168,11 +185,10 @@ func add_shop_consumable(consumable_object_id: String, price: int = -1):
 	var consumable_data: ConsumableData = Global.get_consumable_data(consumable_object_id)
 	if consumable_data != null:
 		var consumable_price_range_values: Array = CONSUMABLE_RARITY_TO_PRICE_RANGE.get(consumable_data.consumable_rarity)
-		var item_price_range: int = consumable_price_range_values[1] - consumable_price_range_values[0]
 		var consumable_price: int = price
 		if price < 0:
 			var rng_shop: RandomNumberGenerator = Global.player_data.get_player_rng("rng_shop")
-			consumable_price = consumable_price_range_values[0] + (rng_shop.randi() % item_price_range)
+			consumable_price = rng_shop.randi_range(consumable_price_range_values[0], consumable_price_range_values[1])
 		
 		var slot_index: int = get_next_empty_shop_consumable_slot()
 		

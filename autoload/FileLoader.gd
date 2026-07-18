@@ -265,11 +265,10 @@ func load_read_only_data() -> void:
 				var old_script_path: String = mod_data.mod_script_file_paths[mod_script_file_path]
 
 				var new_script: Script = load(full_script_path)
-				if new_script:
-					if old_script_path != "":
-						new_script.take_over_path(old_script_path)
-				else:
+				if new_script == null:
 					DebugLogger.log_line("FileLoader: Failed to load script at " + full_script_path, Color.RED, DebugLogger.Severities.ERROR)
+				elif old_script_path != "":
+					new_script.take_over_path(old_script_path)
 		
 		# iterate over every subdirectory listed in mod info's folders
 		for mod_sub_directory: String in mod_data.mod_folder_to_load_data.keys():
@@ -298,6 +297,13 @@ func load_read_only_data() -> void:
 				
 				if has_object_id:
 					exists_in_table = data_table.has(object_id)
+				if exists_in_table and class_type == AchievementData:
+					var existing_achievement: AchievementData = data_table[object_id]
+					DebugLogger.log_error(
+						"FileLoader: 拒绝成就 ID 冲突 %s（已有来源：%s；后加载来源：%s）"
+						% [object_id, existing_achievement.achievement_source_name, mod_data.mod_name]
+					)
+					continue
 				
 				var read_only_data: SerializableData = null
 				if exists_in_table:

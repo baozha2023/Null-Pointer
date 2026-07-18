@@ -16,7 +16,7 @@ var player_energy: int = 3 # in combat energy. Not saved.
 
 var player_block: int = 0 # in combat block. Not saved.
 
-## The time the player has been playing the current run, in milliseconds.
+## The time the player has been playing the current run, in seconds.
 ## See: RunTimer.
 @export var player_run_time: float = 0.0
 
@@ -45,6 +45,8 @@ var player_block: int = 0 # in combat block. Not saved.
 
 #region RNG
 @export var player_run_seed: int = 0
+## Persisted identity for achievement scopes; unlike the deterministic seed, this is unique per run.
+@export var player_achievement_run_scope_key: String = ""
 
 ## Maps rng names to a random number generator "track". This allows seperate tracks of RNG to function
 ## independently. Whenever an rng is requested but does not yet exist, a new one will be instantiated

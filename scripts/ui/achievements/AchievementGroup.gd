@@ -20,6 +20,8 @@ func init(group_name: String, achievements: Array[AchievementData]) -> void:
 
 
 func _sort_achievements(left: AchievementData, right: AchievementData) -> bool:
-	if left.achievement_display_order == right.achievement_display_order:
+	var left_order: int = left.achievement_presentation.achievement_display_order
+	var right_order: int = right.achievement_presentation.achievement_display_order
+	if left_order == right_order:
 		return left.object_id < right.object_id
-	return left.achievement_display_order < right.achievement_display_order
+	return left_order < right_order

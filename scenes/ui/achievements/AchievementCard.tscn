@@ -15,7 +15,7 @@ corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
 
 [node name="AchievementCard" type="PanelContainer"]
-custom_minimum_size = Vector2(520, 118)
+custom_minimum_size = Vector2(520, 178)
 theme_override_styles/panel = SubResource("StyleCard")
 script = ExtResource("1_script")
 
@@ -66,3 +66,25 @@ layout_mode = 2
 theme_override_colors/font_color = Color(0.38, 0.48, 0.55, 1)
 theme_override_font_sizes/font_size = 12
 text = "未解锁"
+
+[node name="ProgressBar" type="ProgressBar" parent="Margin/Row/Text"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 10)
+layout_mode = 2
+max_value = 100.0
+show_percentage = false
+
+[node name="Progress" type="Label" parent="Margin/Row/Text"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.42, 0.82, 0.86, 1)
+theme_override_font_sizes/font_size = 12
+text = "当前 0 / 目标 1"
+
+[node name="Details" type="Label" parent="Margin/Row/Text"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.42, 0.55, 0.6, 1)
+theme_override_font_sizes/font_size = 11
+text = "最近 0 · 最佳 0"
+autowrap_mode = 2

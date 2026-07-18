@@ -68,12 +68,18 @@ signal game_unpaused
 
 # achievements
 signal achievement_unlocked(achievement_data: AchievementData)
+signal achievement_progress_changed(achievement_data: AchievementData, state: AchievementStateData)
+## Stable snapshots emitted after statistics are complete, for the data-driven achievement bridge.
+signal achievement_turn_completed(turn_stats: Dictionary)
+signal achievement_combat_completed(combat_stats: CombatStatsData, location_type: int, combat_victory: bool)
 
 #region Run
 signal run_started # player has started or continued a run
 ## Emitted only after a won/lost run and its aggregate profile changes commit to SQLite.
 signal run_completed(run_stats: RunStatsData)
 signal run_ended # player has ended a run (does not necessarily mean victory/defeat)
+## Emitted after run_ended when a saved run is forfeited from the title screen.
+signal run_forfeited_from_title
 signal run_victory # player has won a run
 signal player_killed(player: Player)
 signal player_death_animation_finished(player: Player)

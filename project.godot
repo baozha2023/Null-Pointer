@@ -15,7 +15,7 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 [application]
 
 config/name="Null Pointer"
-config/version="2.9"
+config/version="2.10"
 run/main_scene="res://scenes/LoadingScreen.tscn"
 config/features=PackedStringArray("4.6")
 boot_splash/bg_color=Color(0, 0, 0, 1)
@@ -57,7 +57,6 @@ gdscript/warnings/integer_division=0
 window/size/viewport_width=1200
 window/size/viewport_height=700
 window/stretch/mode="canvas_items"
-window/stretch/aspect="keep"
 
 [editor_plugins]
 

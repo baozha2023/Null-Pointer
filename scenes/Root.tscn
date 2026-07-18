@@ -1,9 +1,6 @@
 [gd_scene format=3 uid="uid://bg7gmq537qyn5"]
 
 [ext_resource type="Script" uid="uid://ckfi22o2jit0b" path="res://scripts/Root.gd" id="1_ak6de"]
-[ext_resource type="PackedScene" path="res://scenes/ui/menus/ModMenu.tscn" id="mod_menu_scene"]
-[ext_resource type="PackedScene" path="res://scenes/ui/achievements/AchievementMenu.tscn" id="achievement_menu_scene"]
-[ext_resource type="PackedScene" uid="uid://dfb0l2x5vqxyz" path="res://scenes/ui/CardSelectionOverlay.tscn" id="100_cso"]
 [ext_resource type="Theme" uid="uid://cd5rw86bhiyn" path="res://themes/title_screen_theme.tres" id="2_bi5lp"]
 [ext_resource type="Script" uid="uid://dw0xyfu580mkb" path="res://scripts/ui/menus/TitleScreen.gd" id="2_m6atk"]
 [ext_resource type="Texture2D" uid="uid://d33u8m744fh03" path="res://icon.svg" id="3_8ax2e"]
@@ -23,7 +20,6 @@
 [ext_resource type="Texture2D" uid="uid://vtmxc3lvqedh" path="res://sprites/btn_base_hover.png" id="9_jiqw6"]
 [ext_resource type="Script" uid="uid://cu62o32eaklx7" path="res://scripts/ui/TurnOverlay.gd" id="9_u2w0b"]
 [ext_resource type="Script" uid="uid://dgls5w4w7ym84" path="res://scripts/ui/menus/CodexMenu.gd" id="9_uxrgu"]
-[ext_resource type="Script" uid="uid://brwptyvf1yacl" path="res://scripts/ui/CardSelectionOverlay.gd" id="10_bwtvr"]
 [ext_resource type="Script" uid="uid://nkhf5a8dd47j" path="res://ui/components/resizing_grid_scroll_container/ResizingGridScrollContainer.gd" id="10_kpmo0"]
 [ext_resource type="Script" uid="uid://ejl2op54o7aw" path="res://scripts/ui/RewardOverlay.gd" id="10_u2l48"]
 [ext_resource type="Script" uid="uid://b8gg8exxeg26k" path="res://scripts/ui/Chest.gd" id="11_1uvyw"]
@@ -32,7 +28,6 @@
 [ext_resource type="Script" uid="uid://dj8cttlgi1fow" path="res://scripts/ui/codex/CodexCardsMenu.gd" id="11_nownq"]
 [ext_resource type="Texture2D" uid="uid://csm0chktmbxho" path="res://sprites/characters/character_green/character_green_poster.png" id="11_ug4o1"]
 [ext_resource type="PackedScene" uid="uid://cim470d3rss83" path="res://scenes/ui/CardUpgradeOverlay.tscn" id="11_upgrade"]
-[ext_resource type="PackedScene" path="res://scenes/ui/CardEnchantOverlay.tscn" id="101_enchant"]
 [ext_resource type="Script" uid="uid://bepy2gle06uwf" path="res://scripts/ui/CardDraftSelectionOverlay.gd" id="11_yys3c"]
 [ext_resource type="Script" uid="uid://dm6o2678kafwr" path="res://scripts/ui/menus/RunScreen.gd" id="12_elxq6"]
 [ext_resource type="Script" uid="uid://c2i6b2ert5jls" path="res://scripts/ui/PauseButton.gd" id="13_i7igs"]
@@ -46,10 +41,9 @@
 [ext_resource type="Script" uid="uid://cw6tfwitjoo0i" path="res://scripts/ui/ShopOverlay.gd" id="17_stqr4"]
 [ext_resource type="Script" uid="uid://bwx7uuvrugqlu" path="res://scripts/ui/codex/CodexConsumablesMenu.gd" id="18_4u6xb"]
 [ext_resource type="PackedScene" uid="uid://cftk22jibfvcc" path="res://ui/components/volume_slider/VolumeSlider.tscn" id="18_plfau"]
-[ext_resource type="PackedScene" path="res://ui/components/frame_rate_limit_slider/FrameRateLimitSlider.tscn" id="frame_rate_limit_slider"]
 [ext_resource type="PackedScene" uid="uid://ccwweknxxvks" path="res://scenes/ui/codex/CodexConsumable.tscn" id="19_o7n0g"]
 [ext_resource type="Script" uid="uid://bydljvbv1j5j3" path="res://scripts/ui/codex/CodexEnemiesMenu.gd" id="20_jsyke"]
-[ext_resource type="PackedScene" path="res://scenes/ui/RunSummaryOverlay.tscn" id="21_fj66g"]
+[ext_resource type="PackedScene" uid="uid://cfwv83pkpv06t" path="res://scenes/ui/RunSummaryOverlay.tscn" id="21_fj66g"]
 [ext_resource type="PackedScene" uid="uid://c3p3waeyddith" path="res://scenes/ui/codex/CodexActNameLabel.tscn" id="22_gs3rm"]
 [ext_resource type="PackedScene" uid="uid://crgv8ihu0ojrw" path="res://scenes/ui/codex/CodexEnemyButton.tscn" id="23_bl3tx"]
 [ext_resource type="PackedScene" uid="uid://c75lxyqfus0oq" path="res://scenes/ui/codex/CodexEnemyIntent.tscn" id="24_gs3rm"]
@@ -61,13 +55,14 @@
 [ext_resource type="Script" uid="uid://b3nvcsku8u75w" path="res://addons/smooth_scroll_container/scroll_damper/expo_scroll_damper.gd" id="26_08sam"]
 [ext_resource type="Script" uid="uid://6xsavir53fvp" path="res://scripts/ui/PauseOverlay.gd" id="29_p8axl"]
 [ext_resource type="Script" uid="uid://cwt4a5keff86t" path="res://scripts/ui/RunTimer.gd" id="30_plfau"]
-[ext_resource type="Script" path="res://scripts/ui/FPSDisplay.gd" id="fps_display"]
 [ext_resource type="Script" uid="uid://cv2h3ccb6uytr" path="res://scripts/ui/Tooltips.gd" id="40_wtekq"]
 [ext_resource type="Theme" uid="uid://2714jm71pkv4" path="res://themes/keyword_tooltip_theme.tres" id="41_0h1ar"]
 [ext_resource type="Script" uid="uid://d2fxhtmdfmtdf" path="res://scripts/ui/general/KeywordContainer.gd" id="42_wtekq"]
-[ext_resource type="Script" uid="uid://c5i0sjwlko88l" path="res://addons/label_font_auto_sizer/rich_label_auto_sizer.gd" id="43_gs3rm"]
 [ext_resource type="Script" uid="uid://b2jf7xdselhk" path="res://scripts/ui/codex/CodexGlossaryMenu.gd" id="99_glossary"]
 [ext_resource type="PackedScene" uid="uid://dxuwyfplappcu" path="res://scenes/ui/OptionSelectionOverlay.tscn" id="99_optsel"]
+[ext_resource type="PackedScene" uid="uid://dfb0l2x5vqxy0" path="res://scenes/ui/CardSelectionOverlay.tscn" id="100_cso"]
+[ext_resource type="PackedScene" uid="uid://bp3j28lbe6six" path="res://scenes/ui/CardEnchantOverlay.tscn" id="101_enchant"]
+[ext_resource type="PackedScene" path="res://scenes/ui/achievements/AchievementMenu.tscn" id="achievement_menu_scene"]
 [ext_resource type="Script" uid="uid://vh16q48jrisi" path="res://scripts/ui/components/AutoResizingGridContainer.gd" id="auto_resize_grid"]
 [ext_resource type="Texture2D" uid="uid://djt1sc74fp60x" path="res://sprites/btn_common_hover.png" id="btn_common_hover"]
 [ext_resource type="Texture2D" uid="uid://dab6flcgmdgpn" path="res://sprites/btn_common_normal.png" id="btn_common_normal"]
@@ -75,11 +70,42 @@
 [ext_resource type="Script" uid="uid://rt6p3v5dh3cs" path="res://scripts/ui/codex/CodexCardDetailPanel.gd" id="codex_card_detail_panel"]
 [ext_resource type="Texture2D" uid="uid://bi6lu6igtqj20" path="res://sprites/ui/btn_deck_icon.png" id="deck_icon"]
 [ext_resource type="PackedScene" uid="uid://cx6g8tforge31" path="res://scenes/ui/ForgeOverlay.tscn" id="forge_overlay_scene"]
+[ext_resource type="Script" uid="uid://qcocln7oe0nr" path="res://scripts/ui/FPSDisplay.gd" id="fps_display"]
+[ext_resource type="PackedScene" path="res://ui/components/frame_rate_limit_slider/FrameRateLimitSlider.tscn" id="frame_rate_limit_slider"]
 [ext_resource type="Texture2D" uid="uid://3gyh5dmwaune" path="res://sprites/ui/icon_ui_forge.png" id="icon_ui_forge"]
 [ext_resource type="Texture2D" uid="uid://ct5ednanwp20w" path="res://sprites/ui/icon_ui_health.png" id="icon_ui_health"]
 [ext_resource type="Texture2D" uid="uid://bi4veb1rxlkb6" path="res://sprites/ui/icon_ui_money.png" id="icon_ui_money"]
 [ext_resource type="Texture2D" uid="uid://cr6a63jqnlrsl" path="res://sprites/ui/btn_map_icon.png" id="map_icon"]
+[ext_resource type="PackedScene" uid="uid://c51c3a7l2" path="res://scenes/ui/menus/ModMenu.tscn" id="mod_menu_scene"]
 [ext_resource type="Texture2D" uid="uid://qf8rdrmsdx7m" path="res://sprites/ui/btn_pause_icon.png" id="pause_icon"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_main_menu_terminal"]
+bg_color = Color(0.015, 0.035, 0.045, 0.88)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.078, 0.878, 0.925, 0.42)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+shadow_color = Color(0, 0, 0, 0.55)
+shadow_size = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_main_menu_modules"]
+bg_color = Color(0.018, 0.025, 0.04, 0.9)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.286, 1, 0.392, 0.34)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+shadow_color = Color(0, 0, 0, 0.55)
+shadow_size = 12
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_ug4o1"]
 texture = ExtResource("7_v75fn")
@@ -213,15 +239,6 @@ metadata/_custom_type_script = "uid://b3nvcsku8u75w"
 script = ExtResource("26_08sam")
 metadata/_custom_type_script = "uid://b3nvcsku8u75w"
 
-[sub_resource type="Resource" id="Resource_tn5yy"]
-script = ExtResource("26_08sam")
-friction = 10.0
-metadata/_custom_type_script = "uid://b3nvcsku8u75w"
-
-[sub_resource type="Resource" id="Resource_kpmo0"]
-script = ExtResource("26_08sam")
-metadata/_custom_type_script = "uid://b3nvcsku8u75w"
-
 [sub_resource type="Resource" id="Resource_kqcdx"]
 script = ExtResource("26_08sam")
 friction = 10.0
@@ -297,135 +314,218 @@ NodePath("VBoxContainer/ModButton"): NodePath("../ModMenu"),
 NodePath("VBoxContainer/AchievementButton"): NodePath("../AchievementMenu")
 }
 
+[node name="TerminalPanel" type="Panel" parent="TitleScreen/MainMenu" unique_id=1188317194]
+layout_mode = 0
+offset_left = 58.0
+offset_top = 250.0
+offset_right = 552.0
+offset_bottom = 640.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_main_menu_terminal")
+
+[node name="TerminalAccent" type="ColorRect" parent="TitleScreen/MainMenu/TerminalPanel" unique_id=666798223]
+layout_mode = 0
+offset_top = 61.0
+offset_right = 4.0
+offset_bottom = 334.0
+mouse_filter = 2
+color = Color(0.047, 0.91, 0.94, 0.9)
+
+[node name="TerminalHeader" type="Label" parent="TitleScreen/MainMenu/TerminalPanel" unique_id=1574127551]
+layout_mode = 0
+offset_left = 28.0
+offset_top = 18.0
+offset_right = 290.0
+offset_bottom = 51.0
+theme_override_colors/font_color = Color(0.9, 1, 1, 1)
+theme_override_font_sizes/font_size = 25
+text = "进程终端"
+
+[node name="TerminalDivider" type="ColorRect" parent="TitleScreen/MainMenu/TerminalPanel" unique_id=281444402]
+layout_mode = 0
+offset_left = 28.0
+offset_top = 61.0
+offset_right = 466.0
+offset_bottom = 62.0
+mouse_filter = 2
+color = Color(0.07, 0.72, 0.78, 0.45)
+
+[node name="TerminalHint" type="Label" parent="TitleScreen/MainMenu/TerminalPanel" unique_id=1633238881]
+layout_mode = 0
+offset_left = 29.0
+offset_top = 70.0
+offset_right = 465.0
+offset_bottom = 94.0
+theme_override_colors/font_color = Color(0.53, 0.68, 0.7, 1)
+theme_override_font_sizes/font_size = 14
+text = "选择一个操作，接入仿生逻辑网络"
+
+[node name="ModulesPanel" type="Panel" parent="TitleScreen/MainMenu" unique_id=1749431577]
+layout_mode = 0
+offset_left = 576.0
+offset_top = 250.0
+offset_right = 1142.0
+offset_bottom = 640.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_main_menu_modules")
+
+[node name="ModulesHeader" type="Label" parent="TitleScreen/MainMenu/ModulesPanel" unique_id=2008418087]
+layout_mode = 0
+offset_left = 30.0
+offset_top = 25.0
+offset_right = 255.0
+offset_bottom = 60.0
+theme_override_colors/font_color = Color(0.92, 1, 0.94, 1)
+theme_override_font_sizes/font_size = 27
+text = "系统模块"
+
+[node name="ModulesDivider" type="ColorRect" parent="TitleScreen/MainMenu/ModulesPanel" unique_id=120581486]
+layout_mode = 0
+offset_left = 30.0
+offset_top = 70.0
+offset_right = 536.0
+offset_bottom = 71.0
+mouse_filter = 2
+color = Color(0.25, 0.9, 0.4, 0.38)
+
+[node name="ModulesHint" type="Label" parent="TitleScreen/MainMenu/ModulesPanel" unique_id=1601724765]
+layout_mode = 0
+offset_left = 31.0
+offset_top = 79.0
+offset_right = 535.0
+offset_bottom = 102.0
+theme_override_colors/font_color = Color(0.5, 0.65, 0.54, 1)
+theme_override_font_sizes/font_size = 14
+text = "浏览数据、战绩与扩展组件"
+
 [node name="TextureRect" type="TextureRect" parent="TitleScreen/MainMenu" unique_id=467371030]
-layout_mode = 1
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -346.0
-offset_right = 349.0
-offset_bottom = 232.0
-grow_horizontal = 2
+layout_mode = 0
+offset_left = 225.0
+offset_top = 18.0
+offset_right = 975.0
+offset_bottom = 222.0
+mouse_filter = 2
 texture = ExtResource("5_grlmo")
 expand_mode = 1
 stretch_mode = 6
 
 [node name="VBoxContainer" type="Control" parent="TitleScreen/MainMenu" unique_id=324557784]
 layout_mode = 1
-anchor_left = 0.5
-anchor_top = 0.63500005
-anchor_right = 0.5
-anchor_bottom = 0.63500005
-offset_left = -188.5
-offset_top = -136.50003
-offset_right = 188.5
-offset_bottom = 309.49997
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 1
 
 [node name="ContinueButton" type="Button" parent="TitleScreen/MainMenu/VBoxContainer" unique_id=1414899619]
 visible = false
-custom_minimum_size = Vector2(295, 71)
 layout_mode = 0
-offset_left = -264.0
-offset_top = 31.0
-offset_right = 31.0
-offset_bottom = 102.0
-size_flags_horizontal = 4
+offset_left = 86.0
+offset_top = 356.0
+offset_right = 524.0
+offset_bottom = 432.0
 theme = ExtResource("2_bi5lp")
+theme_override_colors/font_color = Color(0.94, 1, 1, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 28
 theme_override_styles/normal = SubResource("StyleBoxTexture_ug4o1")
 theme_override_styles/pressed = SubResource("StyleBoxTexture_8b2qk")
 theme_override_styles/hover = SubResource("StyleBoxTexture_gdi3b")
-text = "恢复进程"
+text = "恢复进程  ›"
 
 [node name="ForfeitRunButton" type="Button" parent="TitleScreen/MainMenu/VBoxContainer" unique_id=2040220208]
 visible = false
-custom_minimum_size = Vector2(295, 71)
 layout_mode = 0
-offset_left = 346.0
-offset_top = 31.0
-offset_right = 641.0
-offset_bottom = 102.0
-size_flags_horizontal = 4
+offset_left = 86.0
+offset_top = 444.0
+offset_right = 524.0
+offset_bottom = 520.0
 theme = ExtResource("2_bi5lp")
+theme_override_colors/font_color = Color(1, 0.55, 0.58, 1)
+theme_override_colors/font_hover_color = Color(1, 0.78, 0.8, 1)
+theme_override_font_sizes/font_size = 25
 theme_override_styles/normal = SubResource("StyleBoxTexture_ug4o1")
 theme_override_styles/pressed = SubResource("StyleBoxTexture_8b2qk")
 theme_override_styles/hover = SubResource("StyleBoxTexture_gdi3b")
-text = "放弃本轮"
+text = "放弃当前进程"
 
 [node name="NewRunButton" type="Button" parent="TitleScreen/MainMenu/VBoxContainer" unique_id=281880096]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(295, 71)
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -147.5
-offset_top = -273.0
-offset_right = 147.5
-offset_bottom = -202.0
-grow_horizontal = 2
-grow_vertical = 2
-size_flags_horizontal = 4
+layout_mode = 0
+offset_left = 86.0
+offset_top = 356.0
+offset_right = 524.0
+offset_bottom = 432.0
 theme = ExtResource("2_bi5lp")
+theme_override_colors/font_color = Color(0.94, 1, 1, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 28
 theme_override_styles/normal = SubResource("StyleBoxTexture_ug4o1")
 theme_override_styles/pressed = SubResource("StyleBoxTexture_8b2qk")
 theme_override_styles/hover = SubResource("StyleBoxTexture_gdi3b")
-text = "新建进程"
+text = "新建进程  ›"
+
+[node name="FreshRunHintLabel" type="Label" parent="TitleScreen/MainMenu/VBoxContainer" unique_id=1676841540]
+layout_mode = 0
+offset_left = 86.0
+offset_top = 451.0
+offset_right = 524.0
+offset_bottom = 482.0
+theme_override_colors/font_color = Color(0.27, 0.68, 0.71, 0.9)
+theme_override_font_sizes/font_size = 13
+text = "当前无运行进程，系统等待初始化"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="SettingsButton" type="Button" parent="TitleScreen/MainMenu/VBoxContainer" unique_id=1950778943]
-custom_minimum_size = Vector2(295, 71)
 layout_mode = 0
-offset_left = 41.0
-offset_top = 31.0
-offset_right = 336.0
-offset_bottom = 102.0
-size_flags_horizontal = 4
+offset_left = 86.0
+offset_top = 548.0
+offset_right = 298.0
+offset_bottom = 612.0
 theme = ExtResource("2_bi5lp")
+theme_override_colors/font_color = Color(0.82, 0.95, 0.96, 1)
+theme_override_font_sizes/font_size = 19
 theme_override_styles/normal = SubResource("StyleBoxTexture_ug4o1")
 theme_override_styles/pressed = SubResource("StyleBoxTexture_8b2qk")
 theme_override_styles/hover = SubResource("StyleBoxTexture_gdi3b")
 text = "控制面板"
 
 [node name="CodexButton" type="Button" parent="TitleScreen/MainMenu/VBoxContainer" unique_id=608866653]
-custom_minimum_size = Vector2(295, 71)
 layout_mode = 0
-offset_left = -264.0
-offset_top = 112.0
-offset_right = 31.0
-offset_bottom = 183.0
-size_flags_horizontal = 4
+offset_left = 607.0
+offset_top = 358.0
+offset_right = 844.0
+offset_bottom = 423.0
 theme = ExtResource("2_bi5lp")
+theme_override_font_sizes/font_size = 22
 theme_override_styles/normal = SubResource("StyleBoxTexture_ug4o1")
 theme_override_styles/pressed = SubResource("StyleBoxTexture_8b2qk")
 theme_override_styles/hover = SubResource("StyleBoxTexture_gdi3b")
 text = "注册表"
 
 [node name="ProfileStatsButton" type="Button" parent="TitleScreen/MainMenu/VBoxContainer" unique_id=1632255188]
-custom_minimum_size = Vector2(295, 71)
 layout_mode = 0
-offset_left = 346.0
-offset_top = 112.0
-offset_right = 641.0
-offset_bottom = 183.0
-size_flags_horizontal = 4
+offset_left = 607.0
+offset_top = 440.0
+offset_right = 844.0
+offset_bottom = 505.0
 theme = ExtResource("2_bi5lp")
+theme_override_font_sizes/font_size = 22
 theme_override_styles/normal = SubResource("StyleBoxTexture_ug4o1")
 theme_override_styles/pressed = SubResource("StyleBoxTexture_8b2qk")
 theme_override_styles/hover = SubResource("StyleBoxTexture_gdi3b")
 text = "进程统计"
 
 [node name="RunHistoryButton" type="Button" parent="TitleScreen/MainMenu/VBoxContainer" unique_id=1632287860]
-custom_minimum_size = Vector2(295, 71)
 layout_mode = 0
-offset_left = 41.0
-offset_top = 112.0
-offset_right = 336.0
-offset_bottom = 183.0
-size_flags_horizontal = 4
+offset_left = 865.0
+offset_top = 358.0
+offset_right = 1102.0
+offset_bottom = 423.0
 theme = ExtResource("2_bi5lp")
+theme_override_font_sizes/font_size = 22
 theme_override_styles/normal = SubResource("StyleBoxTexture_ug4o1")
 theme_override_styles/pressed = SubResource("StyleBoxTexture_8b2qk")
 theme_override_styles/hover = SubResource("StyleBoxTexture_gdi3b")
@@ -433,42 +533,42 @@ text = "游戏记录"
 
 [node name="ExitGameButton" type="Button" parent="TitleScreen/MainMenu/VBoxContainer" unique_id=111357402]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(295, 71)
 layout_mode = 0
-offset_left = 41.0
-offset_top = 193.0
-offset_right = 336.0
-offset_bottom = 264.0
-size_flags_horizontal = 4
+offset_left = 312.0
+offset_top = 548.0
+offset_right = 524.0
+offset_bottom = 612.0
 theme = ExtResource("2_bi5lp")
+theme_override_colors/font_color = Color(0.86, 0.76, 0.68, 1)
+theme_override_colors/font_hover_color = Color(1, 0.87, 0.7, 1)
+theme_override_font_sizes/font_size = 19
 theme_override_styles/normal = SubResource("StyleBoxTexture_ug4o1")
 theme_override_styles/pressed = SubResource("StyleBoxTexture_8b2qk")
 theme_override_styles/hover = SubResource("StyleBoxTexture_gdi3b")
 text = "注销"
 
-[node name="ModButton" type="Button" parent="TitleScreen/MainMenu/VBoxContainer"]
-custom_minimum_size = Vector2(295, 71)
+[node name="ModButton" type="Button" parent="TitleScreen/MainMenu/VBoxContainer" unique_id=1203272654]
 layout_mode = 0
-offset_left = -264.0
-offset_top = 193.0
-offset_right = 31.0
-offset_bottom = 264.0
-size_flags_horizontal = 4
+offset_left = 607.0
+offset_top = 522.0
+offset_right = 1102.0
+offset_bottom = 587.0
 theme = ExtResource("2_bi5lp")
+theme_override_colors/font_color = Color(0.75, 1, 0.82, 1)
+theme_override_font_sizes/font_size = 22
 theme_override_styles/normal = SubResource("StyleBoxTexture_ug4o1")
 theme_override_styles/pressed = SubResource("StyleBoxTexture_8b2qk")
 theme_override_styles/hover = SubResource("StyleBoxTexture_gdi3b")
-text = "模组"
+text = "扩展模组"
 
-[node name="AchievementButton" type="Button" parent="TitleScreen/MainMenu/VBoxContainer"]
-custom_minimum_size = Vector2(295, 71)
+[node name="AchievementButton" type="Button" parent="TitleScreen/MainMenu/VBoxContainer" unique_id=336489621]
 layout_mode = 0
-offset_left = 346.0
-offset_top = 193.0
-offset_right = 641.0
-offset_bottom = 264.0
-size_flags_horizontal = 4
+offset_left = 865.0
+offset_top = 440.0
+offset_right = 1102.0
+offset_bottom = 505.0
 theme = ExtResource("2_bi5lp")
+theme_override_font_sizes/font_size = 22
 theme_override_styles/normal = SubResource("StyleBoxTexture_ug4o1")
 theme_override_styles/pressed = SubResource("StyleBoxTexture_8b2qk")
 theme_override_styles/hover = SubResource("StyleBoxTexture_gdi3b")
@@ -875,7 +975,7 @@ offset_right = 750.0
 offset_bottom = 200.0
 text = "显示状态效果"
 
-[node name="DisplayFPSCheckButton" type="CheckButton" parent="TitleScreen/SettingsMenu"]
+[node name="DisplayFPSCheckButton" type="CheckButton" parent="TitleScreen/SettingsMenu" unique_id=1641885557]
 unique_name_in_owner = true
 layout_mode = 0
 offset_left = 766.0
@@ -935,7 +1035,7 @@ offset_top = 440.0
 offset_right = 696.0
 offset_bottom = 512.0
 
-[node name="FrameRateLimitLabel" type="Label" parent="TitleScreen/SettingsMenu"]
+[node name="FrameRateLimitLabel" type="Label" parent="TitleScreen/SettingsMenu" unique_id=1920292375]
 layout_mode = 0
 offset_left = 224.0
 offset_top = 528.0
@@ -944,7 +1044,7 @@ offset_bottom = 600.0
 text = "帧数上限"
 vertical_alignment = 1
 
-[node name="FrameRateLimitSlider" parent="TitleScreen/SettingsMenu" instance=ExtResource("frame_rate_limit_slider")]
+[node name="FrameRateLimitSlider" parent="TitleScreen/SettingsMenu" unique_id=318846282 instance=ExtResource("frame_rate_limit_slider")]
 unique_name_in_owner = true
 layout_mode = 0
 offset_left = 344.0
@@ -1165,7 +1265,7 @@ theme_override_constants/margin_top = 8
 theme_override_constants/margin_right = 8
 theme_override_constants/margin_bottom = 16
 
-[node name="LeftPanel" type="VBoxContainer" parent="TitleScreen/CodexMenu/VSplitContainer/CodexContentDisplay/CodexCardsMenu/HSplitContainer/ScrollContainer/MarginContainer2"]
+[node name="LeftPanel" type="VBoxContainer" parent="TitleScreen/CodexMenu/VSplitContainer/CodexContentDisplay/CodexCardsMenu/HSplitContainer/ScrollContainer/MarginContainer2" unique_id=18188491]
 layout_mode = 2
 theme_override_constants/separation = 16
 
@@ -1177,7 +1277,7 @@ theme_override_constants/separation = 8
 [node name="CodexCardColorButton" parent="TitleScreen/CodexMenu/VSplitContainer/CodexContentDisplay/CodexCardsMenu/HSplitContainer/ScrollContainer/MarginContainer2/LeftPanel/CodexCardPackContainer" unique_id=1144760387 instance=ExtResource("11_kw7ld")]
 layout_mode = 2
 
-[node name="CodexSearchLineEdit" type="LineEdit" parent="TitleScreen/CodexMenu/VSplitContainer/CodexContentDisplay/CodexCardsMenu/HSplitContainer/ScrollContainer/MarginContainer2/LeftPanel"]
+[node name="CodexSearchLineEdit" type="LineEdit" parent="TitleScreen/CodexMenu/VSplitContainer/CodexContentDisplay/CodexCardsMenu/HSplitContainer/ScrollContainer/MarginContainer2/LeftPanel" unique_id=702039100]
 unique_name_in_owner = true
 layout_mode = 2
 placeholder_text = "搜索..."
@@ -1602,21 +1702,17 @@ layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="ModMenu" parent="TitleScreen" instance=ExtResource("mod_menu_scene")]
+[node name="ModMenu" parent="TitleScreen" unique_id=583880916 instance=ExtResource("mod_menu_scene")]
+layout_mode = 1
 
 [node name="ProfileStatsMenu" parent="TitleScreen" unique_id=187253601 node_paths=PackedStringArray("navigation_button_to_menu") instance=ExtResource("25_yjgj2")]
-visible = false
 layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
 navigation_button_to_menu = {
 NodePath("Header/MainMenuButton"): NodePath("../MainMenu")
 }
 
-[node name="AchievementMenu" parent="TitleScreen" node_paths=PackedStringArray("navigation_button_to_menu") instance=ExtResource("achievement_menu_scene")]
+[node name="AchievementMenu" parent="TitleScreen" unique_id=907267803 node_paths=PackedStringArray("navigation_button_to_menu") instance=ExtResource("achievement_menu_scene")]
+layout_mode = 1
 navigation_button_to_menu = {
 NodePath("Header/MainMenuButton"): NodePath("../MainMenu")
 }
@@ -2384,7 +2480,7 @@ horizontal_alignment = 1
 vertical_alignment = 1
 script = ExtResource("30_plfau")
 
-[node name="FPSDisplay" type="Label" parent="RunScreen/Combat"]
+[node name="FPSDisplay" type="Label" parent="RunScreen/Combat" unique_id=1819337254]
 layout_mode = 0
 offset_left = 848.0
 offset_top = 8.0
@@ -2611,13 +2707,6 @@ theme_override_constants/separation = 20
 [node name="RunSummaryOverlay" parent="RunScreen" unique_id=2107005201 instance=ExtResource("21_fj66g")]
 unique_name_in_owner = true
 layout_mode = 0
-anchors_preset = 0
-anchor_right = 0.0
-anchor_bottom = 0.0
-offset_right = 1200.0
-offset_bottom = 700.0
-grow_horizontal = 1
-grow_vertical = 1
 
 [node name="RunStartOptions" type="Control" parent="RunScreen" unique_id=330842242]
 unique_name_in_owner = true
@@ -2789,6 +2878,9 @@ anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_right = 0.0
+offset_bottom = 0.0
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="CardEnchantOverlay" parent="RunScreen" unique_id=273723738 instance=ExtResource("101_enchant")]
 unique_name_in_owner = true

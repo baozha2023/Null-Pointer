@@ -78,8 +78,10 @@ func damage(_damage: int, bypass_block: bool = false) -> Array[int]:
 			Signals.combatant_blocked.emit(self, _damage)
 		else:
 			# damage exceeds block
-			bypassed_damage = _damage - player_data.player_block
+			var amount_blocked: int = player_data.player_block
+			bypassed_damage = _damage - amount_blocked
 			player_data.player_block = 0
+			Signals.combatant_blocked.emit(self, amount_blocked)
 			Signals.combatant_block_broken.emit(self)
 	
 	block.update_block(player_data.player_block)

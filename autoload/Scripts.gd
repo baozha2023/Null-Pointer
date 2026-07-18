@@ -1,13 +1,6 @@
 # Hardcoded script paths
 extends Node
 
-#region Achievement trigger scripts
-const ACHIEVEMENT_TRIGGER_ENEMY_KILLED: String = "res://scripts/achievements/AchievementTriggerEnemyKilled.gd"
-const ACHIEVEMENT_TRIGGER_COMBAT_COMPLETED: String = "res://scripts/achievements/AchievementTriggerCombatCompleted.gd"
-const ACHIEVEMENT_TRIGGER_RUN_VICTORY: String = "res://scripts/achievements/AchievementTriggerRunVictory.gd"
-const ACHIEVEMENT_TRIGGER_ALL_CHARACTERS: String = "res://scripts/achievements/AchievementTriggerAllCharacters.gd"
-#endregion
-
 #region Action scripts
 
 # map generation actions

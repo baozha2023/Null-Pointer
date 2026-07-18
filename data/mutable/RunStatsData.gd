@@ -18,6 +18,7 @@ enum STATS {
 	COMBAT_BOSS_COUNT,
 	
 	SHOPS_VISITED_AMOUNT, # Will not count unless the shop is actually opened
+	SHOP_LOCATIONS_ENTERED, # Counts selecting/traveling to a shop map node
 }
 
 
@@ -77,7 +78,7 @@ enum STATS {
 ## If false combat_stats will be cleared at the end of the run to cut down on storage.
 @export var run_is_detailed: bool = true
 
-## Number of milliseconds it took to complete run.
+## Number of seconds it took to complete the run.
 @export var run_completion_time: float = 0.0
 ## Time-date of run completion in unix time seconds
 @export var run_completion_timestamp: int = 0

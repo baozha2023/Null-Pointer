@@ -1,17 +1,20 @@
-## Read-only definition for an achievement. Runtime unlock state is stored by ProfileStore.
+## Read-only, data-driven definition for an achievement.
 extends SerializableData
 class_name AchievementData
 
-@export var achievement_name: String = "未定义成就"
-@export var achievement_description: String = "未定义成就描述"
-@export var achievement_icon_texture_path: String = "sprites/achievements/achievement_locked.png"
-@export var achievement_is_hidden: bool = false
-@export var achievement_display_order: int = 0
-@export var achievement_trigger_script_path: String = ""
-@export var achievement_trigger_values: Dictionary[String, Variant] = {}
-@export var achievement_disallows_custom_runs: bool = false
+enum RUN_POLICIES {
+	STANDARD_ONLY,
+	ALLOW_CUSTOM,
+	CUSTOM_ONLY,
+}
 
-## Runtime-only provenance. External achievement JSON cannot opt into platform synchronization.
+@export var achievement_presentation: AchievementPresentationData = AchievementPresentationData.new()
+@export var achievement_triggers: Array[AchievementTriggerData] = []
+@export var achievement_progress: AchievementProgressData = null
+@export var achievement_run_policy: int = RUN_POLICIES.STANDARD_ONLY
+@export var achievement_record_after_unlock: bool = false
+
+## Runtime-only provenance. External JSON cannot opt into platform synchronization.
 var achievement_source_mod_object_id: String = "mod_data_base_game"
 var achievement_source_name: String = "原生成就"
 var achievement_is_vanilla: bool = false
@@ -28,3 +31,15 @@ func set_mod_source(mod_object_id: String, mod_name: String) -> void:
 		return
 	achievement_source_mod_object_id = mod_object_id
 	achievement_source_name = mod_name if mod_name != "" else mod_object_id
+
+
+func get_display_name() -> String:
+	return achievement_presentation.achievement_name
+
+
+func get_display_description() -> String:
+	return achievement_presentation.achievement_description
+
+
+func get_display_icon_path() -> String:
+	return achievement_presentation.achievement_icon_texture_path

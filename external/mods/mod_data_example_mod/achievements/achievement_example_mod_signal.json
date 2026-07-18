@@ -1,0 +1,41 @@
+{
+	"patch_data": {},
+	"properties": {
+		"object_id": "mod_data_example_mod.achievement_signal",
+		"achievement_presentation": {
+			"object_id": "",
+			"achievement_name": "模组已接入",
+			"achievement_description": "触发 Example Mod 订阅的自定义信号。",
+			"achievement_icon_texture_path": "sprites/achievements/achievement_locked.png",
+			"achievement_category_id": "example",
+			"achievement_category_name": "示例",
+			"achievement_category_order": 0,
+			"achievement_display_order": 0,
+			"achievement_hidden_policy": 0,
+			"achievement_value_format": 0,
+			"achievement_value_suffix": "",
+			"achievement_show_current_value": true,
+			"achievement_show_latest_value": true,
+			"achievement_show_best_value": true,
+			"achievement_show_recent_values": true
+		},
+		"achievement_triggers": [{
+			"object_id": "",
+			"achievement_event_id": "custom_signal:custom_signal_open_see_top_ui",
+			"achievement_conditions": [],
+			"achievement_progress_field_path": "value",
+			"achievement_unique_value_field_path": "",
+			"achievement_custom_evaluator_script_path": ""
+		}],
+		"achievement_progress": {
+			"object_id": "",
+			"achievement_target_value": 3.0,
+			"achievement_unlock_comparison": 0,
+			"achievement_aggregation": 0,
+			"achievement_scope": 0,
+			"achievement_recent_history_limit": 3
+		},
+		"achievement_run_policy": 1,
+		"achievement_record_after_unlock": false
+	}
+}

@@ -46,95 +46,313 @@ func add_achievements() -> void:
 			"id": "achievement_first_kill",
 			"name": "首次回收",
 			"description": "击败一个敌方进程。",
-			"trigger_script": Scripts.ACHIEVEMENT_TRIGGER_ENEMY_KILLED,
+			"category": ["milestone", "里程碑", 0],
+			"triggers": [{"event": AchievementManager.EVENT_ENEMY_KILLED}],
 		},
 		{
 			"id": "achievement_first_miniboss",
 			"name": "权限提升",
 			"description": "击败一个精英进程。",
-			"trigger_script": Scripts.ACHIEVEMENT_TRIGGER_COMBAT_COMPLETED,
-			"trigger_values": {"location_type": LocationData.LOCATION_TYPES.MINIBOSS},
+			"category": ["milestone", "里程碑", 0],
+			"triggers": [{"event": AchievementManager.EVENT_COMBAT_COMPLETED, "conditions": [
+				["values.combat_victory", AchievementConditionData.OPERATORS.IS_TRUE, null],
+				["values.location_type", AchievementConditionData.OPERATORS.EQUAL, LocationData.LOCATION_TYPES.MINIBOSS],
+			]}],
 		},
 		{
 			"id": "achievement_first_boss",
 			"name": "突破防火墙",
 			"description": "击败一个 Boss 进程。",
-			"trigger_script": Scripts.ACHIEVEMENT_TRIGGER_COMBAT_COMPLETED,
-			"trigger_values": {"location_type": LocationData.LOCATION_TYPES.BOSS},
+			"category": ["milestone", "里程碑", 0],
+			"triggers": [{"event": AchievementManager.EVENT_COMBAT_COMPLETED, "conditions": [
+				["values.combat_victory", AchievementConditionData.OPERATORS.IS_TRUE, null],
+				["values.location_type", AchievementConditionData.OPERATORS.EQUAL, LocationData.LOCATION_TYPES.BOSS],
+			]}],
 		},
 		{
 			"id": "achievement_first_victory",
 			"name": "空指针",
 			"description": "获得一次胜利。",
-			"trigger_script": Scripts.ACHIEVEMENT_TRIGGER_RUN_VICTORY,
+			"category": ["milestone", "里程碑", 0],
+			"triggers": [_achievement_victory_trigger()],
 		},
 		{
 			"id": "achievement_victory_red",
 			"name": "代码即武器",
 			"description": "使用码农获得一次胜利。",
-			"trigger_script": Scripts.ACHIEVEMENT_TRIGGER_RUN_VICTORY,
-			"trigger_values": {"character_id": "character_red"},
+			"category": ["character", "角色专精", 1],
+			"triggers": [_achievement_victory_trigger([
+				["values.run_character_id", AchievementConditionData.OPERATORS.EQUAL, "character_red"],
+			])],
 		},
 		{
 			"id": "achievement_victory_blue",
 			"name": "无痕渗透",
 			"description": "使用渗透专家获得一次胜利。",
-			"trigger_script": Scripts.ACHIEVEMENT_TRIGGER_RUN_VICTORY,
-			"trigger_values": {"character_id": "character_blue"},
+			"category": ["character", "角色专精", 1],
+			"triggers": [_achievement_victory_trigger([
+				["values.run_character_id", AchievementConditionData.OPERATORS.EQUAL, "character_blue"],
+			])],
 		},
 		{
 			"id": "achievement_victory_green",
 			"name": "野蛮生长",
 			"description": "使用赛博植物学家获得一次胜利。",
-			"trigger_script": Scripts.ACHIEVEMENT_TRIGGER_RUN_VICTORY,
-			"trigger_values": {"character_id": "character_green"},
+			"category": ["character", "角色专精", 1],
+			"triggers": [_achievement_victory_trigger([
+				["values.run_character_id", AchievementConditionData.OPERATORS.EQUAL, "character_green"],
+			])],
 		},
 		{
 			"id": "achievement_victory_orange",
 			"name": "重构完成",
 			"description": "使用重构工匠获得一次胜利。",
-			"trigger_script": Scripts.ACHIEVEMENT_TRIGGER_RUN_VICTORY,
-			"trigger_values": {"character_id": "character_orange"},
+			"category": ["character", "角色专精", 1],
+			"triggers": [_achievement_victory_trigger([
+				["values.run_character_id", AchievementConditionData.OPERATORS.EQUAL, "character_orange"],
+			])],
+		},
+		{
+			"id": "achievement_victory_difficulty_0",
+			"name": "难度0",
+			"description": "在难度 0 获得一次标准局胜利。",
+			"category": ["challenge", "运行挑战", 4],
+			"triggers": [_achievement_victory_trigger([
+				["values.run_difficulty_level", AchievementConditionData.OPERATORS.EQUAL, 0],
+			])],
+		},
+		{
+			"id": "achievement_victory_difficulty_1",
+			"name": "难度1",
+			"description": "在难度 1 获得一次标准局胜利。",
+			"category": ["challenge", "运行挑战", 4],
+			"triggers": [_achievement_victory_trigger([
+				["values.run_difficulty_level", AchievementConditionData.OPERATORS.EQUAL, 1],
+			])],
+		},
+		{
+			"id": "achievement_victory_difficulty_2",
+			"name": "难度2",
+			"description": "在难度 2 获得一次标准局胜利。",
+			"category": ["challenge", "运行挑战", 4],
+			"triggers": [_achievement_victory_trigger([
+				["values.run_difficulty_level", AchievementConditionData.OPERATORS.EQUAL, 2],
+			])],
+		},
+		{
+			"id": "achievement_victory_difficulty_3",
+			"name": "难度3",
+			"description": "在难度 3 获得一次标准局胜利。",
+			"category": ["challenge", "运行挑战", 4],
+			"triggers": [_achievement_victory_trigger([
+				["values.run_difficulty_level", AchievementConditionData.OPERATORS.EQUAL, 3],
+			])],
+		},
+		{
+			"id": "achievement_victory_difficulty_4",
+			"name": "难度4",
+			"description": "在难度 4 获得一次标准局胜利。",
+			"category": ["challenge", "运行挑战", 4],
+			"triggers": [_achievement_victory_trigger([
+				["values.run_difficulty_level", AchievementConditionData.OPERATORS.EQUAL, 4],
+			])],
 		},
 		{
 			"id": "achievement_victory_difficulty_5",
-			"name": "内核级危机",
-			"description": "在难度 5 获得一次胜利。",
-			"trigger_script": Scripts.ACHIEVEMENT_TRIGGER_RUN_VICTORY,
-			"trigger_values": {"minimum_difficulty": 5},
+			"name": "难度5",
+			"description": "在难度 5 获得一次标准局胜利。",
+			"category": ["challenge", "运行挑战", 4],
+			"triggers": [_achievement_victory_trigger([
+				["values.run_difficulty_level", AchievementConditionData.OPERATORS.EQUAL, 5],
+			])],
 		},
 		{
 			"id": "achievement_all_characters",
 			"name": "全栈执行",
 			"description": "使用全部四个原生角色分别获得一次胜利。",
-			"trigger_script": Scripts.ACHIEVEMENT_TRIGGER_ALL_CHARACTERS,
-			"trigger_values": {
-				"required_achievement_ids": [
-					"achievement_victory_red",
-					"achievement_victory_blue",
-					"achievement_victory_green",
-					"achievement_victory_orange",
+			"category": ["character", "角色专精", 1],
+			"hidden_policy": AchievementPresentationData.HIDDEN_POLICIES.HIDE_ALL,
+			"triggers": [{
+				"event": AchievementManager.EVENT_RUN_COMPLETED,
+				"conditions": [
+					["values.run_victory", AchievementConditionData.OPERATORS.IS_TRUE, null],
+					["values.run_character_id", AchievementConditionData.OPERATORS.IN, ["character_red", "character_blue", "character_green", "character_orange"]],
 				],
-			},
-			"hidden": true,
+				"unique_field": "values.run_character_id",
+			}],
+			"progress": [4, AchievementProgressData.COMPARISONS.GREATER_OR_EQUAL, AchievementProgressData.AGGREGATIONS.UNIQUE_COUNT, AchievementProgressData.SCOPES.LIFETIME, 5],
+		},
+		{
+			"id": "achievement_enemy_kills_100", "name": "垃圾回收器",
+			"description": "在标准局中累计击败 100 个敌方进程。",
+			"category": ["milestone", "里程碑", 0],
+			"triggers": [{"event": AchievementManager.EVENT_RUN_COMPLETED, "progress_field": "values.enemies_killed"}],
+			"progress": [100, AchievementProgressData.COMPARISONS.GREATER_OR_EQUAL, AchievementProgressData.AGGREGATIONS.SUM, AchievementProgressData.SCOPES.LIFETIME, 5],
+		},
+		{
+			"id": "achievement_victories_10", "name": "十次上线",
+			"description": "累计获得 10 次标准局胜利。",
+			"category": ["milestone", "里程碑", 0],
+			"triggers": [_achievement_victory_trigger()],
+			"progress": [10, AchievementProgressData.COMPARISONS.GREATER_OR_EQUAL, AchievementProgressData.AGGREGATIONS.COUNT, AchievementProgressData.SCOPES.LIFETIME, 5],
+		},
+		{
+			"id": "achievement_minibosses_25", "name": "精英猎手",
+			"description": "在标准局中累计击败 25 个精英进程。",
+			"category": ["milestone", "里程碑", 0],
+			"triggers": [{"event": AchievementManager.EVENT_RUN_COMPLETED, "progress_field": "values.minibosses_defeated"}],
+			"progress": [25, AchievementProgressData.COMPARISONS.GREATER_OR_EQUAL, AchievementProgressData.AGGREGATIONS.SUM, AchievementProgressData.SCOPES.LIFETIME, 5],
+		},
+		{
+			"id": "achievement_flawless_combat", "name": "无损握手",
+			"description": "在一场战斗中不受到生命伤害并获胜。",
+			"category": ["combat", "战斗挑战", 2],
+			"triggers": [{"event": AchievementManager.EVENT_COMBAT_COMPLETED, "conditions": [
+				["values.combat_victory", AchievementConditionData.OPERATORS.IS_TRUE, null],
+				["values.player_damage", AchievementConditionData.OPERATORS.EQUAL, 0],
+			]}],
+		},
+		{
+			"id": "achievement_cards_played_turn_10", "name": "线程风暴",
+			"description": "在一个回合内打出至少 10 张牌。",
+			"category": ["combat", "战斗挑战", 2],
+			"triggers": [_achievement_combat_stat_trigger("CARDS_PLAYED", "turn_value")],
+			"progress": [10, AchievementProgressData.COMPARISONS.GREATER_OR_EQUAL, AchievementProgressData.AGGREGATIONS.MAXIMUM, AchievementProgressData.SCOPES.TURN, 5],
+		},
+		{
+			"id": "achievement_damage_blocked_turn_50", "name": "绝对防御",
+			"description": "在一个回合内用格挡抵消至少 50 点伤害。",
+			"category": ["combat", "战斗挑战", 2],
+			"triggers": [_achievement_combat_stat_trigger("PLAYER_BLOCKED_AMOUNT", "turn_value")],
+			"progress": [50, AchievementProgressData.COMPARISONS.GREATER_OR_EQUAL, AchievementProgressData.AGGREGATIONS.MAXIMUM, AchievementProgressData.SCOPES.TURN, 5],
+		},
+		{
+			"id": "achievement_damage_dealt_turn_100", "name": "带宽压制",
+			"description": "在一个回合内对敌人造成至少 100 点有效生命伤害。",
+			"category": ["combat", "战斗挑战", 2],
+			"triggers": [_achievement_combat_stat_trigger("ENEMY_DAMAGED_CAPPED_AMOUNT", "turn_value")],
+			"progress": [100, AchievementProgressData.COMPARISONS.GREATER_OR_EQUAL, AchievementProgressData.AGGREGATIONS.MAXIMUM, AchievementProgressData.SCOPES.TURN, 5],
+		},
+		{
+			"id": "achievement_cards_exhausted_combat_10", "name": "内存清理",
+			"description": "在一场战斗中消耗至少 10 张牌。",
+			"category": ["combat", "战斗挑战", 2],
+			"triggers": [_achievement_combat_stat_trigger("CARDS_EXHAUSTED", "combat_value")],
+			"progress": [10, AchievementProgressData.COMPARISONS.GREATER_OR_EQUAL, AchievementProgressData.AGGREGATIONS.MAXIMUM, AchievementProgressData.SCOPES.COMBAT, 5],
+		},
+		{
+			"id": "achievement_victory_small_deck", "name": "最小化构建",
+			"description": "以不超过 7 张牌的牌组获得标准局胜利。",
+			"category": ["build", "构筑挑战", 3],
+			"triggers": [_achievement_victory_trigger([], "values.run_deck_size")],
+			"progress": [7, AchievementProgressData.COMPARISONS.LESS_OR_EQUAL, AchievementProgressData.AGGREGATIONS.MINIMUM, AchievementProgressData.SCOPES.LIFETIME, 5],
+		},
+		{
+			"id": "achievement_victory_artifacts_10", "name": "插件生态",
+			"description": "持有至少 10 件遗物并获得标准局胜利。",
+			"category": ["build", "构筑挑战", 3],
+			"triggers": [_achievement_victory_trigger([], "values.run_artifact_count")],
+			"progress": [10, AchievementProgressData.COMPARISONS.GREATER_OR_EQUAL, AchievementProgressData.AGGREGATIONS.MAXIMUM, AchievementProgressData.SCOPES.LIFETIME, 5],
+		},
+		{
+			"id": "achievement_victory_money_500", "name": "资源囤积",
+			"description": "持有至少 500 数据币并获得标准局胜利。",
+			"category": ["build", "构筑挑战", 3],
+			"triggers": [_achievement_victory_trigger([], "values.run_player_money")],
+			"progress": [500, AchievementProgressData.COMPARISONS.GREATER_OR_EQUAL, AchievementProgressData.AGGREGATIONS.MAXIMUM, AchievementProgressData.SCOPES.LIFETIME, 5],
+		},
+		{
+			"id": "achievement_victory_full_health", "name": "完整镜像",
+			"description": "以满生命值获得标准局胜利。",
+			"category": ["challenge", "运行挑战", 4],
+			"triggers": [_achievement_victory_trigger([
+				["values.run_player_health", AchievementConditionData.OPERATORS.EQUAL, {"field": "values.run_player_health_max"}],
+			])],
+		},
+		{
+			"id": "achievement_victory_under_45_minutes", "name": "极速部署",
+			"description": "在 45 分钟内获得标准局胜利。",
+			"category": ["challenge", "运行挑战", 4],
+			"format": AchievementPresentationData.VALUE_FORMATS.DURATION,
+			"triggers": [_achievement_victory_trigger([], "values.run_completion_time_ms")],
+			"progress": [2700000, AchievementProgressData.COMPARISONS.LESS_OR_EQUAL, AchievementProgressData.AGGREGATIONS.MINIMUM, AchievementProgressData.SCOPES.LIFETIME, 5],
+		},
+		{
+			"id": "achievement_victory_no_shop", "name": "离线部署",
+			"description": "整局不选择任何商店地图节点并获得标准局胜利。",
+			"category": ["challenge", "运行挑战", 4],
+			"triggers": [_achievement_victory_trigger([
+				["values.shop_locations_entered", AchievementConditionData.OPERATORS.EQUAL, 0],
+			])],
 		},
 	]
 
 	for index: int in definitions.size():
 		var definition: Dictionary = definitions[index]
-		var achievement_data: AchievementData = AchievementData.new(str(definition["id"]))
-		achievement_data.achievement_name = str(definition["name"])
-		achievement_data.achievement_description = str(definition["description"])
-		achievement_data.achievement_icon_texture_path = "sprites/achievements/%s.png" % achievement_data.object_id
-		achievement_data.achievement_is_hidden = bool(definition.get("hidden", false))
-		achievement_data.achievement_display_order = index
-		achievement_data.achievement_trigger_script_path = str(definition["trigger_script"])
-		var trigger_values: Dictionary[String, Variant] = {}
-		trigger_values.assign(definition.get("trigger_values", {}))
-		achievement_data.achievement_trigger_values = trigger_values
-		achievement_data.achievement_disallows_custom_runs = true
+		var achievement_data: AchievementData = _build_achievement_data(definition, index)
 		achievement_data.mark_as_vanilla()
 		Global.register_rod(achievement_data)
+
+
+func _build_achievement_data(definition: Dictionary, display_order: int) -> AchievementData:
+	var achievement_data := AchievementData.new(str(definition["id"]))
+	var presentation := AchievementPresentationData.new()
+	presentation.achievement_name = str(definition["name"])
+	presentation.achievement_description = str(definition["description"])
+	presentation.achievement_icon_texture_path = "sprites/achievements/%s.png" % achievement_data.object_id
+	var category: Array = definition.get("category", ["general", "通用", 0])
+	presentation.achievement_category_id = str(category[0])
+	presentation.achievement_category_name = str(category[1])
+	presentation.achievement_category_order = int(category[2])
+	presentation.achievement_display_order = display_order
+	presentation.achievement_hidden_policy = int(definition.get("hidden_policy", AchievementPresentationData.HIDDEN_POLICIES.VISIBLE))
+	presentation.achievement_value_format = int(definition.get("format", AchievementPresentationData.VALUE_FORMATS.INTEGER))
+	presentation.achievement_value_suffix = str(definition.get("suffix", ""))
+	presentation.achievement_show_recent_values = bool(definition.get("show_recent", false))
+	achievement_data.achievement_presentation = presentation
+	achievement_data.achievement_run_policy = AchievementData.RUN_POLICIES.STANDARD_ONLY
+	achievement_data.achievement_record_after_unlock = bool(definition.get("record_after_unlock", false))
+	for trigger_definition: Dictionary in definition["triggers"]:
+		var trigger := AchievementTriggerData.new()
+		trigger.achievement_event_id = str(trigger_definition["event"])
+		trigger.achievement_progress_field_path = str(trigger_definition.get("progress_field", "value"))
+		trigger.achievement_unique_value_field_path = str(trigger_definition.get("unique_field", ""))
+		trigger.achievement_custom_evaluator_script_path = str(trigger_definition.get("evaluator", ""))
+		for condition_definition: Array in trigger_definition.get("conditions", []):
+			var condition := AchievementConditionData.new()
+			condition.achievement_condition_field_path = str(condition_definition[0])
+			condition.achievement_condition_operator = int(condition_definition[1])
+			condition.achievement_condition_value = condition_definition[2]
+			trigger.achievement_conditions.append(condition)
+		achievement_data.achievement_triggers.append(trigger)
+	if definition.has("progress"):
+		var progress_definition: Array = definition["progress"]
+		var progress := AchievementProgressData.new()
+		progress.achievement_target_value = float(progress_definition[0])
+		progress.achievement_unlock_comparison = int(progress_definition[1])
+		progress.achievement_aggregation = int(progress_definition[2])
+		progress.achievement_scope = int(progress_definition[3])
+		progress.achievement_recent_history_limit = int(progress_definition[4])
+		achievement_data.achievement_progress = progress
+	return achievement_data
+
+
+func _achievement_victory_trigger(extra_conditions: Array = [], progress_field: String = "value") -> Dictionary:
+	var conditions: Array = [["values.run_victory", AchievementConditionData.OPERATORS.IS_TRUE, null]]
+	conditions.append_array(extra_conditions)
+	return {
+		"event": AchievementManager.EVENT_RUN_COMPLETED,
+		"conditions": conditions,
+		"progress_field": progress_field,
+	}
+
+
+func _achievement_combat_stat_trigger(stat_name: String, value_field: String) -> Dictionary:
+	return {
+		"event": AchievementManager.EVENT_COMBAT_STAT_CHANGED,
+		"conditions": [["values.stat_name", AchievementConditionData.OPERATORS.EQUAL, stat_name]],
+		"progress_field": "values.%s" % value_field,
+	}
 #endregion
 
 
@@ -1735,7 +1953,7 @@ func add_characters() -> void:
 		"card_basic_block_green",
 		"card_basic_block_green",
 		"card_basic_block_green",
-        "card_energy_next_turn"
+		"card_energy_injection"
 	]
 
 	# green character animations
@@ -1787,7 +2005,7 @@ func add_characters() -> void:
 		"card_basic_block_red",
 		"card_basic_block_red",
 		"card_basic_block_red",
-		"card_energy_next_turn"
+		"card_energy_injection"
 	]
 
 	var animation_character_red: AnimationData = AnimationData.new("animation_character_{0}".format([character_color]))
@@ -1838,7 +2056,7 @@ func add_characters() -> void:
 		"card_basic_block_blue",
 		"card_basic_block_blue",
 		"card_basic_block_blue",
-    	"card_energy_next_turn"
+		"card_energy_injection"
 	]
 
 	# 动画资源接入
@@ -1892,7 +2110,7 @@ func add_characters() -> void:
 		  "card_basic_block_orange",
 		  "card_basic_block_orange",
 		  "card_basic_block_orange",
-          "card_energy_next_turn"
+		"card_energy_injection"
 	]
 
 	# 动画资源接入

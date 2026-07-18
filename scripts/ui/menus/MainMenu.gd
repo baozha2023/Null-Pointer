@@ -7,6 +7,7 @@ extends BaseMenu
 
 @onready var new_run_button: Button = $VBoxContainer/NewRunButton
 @onready var mod_button: Button = $VBoxContainer/ModButton
+@onready var fresh_run_hint_label: Label = $VBoxContainer/FreshRunHintLabel
 
 const LOBBY_BGM: AudioStream = preload("res://sounds/bgm/bgm_lobby.mp3")
 
@@ -43,6 +44,7 @@ func update_continue_button_visibility() -> void:
 	continue_button.visible = has_save_file
 	forfeit_run_button.visible = has_save_file
 	new_run_button.visible = not has_save_file
+	fresh_run_hint_label.visible = not has_save_file
 
 func _on_run_ended():
 	# go back to tile screen on abandoned run, but not failed run

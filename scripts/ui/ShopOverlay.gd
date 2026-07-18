@@ -23,16 +23,10 @@ func _ready():
 	
 	continue_button.button_up.connect(_on_continue_button_up)
 
-func populate_shop() -> void:
-	clear_shop()
-	
-	var shop_data: ShopData = Global.get_shop_at_player_location()
-	if shop_data == null:
-		shop_data = Global.generate_shop_at_player_location()
-
+## Rebuilds controls from existing inventory. This never generates or replaces shop items.
+func _rebuild_shop_ui(shop_data: ShopData) -> void:
+	_clear_shop_ui()
 	if shop_data != null:
-		shop_data.visit_shop()	# ensure the shop is populated
-		
 		### populate shop cards
 		var shop_cards: Array[CardData] = shop_data.shop_cards
 		for card_data in shop_cards:
@@ -114,7 +108,7 @@ func populate_shop() -> void:
 			consumable_shop_button.init(purchase_consumable_action)
 		
 
-func clear_shop():
+func _clear_shop_ui() -> void:
 	for child in card_container.get_children():
 		child.queue_free()
 	for child in artifact_container.get_children():
@@ -124,25 +118,30 @@ func clear_shop():
 
 func _on_combat_started(_event_id: String):
 	visible = false
-	clear_shop()
+	_clear_shop_ui()
 
 func _on_shop_opened():
 	visible = true
-	populate_shop()
+	var shop_data: ShopData = Global.get_shop_at_player_location()
+	if shop_data == null:
+		shop_data = Global.generate_shop_at_player_location()
+	if shop_data != null:
+		shop_data.visit_shop()
+	_rebuild_shop_ui(shop_data)
 
 func _on_card_purchased(_card_data: CardData):
-	_repopulate_shop_after_actions_ended()
+	_rebuild_shop_ui_after_actions_ended()
 
 func _on_artifact_purchased(_artifact_data: ArtifactData):
-	_repopulate_shop_after_actions_ended()
+	_rebuild_shop_ui_after_actions_ended()
 
 func _on_consumable_purchased(_consumable_object_id: String):
-	_repopulate_shop_after_actions_ended()
+	_rebuild_shop_ui_after_actions_ended()
 
-func _repopulate_shop_after_actions_ended() -> void:
+func _rebuild_shop_ui_after_actions_ended() -> void:
 	if ActionHandler.actions_being_performed:
 		await ActionHandler.actions_ended
-	populate_shop()
+	_rebuild_shop_ui(Global.get_shop_at_player_location())
 
 func _on_continue_button_up():
 	visible = false
@@ -162,5 +161,5 @@ func _on_map_location_selected(_location_data: LocationData):
 	visible = false
 
 func _on_player_killed(_player: Player):
-	clear_shop()
+	_clear_shop_ui()
 	visible = false

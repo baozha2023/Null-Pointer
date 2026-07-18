@@ -15,7 +15,7 @@ var _database_ready: bool = false
 var _profile_summary: ProfileSummaryData = ProfileSummaryData.new()
 var _character_id_to_stats: Dictionary[String, CharacterProfileStatsData] = {}
 var _discovered_card_ids: Dictionary[String, bool] = {}
-var _achievement_unlock_timestamps: Dictionary[String, int] = {}
+var _achievement_states: Dictionary[String, AchievementStateData] = {}
 
 
 func _ready() -> void:
@@ -120,7 +120,27 @@ func _get_schema_statements() -> Array[String]:
 			total_run_time REAL NOT NULL DEFAULT 0
 		);""",
 		"CREATE TABLE discovered_cards (card_id TEXT PRIMARY KEY);",
-		"CREATE TABLE achievement_unlocks (achievement_id TEXT PRIMARY KEY, unlocked_at INTEGER NOT NULL);",
+		"""CREATE TABLE achievement_states (
+			achievement_id TEXT PRIMARY KEY,
+			current_value REAL NOT NULL DEFAULT 0,
+			latest_value REAL NOT NULL DEFAULT 0,
+			best_value REAL NOT NULL DEFAULT 0,
+			update_count INTEGER NOT NULL DEFAULT 0,
+			scope_update_count INTEGER NOT NULL DEFAULT 0,
+			scope_key TEXT NOT NULL DEFAULT '',
+			updated_at INTEGER NOT NULL DEFAULT 0,
+			unlocked_at INTEGER
+		);""",
+		"CREATE TABLE achievement_unique_values (achievement_id TEXT NOT NULL, scope_key TEXT NOT NULL, value_key TEXT NOT NULL, PRIMARY KEY (achievement_id, scope_key, value_key));",
+		"""CREATE TABLE achievement_recent_values (
+			sample_id INTEGER PRIMARY KEY AUTOINCREMENT,
+			achievement_id TEXT NOT NULL,
+			value REAL NOT NULL,
+			recorded_at INTEGER NOT NULL,
+			scope_key TEXT NOT NULL DEFAULT '',
+			context_json TEXT NOT NULL DEFAULT '{}'
+		);""",
+		"CREATE INDEX achievement_recent_values_index ON achievement_recent_values (achievement_id, sample_id DESC);",
 		"""CREATE TABLE runs (
 			run_id INTEGER PRIMARY KEY AUTOINCREMENT,
 			seed INTEGER NOT NULL,
@@ -179,11 +199,12 @@ func _load_caches() -> bool:
 	for row: Dictionary in _db.query_result:
 		_discovered_card_ids[str(row.get("card_id", ""))] = true
 
-	_achievement_unlock_timestamps.clear()
-	if not _execute("SELECT achievement_id, unlocked_at FROM achievement_unlocks;"):
+	_achievement_states.clear()
+	if not _execute("SELECT * FROM achievement_states;"):
 		return false
 	for row: Dictionary in _db.query_result:
-		_achievement_unlock_timestamps[str(row.get("achievement_id", ""))] = int(row.get("unlocked_at", 0))
+		var achievement_state: AchievementStateData = _achievement_state_from_row(row)
+		_achievement_states[achievement_state.achievement_id] = achievement_state
 	return true
 
 
@@ -225,32 +246,256 @@ func is_card_discovered(card_id: String) -> bool:
 	return _discovered_card_ids.has(card_id)
 
 
-func unlock_achievement(achievement_id: String, timestamp: int) -> WriteResult:
-	if achievement_id == "" or not _database_ready:
-		return WriteResult.FAILED
-	if _achievement_unlock_timestamps.has(achievement_id):
-		return WriteResult.UNCHANGED
-	if not _execute(
-		"INSERT OR IGNORE INTO achievement_unlocks (achievement_id, unlocked_at) VALUES (?, ?);",
-		[achievement_id, timestamp],
-	):
-		return WriteResult.FAILED
-	if _get_changed_row_count() == 0:
-		return WriteResult.UNCHANGED
-	_achievement_unlock_timestamps[achievement_id] = timestamp
-	return WriteResult.INSERTED
+func get_achievement_state(achievement_id: String) -> AchievementStateData:
+	if _achievement_states.has(achievement_id):
+		return _achievement_states[achievement_id].duplicate_data()
+	var result := AchievementStateData.new()
+	result.achievement_id = achievement_id
+	return result
 
 
 func is_achievement_unlocked(achievement_id: String) -> bool:
-	return _achievement_unlock_timestamps.has(achievement_id)
+	return _achievement_states.has(achievement_id) and _achievement_states[achievement_id].unlocked_at > 0
 
 
 func get_unlock_timestamp(achievement_id: String) -> int:
-	return _achievement_unlock_timestamps.get(achievement_id, 0)
+	if not _achievement_states.has(achievement_id):
+		return 0
+	return _achievement_states[achievement_id].unlocked_at
 
 
 func get_unlocked_achievement_timestamps() -> Dictionary[String, int]:
-	return _achievement_unlock_timestamps.duplicate()
+	var result: Dictionary[String, int] = {}
+	for achievement_id: String in _achievement_states:
+		var state: AchievementStateData = _achievement_states[achievement_id]
+		if state.unlocked_at > 0:
+			result[achievement_id] = state.unlocked_at
+	return result
+
+
+func unlock_achievement(achievement_id: String, timestamp: int) -> WriteResult:
+	if achievement_id == "" or not _database_ready:
+		return WriteResult.FAILED
+	if is_achievement_unlocked(achievement_id):
+		return WriteResult.UNCHANGED
+	if not _execute("BEGIN IMMEDIATE;"):
+		return WriteResult.FAILED
+	if not _execute(
+		"""INSERT INTO achievement_states (achievement_id, updated_at, unlocked_at)
+		VALUES (?, ?, ?) ON CONFLICT(achievement_id) DO UPDATE SET
+		updated_at = excluded.updated_at, unlocked_at = excluded.unlocked_at;""",
+		[achievement_id, timestamp, timestamp],
+	):
+		_execute("ROLLBACK;")
+		return WriteResult.FAILED
+	if not _execute("COMMIT;"):
+		_execute("ROLLBACK;")
+		return WriteResult.FAILED
+	var state: AchievementStateData = get_achievement_state(achievement_id)
+	state.updated_at = timestamp
+	state.unlocked_at = timestamp
+	_achievement_states[achievement_id] = state
+	return WriteResult.INSERTED
+
+
+func reset_achievement_scope(achievement_id: String, scope_key: String) -> bool:
+	if achievement_id == "" or not _database_ready:
+		return false
+	if not _achievement_states.has(achievement_id):
+		return true
+	var state: AchievementStateData = get_achievement_state(achievement_id)
+	if state.scope_key == scope_key:
+		return true
+	state.current_value = 0.0
+	state.scope_update_count = 0
+	state.scope_key = scope_key
+	state.updated_at = int(Time.get_unix_time_from_system())
+	if not _execute("BEGIN IMMEDIATE;"):
+		return false
+	if not _write_achievement_state(state, false):
+		_execute("ROLLBACK;")
+		return false
+	# Scoped UNIQUE_COUNT values are irrelevant after their run/combat/turn ends.
+	# Processed event keys remain global so replayed native events stay idempotent.
+	if not _execute(
+		"DELETE FROM achievement_unique_values WHERE achievement_id = ? AND scope_key != ? AND scope_key != '__processed_events__';",
+		[achievement_id, scope_key],
+	):
+		_execute("ROLLBACK;")
+		return false
+	if not _execute("COMMIT;"):
+		_execute("ROLLBACK;")
+		return false
+	_achievement_states[achievement_id] = state
+	return true
+
+
+## Atomically applies one event sample, recent-history retention, and optional unlock.
+func apply_achievement_update(
+	achievement_id: String,
+	candidate_value: float,
+	aggregation: int,
+	scope_key: String,
+	target_value: float,
+	comparison: int,
+	recent_history_limit: int,
+	context: Dictionary[String, Variant],
+	unique_value: String = "",
+	event_key: String = "",
+) -> AchievementStateData:
+	if achievement_id == "" or not _database_ready:
+		return null
+	var old_state: AchievementStateData = get_achievement_state(achievement_id)
+	var next_state: AchievementStateData = old_state.duplicate_data()
+	var scope_changed: bool = next_state.scope_key != scope_key
+	if scope_changed:
+		next_state.current_value = 0.0
+		next_state.scope_update_count = 0
+		next_state.scope_key = scope_key
+	var is_first_scope_value: bool = next_state.scope_update_count == 0
+	var timestamp: int = int(Time.get_unix_time_from_system())
+
+	if not _execute("BEGIN IMMEDIATE;"):
+		return null
+	if event_key != "":
+		if not _execute(
+			"INSERT OR IGNORE INTO achievement_unique_values (achievement_id, scope_key, value_key) VALUES (?, ?, ?);",
+			[achievement_id, "__processed_events__", event_key],
+		):
+			_execute("ROLLBACK;")
+			return null
+		if _get_changed_row_count() == 0:
+			_execute("ROLLBACK;")
+			return old_state
+	if aggregation == AchievementProgressData.AGGREGATIONS.UNIQUE_COUNT:
+		if unique_value == "":
+			_execute("ROLLBACK;")
+			return null
+		if not _execute(
+			"INSERT OR IGNORE INTO achievement_unique_values (achievement_id, scope_key, value_key) VALUES (?, ?, ?);",
+			[achievement_id, scope_key, unique_value],
+		):
+			_execute("ROLLBACK;")
+			return null
+		if _get_changed_row_count() == 0:
+			_execute("ROLLBACK;")
+			return old_state
+		if not _execute("SELECT COUNT(*) AS value_count FROM achievement_unique_values WHERE achievement_id = ? AND scope_key = ?;", [achievement_id, scope_key]):
+			_execute("ROLLBACK;")
+			return null
+		next_state.current_value = float(_db.query_result[0].get("value_count", 0))
+	else:
+		match aggregation:
+			AchievementProgressData.AGGREGATIONS.COUNT:
+				next_state.current_value += 1.0
+			AchievementProgressData.AGGREGATIONS.SUM:
+				next_state.current_value += candidate_value
+			AchievementProgressData.AGGREGATIONS.LATEST:
+				next_state.current_value = candidate_value
+			AchievementProgressData.AGGREGATIONS.MAXIMUM:
+				next_state.current_value = candidate_value if is_first_scope_value else max(next_state.current_value, candidate_value)
+			AchievementProgressData.AGGREGATIONS.MINIMUM:
+				next_state.current_value = candidate_value if is_first_scope_value else min(next_state.current_value, candidate_value)
+
+	next_state.latest_value = candidate_value
+	next_state.update_count += 1
+	next_state.scope_update_count += 1
+	next_state.updated_at = timestamp
+	if old_state.update_count == 0:
+		next_state.best_value = next_state.current_value
+	elif comparison == AchievementProgressData.COMPARISONS.LESS_OR_EQUAL:
+		next_state.best_value = min(old_state.best_value, next_state.current_value)
+	elif comparison == AchievementProgressData.COMPARISONS.EQUAL:
+		if abs(next_state.current_value - target_value) < abs(old_state.best_value - target_value):
+			next_state.best_value = next_state.current_value
+	else:
+		next_state.best_value = max(old_state.best_value, next_state.current_value)
+	if next_state.unlocked_at <= 0 and _achievement_target_reached(next_state.current_value, target_value, comparison):
+		next_state.unlocked_at = timestamp
+
+	if not _write_achievement_state(next_state, false):
+		_execute("ROLLBACK;")
+		return null
+	if recent_history_limit > 0:
+		if not _execute(
+			"INSERT INTO achievement_recent_values (achievement_id, value, recorded_at, scope_key, context_json) VALUES (?, ?, ?, ?, ?);",
+			[achievement_id, candidate_value, timestamp, scope_key, JSON.stringify(context)],
+		):
+			_execute("ROLLBACK;")
+			return null
+		if not _execute(
+			"""DELETE FROM achievement_recent_values WHERE sample_id IN (
+				SELECT sample_id FROM achievement_recent_values WHERE achievement_id = ?
+				ORDER BY sample_id DESC LIMIT -1 OFFSET ?
+			);""",
+			[achievement_id, recent_history_limit],
+		):
+			_execute("ROLLBACK;")
+			return null
+	if not _execute("COMMIT;"):
+		_execute("ROLLBACK;")
+		return null
+	_achievement_states[achievement_id] = next_state
+	return next_state.duplicate_data()
+
+
+func get_achievement_recent_values(achievement_id: String, limit: int = 5) -> Array[AchievementRecentValueData]:
+	var result: Array[AchievementRecentValueData] = []
+	if limit <= 0 or not _database_ready:
+		return result
+	if not _execute(
+		"SELECT value, recorded_at, scope_key, context_json FROM achievement_recent_values WHERE achievement_id = ? ORDER BY sample_id DESC LIMIT ?;",
+		[achievement_id, limit],
+	):
+		return result
+	for row: Dictionary in _db.query_result:
+		var sample := AchievementRecentValueData.new()
+		sample.value = float(row.get("value", 0.0))
+		sample.recorded_at = int(row.get("recorded_at", 0))
+		sample.scope_key = str(row.get("scope_key", ""))
+		var parsed_context: Variant = JSON.parse_string(str(row.get("context_json", "{}")))
+		if parsed_context is Dictionary:
+			sample.context.assign(parsed_context)
+		result.append(sample)
+	return result
+
+
+func _achievement_target_reached(current_value: float, target_value: float, comparison: int) -> bool:
+	match comparison:
+		AchievementProgressData.COMPARISONS.LESS_OR_EQUAL:
+			return current_value <= target_value
+		AchievementProgressData.COMPARISONS.EQUAL:
+			return is_equal_approx(current_value, target_value)
+		_:
+			return current_value >= target_value
+
+
+func _write_achievement_state(state: AchievementStateData, own_transaction: bool = true) -> bool:
+	if own_transaction and not _execute("BEGIN IMMEDIATE;"):
+		return false
+	var unlocked_binding: Variant = state.unlocked_at if state.unlocked_at > 0 else null
+	var succeeded: bool = _execute(
+		"""INSERT INTO achievement_states (
+			achievement_id, current_value, latest_value, best_value, update_count,
+			scope_update_count, scope_key, updated_at, unlocked_at
+		) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT(achievement_id) DO UPDATE SET
+			current_value = excluded.current_value, latest_value = excluded.latest_value,
+			best_value = excluded.best_value, update_count = excluded.update_count,
+			scope_update_count = excluded.scope_update_count, scope_key = excluded.scope_key,
+			updated_at = excluded.updated_at,
+			unlocked_at = COALESCE(achievement_states.unlocked_at, excluded.unlocked_at);""",
+		[
+			state.achievement_id, state.current_value, state.latest_value, state.best_value,
+			state.update_count, state.scope_update_count, state.scope_key, state.updated_at,
+			unlocked_binding,
+		],
+	)
+	if own_transaction:
+		if succeeded:
+			succeeded = _execute("COMMIT;")
+		else:
+			_execute("ROLLBACK;")
+	return succeeded
 
 
 func record_completed_run(run_stats: RunStatsData) -> bool:
@@ -595,6 +840,21 @@ func _character_stats_from_row(row: Dictionary) -> CharacterProfileStatsData:
 	result.highest_difficulty = int(row.get("highest_difficulty", -1))
 	result.fastest_win_run_time = float(row.get("fastest_win_run_time", 0.0))
 	result.total_run_time = float(row.get("total_run_time", 0.0))
+	return result
+
+
+func _achievement_state_from_row(row: Dictionary) -> AchievementStateData:
+	var result := AchievementStateData.new()
+	result.achievement_id = str(row.get("achievement_id", ""))
+	result.current_value = float(row.get("current_value", 0.0))
+	result.latest_value = float(row.get("latest_value", 0.0))
+	result.best_value = float(row.get("best_value", 0.0))
+	result.update_count = int(row.get("update_count", 0))
+	result.scope_update_count = int(row.get("scope_update_count", 0))
+	result.scope_key = str(row.get("scope_key", ""))
+	result.updated_at = int(row.get("updated_at", 0))
+	var unlocked_value: Variant = row.get("unlocked_at", null)
+	result.unlocked_at = 0 if unlocked_value == null else int(unlocked_value)
 	return result
 
 

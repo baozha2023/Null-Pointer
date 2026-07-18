@@ -51,6 +51,7 @@ func _connect_signals():
 	Signals.player_money_changed.connect(_on_player_money_changed)
 	Signals.rest_action_ended.connect(_on_rest_action_ended)
 	Signals.shop_visited_first_time.connect(_on_shop_visited_first_time)
+	Signals.map_location_selected.connect(_on_map_location_selected)
 	
 	# combat stats
 	Signals.combatant_block_broken.connect(_on_combatant_block_broken)
@@ -106,8 +107,6 @@ func _complete_run(is_victory: bool) -> RunStatsData:
 
 	current_run_stats.run_victory = is_victory
 	var character_id: String = Global.player_data.player_character_object_id
-	var run_time: float = Global.player_data.player_run_time
-
 	# Store final run state. Profile aggregates are updated atomically by ProfileStore.
 	current_run_stats.run_seed = Global.player_data.player_run_seed
 	current_run_stats.run_character_id = character_id
@@ -141,7 +140,8 @@ func _complete_run(is_victory: bool) -> RunStatsData:
 			current_run_stats.run_defeat_event_id = current_event_data.object_id
 	
 	# Finalize the last combat and prune disabled detail levels.
-	_on_combat_ended() # treats combat as finished and adds last combat to run stats
+	if current_combat_stats != null:
+		_on_combat_ended(is_victory) # A loss may finalize a still-active combat without counting it as won.
 	
 	if not TRACK_COMBAT:
 		# no tracking; delete combat stats entirely
@@ -180,27 +180,34 @@ func _on_combat_started(event_id: String) -> void:
 	current_combat_stats = CombatStatsData.new(event_id, current_floor)
 	current_combat_stats.initialize_stats()
 
-func _on_combat_ended() -> void:
+func _on_combat_ended(combat_victory: bool = true) -> void:
+	var completed_combat_stats: CombatStatsData = current_combat_stats
+	var completed_location_type: int = -1
+	var location_data: LocationData = Global.get_player_location_data()
+	if location_data != null:
+		completed_location_type = location_data.location_type
 	if current_combat_stats != null:
 		# remove these to save card plays after they're not needed for run history
 		current_combat_stats.cards_played_this_combat.clear()
 		current_combat_stats.cards_played_this_turn.clear()
-		
+	if current_combat_stats != null and current_run_stats != null:
 		current_run_stats.run_combat_stats.append(current_combat_stats)
 	
 	current_combat_stats = null
 	_reset_card_play_history()
 	
-	# track combat victories in run stats
-	if current_run_stats != null:
-		var location_data: LocationData = Global.get_player_location_data()
-		match location_data.location_type:
+	# Only a real, won combat contributes to victory counters. This also prevents a second
+	# _on_combat_ended() call during run finalization from counting the last combat twice.
+	if current_run_stats != null and completed_combat_stats != null and combat_victory:
+		match completed_location_type:
 			LocationData.LOCATION_TYPES.COMBAT:
 				current_run_stats.add_to_enum_stat(RunStatsData.STATS.COMBAT_STANDARD_COUNT, 1)
 			LocationData.LOCATION_TYPES.MINIBOSS:
 				current_run_stats.add_to_enum_stat(RunStatsData.STATS.COMBAT_MINIBOSS_COUNT, 1)
 			LocationData.LOCATION_TYPES.BOSS:
 				current_run_stats.add_to_enum_stat(RunStatsData.STATS.COMBAT_BOSS_COUNT, 1)
+	if completed_combat_stats != null:
+		Signals.achievement_combat_completed.emit(completed_combat_stats, completed_location_type, combat_victory)
 				
 
 func _on_player_turn_started():
@@ -210,13 +217,14 @@ func _on_player_turn_ended():
 	is_player_turn = false
 
 func _on_enemy_turn_ended():
-	turn_count += 1
 	if current_combat_stats != null:
+		Signals.achievement_turn_completed.emit(current_combat_stats.turn_stats.duplicate())
 		current_combat_stats.turn_count += 1
 		current_combat_stats.reset_turn_stats()
 		# move cards played over and reset it
 		cards_played_this_combat.append(cards_played_this_turn)
 		cards_played_this_turn = []
+	turn_count += 1
 
 func _reset_card_play_history() -> void:
 	cards_played_this_turn.clear()
@@ -377,6 +385,13 @@ func _on_shop_visited_first_time() -> void:
 		return
 	current_run_stats.add_to_enum_stat(RunStatsData.STATS.SHOPS_VISITED_AMOUNT, 1)
 
+
+func _on_map_location_selected(location_data: LocationData) -> void:
+	if current_run_stats == null or location_data == null:
+		return
+	if location_data.location_type == LocationData.LOCATION_TYPES.SHOP:
+		current_run_stats.add_to_enum_stat(RunStatsData.STATS.SHOP_LOCATIONS_ENTERED, 1)
+
 #endregion
 #region Combat Stat Tracking Hooks
 
@@ -417,7 +432,7 @@ func _on_card_exhausted(_card_data: CardData) -> void:
 	_add_to_combat_enum_stat(CombatStatsData.STATS.CARDS_EXHAUSTED, 1)
 func _on_card_banished(_card_data: CardData, in_limbo: bool) -> void:
 	if not in_limbo:
-		_add_to_combat_enum_stat(CombatStatsData.STATS.CARDS_EXHAUSTED, 1)
+		_add_to_combat_enum_stat(CombatStatsData.STATS.CARDS_BANISHED, 1)
 func _on_card_retained(_card_data: CardData) -> void:
 	_add_to_combat_enum_stat(CombatStatsData.STATS.CARDS_RETAINED, 1)
 func _on_card_upgraded(_card_data: CardData) -> void:

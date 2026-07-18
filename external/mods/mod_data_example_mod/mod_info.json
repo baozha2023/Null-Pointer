@@ -32,8 +32,7 @@
 			"patch": 0
 		},
 		"mod_script_file_paths": {
-			"external/mods/mod_data_example_mod/scripts/ActionDebugLog.gd": "res://scripts/actions/debug_actions/ActionDebugLog.gd",
-			"external/mods/mod_data_example_mod/scripts/AchievementTriggerExampleCard.gd": ""
+			"external/mods/mod_data_example_mod/scripts/ActionDebugLog.gd": "res://scripts/actions/debug_actions/ActionDebugLog.gd"
 		},
 		"object_id": "mod_data_example_mod"
 	}
