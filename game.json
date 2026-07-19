@@ -1,7 +1,7 @@
 {
   "id": "com.bz.nullpointer",
   "name": "Null Pointer",
-  "version": "2.2.0",
+  "version": "2.10.0",
   "description": "基于 Godot 开发、深受《杀戮尖塔》启发的赛博骇客 Roguelike 牌组构建游戏。",
   "author": "BZ-Games Team",
   "platformVersion": ">=3.0.0",
@@ -130,8 +130,8 @@
     },
     {
       "id": "achievement_victory_artifacts_10",
-      "title": "插件生态",
-      "description": "持有至少 10 件遗物并获得标准局胜利。"
+      "title": "外设矩阵",
+      "description": "持有至少 10 件外设并获得标准局胜利。"
     },
     {
       "id": "achievement_victory_money_500",

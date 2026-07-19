@@ -1,9 +1,9 @@
 [gd_scene format=3 uid="uid://528isoebkdpv"]
 
 [ext_resource type="Script" uid="uid://d4l5y1jvle1mq" path="res://scripts/combatants/Enemy.gd" id="1_10iyf"]
-[ext_resource type="AnimationLibrary" uid="uid://dvbwuh87t2tha" path="res://animations/Combatant.res" id="2_11ric"]
+[ext_resource type="AnimationLibrary" path="res://animations/Combatant.res" id="2_11ric"]
 [ext_resource type="PackedScene" uid="uid://b0qk0vn81d0kp" path="res://scenes/combatants/LayeredHealthBar.tscn" id="3_nimvv"]
-[ext_resource type="AnimationLibrary" uid="uid://8a2mcc4gqn5k" path="res://animations/Enemy.res" id="3_vx4nw"]
+[ext_resource type="AnimationLibrary" path="res://animations/Enemy.res" id="3_vx4nw"]
 [ext_resource type="Texture2D" uid="uid://dw4k1k81ap581" path="res://sprites/missing_texture.png" id="4_gu0s6"]
 [ext_resource type="Texture2D" uid="uid://c45xfek4l50e5" path="res://sprites/intents/enemy_intent_attacking.png" id="6_gmsgo"]
 [ext_resource type="PackedScene" uid="uid://d3ay0q2ywlmkj" path="res://scenes/combatants/SpeechBubble.tscn" id="6_vx4nw"]
@@ -13,6 +13,7 @@
 [ext_resource type="Texture2D" uid="uid://cpgx50bqopa8m" path="res://sprites/intents/enemy_intent_summoning.png" id="10_mxi1b"]
 [ext_resource type="Texture2D" uid="uid://dpcyhrku2ep8a" path="res://sprites/intents/enemy_intent_special.png" id="11_special"]
 [ext_resource type="PackedScene" uid="uid://bblblockind01" path="res://scenes/combatants/BlockIndicator.tscn" id="shield_scn"]
+[ext_resource type="PackedScene" uid="uid://bibi0twthi17u" path="res://scenes/ui/HoverBrackets.tscn" id="target_highlight"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_7in10"]
 atlas = ExtResource("4_gu0s6")
@@ -67,8 +68,17 @@ offset_bottom = 40.0
 mouse_filter = 2
 
 [node name="CombatantCenter" type="Node2D" parent="Visible" unique_id=-1214215279]
+position = Vector2(0, -64)
 
-[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="Visible/CombatantCenter" unique_id=1339550553]
+[node name="WorldScaleRoot" type="Node2D" parent="Visible/CombatantCenter"]
+unique_name_in_owner = true
+
+[node name="GroundShadow" type="Polygon2D" parent="Visible/CombatantCenter/WorldScaleRoot"]
+z_index = -1
+polygon = PackedVector2Array(-48, -2, -42, -7, -28, -11, 0, -13, 28, -11, 42, -7, 48, -2, 42, 3, 28, 6, 0, 8, -28, 6, -42, 3)
+color = Color(0.005, 0.012, 0.02, 0.38)
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="Visible/CombatantCenter/WorldScaleRoot" unique_id=1339550553]
 unique_name_in_owner = true
 scale = Vector2(2, 2)
 sprite_frames = SubResource("SpriteFrames_e5l7p")
@@ -92,7 +102,7 @@ offset_top = 70.0
 offset_right = 64.0
 offset_bottom = 86.0
 
-[node name="SelectionButton" type="Button" parent="Visible/CombatantCenter" unique_id=2112562926]
+[node name="SelectionButton" type="Button" parent="Visible/CombatantCenter/WorldScaleRoot" unique_id=2112562926]
 unique_name_in_owner = true
 self_modulate = Color(1, 1, 1, 0)
 offset_left = -64.0
@@ -100,7 +110,10 @@ offset_top = -64.0
 offset_right = 64.0
 offset_bottom = 64.0
 
-[node name="ImageFadeContainer" type="Node2D" parent="Visible/CombatantCenter" unique_id=825700959]
+[node name="TargetHighlight" parent="Visible/CombatantCenter/WorldScaleRoot/SelectionButton" instance=ExtResource("target_highlight")]
+unique_name_in_owner = true
+
+[node name="ImageFadeContainer" type="Node2D" parent="Visible/CombatantCenter/WorldScaleRoot" unique_id=825700959]
 unique_name_in_owner = true
 
 [node name="Block" parent="Visible/CombatantCenter" unique_id=1432771270 instance=ExtResource("shield_scn")]
@@ -110,9 +123,9 @@ scale = Vector2(0.4, 0.4)
 [node name="Intent" type="HBoxContainer" parent="Visible" unique_id=785213509]
 layout_mode = 0
 offset_left = -99.0
-offset_top = -113.0
+offset_top = -177.0
 offset_right = 101.0
-offset_bottom = -65.0
+offset_bottom = -129.0
 mouse_filter = 2
 alignment = 1
 
@@ -182,9 +195,9 @@ position = Vector2(1, -136)
 [node name="StatusContainer" type="GridContainer" parent="Visible" unique_id=622018222]
 layout_mode = 0
 offset_left = -83.0
-offset_top = 96.0
+offset_top = 32.0
 offset_right = 85.0
-offset_bottom = 136.0
+offset_bottom = 72.0
 columns = 6
 
 [node name="SpeechBubble" parent="Visible" unique_id=431196108 instance=ExtResource("6_vx4nw")]

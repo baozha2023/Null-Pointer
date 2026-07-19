@@ -15,11 +15,15 @@ var pointer_position: Vector2 = Vector2.ZERO
 var use_pointer_position: bool = false
 
 var _anim_offset: float = 0.0
-var current_bracket: Node = null
+var highlighted_enemy: Enemy = null
 
 func _ready() -> void:
 	top_level = true
 	z_index = 4000
+
+func _exit_tree() -> void:
+	target_enemy = null
+	_update_target_highlight()
 
 func _process(delta: float) -> void:
 	if is_instance_valid(start_node):
@@ -33,24 +37,7 @@ func _process(delta: float) -> void:
 		_anim_offset -= 1.0
 	queue_redraw()
 	
-	if is_instance_valid(target_enemy):
-		var selection_btn = target_enemy.get_node("Visible/CombatantCenter/SelectionButton")
-		var brackets = selection_btn.get_node_or_null("HoverBrackets")
-		if not brackets:
-			var brackets_scn = load("res://scenes/ui/HoverBrackets.tscn")
-			if brackets_scn:
-				brackets = brackets_scn.instantiate()
-				brackets.name = "HoverBrackets"
-				selection_btn.add_child(brackets)
-		
-		if current_bracket != brackets:
-			if is_instance_valid(current_bracket):
-				current_bracket.hide_brackets()
-			current_bracket = brackets
-			if current_bracket:
-				current_bracket.show_brackets()
-	else:
-		_clear_bracket()
+	_update_target_highlight()
 
 func set_pointer_position(pointer_global_position: Vector2) -> void:
 	pointer_position = pointer_global_position
@@ -61,22 +48,27 @@ func clear_pointer_position() -> void:
 
 func clear_target() -> void:
 	target_enemy = null
-	_clear_bracket()
+	_update_target_highlight()
 
-func _clear_bracket() -> void:
-	if is_instance_valid(current_bracket):
-		current_bracket.hide_brackets()
-	current_bracket = null
+func _update_target_highlight() -> void:
+	var next_highlighted_enemy: Enemy = target_enemy if is_instance_valid(target_enemy) else null
+	if highlighted_enemy == next_highlighted_enemy:
+		return
+	if is_instance_valid(highlighted_enemy):
+		highlighted_enemy.set_target_highlighted(false)
+	highlighted_enemy = next_highlighted_enemy
+	if highlighted_enemy != null:
+		highlighted_enemy.set_target_highlighted(true)
 
 func _draw() -> void:
 	var p2: Vector2
 	var current_color: Color
 	
-	p2 = pointer_position if use_pointer_position else get_global_mouse_position()
-	
 	if is_instance_valid(target_enemy):
+		p2 = target_enemy.get_target_anchor_global_position()
 		current_color = targeted_color
 	else:
+		p2 = pointer_position if use_pointer_position else get_global_mouse_position()
 		current_color = arrow_color
 	
 	var p0 = start_pos

@@ -274,6 +274,7 @@ static func add_enemies() -> void:
 	enemy_act_1_boss_1.add_health_bounds(250, 250, DIFFICULTY_BOSS_ENEMIES_HARDER)
 	enemy_act_1_boss_1.add_health_bounds(280, 280, DIFFICULTY_BOSS_ENEMIES_HARDER_2)
 	enemy_act_1_boss_1.enemy_type = EnemyData.ENEMY_TYPES.BOSS
+	enemy_act_1_boss_1.enemy_combat_scale = 1.55
 	enemy_act_1_boss_1.enemy_texture_path = "sprites/enemies/act1/boss_guardian.png"
 	
 	# Initial status effects: threshold starts at 40
@@ -611,8 +612,7 @@ static func add_events() -> void:
 	event_act_1_miniboss_4.event_weighted_enemy_object_ids = [
 		{"enemy_miniboss_new_1": 1},
 	]
-	event_act_1_miniboss_4.event_enemy_placement_is_automatic = false
-	event_act_1_miniboss_4.event_enemy_placement_positions = [[0, 0], [250, 0]]
+	event_act_1_miniboss_4.event_enemy_slot_ids = [0]
 
 	Global.register_rod(event_act_1_miniboss_4)
 
@@ -620,8 +620,7 @@ static func add_events() -> void:
 	event_act_1_boss_1.event_weighted_enemy_object_ids = [
 		{"enemy_act_1_boss_1": 1},
 	]
-	event_act_1_boss_1.event_enemy_placement_is_automatic = false
-	event_act_1_boss_1.event_enemy_placement_positions = [[0, 0], [180, 0], [360, 0]]
+	event_act_1_boss_1.event_enemy_slot_ids = [0]
 	event_act_1_boss_1.event_death_message_bbcode = "被守护兽彻底抹除"
 
 	Global.register_rod(event_act_1_boss_1)

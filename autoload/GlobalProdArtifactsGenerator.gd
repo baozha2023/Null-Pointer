@@ -9,7 +9,7 @@ static func generate_artifacts() -> void:
 #region Artifacts
 static func add_artifacts() -> void:
 	var artifact_add_money: ArtifactData = ArtifactData.new("artifact_add_money")
-	artifact_add_money.artifact_name = "数据币外设插件"
+	artifact_add_money.artifact_name = "零号铸币盒"
 	artifact_add_money.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.COMMON
 	artifact_add_money.artifact_texture_path = "sprites/artifacts/artifact_add_money.png"
 	artifact_add_money.artifact_description = "获得时增加 [color=green]200[/color] 数据币。"
@@ -18,7 +18,7 @@ static func add_artifacts() -> void:
 	Global.register_rod(artifact_add_money)
 
 	var artifact_high_latency: ArtifactData = ArtifactData.new("artifact_high_latency")
-	artifact_high_latency.artifact_name = "高延迟插件"
+	artifact_high_latency.artifact_name = "拨号猫"
 	artifact_high_latency.artifact_color_id = ""
 	artifact_high_latency.artifact_texture_path = "sprites/artifacts/artifact_high_latency.png"
 	artifact_high_latency.artifact_description = "每回合开始时，少抽 [color=red][artifact_counter][/color] 张牌。"
@@ -40,7 +40,7 @@ static func add_artifacts() -> void:
 	Global.register_rod(artifact_high_latency)
 
 	var artifact_memory_leak: ArtifactData = ArtifactData.new("artifact_memory_leak")
-	artifact_memory_leak.artifact_name = "内存泄漏插件"
+	artifact_memory_leak.artifact_name = "漏水内存条"
 	artifact_memory_leak.artifact_color_id = ""
 	artifact_memory_leak.artifact_texture_path = "sprites/artifacts/artifact_memory_leak.png"
 	artifact_memory_leak.artifact_description = "每回合开始时，失去 [color=red][artifact_counter][/color] 点完整度。"
@@ -62,7 +62,7 @@ static func add_artifacts() -> void:
 	Global.register_rod(artifact_memory_leak)
 
 	var artifact_negate_money_gain: ArtifactData = ArtifactData.new("artifact_negate_money_gain")
-	artifact_negate_money_gain.artifact_name = "算力外设插件"
+	artifact_negate_money_gain.artifact_name = "永动超频核"
 	artifact_negate_money_gain.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.BOSS
 	artifact_negate_money_gain.artifact_texture_path = "sprites/artifacts/artifact_negate_money_gain.png"
 	artifact_negate_money_gain.artifact_description = "每时钟周期获得 [energy_icon]。无法再获得数据币"
@@ -87,7 +87,7 @@ static func add_artifacts() -> void:
 	Global.register_rod(artifact_negate_money_gain)
 
 	var artifact_heal_on_combat_ended: ArtifactData = ArtifactData.new("artifact_heal_on_combat_ended")
-	artifact_heal_on_combat_ended.artifact_name = "战后治疗外设插件"
+	artifact_heal_on_combat_ended.artifact_name = "战地修复臂"
 	artifact_heal_on_combat_ended.artifact_texture_path = "sprites/artifacts/artifact_heal_on_combat_ended.png"
 	artifact_heal_on_combat_ended.artifact_description = "战斗结束时恢复 [color=green]5[/color] 点完整度。"
 	artifact_heal_on_combat_ended.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.UNCOMMON
@@ -100,7 +100,7 @@ static func add_artifacts() -> void:
 	Global.register_rod(artifact_heal_on_combat_ended)
 
 	var artifact_auto_restore: ArtifactData = ArtifactData.new("artifact_auto_restore")
-	artifact_auto_restore.artifact_name = "自适应修复外设"
+	artifact_auto_restore.artifact_name = "忒修斯修复舱"
 	artifact_auto_restore.artifact_color_id = ""
 	artifact_auto_restore.artifact_texture_path = "sprites/artifacts/artifact_auto_restore.png"
 	artifact_auto_restore.artifact_description = "每场战斗开始时，完整度上限变为 [color=green]999[/color]，并完全恢复。"
@@ -111,7 +111,7 @@ static func add_artifacts() -> void:
 	Global.register_rod(artifact_auto_restore)
 
 	var artifact_full_heal: ArtifactData = ArtifactData.new("artifact_full_heal")
-	artifact_full_heal.artifact_name = "完全治疗外设插件"
+	artifact_full_heal.artifact_name = "冷启动镜像"
 	artifact_full_heal.artifact_texture_path = "sprites/artifacts/artifact_full_heal.png"
 	artifact_full_heal.artifact_description = "获得时完全恢复完整度。"
 	artifact_full_heal.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.RARE
@@ -127,7 +127,7 @@ static func add_artifacts() -> void:
 	Global.register_rod(artifact_full_heal)
 
 	var artifact_draw_on_kill: ArtifactData = ArtifactData.new("artifact_draw_on_kill")
-	artifact_draw_on_kill.artifact_name = "击杀读取脚本外设插件"
+	artifact_draw_on_kill.artifact_name = "收割进程"
 	artifact_draw_on_kill.artifact_texture_path = "sprites/artifacts/artifact_draw_on_kill.png"
 	artifact_draw_on_kill.artifact_description = "击杀敌人时读取 [color=blue]1[/color] 个脚本。"
 	artifact_draw_on_kill.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.UNCOMMON
@@ -135,7 +135,7 @@ static func add_artifacts() -> void:
 	Global.register_rod(artifact_draw_on_kill)
 
 	var artifact_draw_on_combat_start: ArtifactData = ArtifactData.new("artifact_draw_on_combat_start")
-	artifact_draw_on_combat_start.artifact_name = "初始读取脚本外设插件"
+	artifact_draw_on_combat_start.artifact_name = "预读缓存"
 	artifact_draw_on_combat_start.artifact_description = "首时钟周期额外读取 [color=blue]2[/color] 个脚本。"
 	artifact_draw_on_combat_start.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.BASIC
 	artifact_draw_on_combat_start.artifact_color_id = "color_green"
@@ -145,7 +145,7 @@ static func add_artifacts() -> void:
 	Global.register_rod(artifact_draw_on_combat_start)
 
 	var artifact_energy_on_combat_start: ArtifactData = ArtifactData.new("artifact_energy_on_combat_start")
-	artifact_energy_on_combat_start.artifact_name = "初始算力外设插件"
+	artifact_energy_on_combat_start.artifact_name = "启动电容"
 	artifact_energy_on_combat_start.artifact_description = "首时钟周期获得 [energy_icon]。"
 	artifact_energy_on_combat_start.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.UNCOMMON
 	artifact_energy_on_combat_start.artifact_texture_path = "sprites/artifacts/artifact_energy_on_combat_start.png"
@@ -154,7 +154,7 @@ static func add_artifacts() -> void:
 	Global.register_rod(artifact_energy_on_combat_start)
 
 	var artifact_easy_mode: ArtifactData = ArtifactData.new("artifact_easy_mode")
-	artifact_easy_mode.artifact_name = "安全模式外设插件"
+	artifact_easy_mode.artifact_name = "安全模式开关"
 	artifact_easy_mode.artifact_color_id = ""
 	artifact_easy_mode.artifact_texture_path = "sprites/artifacts/artifact_easy_mode.png"
 	artifact_easy_mode.artifact_description = "将敌人完整度设为 [color=red]1[/color]。"
@@ -168,7 +168,7 @@ static func add_artifacts() -> void:
 	Global.register_rod(artifact_easy_mode)
 
 	var artifact_data_scarcity: ArtifactData = ArtifactData.new("artifact_data_scarcity")
-	artifact_data_scarcity.artifact_name = "数据贫瘠插件"
+	artifact_data_scarcity.artifact_name = "荒漠限流阀"
 	artifact_data_scarcity.artifact_color_id = ""
 	artifact_data_scarcity.artifact_description = "获得的数据币收益减少 [color=red]20%[/color]。"
 	artifact_data_scarcity.artifact_texture_path = "sprites/artifacts/artifact_data_scarcity.png"
@@ -178,7 +178,7 @@ static func add_artifacts() -> void:
 	Global.register_rod(artifact_data_scarcity)
 
 	var artifact_inflation: ArtifactData = ArtifactData.new("artifact_inflation")
-	artifact_inflation.artifact_name = "通货膨胀插件"
+	artifact_inflation.artifact_name = "价格操纵芯片"
 	artifact_inflation.artifact_color_id = ""
 	artifact_inflation.artifact_description = "商店所有商品价格上涨 [color=red]25%[/color]。"
 	artifact_inflation.artifact_texture_path = "sprites/artifacts/artifact_inflation.png"
@@ -188,7 +188,7 @@ static func add_artifacts() -> void:
 	Global.register_rod(artifact_inflation)
 
 	var artifact_data_abundance: ArtifactData = ArtifactData.new("artifact_data_abundance")
-	artifact_data_abundance.artifact_name = "数据充裕插件"
+	artifact_data_abundance.artifact_name = "丰饶挖矿机"
 	artifact_data_abundance.artifact_texture_path = "sprites/artifacts/artifact_data_abundance.png"
 	artifact_data_abundance.artifact_description = "所有数据币获取量增加 [color=green]20%[/color]。"
 	artifact_data_abundance.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.RARE
@@ -206,7 +206,7 @@ static func add_artifacts() -> void:
 	Global.register_rod(artifact_deflation)
 
 	var artifact_block_on_attacks: ArtifactData = ArtifactData.new("artifact_block_on_attacks")
-	artifact_block_on_attacks.artifact_name = "初始功转防外设插件"
+	artifact_block_on_attacks.artifact_name = "动能防火墙"
 	artifact_block_on_attacks.artifact_description = "每 [color=blue]3[/color] 次攻击获得 [color=blue]5[/color] 点防火墙。当前：[color=blue][artifact_counter][/color]/3"
 	artifact_block_on_attacks.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.BASIC
 	artifact_block_on_attacks.artifact_color_id = "color_red"
@@ -225,7 +225,7 @@ static func add_artifacts() -> void:
 	Global.register_rod(artifact_block_on_attacks)
 
 	var artifact_retain_hand: ArtifactData = ArtifactData.new("artifact_retain_hand")
-	artifact_retain_hand.artifact_name = "当前线程保留外设插件"
+	artifact_retain_hand.artifact_name = "线程冷冻舱"
 	artifact_retain_hand.artifact_texture_path = "sprites/artifacts/artifact_retain_hand.png"
 	artifact_retain_hand.artifact_description = "时钟周期结束时，当前线程中的所有脚本不会被丢弃"
 	artifact_retain_hand.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.BOSS
@@ -235,7 +235,7 @@ static func add_artifacts() -> void:
 
 	# preserves energy between turns
 	var artifact_preserve_energy: ArtifactData = ArtifactData.new("artifact_preserve_energy")
-	artifact_preserve_energy.artifact_name = "算力保留外设插件"
+	artifact_preserve_energy.artifact_name = "余量电容"
 	artifact_preserve_energy.artifact_color_id = "color_orange"
 	artifact_preserve_energy.artifact_texture_path = "sprites/artifacts/artifact_preserve_energy.png"
 	artifact_preserve_energy.artifact_description = "时钟周期结束时，未消耗的算力将保留至下一周期"
@@ -254,7 +254,7 @@ static func add_artifacts() -> void:
 
 	# Enables a rest action when obtained, which grants a damage increase at the start of combat
 	var artifact_increase_attack_on_rest: ArtifactData = ArtifactData.new("artifact_increase_attack_on_rest")
-	artifact_increase_attack_on_rest.artifact_name = "碎片整理增伤外设插件"
+	artifact_increase_attack_on_rest.artifact_name = "碎片整理臂"
 	artifact_increase_attack_on_rest.artifact_description = "在维护终端可进行碎片整理。每场战斗开始时获得 [color=green]1[/color] 层 [status_icon:status_effect_damage_increase] 算力增幅（最高提升 [color=green]3[/color] 次）。当前次数：[color=green][artifact_counter][/color]/3"
 	artifact_increase_attack_on_rest.artifact_counter = 0
 	artifact_increase_attack_on_rest.artifact_counter_max = 3
@@ -282,7 +282,7 @@ static func add_artifacts() -> void:
 	Global.register_rod(artifact_increase_attack_on_rest)
 
 	var artifact_see_top_of_draw_pile: ArtifactData = ArtifactData.new("artifact_see_top_of_draw_pile")
-	artifact_see_top_of_draw_pile.artifact_name = "查看内存队列外设插件"
+	artifact_see_top_of_draw_pile.artifact_name = "内存探针"
 	artifact_see_top_of_draw_pile.artifact_description = "可以预见内存队列顶部的脚本。\n[color=gray]（支持右键/双击操作）[/color]"
 	artifact_see_top_of_draw_pile.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.BASIC
 	artifact_see_top_of_draw_pile.artifact_color_id = "color_blue"
@@ -298,7 +298,7 @@ static func add_artifacts() -> void:
 	Global.register_rod(artifact_see_top_of_draw_pile)
 
 	var artifact_forge: ArtifactData = ArtifactData.new("artifact_forge")
-	artifact_forge.artifact_name = "锻造台外设"
+	artifact_forge.artifact_name = "代码锻炉"
 	artifact_forge.artifact_description = "解锁锻造台，提供高级的代码编译和改造功能。\n[color=gray]（支持右键/双击操作）[/color]"
 	artifact_forge.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.BASIC
 	artifact_forge.artifact_color_id = "color_orange"
@@ -325,7 +325,7 @@ static func add_artifacts() -> void:
 
 	# Makes an attack card top deck when obtained
 	var artifact_top_deck_attack_card: ArtifactData = ArtifactData.new("artifact_top_deck_attack_card")
-	artifact_top_deck_attack_card.artifact_name = "攻击脚本置顶外设插件"
+	artifact_top_deck_attack_card.artifact_name = "红线调度器"
 	artifact_top_deck_attack_card.artifact_texture_path = "sprites/artifacts/artifact_top_deck_attack_card.png"
 	artifact_top_deck_attack_card.artifact_description = "选择一个攻击脚本置于内存队列顶部。"
 	artifact_top_deck_attack_card.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.COMMON
@@ -361,7 +361,7 @@ static func add_artifacts() -> void:
 	Global.register_rod(artifact_top_deck_attack_card)
 
 	var artifact_right_click_shuffle_deck: ArtifactData = ArtifactData.new("artifact_right_click_shuffle_deck")
-	artifact_right_click_shuffle_deck.artifact_name = "重洗外设插件"
+	artifact_right_click_shuffle_deck.artifact_name = "熵流路由器"
 	artifact_right_click_shuffle_deck.artifact_description = "将回收站的数据重新分配入内存队列。\n[color=gray]（支持右键/双击操作）[/color]"
 	artifact_right_click_shuffle_deck.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.COMMON
 	artifact_right_click_shuffle_deck.artifact_color_id = "color_green"
@@ -561,6 +561,7 @@ static func add_artifacts() -> void:
 
 	# 10. 抓包工具 (Packet Sniffer)
 	var artifact_packet_sniffer: ArtifactData = ArtifactData.new("artifact_packet_sniffer")
+	artifact_packet_sniffer.artifact_name = "深网嗅探器"
 	artifact_packet_sniffer.artifact_description = "每当你对敌人施加负面状态时，有 [color=green]50%[/color] 的概率读取 [color=blue]1[/color] 个脚本。"
 	artifact_packet_sniffer.artifact_color_id = "color_blue"
 	artifact_packet_sniffer.artifact_texture_path = "sprites/artifacts/artifact_packet_sniffer.png"

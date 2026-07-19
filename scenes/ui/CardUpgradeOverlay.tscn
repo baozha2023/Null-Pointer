@@ -27,7 +27,8 @@ texture = ExtResource("btn_common_pressed")
 
 [node name="CardUpgradeOverlay" type="Control" unique_id=696036188]
 process_mode = 1
-z_index = 10
+z_index = 500
+z_as_relative = false
 layout_mode = 3
 anchors_preset = 0
 offset_right = 1200.0

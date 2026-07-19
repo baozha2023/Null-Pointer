@@ -3,20 +3,32 @@
 ## Can play a sound for each attack.
 extends BaseAction
 
-func perform_action():
+func perform_action() -> void:
 	var action_interceptor_processors: Array[ActionInterceptorProcessor] = _intercept_action()
-	
+	var attacker_animation_started: bool = false
+
 	for action_interceptor_processor in action_interceptor_processors:
 		var target: BaseCombatant = action_interceptor_processor.target
 		if target == null:
-			return
+			continue
 		if not target.is_alive():
-			return
-		
-		# play audio instantly if one is provided
-		var audio_path_val: Array = action_interceptor_processor.get_shadowed_action_values("audio_path", []) # sound that plays for every attack
-		if typeof(audio_path_val) == TYPE_ARRAY and audio_path_val.size() > 0:
-			ActionGenerator.generate_sound_action(audio_path_val)
+			continue
+
+		# Every presentation belonging to this hit starts in the same frame. The
+		# ActionHandler waits for the longest tracked presentation after the Action.
+		var attack_animation_name: String = action_interceptor_processor.get_shadowed_action_values("attack_animation_name", AnimationData.ANIMATION_NONE)
+		if not attacker_animation_started and parent_combatant != null and attack_animation_name != AnimationData.ANIMATION_NONE:
+			parent_combatant.play_animation(attack_animation_name)
+			attacker_animation_started = true
+
+		var impact_vfx_animation_id: String = action_interceptor_processor.get_shadowed_action_values("impact_vfx_animation_id", "")
+		if not impact_vfx_animation_id.is_empty():
+			target.create_effect_animation(impact_vfx_animation_id)
+
+		var audio_paths: Array[String] = []
+		audio_paths.assign(action_interceptor_processor.get_shadowed_action_values("audio_path", []))
+		if not audio_paths.is_empty():
+			ActionGenerator.play_combat_sound(audio_paths, parent_combatant)
 		
 		# get damage parameters
 		var damage: int = action_interceptor_processor.get_shadowed_action_values("damage", 0)

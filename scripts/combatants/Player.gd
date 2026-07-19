@@ -18,13 +18,11 @@ func _ready():
 	Signals.run_started.connect(_on_run_started)
 	Signals.run_ended.connect(_on_run_ended)
 	
-	incoming_damage_amount_text.mouse_filter = Control.MOUSE_FILTER_PASS
-	incoming_damage_amount_text.mouse_entered.connect(_on_incoming_damage_mouse_entered.bind(incoming_damage_amount_text))
-	incoming_damage_amount_text.mouse_exited.connect(_on_incoming_damage_mouse_exited.bind(incoming_damage_amount_text))
-	
-	incoming_damage_texture.mouse_filter = Control.MOUSE_FILTER_PASS
-	incoming_damage_texture.mouse_entered.connect(_on_incoming_damage_mouse_entered.bind(incoming_damage_texture))
-	incoming_damage_texture.mouse_exited.connect(_on_incoming_damage_mouse_exited.bind(incoming_damage_texture))
+	incoming_damage.mouse_filter = Control.MOUSE_FILTER_PASS
+	incoming_damage.mouse_entered.connect(_on_incoming_damage_mouse_entered.bind(incoming_damage))
+	incoming_damage.mouse_exited.connect(_on_incoming_damage_mouse_exited.bind(incoming_damage))
+	incoming_damage_amount_text.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	incoming_damage_texture.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	
 	Signals.player_artifact_added.connect(_on_artifact_added)
 	Signals.player_artifact_removed.connect(_on_artifact_removed)
@@ -121,8 +119,9 @@ func add_health(health_amount: int, health_amount_max: int) -> void:
 		create_health_text(health_amount)
 
 ## Heals the combatant by a given percentage between 0.0 and 1.0.
-func heal_percentage(health_percent: float):
-	Global.player_data.heal_percentage(health_percent)
+func heal_percentage(health_percent: float) -> void:
+	var health_amount: int = int(ceil(float(Global.player_data.player_health_max) * health_percent))
+	add_health(health_amount, 0)
 
 func set_health(health_amount: int, health_amount_max: int = Global.player_data.player_health_max) -> void:
 	Global.player_data.set_health(health_amount, health_amount_max)
@@ -157,13 +156,10 @@ func update_incoming_damage_amount(recalculate_enemy_intent: bool = true) -> voi
 		await get_tree().process_frame
 		_intent_is_updating = false
 	
-	var incoming_damage_amount = 0 # totaled value
-	for en in get_tree().get_nodes_in_group("enemies"):
-		var enemy: Enemy = en # typecast
-		
+	var incoming_damage_amount: int = 0
+	for enemy: Enemy in Global.get_alive_enemies_in_formation_order():
 		if recalculate_enemy_intent:
 			enemy.update_enemy_intent()
-		
 		incoming_damage_amount += enemy.enemy_intent_attack_damage * enemy.enemy_intent_number_of_attacks
 
 	incoming_damage_amount_text.text = str(incoming_damage_amount)
@@ -256,10 +252,8 @@ func _on_artifact_proc(artifact_data: ArtifactData):
 
 func _on_death_animtation_finished():
 	# called from animation player
+	_finish_blocking_animation(AnimationData.ANIMATION_DEATH)
 	Signals.player_death_animation_finished.emit(self)
-
-func play_attack_animation() -> void:
-	animation_player.play("Player/attack")
 
 func play_death_animation() -> void:
 	if not animation_player.is_playing():

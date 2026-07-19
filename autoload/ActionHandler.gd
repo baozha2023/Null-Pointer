@@ -9,6 +9,7 @@ var action_stack: Array[Array] = []	# stack of queues of BaseActions
 var current_action_queue: Array[BaseAction] = []
 var current_action: BaseAction = null # the current action being invoked
 var actions_being_performed: bool = false	# flag to prevent multiple actions being performed simultaneously and check for blocking
+var _execution_generation: int = 0
 
 # action interceptors
 # combatant -> interceptor id -> source key -> true
@@ -66,10 +67,12 @@ func add_actions(actions: Array[BaseAction], enqueue: bool = false, front_of_que
 		if not actions_being_performed:	# check to prevent multiple automatic calls of this method
 			_perform_actions()
 
-func _perform_actions() -> void:	
+func _perform_actions() -> void:
 	# performs all actions on the action stack
+	_execution_generation += 1
+	var execution_generation: int = _execution_generation
 	actions_being_performed = true
-	while len(action_stack) > 0:
+	while execution_generation == _execution_generation and len(action_stack) > 0:
 		# pop the next queue from the stack
 		var action_queue = action_stack.pop_back()
 		
@@ -79,6 +82,8 @@ func _perform_actions() -> void:
 		
 		# perform all actions in the queue until empty
 		while len(current_action_queue) > 0:
+			if execution_generation != _execution_generation:
+				return
 			current_action = current_action_queue.pop_front()
 			# skip short circuited actions
 			if current_action.is_action_short_circuited():
@@ -86,21 +91,44 @@ func _perform_actions() -> void:
 					continue
 			# perform action
 			current_action.perform_action()
+			if execution_generation != _execution_generation:
+				return
+			# The pacing delay and presentation both begin with the Action. They form
+			# one completion barrier, so the total wait is the longer duration rather
+			# than time_delay plus the presentation duration.
+			var waits_for_delay: bool = current_action.time_delay > 0.0 and not current_action.is_instant_action()
+			if waits_for_delay and not current_action.is_async_action():
+				action_timer.start(current_action.time_delay)
 			# wait for async actions to finish
 			if current_action.is_async_action():
 				await current_action.action_async_finished
-			# wait for action delay if one exists
-			if current_action.time_delay > 0.0 and !current_action.is_instant_action():
-				action_timer.start(current_action.time_delay)
-				await action_timer.timeout
-				# await get_tree().create_timer(current_action.time_delay).timeout
-			else:
-				await get_tree().process_frame
+				if execution_generation != _execution_generation:
+					return
+				# Preserve async-action semantics: its pacing window starts after the
+				# user/external wait completes, alongside any completion presentation.
+				if waits_for_delay:
+					action_timer.start(current_action.time_delay)
+			# Always yield once so presentation nodes created by the Action can enter
+			# the tree before evaluating the shared completion barrier.
+			await get_tree().process_frame
+			if execution_generation != _execution_generation:
+				return
+			await _wait_for_action_completion(execution_generation, waits_for_delay)
+			if execution_generation != _execution_generation:
+				return
 			
 			current_action = null
 	
-	actions_being_performed = false
-	actions_ended.emit()
+	if execution_generation == _execution_generation:
+		actions_being_performed = false
+		actions_ended.emit()
+
+func _wait_for_action_completion(execution_generation: int, waits_for_delay: bool) -> void:
+	while execution_generation == _execution_generation and (
+		(waits_for_delay and not action_timer.is_stopped())
+		or CombatPresentation.is_blocking()
+	):
+		await get_tree().process_frame
 
 ## Removes the current async action. Will only remove short circuited actions unless force_end = true.
 func _clear_current_async_action(force_end: bool = false) -> void:
@@ -113,7 +141,9 @@ func _clear_current_async_action(force_end: bool = false) -> void:
 					current_action = null
 
 func clear_all_actions() -> void:
+	_execution_generation += 1
 	_clear_current_async_action(true)
+	action_timer.stop()
 	
 	action_stack.clear()
 	current_action_queue.clear()

@@ -30,7 +30,7 @@ const INTRO_TEXTS: Array[String] = [
 @onready var narrative_label = $NarrativeLabel
 @onready var background_texture: TextureRect = $BackgroundTexture
 @onready var map = $%Map
-@onready var combat = $%Combat
+@onready var combat: Control = get_node("../Combat")
 
 func _ready():
 	_aggregate_run_start_options()

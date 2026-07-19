@@ -138,7 +138,7 @@ signal enemy_killed(enemy: Enemy)
 signal enemy_death_animation_finished(enemy: Enemy)
 signal enemy_clicked(enemy: Enemy)
 signal enemy_hovered(enemy: Enemy)
-signal enemy_spawn_requested(enemy_object_id: String, slot_id: int, is_minion: bool)	# requests spawning an enemy in a slot
+signal enemy_spawn_requested(request: EnemySpawnRequest)	# requests spawning an enemy in a slot
 
 # artifacts
 signal artifact_proc(artifact_data: ArtifactData)	# an artifact's effect has been triggered

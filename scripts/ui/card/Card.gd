@@ -9,6 +9,7 @@ var card_decorator_id_to_card_decorator: Dictionary[String, CardDecorator] = {}
 
 const CARDS_RERENDER_LAZILY: bool = true # throttles card display generation to next frame
 var _card_is_rerendering: bool = false
+var _latest_display_target: Enemy = null
 var _is_in_codex: bool = false
 var _hand_input_enabled: bool = false
 
@@ -92,11 +93,13 @@ func init(_card_data: CardData, angular_offset: float, connect_combat_signals: b
 	
 
 func update_card_display(selected_enemy: Enemy = null) -> void:
+	_latest_display_target = selected_enemy
 	if _card_is_rerendering:
 		return
 	if CARDS_RERENDER_LAZILY:
 		_card_is_rerendering = true
 		await get_tree().process_frame
+		selected_enemy = _latest_display_target
 		_card_is_rerendering = false
 	
 	# update visuals
@@ -202,6 +205,19 @@ func begin_hand_interaction() -> void:
 ## Moves the card pivot without coupling Card to any combat or play logic.
 func update_hand_drag_position(pointer_position: Vector2, grab_offset: Vector2) -> void:
 	pivot.global_position = pointer_position + grab_offset
+
+## Rotation-aware hit test used by Hand to arbitrate overlapping hand cards.
+func contains_global_point(global_point: Vector2) -> bool:
+	var local_point: Vector2 = card_button.get_global_transform_with_canvas().affine_inverse() * global_point
+	return Rect2(Vector2.ZERO, card_button.size).has_point(local_point)
+
+## Hand owns hover arbitration because overlapping card buttons can otherwise
+## repeatedly exchange mouse_entered/mouse_exited while one card is raised.
+func set_managed_hand_hover(active: bool) -> void:
+	if active:
+		keyword_timer.start(KEYWORD_HOVER_DELAY)
+		return
+	keyword_timer.stop()
 
 ## Clears transient drag/selection visuals. Hand remains responsible for layout.
 func reset_hand_interaction_visual() -> void:
@@ -391,10 +407,14 @@ func _on_button_gui_input(event: InputEvent) -> void:
 		card_selected.emit(self)
 
 func _on_mouse_entered():
+	if _hand_input_enabled:
+		return
 	keyword_timer.start(KEYWORD_HOVER_DELAY)
 	card_hovered.emit(self)
 	
 func _on_mouse_exited():
+	if _hand_input_enabled:
+		return
 	keyword_timer.stop()
 	HandManager.tooltip.hide_tooltip()
 	card_unhovered.emit(self)

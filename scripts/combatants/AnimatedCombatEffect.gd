@@ -12,7 +12,7 @@ func _ready() -> void:
 
 func init(animation_data: AnimationData) -> void:
 	if animation_data == null:
-		DebugLogger.log_error("AnimatedCombatEffect.init(): animation \"{0}\" not defined".format([animation_data.object_id]))
+		DebugLogger.log_error("AnimatedCombatEffect.init(): animation data is required")
 		queue_free()
 		return
 	
@@ -27,6 +27,7 @@ func init(animation_data: AnimationData) -> void:
 		play(COMBAT_EFFECT_ANIMATION_NAME)
 	else:
 		DebugLogger.log_error("AnimatedCombatEffect.init(): animation \"{0}\" missing \"{1}\"".format([animation_data.object_id, COMBAT_EFFECT_ANIMATION_NAME]))
+		queue_free()
 	
 
 func _on_animation_finished():

@@ -93,22 +93,24 @@ Order is critical because later autoloads depend on earlier ones. `Global._ready
 | 6 | `Random` | Deterministic RNG — all randomness flows through player-seed-based RNG tracks |
 | 7 | `Global` | Central data hub — schema generation, data lookup tables, caching, run management, validator dispatch |
 | 8 | `GlobalProdDataGenerator` | Generates production data via code |
-| 9 | `ActionHandler` | Action stack & queue processor — manages execution order, timing, and interception |
-| 10 | `ActionGenerator` | Factory that creates Action instances from data |
-| 11 | `DebugLogger` | Centralized logging |
-| 12 | `HandManager` | Manages the player's hand cards |
-| 13 | `StatsHandler` | Tracks per-turn, per-combat, and per-run statistics |
-| 14 | `SoundManager` | Audio playback (plugin-based, registered as `uid://`) |
-| 15 | `UIMessage` | Global UI message overlay for floating notifications |
-| 16 | `TextParser` | Rich-text value substitution and card/status/energy macros |
-| 17 | `Platform` | Platform integration registered through a UID-backed autoload |
-| 18 | `AchievementManager` | Data-driven achievement event routing, evaluation, persistence facade, and native platform synchronization |
+| 9 | `CombatPresentation` | Shared barrier for combat animations, effects, floaters, and blocking audio |
+| 10 | `ActionHandler` | Action stack & queue processor — manages execution order, timing, and interception |
+| 11 | `ActionGenerator` | Factory that creates Action instances from data |
+| 12 | `DebugLogger` | Centralized logging |
+| 13 | `HandManager` | Manages the player's hand cards and the manual combat-input lock |
+| 14 | `StatsHandler` | Tracks per-turn, per-combat, and per-run statistics |
+| 15 | `SoundManager` | Audio playback (plugin-based, registered as `uid://`) |
+| 16 | `UIMessage` | Global UI message overlay for floating notifications |
+| 17 | `TextParser` | Rich-text value substitution and card/status/energy macros |
+| 18 | `Platform` | Platform integration registered through a UID-backed autoload |
+| 19 | `AchievementManager` | Data-driven achievement event routing, evaluation, persistence facade, and native platform synchronization |
 
 ### Data Layer (`data/`)
 
 **Schema System** (`Global.SCHEMA`): A central `Array[Array]` mapping each data type's class name, script, lookup table property name, and external folder path. `Global._generate_schema()` builds fast lookup tables from this schema. **Any new data type must be added to SCHEMA.**
 
 - **`data/CardPlayRequest.gd`** — Extends `RefCounted` (not `Resource`/`SerializableData`). A request payload carrying `card_data`, `selected_target`, `card_values`, refund/input energy, and pile routing info. Created by `HandManager` when a player clicks a hand card; flows through the action system as a value/targeting reference. Also used for card-less action payloads via `card_values` alone. Runtime wrapper actions must call `duplicate_for_child_actions()` before changing inherited values so sibling action branches remain isolated.
+- **`data/EnemySpawnRequest.gd`** — A typed synchronous request/response payload emitted through `Signals.enemy_spawn_requested`. `EnemyContainer` is the only owner that turns a requested enemy ID and logical slot ID into an `Enemy` node and writes the result back to `spawned_enemy`.
 - **`data/prototype/`** — Read-only template data. Call `Global.get_card_data_from_prototype(id)` (which internally calls `.get_prototype(true)`) to get a mutable copy. `CardData` now includes `card_hint` (new-player hint text), `card_status_effect_object_ids` (explicit status effect tooltip bindings), and `CARD_TYPE_DISPLAY` / `CARD_RARITY_DISPLAY` constants (moved from `Card.gd` to the data layer for reuse across all UI).
 - **`data/readonly/`** — Immutable lookup data (ActData, EventData, DialogueData, KeywordData, ColorData, StatusEffectData, RunModifierData, CustomSignalData, CharacterData, mod configs, etc.).
 - **`data/readonly/embedded/`** — Nested readonly data types embedded inside parent data objects: `DialogueOptionData`, `DialogueStateData` (used by `DialogueData`), `EnemyIntentData` (used by `EnemyData`).
@@ -123,6 +125,8 @@ All game behavior flows through Actions. Inheritance chain: `BaseAction` → `Ba
 - **ActionHandler** maintains an action queue stack. Push actions via `add_action()`/`add_actions()`; they auto-execute via `_perform_actions()`.
 - Actions can be **synchronous** or **asynchronous** (waiting for user input, animations, timers).
 - Actions carry a `time_delay` for pacing and an interceptor pipeline (see below).
+- Action pacing and combat presentation start together. `ActionHandler` advances only after both the action's `time_delay` and the shared `CombatPresentation` barrier have completed, so durations use `max(delay, presentation)` rather than being added serially.
+- Combat animations, impact effects, floating numbers, fades, and explicitly blocking combat audio register with `CombatPresentation`. UI audio remains non-blocking. Player input and turn transitions use this same barrier instead of maintaining parallel animation flags.
 - **ActionGenerator** is the factory — it builds action trees from JSON/dictionary action data payloads.
 - Key action categories:
   - `card_actions/` — play cards, pick cards, transform, discard, upgrade
@@ -209,16 +213,18 @@ The central mutable data object for the current Run. Key subsystems:
 
 ### Combat Flow
 
-Combat is a **signal-driven state machine** in `scripts/ui/Combat.gd` (no dedicated CombatManager class):
+Combat is a **signal-driven state machine** in `scripts/ui/Combat.gd` (no dedicated CombatManager class). Its scene is isolated in `scenes/ui/Combat.tscn` and instantiated by `Root.tscn`:
 
 1. `combat_started` → enemies spawn, play turn start animations
 2. `start_turn()` → reset energy, process pre-draw status effects, reset block, draw cards, unlock hand
-3. Player plays cards through the `CardPlayRequest` queue → Actions execute via `ActionHandler`
+3. Player plays cards through the `CardPlayRequest` queue → Actions execute via `ActionHandler`; manual input stays locked until the action delay and every registered presentation have finished
 4. `end_turn` → `CombatEndTurn` object manages immediacy levels (WAIT_FOR_ALL_CARD_PLAYS, WAIT_FOR_ACTIONS, IMMEDIATE)
 5. Player turn ends → discard/exhaust/retain logic, process post-turn status effects
-6. Enemy turn → for each living enemy: pre-intent status processing → execute intent → post-intent status processing
+6. Enemy turn → for each living enemy in stable formation order: pre-intent status processing → execute intent → post-intent status processing
 7. Loop back to step 2
 8. Combat ends when all non-summon enemies die or player dies
+
+The battlefield uses five authored `CombatEnemySlot` nodes in `Combat.tscn`. A slot stores the logical ID, left-to-right order, and depth scale; its scene position is the enemy's ground-contact point and also drives render order. `CombatFormation` owns only deterministic slot rules and automatic formations. Initial events optionally provide `event_enemy_slot_ids`; summon actions provide `spawn_slots`. Gameplay target queries (`get_leftmost_enemy()`, adjacent lookups, and enemy-turn order) use stable formation order rather than animated screen coordinates. Enemy sprite scale is `slot.depth_scale * EnemyData.enemy_combat_scale`, while intent, health, and status UI retain fixed display scale and reposition around the resulting silhouette.
 
 ### Run Modifiers
 
@@ -280,8 +286,8 @@ Single shader: `scripts/ui/outline.gdshader` — a `canvas_item` shader drawing 
 
 ### UI Architecture
 
-All UI scenes are preloaded in the `Scenes` singleton. UI scripts are in `scripts/ui/`. The root scene (`Root.tscn`) has three top-level children: **TitleScreen** (menus), **RunScreen** (in-game HUD), and **Tooltips** (global tooltip layer, Z-index 1000). Key subsystems:
-- **Card display**: `Card.tscn` + `CardDecorator.tscn` (for enchantment-like card visual modifications). Hand input is owned by the `Hand.gd` interaction state machine (`IDLE`, `PRESSING`, `DRAGGING`, `SELECTED`, `COMMITTING`); `Card.gd` only emits pointer input and manages visual feedback. Mouse and touch share the same commit/cancel path, and consumable targeting cancels active card interaction.
+All UI scenes are preloaded in the `Scenes` singleton. UI scripts are in `scripts/ui/`. The root scene (`Root.tscn`) has three top-level children: **TitleScreen** (menus), **RunScreen** (in-game HUD), and **Tooltips** (global tooltip layer, Z-index 1000). `RunScreen` instantiates the standalone `Combat.tscn`; modal selection, upgrade, enchant, forge, option, and summary overlays use absolute high Z-order so combat HUD and combatants cannot cover them. Key subsystems:
+- **Card display**: `Card.tscn` + `CardDecorator.tscn` (for enchantment-like card visual modifications). Hand input is owned by the `Hand.gd` interaction state machine (`IDLE`, `PRESSING`, `DRAGGING`, `SELECTED`, `COMMITTING`); `Card.gd` only emits pointer input and manages visual feedback. Mouse and touch share the same commit/cancel path, and consumable targeting cancels active card interaction. `Hand` centrally arbitrates overlapping-card hover ownership to prevent boundary oscillation. Once a targeted card is dragged into the battlefield it locks to the directly pointed enemy or, otherwise, the enemy nearest the dragged card.
 - **Codex**: Browseable content encyclopedia with five tabs: Cards, Artifacts, Consumables, Enemies, and Glossary (keywords + status effects with descriptions). Card tab supports pack filtering, text searching, sorting by rarity/cost/type and **double-click** on any card opens `CodexCardDetailPanel` — a full overlay showing all card data: basic info, flags, pile routing, numeric values, upgrade paths, decorators, action hooks, keywords, and tags. Codex and other browser-style selectors share `Global.get_cards_for_browser()`; it intentionally ignores `card_appears_in_card_packs`, which controls run acquisition only.
 - **Card Selection**: `CardSelectionOverlay.tscn` supports browsing, selecting cards, filtering by card packs, and text search through the same `Global.get_cards_for_browser()` path used by the Codex.
 - **Run/profile summaries**: `RunSummaryOverlay.tscn`, `ProfileStatsMenu.tscn`, and `CharacterStat.tscn` are standalone reusable scenes rather than embedded `Root.tscn` subtrees. Elapsed-time labels use `TextParser.format_duration()` so durations do not wrap after 24 hours.
@@ -293,7 +299,7 @@ All UI scenes are preloaded in the `Scenes` singleton. UI scripts are in `script
 
 ### Combatants (`scenes/combatants/`, `scripts/combatants/`)
 
-`Player.tscn` and `Enemy.tscn` are combatant scenes. Health is displayed via `LayeredHealthBar` + `HealthLayer`. `StatusEffect.tscn` renders status icons. Combat floaters (text, artifact, image) provide visual feedback for actions.
+`Player.tscn` and `Enemy.tscn` are combatant scenes whose root position represents ground contact. `WorldScaleRoot` contains the depth-scaled world sprite, shadow, and hit area; fixed-size intent, health, and status UI remains outside that scaled subtree. Health is displayed via `LayeredHealthBar` + `HealthLayer`. `StatusEffect.tscn` renders status icons. Combat floaters (text, artifact, image) provide visual feedback for actions and participate in the shared presentation barrier.
 
 ## Key Patterns & Best Practices
 

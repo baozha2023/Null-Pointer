@@ -109,11 +109,11 @@ var STANDARD_DIFFICULTY_RUN_MODIFIER_IDS: Array[String] = [
 ## 具体逻辑参考：Global._generate_card_pack_cache()
 var _id_to_card_filter_cache: Dictionary[String, CardFilter] = {}
 
-## 存储外设插件过滤器（Artifact Filter）的结果缓存。
+## 存储外设过滤器（Artifact Filter）的结果缓存。
 ## 具体逻辑参考：Global._generate_artifact_pack_cache()
 var _id_to_artifact_filter_cache: Dictionary[String, ArtifactFilter] = {}
 
-## 存储物理删除品过滤器（Consumable Filter）的结果缓存。
+## 存储消耗品过滤器（Consumable Filter）的结果缓存。
 ## 具体逻辑参考：Global._generate_consumable_pack_cache()
 var _id_to_consumable_filter_cache: Dictionary[String, ConsumableFilter] = {}
 #endregion
@@ -200,9 +200,9 @@ func _ready():
 	Signals.register_all_custom_signals()
 	# 根据 CardPackData 生成卡牌过滤器缓存
 	Global._generate_card_pack_cache()
-	# 根据 ArtifactPackData 生成外设插件过滤器缓存
+	# 根据 ArtifactPackData 生成外设过滤器缓存
 	Global._generate_artifact_pack_cache()
-	# 根据 ConsumablePackData 生成物理删除品过滤器缓存
+	# 根据 ConsumablePackData 生成消耗品过滤器缓存
 	Global._generate_consumable_pack_cache()
 	# 强制生成所有的特效动画
 	FileLoader.generate_all_animations()
@@ -262,11 +262,11 @@ func start_run(character_object_id: String, run_seed: int, difficulty_level: int
 	player_data.player_achievement_run_scope_key = "run:%d:%d" % [int(Time.get_unix_time_from_system() * 1000000.0), run_seed]
 	
 	#region 游戏进程数据初始化
-	# 为这局游戏生成外设插件池
-	# 注意：这里面包含了所有的插件，不考虑补充包（Packs）过滤
+	# 为这局游戏生成外设池
+	# 注意：这里面包含了所有外设，不考虑补充包（Packs）过滤
 	player_data.initialize_artifact_pool()
 	
-	# 给玩家添加初始外设插件
+	# 给玩家添加初始外设
 	for artifact_id in character_data.character_starting_artifact_ids:
 		player_data.add_artifact(artifact_id)
 	
@@ -276,9 +276,9 @@ func start_run(character_object_id: String, run_seed: int, difficulty_level: int
 	
 	# 卡牌掉落包配置
 	player_data.reward_draft_card_pack_ids.assign(character_data.character_starting_card_draft_card_pack_ids)
-	# 外设插件掉落包配置
+	# 外设掉落包配置
 	player_data.player_artifact_pack_ids.assign(character_data.character_starting_artifact_pack_ids)
-	# 物理删除品掉落包配置
+	# 消耗品掉落包配置
 	player_data.player_consumable_pack_ids.assign(character_data.character_starting_consumable_pack_ids)
 	
 	# 初始金钱与血量设置
@@ -418,15 +418,44 @@ func unpause_game() -> void:
 func get_player() -> Player:
 	return Global.get_tree().get_first_node_in_group("players")
 
-func get_alive_enemies() -> Array[Enemy]:
+func get_all_enemies_in_formation_order() -> Array[Enemy]:
 	var returned_enemies: Array[Enemy] = []
 	for enemy: Enemy in Global.get_tree().get_nodes_in_group("enemies_alive_or_dead"):
+		returned_enemies.append(enemy)
+	returned_enemies.sort_custom(func(a: Enemy, b: Enemy) -> bool:
+		return a.enemy_formation_order < b.enemy_formation_order
+	)
+	return returned_enemies
+
+## Returns living enemies in stable player-visible left-to-right formation order.
+## This order is independent of animation offsets and render depth.
+func get_alive_enemies_in_formation_order() -> Array[Enemy]:
+	var returned_enemies: Array[Enemy] = []
+	for enemy: Enemy in get_all_enemies_in_formation_order():
 		if enemy.is_alive():
 			returned_enemies.append(enemy)
 	return returned_enemies
 
+func get_leftmost_enemy() -> Enemy:
+	var enemies: Array[Enemy] = get_alive_enemies_in_formation_order()
+	return enemies.front() if not enemies.is_empty() else null
+
+func get_rightmost_enemy() -> Enemy:
+	var enemies: Array[Enemy] = get_alive_enemies_in_formation_order()
+	return enemies.back() if not enemies.is_empty() else null
+
+func get_left_enemy_of(enemy: Enemy) -> Enemy:
+	var enemies: Array[Enemy] = get_alive_enemies_in_formation_order()
+	var index: int = enemies.find(enemy)
+	return enemies[index - 1] if index > 0 else null
+
+func get_right_enemy_of(enemy: Enemy) -> Enemy:
+	var enemies: Array[Enemy] = get_alive_enemies_in_formation_order()
+	var index: int = enemies.find(enemy)
+	return enemies[index + 1] if index >= 0 and index + 1 < enemies.size() else null
+
 func are_remaining_enemies() -> bool:
-	return len(get_alive_enemies()) > 0
+	return not get_alive_enemies_in_formation_order().is_empty()
 
 func get_combat_stats() -> CombatStatsData:
 	# 快速获取属性的辅助方法

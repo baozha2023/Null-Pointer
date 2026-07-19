@@ -1,0 +1,924 @@
+[gd_scene format=3 uid="uid://bqano05tj4g53"]
+
+[ext_resource type="Script" uid="uid://dao05mln2rw4g" path="res://scripts/ui/Combat.gd" id="1_combat"]
+[ext_resource type="Texture2D" uid="uid://d4nl1e8fgssur" path="res://sprites/act/1/bg_act_1_init.png" id="2_25dbn"]
+[ext_resource type="Script" uid="uid://dlwowe1wugkh4" path="res://scripts/ui/Hand.gd" id="2_hand"]
+[ext_resource type="Script" uid="uid://p4ouiuival0e" path="res://scripts/ui/EnemyContainer.gd" id="3_enemies"]
+[ext_resource type="Script" uid="uid://br6hug6kh60qh" path="res://scripts/ui/CombatEnemySlot.gd" id="4_slot"]
+[ext_resource type="PackedScene" uid="uid://c0sxkaemtqb5x" path="res://scenes/combatants/Player.tscn" id="5_player"]
+[ext_resource type="Script" uid="uid://cedacrx3ip1sl" path="res://scripts/ui/ArtifactContainer.gd" id="6_artifacts"]
+[ext_resource type="Script" uid="uid://b5htysy0x53ab" path="res://scripts/ui/Consumables.gd" id="7_consumables"]
+[ext_resource type="Script" uid="uid://b8gg8exxeg26k" path="res://scripts/ui/Chest.gd" id="8_chest"]
+[ext_resource type="Script" uid="uid://cdp0fx5l64nnt" path="res://scripts/ui/Shop.gd" id="9_shop"]
+[ext_resource type="Script" uid="uid://cu62o32eaklx7" path="res://scripts/ui/TurnOverlay.gd" id="10_turn"]
+[ext_resource type="Script" uid="uid://c2i6b2ert5jls" path="res://scripts/ui/PauseButton.gd" id="11_pause"]
+[ext_resource type="Script" uid="uid://cwt4a5keff86t" path="res://scripts/ui/RunTimer.gd" id="12_timer"]
+[ext_resource type="Script" uid="uid://qcocln7oe0nr" path="res://scripts/ui/FPSDisplay.gd" id="13_fps"]
+[ext_resource type="Texture2D" uid="uid://d33u8m744fh03" path="res://icon.svg" id="14_placeholder"]
+[ext_resource type="Texture2D" uid="uid://qf8rdrmsdx7m" path="res://sprites/ui/btn_pause_icon.png" id="15_pause_icon"]
+[ext_resource type="Texture2D" uid="uid://cr6a63jqnlrsl" path="res://sprites/ui/btn_map_icon.png" id="16_map_icon"]
+[ext_resource type="Texture2D" uid="uid://bi6lu6igtqj20" path="res://sprites/ui/btn_deck_icon.png" id="17_deck_icon"]
+[ext_resource type="Texture2D" uid="uid://bi4veb1rxlkb6" path="res://sprites/ui/icon_ui_money.png" id="18_money_icon"]
+[ext_resource type="Texture2D" uid="uid://ct5ednanwp20w" path="res://sprites/ui/icon_ui_health.png" id="19_health_icon"]
+[ext_resource type="Texture2D" uid="uid://3gyh5dmwaune" path="res://sprites/ui/icon_ui_forge.png" id="20_forge_icon"]
+[ext_resource type="Shortcut" uid="uid://d3saxt3nuwqbg" path="res://shortcuts/esc_shortcut.tres" id="21_escape"]
+[ext_resource type="Texture2D" uid="uid://dab6flcgmdgpn" path="res://sprites/btn_common_normal.png" id="22_btn_normal"]
+[ext_resource type="Texture2D" uid="uid://bkrlkjojwbv77" path="res://sprites/btn_common_pressed.png" id="23_btn_pressed"]
+[ext_resource type="Texture2D" uid="uid://djt1sc74fp60x" path="res://sprites/btn_common_hover.png" id="24_btn_hover"]
+[ext_resource type="PackedScene" uid="uid://c7qo6l6ra5jhr" path="res://scenes/ui/ConsumableButton.tscn" id="25_consumable_button"]
+
+[sub_resource type="StyleBoxTexture" id="ButtonNormal"]
+texture = ExtResource("22_btn_normal")
+
+[sub_resource type="StyleBoxTexture" id="ButtonPressed"]
+texture = ExtResource("23_btn_pressed")
+
+[sub_resource type="StyleBoxTexture" id="ButtonHover"]
+texture = ExtResource("24_btn_hover")
+
+[sub_resource type="Animation" id="AnimationEndTurn"]
+resource_name = "end_turn"
+length = 0.5
+tracks/0/type = "method"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0.5),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": [],
+"method": &"_on_player_end_turn_animation_finished"
+}]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("EndTurnButton:disabled")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [true, true]
+}
+
+[sub_resource type="Animation" id="AnimationStartTurn"]
+resource_name = "start_turn"
+tracks/0/type = "method"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(1),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": [],
+"method": &"_on_player_start_turn_animation_finished"
+}]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("TurnOverlay:modulate")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.3, 0.7, 1),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1), Color(1, 1, 1, 1), Color(1, 1, 1, 0)]
+}
+tracks/2/type = "method"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("TurnOverlay")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": [],
+"method": &"update_turn_label"
+}]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("TurnOverlay:visible")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [true, false]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("EndTurnButton:disabled")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [true, false]
+}
+
+[sub_resource type="AnimationLibrary" id="CombatAnimations"]
+_data = {
+&"end_turn": SubResource("AnimationEndTurn"),
+&"start_turn": SubResource("AnimationStartTurn")
+}
+
+[node name="Combat" type="Control" unique_id=1790873775]
+unique_name_in_owner = true
+process_mode = 1
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_combat")
+
+[node name="BackgroundTexture" type="TextureRect" parent="." unique_id=1277159826]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("2_25dbn")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="BackgroundShade" type="ColorRect" parent="." unique_id=1515027846]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.015, 0.025, 0.045, 0.18)
+
+[node name="BackgroundButton" type="TextureButton" parent="." unique_id=925191927]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+button_mask = 3
+ignore_texture_size = true
+
+[node name="TopBar" type="ColorRect" parent="." unique_id=2105172691]
+z_index = 90
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 64.0
+grow_horizontal = 2
+mouse_filter = 2
+color = Color(0.025, 0.04, 0.065, 0.9)
+
+[node name="Battlefield" type="Control" parent="." unique_id=206731231]
+unique_name_in_owner = true
+layout_mode = 1
+anchor_top = 0.1
+anchor_right = 1.0
+anchor_bottom = 0.78
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Player" parent="Battlefield" unique_id=2008465235 instance=ExtResource("5_player")]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.25300002
+anchor_top = 0.674
+anchor_right = 0.25300002
+anchor_bottom = 0.674
+offset_left = 0.39996338
+offset_top = 0.17599487
+offset_right = 200.39996
+offset_bottom = 144.176
+
+[node name="EnemyContainer" type="Control" parent="Battlefield" unique_id=566103395]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("3_enemies")
+
+[node name="EnemySlots" type="Control" parent="Battlefield/EnemyContainer" unique_id=1927801997]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Slot0" type="Control" parent="Battlefield/EnemyContainer/EnemySlots" unique_id=430412333]
+layout_mode = 1
+anchor_left = 0.76
+anchor_top = 0.625
+anchor_right = 0.76
+anchor_bottom = 0.625
+offset_left = -80.0
+offset_top = -60.0
+offset_right = 80.0
+offset_bottom = 60.0
+mouse_filter = 2
+script = ExtResource("4_slot")
+logical_order = 2
+depth_scale = 0.98
+
+[node name="Slot1" type="Control" parent="Battlefield/EnemyContainer/EnemySlots" unique_id=10726852]
+layout_mode = 1
+anchor_left = 0.63
+anchor_top = 0.685
+anchor_right = 0.63
+anchor_bottom = 0.685
+offset_left = -80.0
+offset_top = -60.0
+offset_right = 80.0
+offset_bottom = 60.0
+mouse_filter = 2
+script = ExtResource("4_slot")
+slot_id = 1
+depth_scale = 1.03
+
+[node name="Slot2" type="Control" parent="Battlefield/EnemyContainer/EnemySlots" unique_id=466618456]
+layout_mode = 1
+anchor_left = 0.89
+anchor_top = 0.685
+anchor_right = 0.89
+anchor_bottom = 0.685
+offset_left = -80.0
+offset_top = -60.0
+offset_right = 80.0
+offset_bottom = 60.0
+mouse_filter = 2
+script = ExtResource("4_slot")
+slot_id = 2
+logical_order = 4
+depth_scale = 1.03
+
+[node name="Slot3" type="Control" parent="Battlefield/EnemyContainer/EnemySlots" unique_id=1525786881]
+layout_mode = 1
+anchor_left = 0.69
+anchor_top = 0.595
+anchor_right = 0.69
+anchor_bottom = 0.595
+offset_left = -80.0
+offset_top = -60.0
+offset_right = 80.0
+offset_bottom = 60.0
+mouse_filter = 2
+script = ExtResource("4_slot")
+slot_id = 3
+logical_order = 1
+depth_scale = 0.94
+
+[node name="Slot4" type="Control" parent="Battlefield/EnemyContainer/EnemySlots" unique_id=1333782288]
+layout_mode = 1
+anchor_left = 0.83
+anchor_top = 0.595
+anchor_right = 0.83
+anchor_bottom = 0.595
+offset_left = -80.0
+offset_top = -60.0
+offset_right = 80.0
+offset_bottom = 60.0
+mouse_filter = 2
+script = ExtResource("4_slot")
+slot_id = 4
+logical_order = 3
+depth_scale = 0.94
+
+[node name="EnemyLayer" type="Control" parent="Battlefield/EnemyContainer" unique_id=601097021]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Chest" type="TextureButton" parent="Battlefield" unique_id=1424294490]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -96.0
+offset_top = -96.0
+offset_right = 96.0
+offset_bottom = 96.0
+grow_horizontal = 2
+grow_vertical = 2
+texture_normal = ExtResource("14_placeholder")
+ignore_texture_size = true
+stretch_mode = 0
+script = ExtResource("8_chest")
+
+[node name="Label" type="Label" parent="Battlefield/Chest" unique_id=1739931210]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = -56.0
+offset_bottom = -11.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 32
+text = "加密数据包"
+horizontal_alignment = 1
+
+[node name="Shop" type="TextureButton" parent="Battlefield" unique_id=1337346480]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -96.0
+offset_top = -96.0
+offset_right = 96.0
+offset_bottom = 96.0
+grow_horizontal = 2
+grow_vertical = 2
+texture_normal = ExtResource("14_placeholder")
+ignore_texture_size = true
+stretch_mode = 0
+script = ExtResource("9_shop")
+
+[node name="Label" type="Label" parent="Battlefield/Shop" unique_id=1346261092]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = -56.0
+offset_bottom = -11.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 32
+text = "暗网节点"
+horizontal_alignment = 1
+
+[node name="TopHUD" type="MarginContainer" parent="." unique_id=1327975582]
+z_index = 100
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 0.17
+grow_horizontal = 2
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 4
+
+[node name="Rows" type="VBoxContainer" parent="TopHUD" unique_id=1390702434]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="TopRow" type="HBoxContainer" parent="TopHUD/Rows" unique_id=1448715549]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="PauseButton" type="TextureButton" parent="TopHUD/Rows/TopRow" unique_id=529301017]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 2
+shortcut = ExtResource("21_escape")
+shortcut_feedback = false
+shortcut_in_tooltip = false
+texture_normal = ExtResource("15_pause_icon")
+ignore_texture_size = true
+stretch_mode = 0
+script = ExtResource("11_pause")
+
+[node name="MapButton" type="TextureButton" parent="TopHUD/Rows/TopRow" unique_id=1082513406]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 2
+texture_normal = ExtResource("16_map_icon")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="DeckButton" type="TextureButton" parent="TopHUD/Rows/TopRow" unique_id=752332666]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 2
+texture_normal = ExtResource("17_deck_icon")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="MoneyContainer" type="HBoxContainer" parent="TopHUD/Rows/TopRow" unique_id=151089016]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(140, 48)
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="MoneyIcon" type="TextureRect" parent="TopHUD/Rows/TopRow/MoneyContainer" unique_id=1239602819]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+texture = ExtResource("18_money_icon")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="MoneyLabel" type="Label" parent="TopHUD/Rows/TopRow/MoneyContainer" unique_id=254878411]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "10000"
+
+[node name="HealthContainer" type="HBoxContainer" parent="TopHUD/Rows/TopRow" unique_id=285496774]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(160, 48)
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="HealthIcon" type="TextureRect" parent="TopHUD/Rows/TopRow/HealthContainer" unique_id=620134676]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+texture = ExtResource("19_health_icon")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="HealthLabel" type="Label" parent="TopHUD/Rows/TopRow/HealthContainer" unique_id=2119676909]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "99/99"
+
+[node name="Consumables" type="Control" parent="TopHUD/Rows/TopRow" unique_id=441747125]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(108, 50)
+layout_mode = 2
+script = ExtResource("7_consumables")
+
+[node name="ConsumableContainer" type="HBoxContainer" parent="TopHUD/Rows/TopRow/Consumables" unique_id=1557995928]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 24.0
+offset_top = 10.0
+offset_right = 32.0
+offset_bottom = -7.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 4
+
+[node name="ConsumableSlot0" parent="TopHUD/Rows/TopRow/Consumables/ConsumableContainer" unique_id=2038007603 instance=ExtResource("25_consumable_button")]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="ConsumableSlot1" parent="TopHUD/Rows/TopRow/Consumables/ConsumableContainer" unique_id=2022093598 instance=ExtResource("25_consumable_button")]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="ConsumableSlot2" parent="TopHUD/Rows/TopRow/Consumables/ConsumableContainer" unique_id=1041761690 instance=ExtResource("25_consumable_button")]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="ConsumableActionDropdown" type="Control" parent="TopHUD/Rows/TopRow/Consumables" unique_id=1142793900]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchor_left = 0.36
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 6.0
+offset_bottom = 102.0
+
+[node name="ColorRect" type="ColorRect" parent="TopHUD/Rows/TopRow/Consumables/ConsumableActionDropdown" unique_id=1149076468]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.08, 0.1, 0.14, 0.94)
+
+[node name="UseConsumableButton" type="Button" parent="TopHUD/Rows/TopRow/Consumables/ConsumableActionDropdown" unique_id=924919889]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 0.52
+theme_override_font_sizes/font_size = 16
+expand_icon = true
+
+[node name="UseRow" type="HBoxContainer" parent="TopHUD/Rows/TopRow/Consumables/ConsumableActionDropdown/UseConsumableButton" unique_id=1939901316]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ConsumableEnergy" type="Control" parent="TopHUD/Rows/TopRow/Consumables/ConsumableActionDropdown/UseConsumableButton/UseRow" unique_id=1376866006]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+
+[node name="ConsumableEnergyTextureRect" type="TextureRect" parent="TopHUD/Rows/TopRow/Consumables/ConsumableActionDropdown/UseConsumableButton/UseRow/ConsumableEnergy" unique_id=528230368]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -12.0
+offset_top = -12.0
+offset_right = 12.0
+offset_bottom = 12.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("14_placeholder")
+expand_mode = 1
+
+[node name="ConsumableEnergyCostLabel" type="Label" parent="TopHUD/Rows/TopRow/Consumables/ConsumableActionDropdown/UseConsumableButton/UseRow/ConsumableEnergy/ConsumableEnergyTextureRect" unique_id=1774167416]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "3"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="UseConsumableLabel" type="Label" parent="TopHUD/Rows/TopRow/Consumables/ConsumableActionDropdown/UseConsumableButton/UseRow" unique_id=1698494372]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "使用"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="DiscardConsumableButton" type="Button" parent="TopHUD/Rows/TopRow/Consumables/ConsumableActionDropdown" unique_id=992952768]
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 0.54
+anchor_right = 1.0
+anchor_bottom = 1.0
+text = "丢弃"
+
+[node name="Spacer" type="Control" parent="TopHUD/Rows/TopRow" unique_id=518839884]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+
+[node name="FPSDisplay" type="Label" parent="TopHUD/Rows/TopRow" unique_id=4264856]
+custom_minimum_size = Vector2(88, 50)
+layout_mode = 2
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.7)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 20
+text = "FPS: 60"
+horizontal_alignment = 2
+vertical_alignment = 1
+script = ExtResource("13_fps")
+
+[node name="RunTimer" type="Label" parent="TopHUD/Rows/TopRow" unique_id=1211944068]
+process_mode = 4
+custom_minimum_size = Vector2(170, 50)
+layout_mode = 2
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.7)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 30
+text = "00:00:00"
+horizontal_alignment = 2
+vertical_alignment = 1
+script = ExtResource("12_timer")
+
+[node name="ArtifactContainer" type="HBoxContainer" parent="TopHUD/Rows" unique_id=597093294]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+mouse_filter = 2
+script = ExtResource("6_artifacts")
+
+[node name="Energy" type="TextureButton" parent="." unique_id=301860405]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.015
+anchor_top = 0.79
+anchor_right = 0.065
+anchor_bottom = 0.88
+texture_normal = ExtResource("14_placeholder")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="EnergyCount" type="Label" parent="Energy" unique_id=1077706573]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -44.0
+offset_top = -26.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.9)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 18
+text = "3/3"
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="DrawTopPile" type="TextureButton" parent="." unique_id=1535690239]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.015
+anchor_top = 0.72
+anchor_right = 0.065
+anchor_bottom = 0.81
+texture_normal = ExtResource("14_placeholder")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="DrawTopCount" type="Label" parent="DrawTopPile" unique_id=161394545]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -44.0
+offset_top = -26.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.9)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 18
+text = "5"
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="ForgeButton" type="TextureButton" parent="." unique_id=1120797946]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.015
+anchor_top = 0.65
+anchor_right = 0.065
+anchor_bottom = 0.74
+texture_normal = ExtResource("20_forge_icon")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="DrawPile" type="TextureButton" parent="." unique_id=453464842]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.015
+anchor_top = 0.89
+anchor_right = 0.065
+anchor_bottom = 0.98
+texture_normal = ExtResource("14_placeholder")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="DrawCount" type="Label" parent="DrawPile" unique_id=1637093526]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -44.0
+offset_top = -26.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.9)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 18
+text = "30"
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="DiscardPile" type="TextureButton" parent="." unique_id=1705031137]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.94
+anchor_top = 0.79
+anchor_right = 0.99
+anchor_bottom = 0.88
+texture_normal = ExtResource("14_placeholder")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="DiscardCount" type="Label" parent="DiscardPile" unique_id=694119086]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -44.0
+offset_top = -26.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.9)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 18
+text = "30"
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="ExhaustPile" type="TextureButton" parent="." unique_id=743678269]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.885
+anchor_top = 0.79
+anchor_right = 0.935
+anchor_bottom = 0.88
+texture_normal = ExtResource("14_placeholder")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="ExhaustCount" type="Label" parent="ExhaustPile" unique_id=47137693]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -44.0
+offset_top = -26.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.9)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 18
+text = "30"
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="Hand" type="Control" parent="." unique_id=1288606355]
+unique_name_in_owner = true
+z_index = 100
+z_as_relative = false
+layout_mode = 1
+anchor_left = 0.13
+anchor_top = 0.79
+anchor_right = 0.87
+anchor_bottom = 1.0
+mouse_filter = 2
+script = ExtResource("2_hand")
+
+[node name="CardContainer" type="Control" parent="Hand" unique_id=695926621]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="EndTurnButton" type="Button" parent="." unique_id=1284263909]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.89
+anchor_top = 0.9
+anchor_right = 0.995
+anchor_bottom = 0.995
+theme_override_font_sizes/font_size = 18
+disabled = true
+text = "结束时钟周期"
+
+[node name="CardPicking" type="Control" parent="." unique_id=615920597]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchor_left = 0.1
+anchor_top = 0.26
+anchor_right = 0.9
+anchor_bottom = 0.78
+mouse_filter = 2
+
+[node name="CardPickLabel" type="Label" parent="CardPicking" unique_id=817621991]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 32.0
+grow_horizontal = 2
+text = "选择脚本"
+horizontal_alignment = 1
+
+[node name="ConfirmPickButton" type="Button" parent="CardPicking" unique_id=1519910075]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -192.0
+offset_top = -40.0
+offset_right = 192.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_styles/normal = SubResource("ButtonNormal")
+theme_override_styles/pressed = SubResource("ButtonPressed")
+theme_override_styles/hover = SubResource("ButtonHover")
+text = "确认"
+
+[node name="SelectTargetLabel" type="Label" parent="." unique_id=613296981]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 0.22
+anchor_right = 1.0
+anchor_bottom = 0.29
+theme_override_font_sizes/font_size = 34
+text = "选择一个目标"
+horizontal_alignment = 1
+
+[node name="TurnOverlay" type="Control" parent="." unique_id=868662966]
+visible = false
+modulate = Color(1, 1, 1, 0)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("10_turn")
+
+[node name="ColorRect" type="ColorRect" parent="TurnOverlay" unique_id=615393358]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.0862745, 0.0862745, 0.0862745, 0.192157)
+
+[node name="TurnLabel" type="Label" parent="TurnOverlay" unique_id=129165181]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 54
+text = "时钟周期 1"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="CombatAnimation" type="AnimationPlayer" parent="." unique_id=2096654080]
+libraries/ = SubResource("CombatAnimations")

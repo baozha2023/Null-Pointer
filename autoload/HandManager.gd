@@ -20,6 +20,7 @@ const EXHAUST_TIMER: float = 0.5
 
 var hand: Hand = null # this will store a backreference to Hand UI on game load
 var tooltip: Tooltip = null # this will store a backreference to Tooltip UI on game load. Not the best place to store it, but whatever
+var _manual_combat_input_disabled: bool = true
 
 # Play
 var card_play_queue: Array[CardPlayRequest] = []	# array of cards to play
@@ -419,7 +420,7 @@ func _play_card(card_play_request: CardPlayRequest) -> void:
 	var generated_action: BaseAction = ActionGenerator.generate_card_play(card_play_request)
 	
 	var intercept_targets: Array[BaseCombatant] = [null]
-	intercept_targets.append_array(Global.get_alive_enemies())
+	intercept_targets.append_array(Global.get_alive_enemies_in_formation_order())
 	var _action_interceptor_processors: Array[ActionInterceptorProcessor] = generated_action._intercept_action(intercept_targets)
 	
 	# find out where the card came from before it's played
@@ -759,8 +760,18 @@ func shuffle_draw(shuffle_discard_into_draw: bool = true, is_reshuffle: bool = t
 
 ## Disables the hand, preventing additional card plays by the player.
 ## Automatic plays can still happen.
-func set_disable_hand(disabled: bool = true):
-	hand.disable_hand(disabled)
+func set_manual_combat_input_disabled(disabled: bool) -> void:
+	_manual_combat_input_disabled = disabled
+	if hand != null:
+		hand.on_manual_combat_input_lock_changed()
+
+func is_manual_combat_input_locked() -> bool:
+	return (
+		_manual_combat_input_disabled
+		or cards_being_played
+		or ActionHandler.actions_being_performed
+		or CombatPresentation.is_blocking()
+	)
 
 ## Simple factory method to cut down on code duplication
 ## WARNING: The pile destinations and strategies are not assigned here

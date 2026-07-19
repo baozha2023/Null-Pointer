@@ -6,6 +6,8 @@
 [ext_resource type="Texture2D" uid="uid://dab6flcgmdgpn" path="res://sprites/btn_common_normal.png" id="btn_common_normal"]
 
 [node name="ForgeOverlay" type="Control" unique_id=381514600]
+z_index = 500
+z_as_relative = false
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0

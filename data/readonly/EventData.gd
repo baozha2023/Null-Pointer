@@ -34,7 +34,7 @@ enum FailedEventPoolStrategies {
 
 #region Enemy Spawning
 ## If the event/location is combat, these are the enemies that will spawn.
-## See event_enemy_placement_is_automatic and event_enemy_placement_positions.
+## See event_enemy_slot_ids.
 ## Each slot is a weighted mapping of the probability of that enemy spawning
 @export var event_weighted_enemy_object_ids: Array[Dictionary] = [
 #	{"enemy_id_1": weight_1, "enemy_id_2": weight_2}
@@ -42,14 +42,13 @@ enum FailedEventPoolStrategies {
 	{"enemy_2": 1},
 	]
 
-## Determines whether to use an HBoxContainer for automatic placement of enemies, or
-## positional data for enemies in unique spots on the screen via event_enemy_placement_positions
-@export var event_enemy_placement_is_automatic: bool = true
-
-## Array of positions for where each enemy should go if event_enemy_placement_is_automatic = false.
-## This is accessed both in parallel to event_weighted_enemy_object_ids and direct indexed when summoning additional
-## enemies via ActionSummonEnemies.
-@export var event_enemy_placement_positions: Array[Array] = [[0,-40], [0,40]]
+## Optional logical formation slot ids for the initial enemies. An empty array selects a
+## standard formation based on enemy count. Explicit ids must be unique, match the enemy
+## count, and be in the range supported by EnemyContainer (currently 0 through 4).
+## Slot 0 is the right-side center stage used by a lone enemy or boss; slots 1/2
+## are the shallow front row and slots 3/4 are the shallow rear row.
+## Summoning actions address the same logical slots through their spawn_slots value.
+@export var event_enemy_slot_ids: Array[int] = []
 
 #endregion
 

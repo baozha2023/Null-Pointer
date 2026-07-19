@@ -14,9 +14,10 @@ func perform_action():
 		var additional_block_amount: int = action_interceptor_processor.get_shadowed_action_values("additional_block", 0)
 		target.add_block(block_amount + additional_block_amount)
 
-		var audio_path_val: Array = action_interceptor_processor.get_shadowed_action_values("audio_path", [])
-		if typeof(audio_path_val) == TYPE_ARRAY and audio_path_val.size() > 0:
-			ActionGenerator.generate_sound_action(audio_path_val)
+		var audio_paths: Array[String] = []
+		audio_paths.assign(action_interceptor_processor.get_shadowed_action_values("audio_path", []))
+		if not audio_paths.is_empty():
+			ActionGenerator.play_combat_sound(audio_paths, parent_combatant)
 
 func _to_string():
 	var block: int = get_action_value("block", 0)

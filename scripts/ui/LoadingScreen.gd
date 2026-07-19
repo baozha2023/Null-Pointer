@@ -67,7 +67,7 @@ func _ready() -> void:
 		var artifact: ArtifactData = Global._id_to_artifact_data[artifact_id]
 		if artifact.artifact_texture_path != "":
 			if not _has_resource(artifact.artifact_texture_path):
-				_resources_to_load.append({"path": artifact.artifact_texture_path, "type": "外设插件资源"})
+				_resources_to_load.append({"path": artifact.artifact_texture_path, "type": "外设资源"})
 
 	# 收集所有需要加载的消耗品图片路径
 	for consumable_id: String in Global._id_to_consumable_data:

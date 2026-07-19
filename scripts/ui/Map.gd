@@ -9,7 +9,7 @@ extends Control
 @onready var clear_drawing_button: Button = $ClearDrawingButton
 @onready var auto_boss_button: Button = $AutoBossButton
 
-@onready var map_button = %MapButton
+@onready var map_button: TextureButton = get_node("../Combat").get_node("%MapButton")
 
 var can_travel: bool = false	# if clicking on a location brings you to the next location
 var draw_mode_enabled: bool = false

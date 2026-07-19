@@ -12,18 +12,16 @@ func perform_action() -> void:
 	var action_interceptor_processors: Array[ActionInterceptorProcessor] = _intercept_action([])
 	for action_interceptor_processor in action_interceptor_processors:
 		var forge_actions: Array = Global.player_data.player_values.get("forge_actions", [])
-		var fallback_action_data = action_interceptor_processor.get_shadowed_action_values("fallback_action_data", [])
+		var fallback_action_data: Array[Dictionary] = []
+		fallback_action_data.assign(
+			action_interceptor_processor.get_shadowed_action_values("fallback_action_data", [])
+		)
 		
-		# If forge is empty, try to execute fallback action
+		# If forge is empty, execute the configured fallback actions.
 		if forge_actions.is_empty():
-			if typeof(fallback_action_data) == TYPE_DICTIONARY and not fallback_action_data.is_empty():
-				fallback_action_data = [fallback_action_data]
-			if typeof(fallback_action_data) == TYPE_ARRAY and not fallback_action_data.is_empty():
-				var fallback_typed: Array[Dictionary] = []
-				for f in fallback_action_data:
-					fallback_typed.append(f)
+			if not fallback_action_data.is_empty():
 				var initiator: BaseCombatant = parent_combatant
-				var actions: Array[BaseAction] = ActionGenerator.create_actions(initiator, card_play_request, get_adjusted_action_targets(), fallback_typed, self)
+				var actions: Array[BaseAction] = ActionGenerator.create_actions(initiator, card_play_request, get_adjusted_action_targets(), fallback_action_data, self)
 				ActionHandler.add_actions(actions)
 			continue
 
@@ -83,8 +81,8 @@ func perform_action() -> void:
 				if action_id in ActionTypeGroups.ATTACK_ACTIONS:
 					has_attack = true
 				if action_id in ActionTypeGroups.REQUIRES_TARGET_ACTIONS:
-					var override = action_data[action_id].get("target_override", -1)
-					if override != BaseAction.TARGET_OVERRIDES.PLAYER and override != BaseAction.TARGET_OVERRIDES.ALL_ENEMIES and override != BaseAction.TARGET_OVERRIDES.RANDOM_ENEMY and override != BaseAction.TARGET_OVERRIDES.RANDOM_COMBATANT and override != BaseAction.TARGET_OVERRIDES.ALL_COMBATANTS and override != BaseAction.TARGET_OVERRIDES.PARENT:
+					var override: int = action_data[action_id].get("target_override", BaseAction.TARGET_OVERRIDES.SELECTED_TARGETS)
+					if BaseAction.target_override_requires_selected_target(override):
 						requires_target = true
 
 		# Calculate final_cost based on total_load
@@ -108,7 +106,10 @@ func perform_action() -> void:
 			var initiator: BaseCombatant = parent_combatant
 			# Reverse to ensure FIFO execution (since ActionHandler pushes to stack)
 			card_play_actions.reverse()
-			card_play_actions.append({Scripts.ACTION_PLAY_SOUND: {"audio_path": AudioConstants.SFX_GROUP_FORGE_FUSION}})
+			card_play_actions.append({Scripts.ACTION_PLAY_SOUND: {
+				"audio_path": AudioConstants.SFX_GROUP_FORGE_FUSION,
+				"blocks_combat_presentation": false,
+			}})
 			var actions: Array[BaseAction] = ActionGenerator.create_actions(initiator, card_play_request, get_adjusted_action_targets(), card_play_actions, self)
 			ActionHandler.add_actions(actions)
 		else:
@@ -129,7 +130,10 @@ func perform_action() -> void:
 				
 				# Reverse to ensure FIFO execution
 				card_play_actions.reverse()
-				card_play_actions.append({Scripts.ACTION_PLAY_SOUND: {"audio_path": AudioConstants.SFX_GROUP_FORGE_FUSION}})
+				card_play_actions.append({Scripts.ACTION_PLAY_SOUND: {
+					"audio_path": AudioConstants.SFX_GROUP_FORGE_FUSION,
+					"blocks_combat_presentation": false,
+				}})
 				fusion_card.card_play_actions = card_play_actions
 
 				HandManager.add_cards_to_hand([fusion_card], HandManager.PLAYER_DEFAULT_HAND_CARD_COUNT_MAX)

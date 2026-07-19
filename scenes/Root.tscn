@@ -4,34 +4,24 @@
 [ext_resource type="Theme" uid="uid://cd5rw86bhiyn" path="res://themes/title_screen_theme.tres" id="2_bi5lp"]
 [ext_resource type="Script" uid="uid://dw0xyfu580mkb" path="res://scripts/ui/menus/TitleScreen.gd" id="2_m6atk"]
 [ext_resource type="Texture2D" uid="uid://d33u8m744fh03" path="res://icon.svg" id="3_8ax2e"]
-[ext_resource type="Script" uid="uid://dao05mln2rw4g" path="res://scripts/ui/Combat.gd" id="3_h4evn"]
 [ext_resource type="Script" uid="uid://cg1kj2nrg24jw" path="res://scripts/ui/menus/MainMenu.gd" id="3_jd5n0"]
 [ext_resource type="Texture2D" uid="uid://dxw60api31ik2" path="res://sprites/title_screen_background.png" id="3_qjqcp"]
-[ext_resource type="Script" uid="uid://dlwowe1wugkh4" path="res://scripts/ui/Hand.gd" id="4_i2yfj"]
-[ext_resource type="Script" uid="uid://p4ouiuival0e" path="res://scripts/ui/EnemyContainer.gd" id="4_kvn7e"]
-[ext_resource type="PackedScene" uid="uid://c0sxkaemtqb5x" path="res://scenes/combatants/Player.tscn" id="5_7crh0"]
 [ext_resource type="Script" uid="uid://c4twsg7v4ky8u" path="res://scripts/ui/menus/NewRunMenu.gd" id="5_878fa"]
-[ext_resource type="Script" uid="uid://cedacrx3ip1sl" path="res://scripts/ui/ArtifactContainer.gd" id="5_a7j3r"]
 [ext_resource type="Texture2D" uid="uid://drkqoc4aydkc7" path="res://sprites/logo.png" id="5_grlmo"]
 [ext_resource type="Texture2D" uid="uid://bwhuk7r8qgh71" path="res://sprites/btn_base_normal.png" id="7_v75fn"]
 [ext_resource type="Script" uid="uid://csw1vv4b1hbnb" path="res://addons/label_font_auto_sizer/label_auto_sizer.gd" id="8_lhx3c"]
 [ext_resource type="Texture2D" uid="uid://du2m35pfbfy23" path="res://sprites/btn_base_pressed.png" id="8_nddw4"]
 [ext_resource type="Shortcut" uid="uid://d3saxt3nuwqbg" path="res://shortcuts/esc_shortcut.tres" id="8_xur7f"]
 [ext_resource type="Texture2D" uid="uid://vtmxc3lvqedh" path="res://sprites/btn_base_hover.png" id="9_jiqw6"]
-[ext_resource type="Script" uid="uid://cu62o32eaklx7" path="res://scripts/ui/TurnOverlay.gd" id="9_u2w0b"]
 [ext_resource type="Script" uid="uid://dgls5w4w7ym84" path="res://scripts/ui/menus/CodexMenu.gd" id="9_uxrgu"]
 [ext_resource type="Script" uid="uid://nkhf5a8dd47j" path="res://ui/components/resizing_grid_scroll_container/ResizingGridScrollContainer.gd" id="10_kpmo0"]
 [ext_resource type="Script" uid="uid://ejl2op54o7aw" path="res://scripts/ui/RewardOverlay.gd" id="10_u2l48"]
-[ext_resource type="Script" uid="uid://b8gg8exxeg26k" path="res://scripts/ui/Chest.gd" id="11_1uvyw"]
-[ext_resource type="Script" uid="uid://b5htysy0x53ab" path="res://scripts/ui/Consumables.gd" id="11_c46y0"]
 [ext_resource type="PackedScene" uid="uid://b7itoxbnyegis" path="res://scenes/ui/codex/CodexCardPackButton.tscn" id="11_kw7ld"]
 [ext_resource type="Script" uid="uid://dj8cttlgi1fow" path="res://scripts/ui/codex/CodexCardsMenu.gd" id="11_nownq"]
 [ext_resource type="Texture2D" uid="uid://csm0chktmbxho" path="res://sprites/characters/character_green/character_green_poster.png" id="11_ug4o1"]
 [ext_resource type="PackedScene" uid="uid://cim470d3rss83" path="res://scenes/ui/CardUpgradeOverlay.tscn" id="11_upgrade"]
 [ext_resource type="Script" uid="uid://bepy2gle06uwf" path="res://scripts/ui/CardDraftSelectionOverlay.gd" id="11_yys3c"]
 [ext_resource type="Script" uid="uid://dm6o2678kafwr" path="res://scripts/ui/menus/RunScreen.gd" id="12_elxq6"]
-[ext_resource type="Script" uid="uid://c2i6b2ert5jls" path="res://scripts/ui/PauseButton.gd" id="13_i7igs"]
-[ext_resource type="Script" uid="uid://cdp0fx5l64nnt" path="res://scripts/ui/Shop.gd" id="13_w8i8k"]
 [ext_resource type="PackedScene" uid="uid://btxmfagad05n5" path="res://scenes/ui/card/Card.tscn" id="14_dohly"]
 [ext_resource type="Script" uid="uid://dnvcyccyhfcmu" path="res://scripts/ui/Map.gd" id="14_fc5ht"]
 [ext_resource type="Script" uid="uid://b2hl2ln4jm0mj" path="res://scripts/ui/RestOverlay.gd" id="14_k6wys"]
@@ -54,7 +44,6 @@
 [ext_resource type="PackedScene" path="res://scenes/ui/profile/ProfileStatsMenu.tscn" id="25_yjgj2"]
 [ext_resource type="Script" uid="uid://b3nvcsku8u75w" path="res://addons/smooth_scroll_container/scroll_damper/expo_scroll_damper.gd" id="26_08sam"]
 [ext_resource type="Script" uid="uid://6xsavir53fvp" path="res://scripts/ui/PauseOverlay.gd" id="29_p8axl"]
-[ext_resource type="Script" uid="uid://cwt4a5keff86t" path="res://scripts/ui/RunTimer.gd" id="30_plfau"]
 [ext_resource type="Script" uid="uid://cv2h3ccb6uytr" path="res://scripts/ui/Tooltips.gd" id="40_wtekq"]
 [ext_resource type="Theme" uid="uid://2714jm71pkv4" path="res://themes/keyword_tooltip_theme.tres" id="41_0h1ar"]
 [ext_resource type="Script" uid="uid://d2fxhtmdfmtdf" path="res://scripts/ui/general/KeywordContainer.gd" id="42_wtekq"]
@@ -68,16 +57,10 @@
 [ext_resource type="Texture2D" uid="uid://dab6flcgmdgpn" path="res://sprites/btn_common_normal.png" id="btn_common_normal"]
 [ext_resource type="Texture2D" uid="uid://bkrlkjojwbv77" path="res://sprites/btn_common_pressed.png" id="btn_common_pressed"]
 [ext_resource type="Script" uid="uid://rt6p3v5dh3cs" path="res://scripts/ui/codex/CodexCardDetailPanel.gd" id="codex_card_detail_panel"]
-[ext_resource type="Texture2D" uid="uid://bi6lu6igtqj20" path="res://sprites/ui/btn_deck_icon.png" id="deck_icon"]
+[ext_resource type="PackedScene" path="res://scenes/ui/Combat.tscn" id="combat_scene"]
 [ext_resource type="PackedScene" uid="uid://cx6g8tforge31" path="res://scenes/ui/ForgeOverlay.tscn" id="forge_overlay_scene"]
-[ext_resource type="Script" uid="uid://qcocln7oe0nr" path="res://scripts/ui/FPSDisplay.gd" id="fps_display"]
 [ext_resource type="PackedScene" path="res://ui/components/frame_rate_limit_slider/FrameRateLimitSlider.tscn" id="frame_rate_limit_slider"]
-[ext_resource type="Texture2D" uid="uid://3gyh5dmwaune" path="res://sprites/ui/icon_ui_forge.png" id="icon_ui_forge"]
-[ext_resource type="Texture2D" uid="uid://ct5ednanwp20w" path="res://sprites/ui/icon_ui_health.png" id="icon_ui_health"]
-[ext_resource type="Texture2D" uid="uid://bi4veb1rxlkb6" path="res://sprites/ui/icon_ui_money.png" id="icon_ui_money"]
-[ext_resource type="Texture2D" uid="uid://cr6a63jqnlrsl" path="res://sprites/ui/btn_map_icon.png" id="map_icon"]
 [ext_resource type="PackedScene" uid="uid://c51c3a7l2" path="res://scenes/ui/menus/ModMenu.tscn" id="mod_menu_scene"]
-[ext_resource type="Texture2D" uid="uid://qf8rdrmsdx7m" path="res://sprites/ui/btn_pause_icon.png" id="pause_icon"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_main_menu_terminal"]
 bg_color = Color(0.015, 0.035, 0.045, 0.88)
@@ -126,109 +109,6 @@ texture = ExtResource("btn_common_pressed")
 texture = ExtResource("btn_common_hover")
 
 [sub_resource type="ButtonGroup" id="ButtonGroup_codex_tabs"]
-
-[sub_resource type="Animation" id="Animation_m5prp"]
-resource_name = "end_turn"
-length = 0.5
-tracks/0/type = "method"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath(".")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0.5),
-"transitions": PackedFloat32Array(1),
-"values": [{
-"args": [],
-"method": &"_on_player_end_turn_animation_finished"
-}]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("EndTurnButton:disabled")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0, 0.5),
-"transitions": PackedFloat32Array(1, 1),
-"update": 1,
-"values": [true, true]
-}
-
-[sub_resource type="Animation" id="Animation_beguj"]
-resource_name = "start_turn"
-tracks/0/type = "method"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath(".")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(1),
-"transitions": PackedFloat32Array(1),
-"values": [{
-"args": [],
-"method": &"_on_player_start_turn_animation_finished"
-}]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("TurnOverlay:modulate")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0, 0.3, 0.7, 1),
-"transitions": PackedFloat32Array(1, 1, 1, 1),
-"update": 0,
-"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1), Color(1, 1, 1, 1), Color(1, 1, 1, 0)]
-}
-tracks/2/type = "method"
-tracks/2/imported = false
-tracks/2/enabled = true
-tracks/2/path = NodePath("TurnOverlay")
-tracks/2/interp = 1
-tracks/2/loop_wrap = true
-tracks/2/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"values": [{
-"args": [],
-"method": &"update_turn_label"
-}]
-}
-tracks/3/type = "value"
-tracks/3/imported = false
-tracks/3/enabled = true
-tracks/3/path = NodePath("TurnOverlay:visible")
-tracks/3/interp = 1
-tracks/3/loop_wrap = true
-tracks/3/keys = {
-"times": PackedFloat32Array(0, 1),
-"transitions": PackedFloat32Array(1, 1),
-"update": 1,
-"values": [true, false]
-}
-tracks/4/type = "value"
-tracks/4/imported = false
-tracks/4/enabled = true
-tracks/4/path = NodePath("EndTurnButton:disabled")
-tracks/4/interp = 1
-tracks/4/loop_wrap = true
-tracks/4/keys = {
-"times": PackedFloat32Array(0, 1),
-"transitions": PackedFloat32Array(1, 1),
-"update": 1,
-"values": [true, false]
-}
-
-[sub_resource type="AnimationLibrary" id="AnimationLibrary_yww7o"]
-_data = {
-&"end_turn": SubResource("Animation_m5prp"),
-&"start_turn": SubResource("Animation_beguj")
-}
 
 [sub_resource type="Resource" id="Resource_uxrgu"]
 script = ExtResource("26_08sam")
@@ -733,7 +613,7 @@ unique_name_in_owner = true
 layout_direction = 2
 layout_mode = 2
 theme_override_font_sizes/font_size = 16
-text = "外设插件名称"
+text = "外设名称"
 clip_text = true
 
 [node name="CharacterArtifactDescriptionLabel" type="RichTextLabel" parent="TitleScreen/NewRunMenu/CharacterSelect/VBoxContainer/Control2/VBoxContainer" unique_id=1447978852]
@@ -1158,7 +1038,7 @@ theme_override_styles/pressed = SubResource("StyleBoxTexture_btn_common_pressed"
 theme_override_styles/hover = SubResource("StyleBoxTexture_btn_common_hover")
 toggle_mode = true
 button_group = SubResource("ButtonGroup_codex_tabs")
-text = "外设插件"
+text = "外设"
 
 [node name="MarginContainer3" type="MarginContainer" parent="TitleScreen/CodexMenu/VSplitContainer/VBoxContainer/MarginContainer2/VBoxContainer" unique_id=1789177042]
 layout_mode = 1
@@ -1181,7 +1061,7 @@ theme_override_styles/pressed = SubResource("StyleBoxTexture_btn_common_pressed"
 theme_override_styles/hover = SubResource("StyleBoxTexture_btn_common_hover")
 toggle_mode = true
 button_group = SubResource("ButtonGroup_codex_tabs")
-text = "物理删除品"
+text = "消耗品"
 
 [node name="MarginContainer4" type="MarginContainer" parent="TitleScreen/CodexMenu/VSplitContainer/VBoxContainer/MarginContainer2/VBoxContainer" unique_id=1151655601]
 layout_mode = 1
@@ -1868,7 +1748,7 @@ layout_mode = 2
 [node name="ConsumableTitle" type="Label" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/MainScroll/MainVBox" unique_id=34866031]
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
-text = "物理删除品"
+text = "消耗品"
 
 [node name="RunHistoryConsumableContainer" type="GridContainer" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/MainScroll/MainVBox" unique_id=1124760162]
 unique_name_in_owner = true
@@ -1883,7 +1763,7 @@ layout_mode = 2
 [node name="ArtifactTitle" type="Label" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/MainScroll/MainVBox" unique_id=476153908]
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
-text = "外设插件"
+text = "外设"
 
 [node name="RunHistoryArtifactContainer" type="GridContainer" parent="TitleScreen/RunHistoryMenu/RunsExistContainer/MainScroll/MainVBox" unique_id=227126276]
 unique_name_in_owner = true
@@ -1909,594 +1789,23 @@ script = ExtResource("auto_resize_grid")
 
 [node name="RunScreen" type="Control" parent="." unique_id=2146255345]
 visible = false
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 script = ExtResource("12_elxq6")
 
-[node name="Combat" type="Control" parent="RunScreen" unique_id=797179111]
-unique_name_in_owner = true
-process_mode = 1
-anchors_preset = 0
-offset_right = 1200.0
-offset_bottom = 700.0
-script = ExtResource("3_h4evn")
-
-[node name="Background" type="ColorRect" parent="RunScreen/Combat" unique_id=39069088]
-layout_mode = 0
-offset_right = 1200.0
-offset_bottom = 700.0
-color = Color(0.202309, 0.187588, 0.216973, 1)
-
-[node name="Background2" type="ColorRect" parent="RunScreen/Combat" unique_id=1118416378]
-layout_mode = 0
-offset_right = 1200.0
-offset_bottom = 64.0
-color = Color(0.135517, 0.124494, 0.146491, 1)
-
-[node name="BackgroundButton" type="TextureButton" parent="RunScreen/Combat" unique_id=321482324]
-unique_name_in_owner = true
+[node name="Combat" parent="RunScreen" unique_id=784100509 instance=ExtResource("combat_scene")]
 layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_top = 64.0
-grow_horizontal = 2
-grow_vertical = 2
-button_mask = 3
-ignore_texture_size = true
-stretch_mode = 0
-
-[node name="PauseButton" type="TextureButton" parent="RunScreen/Combat" unique_id=647341802]
-unique_name_in_owner = true
-layout_mode = 0
-offset_left = 16.0
-offset_top = 8.0
-offset_right = 66.0
-offset_bottom = 58.0
-shortcut = ExtResource("8_xur7f")
-shortcut_feedback = false
-shortcut_in_tooltip = false
-texture_normal = ExtResource("pause_icon")
-ignore_texture_size = true
-stretch_mode = 0
-script = ExtResource("13_i7igs")
-
-[node name="MapButton" type="TextureButton" parent="RunScreen/Combat" unique_id=268662246]
-unique_name_in_owner = true
-layout_mode = 0
-offset_left = 72.0
-offset_top = 8.0
-offset_right = 122.0
-offset_bottom = 58.0
-texture_normal = ExtResource("map_icon")
-ignore_texture_size = true
-stretch_mode = 0
-
-[node name="DeckButton" type="TextureButton" parent="RunScreen/Combat" unique_id=1171146295]
-unique_name_in_owner = true
-layout_mode = 0
-offset_left = 128.0
-offset_top = 8.0
-offset_right = 178.0
-offset_bottom = 58.0
-texture_normal = ExtResource("deck_icon")
-ignore_texture_size = true
-stretch_mode = 0
-
-[node name="MoneyContainer" type="HBoxContainer" parent="RunScreen/Combat" unique_id=1231323859]
-unique_name_in_owner = true
-layout_mode = 1
-anchors_preset = 10
-anchor_right = 1.0
-offset_left = 232.0
-offset_top = 6.0
-offset_right = -780.0
-offset_bottom = 54.0
-grow_horizontal = 2
-theme_override_constants/separation = 8
-
-[node name="MoneyIcon" type="TextureRect" parent="RunScreen/Combat/MoneyContainer" unique_id=233444551]
-custom_minimum_size = Vector2(32, 32)
-layout_mode = 2
-texture = ExtResource("icon_ui_money")
-expand_mode = 1
-stretch_mode = 5
-
-[node name="MoneyLabel" type="Label" parent="RunScreen/Combat/MoneyContainer" unique_id=1231323860]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_font_sizes/font_size = 34
-text = "10000"
-
-[node name="HealthContainer" type="HBoxContainer" parent="RunScreen/Combat" unique_id=453838396]
-unique_name_in_owner = true
-layout_mode = 1
-anchors_preset = 10
-anchor_right = 1.0
-offset_left = 380.0
-offset_top = 6.0
-offset_right = -613.0
-offset_bottom = 54.0
-grow_horizontal = 2
-theme_override_constants/separation = 8
-
-[node name="HealthIcon" type="TextureRect" parent="RunScreen/Combat/HealthContainer" unique_id=233444552]
-custom_minimum_size = Vector2(32, 32)
-layout_mode = 2
-texture = ExtResource("icon_ui_health")
-expand_mode = 1
-stretch_mode = 5
-
-[node name="HealthLabel" type="Label" parent="RunScreen/Combat/HealthContainer" unique_id=453838397]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_font_sizes/font_size = 34
-text = "99/99"
-
-[node name="ArtifactContainer" type="HBoxContainer" parent="RunScreen/Combat" unique_id=1591838213]
-layout_mode = 0
-offset_left = 16.0
-offset_top = 72.0
-offset_right = 496.0
-offset_bottom = 112.0
-mouse_filter = 2
-script = ExtResource("5_a7j3r")
-
-[node name="Player" parent="RunScreen/Combat" unique_id=524412048 instance=ExtResource("5_7crh0")]
-unique_name_in_owner = true
-layout_mode = 0
-offset_left = 221.0
-offset_top = 256.0
-offset_right = 421.0
-offset_bottom = 400.0
-
-[node name="EnemyContainer" type="Control" parent="RunScreen/Combat" unique_id=754159237]
-anchors_preset = 0
-offset_left = 655.0
-offset_top = 256.0
-offset_right = 1273.0
-offset_bottom = 448.0
-mouse_filter = 2
-script = ExtResource("4_kvn7e")
-metadata/_edit_group_ = true
-
-[node name="AutomaticEnemyContainer" type="HBoxContainer" parent="RunScreen/Combat/EnemyContainer" unique_id=797003300]
-layout_mode = 0
-offset_right = 608.0
-offset_bottom = 192.0
-mouse_filter = 2
-alignment = 1
-
-[node name="PositionalEnemyContainer" type="Control" parent="RunScreen/Combat/EnemyContainer" unique_id=801103158]
-anchors_preset = 0
-offset_right = 608.0
-offset_bottom = 192.0
-mouse_filter = 2
-
-[node name="Consumables" type="Control" parent="RunScreen/Combat" unique_id=322094683]
-anchors_preset = 0
-offset_left = 512.0
-offset_right = 752.0
-offset_bottom = 104.0
-script = ExtResource("11_c46y0")
-
-[node name="ConsumableContainer" type="HBoxContainer" parent="RunScreen/Combat/Consumables" unique_id=426524601]
-layout_mode = 0
-offset_left = 91.0
-offset_top = 16.0
-offset_right = 480.0
-offset_bottom = 48.0
-
-[node name="ConsumableActionDropdown" type="Control" parent="RunScreen/Combat/Consumables" unique_id=1558880329]
-visible = false
-anchors_preset = 0
-offset_top = 56.0
-offset_right = 144.0
-offset_bottom = 152.0
-
-[node name="ColorRect" type="ColorRect" parent="RunScreen/Combat/Consumables/ConsumableActionDropdown" unique_id=1624439753]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_right = 48.0
-offset_bottom = -8.0
-grow_horizontal = 2
-grow_vertical = 2
-color = Color(0.278431, 0.278431, 0.278431, 1)
-
-[node name="UseConsumableButton" type="Button" parent="RunScreen/Combat/Consumables/ConsumableActionDropdown" unique_id=2030371971]
-unique_name_in_owner = true
-layout_mode = 0
-offset_left = 8.0
-offset_top = 8.0
-offset_right = 184.0
-offset_bottom = 40.0
-theme_override_font_sizes/font_size = 16
-expand_icon = true
-
-[node name="HSplitContainer" type="HSplitContainer" parent="RunScreen/Combat/Consumables/ConsumableActionDropdown/UseConsumableButton" unique_id=740926753]
-layout_mode = 0
-offset_right = 176.0
-offset_bottom = 32.0
-theme_override_constants/separation = -16
-dragging_enabled = false
-
-[node name="ConsumableEnergy" type="Control" parent="RunScreen/Combat/Consumables/ConsumableActionDropdown/UseConsumableButton/HSplitContainer" unique_id=1688068806]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(32, 32)
-layout_mode = 2
-metadata/_edit_group_ = true
-
-[node name="ConsumableEnergyTextureRect" type="TextureRect" parent="RunScreen/Combat/Consumables/ConsumableActionDropdown/UseConsumableButton/HSplitContainer/ConsumableEnergy" unique_id=1557031278]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(24, 24)
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -8.0
-offset_top = -8.0
-offset_right = 8.0
-offset_bottom = 8.0
-grow_horizontal = 2
-grow_vertical = 2
-texture = ExtResource("3_8ax2e")
-expand_mode = 1
-metadata/_edit_group_ = true
-
-[node name="ConsumableEnergyCostLabel" type="Label" parent="RunScreen/Combat/Consumables/ConsumableActionDropdown/UseConsumableButton/HSplitContainer/ConsumableEnergy/ConsumableEnergyTextureRect" unique_id=1228979599]
-unique_name_in_owner = true
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-text = "3"
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="UseConsumableLabel" type="Label" parent="RunScreen/Combat/Consumables/ConsumableActionDropdown/UseConsumableButton/HSplitContainer" unique_id=719537466]
-unique_name_in_owner = true
-layout_mode = 2
-text = "使用"
-horizontal_alignment = 1
-vertical_alignment = 1
-text_overrun_behavior = 4
-
-[node name="DiscardConsumableButton" type="Button" parent="RunScreen/Combat/Consumables/ConsumableActionDropdown" unique_id=2055788104]
-layout_mode = 0
-offset_left = 8.0
-offset_top = 48.0
-offset_right = 184.0
-offset_bottom = 79.0
-theme_override_font_sizes/font_size = 16
-text = "丢弃"
-
-[node name="Chest" type="TextureButton" parent="RunScreen/Combat" unique_id=336087146]
-visible = false
-layout_mode = 0
-offset_left = 768.0
-offset_top = 256.0
-offset_right = 960.0
-offset_bottom = 448.0
-texture_normal = ExtResource("3_8ax2e")
-ignore_texture_size = true
-stretch_mode = 0
-script = ExtResource("11_1uvyw")
-
-[node name="Label" type="Label" parent="RunScreen/Combat/Chest" unique_id=724325389]
-layout_mode = 0
-offset_top = -56.0
-offset_right = 192.0
-offset_bottom = -11.0
-theme_override_font_sizes/font_size = 32
-text = "加密数据包"
-horizontal_alignment = 1
-
-[node name="Shop" type="TextureButton" parent="RunScreen/Combat" unique_id=302804716]
-visible = false
-layout_mode = 0
-offset_left = 768.0
-offset_top = 256.0
-offset_right = 960.0
-offset_bottom = 448.0
-texture_normal = ExtResource("3_8ax2e")
-ignore_texture_size = true
-stretch_mode = 0
-script = ExtResource("13_w8i8k")
-
-[node name="Label" type="Label" parent="RunScreen/Combat/Shop" unique_id=709235408]
-layout_mode = 0
-offset_top = -56.0
-offset_right = 192.0
-offset_bottom = -11.0
-theme_override_font_sizes/font_size = 32
-text = "暗网节点"
-horizontal_alignment = 1
-
-[node name="Energy" type="TextureButton" parent="RunScreen/Combat" unique_id=517286826]
-unique_name_in_owner = true
-visible = false
-layout_mode = 0
-offset_left = 24.0
-offset_top = 560.0
-offset_right = 74.0
-offset_bottom = 610.0
-texture_normal = ExtResource("3_8ax2e")
-ignore_texture_size = true
-stretch_mode = 0
-
-[node name="EnergyCount" type="Label" parent="RunScreen/Combat/Energy" unique_id=1984291671]
-layout_mode = 0
-offset_left = 24.0
-offset_top = 32.0
-offset_right = 66.0
-offset_bottom = 58.0
-theme_override_font_sizes/font_size = 18
-text = "30"
-horizontal_alignment = 1
-
-[node name="DrawTopPile" type="TextureButton" parent="RunScreen/Combat" unique_id=445566778]
-unique_name_in_owner = true
-visible = false
-layout_mode = 0
-offset_left = 24.0
-offset_top = 504.0
-offset_right = 74.0
-offset_bottom = 554.0
-texture_normal = ExtResource("3_8ax2e")
-ignore_texture_size = true
-stretch_mode = 0
-
-[node name="DrawTopCount" type="Label" parent="RunScreen/Combat/DrawTopPile" unique_id=445566779]
-layout_mode = 0
-offset_left = 24.0
-offset_top = 32.0
-offset_right = 66.0
-offset_bottom = 58.0
-theme_override_font_sizes/font_size = 18
-text = "5"
-horizontal_alignment = 1
-
-[node name="ForgeButton" type="TextureButton" parent="RunScreen/Combat" unique_id=445566780]
-unique_name_in_owner = true
-visible = false
-layout_mode = 0
-offset_left = 23.0
-offset_top = 442.0
-offset_right = 73.0
-offset_bottom = 492.0
-texture_normal = ExtResource("icon_ui_forge")
-ignore_texture_size = true
-stretch_mode = 0
-
-[node name="DrawPile" type="TextureButton" parent="RunScreen/Combat" unique_id=320277565]
-unique_name_in_owner = true
-visible = false
-layout_mode = 0
-offset_left = 24.0
-offset_top = 616.0
-offset_right = 74.0
-offset_bottom = 666.0
-texture_normal = ExtResource("3_8ax2e")
-ignore_texture_size = true
-stretch_mode = 0
-
-[node name="DrawCount" type="Label" parent="RunScreen/Combat/DrawPile" unique_id=2059573911]
-layout_mode = 0
-offset_left = 24.0
-offset_top = 32.0
-offset_right = 66.0
-offset_bottom = 58.0
-theme_override_font_sizes/font_size = 18
-text = "30"
-horizontal_alignment = 1
-
-[node name="DiscardPile" type="TextureButton" parent="RunScreen/Combat" unique_id=1125735299]
-unique_name_in_owner = true
-visible = false
-layout_mode = 0
-offset_left = 1136.0
-offset_top = 560.0
-offset_right = 1186.0
-offset_bottom = 610.0
-texture_normal = ExtResource("3_8ax2e")
-ignore_texture_size = true
-stretch_mode = 0
-
-[node name="DiscardCount" type="Label" parent="RunScreen/Combat/DiscardPile" unique_id=1348692494]
-layout_mode = 0
-offset_left = 24.0
-offset_top = 32.0
-offset_right = 66.0
-offset_bottom = 58.0
-theme_override_font_sizes/font_size = 18
-text = "30"
-horizontal_alignment = 1
-
-[node name="ExhaustPile" type="TextureButton" parent="RunScreen/Combat" unique_id=1351464836]
-unique_name_in_owner = true
-visible = false
-layout_mode = 0
-offset_left = 1080.0
-offset_top = 560.0
-offset_right = 1130.0
-offset_bottom = 610.0
-texture_normal = ExtResource("3_8ax2e")
-ignore_texture_size = true
-stretch_mode = 0
-
-[node name="ExhaustCount" type="Label" parent="RunScreen/Combat/ExhaustPile" unique_id=391818972]
-layout_mode = 0
-offset_left = 24.0
-offset_top = 32.0
-offset_right = 66.0
-offset_bottom = 58.0
-theme_override_font_sizes/font_size = 18
-text = "30"
-horizontal_alignment = 1
-
-[node name="CardPicking" type="Control" parent="RunScreen/Combat" unique_id=165883473]
-unique_name_in_owner = true
-visible = false
-anchors_preset = 0
-offset_left = 126.0
-offset_top = 208.0
-offset_right = 1094.0
-offset_bottom = 641.0
-
-[node name="CardPickLabel" type="Label" parent="RunScreen/Combat/CardPicking" unique_id=663104816]
-unique_name_in_owner = true
-layout_mode = 1
-anchors_preset = 14
-anchor_top = 0.5
-anchor_right = 1.0
-anchor_bottom = 0.5
-offset_top = -180.0
-offset_bottom = -157.0
-grow_horizontal = 2
-grow_vertical = 2
-text = "选择脚本"
-horizontal_alignment = 1
-
-[node name="ConfirmPickButton" type="Button" parent="RunScreen/Combat/CardPicking" unique_id=1476605964]
-unique_name_in_owner = true
-layout_mode = 0
-offset_left = 286.0
-offset_top = 189.0
-offset_right = 670.0
-offset_bottom = 220.0
-theme_override_styles/normal = SubResource("StyleBoxTexture_btn_common_normal")
-theme_override_styles/pressed = SubResource("StyleBoxTexture_btn_common_pressed")
-theme_override_styles/hover = SubResource("StyleBoxTexture_btn_common_hover")
-text = "确认"
-
-[node name="Hand" type="Control" parent="RunScreen/Combat" unique_id=1468352038]
-unique_name_in_owner = true
-anchors_preset = 0
-offset_left = 157.0
-offset_top = 553.0
-offset_right = 1059.0
-offset_bottom = 698.0
-script = ExtResource("4_i2yfj")
-
-[node name="CardContainer" type="Control" parent="RunScreen/Combat/Hand" unique_id=2017383676]
-unique_name_in_owner = true
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="HandSizeExceededRect" type="ColorRect" parent="RunScreen/Combat" unique_id=1165565327]
-unique_name_in_owner = true
-visible = false
-self_modulate = Color(1, 1, 1, 0.258824)
-layout_mode = 0
-offset_left = 157.0
-offset_top = 553.0
-offset_right = 1059.0
-offset_bottom = 698.0
-mouse_filter = 2
-
-[node name="EndTurnButton" type="Button" parent="RunScreen/Combat" unique_id=1702274490]
-unique_name_in_owner = true
-visible = false
-layout_mode = 0
-offset_left = 1079.0
-offset_top = 624.0
-offset_right = 1196.0
-offset_bottom = 696.0
-theme_override_font_sizes/font_size = 18
-disabled = true
-text = "结束时钟周期"
-
-[node name="SelectTargetLabel" type="Label" parent="RunScreen/Combat" unique_id=198237144]
-unique_name_in_owner = true
-visible = false
-layout_mode = 1
-anchors_preset = 10
-anchor_right = 1.0
-offset_top = 192.0
-offset_bottom = 240.0
-grow_horizontal = 2
-theme_override_font_sizes/font_size = 34
-text = "选择一个目标"
-horizontal_alignment = 1
-
-[node name="TurnOverlay" type="Control" parent="RunScreen/Combat" unique_id=253104370]
-visible = false
-modulate = Color(1, 1, 1, 0)
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-script = ExtResource("9_u2w0b")
-
-[node name="ColorRect" type="ColorRect" parent="RunScreen/Combat/TurnOverlay" unique_id=349776669]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-color = Color(0.0862745, 0.0862745, 0.0862745, 0.192157)
-
-[node name="TurnLabel" type="Label" parent="RunScreen/Combat/TurnOverlay" unique_id=297751727]
-layout_mode = 1
-anchors_preset = 14
-anchor_top = 0.5
-anchor_right = 1.0
-anchor_bottom = 0.5
-offset_top = -30.0
-offset_bottom = 42.0
-grow_horizontal = 2
-grow_vertical = 2
-text = "时钟周期"
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="CombatAnimation" type="AnimationPlayer" parent="RunScreen/Combat" unique_id=85031201]
-libraries/ = SubResource("AnimationLibrary_yww7o")
-
-[node name="RunTimer" type="Label" parent="RunScreen/Combat" unique_id=833142312]
-process_mode = 4
-layout_mode = 0
-offset_left = 1016.0
-offset_top = 8.0
-offset_right = 1186.0
-offset_bottom = 56.0
-theme_override_font_sizes/font_size = 34
-text = "HH:MM:SS"
-horizontal_alignment = 1
-vertical_alignment = 1
-script = ExtResource("30_plfau")
-
-[node name="FPSDisplay" type="Label" parent="RunScreen/Combat" unique_id=1819337254]
-layout_mode = 0
-offset_left = 848.0
-offset_top = 8.0
-offset_right = 1000.0
-offset_bottom = 56.0
-theme_override_font_sizes/font_size = 26
-text = "FPS: 60"
-horizontal_alignment = 2
-vertical_alignment = 1
-script = ExtResource("fps_display")
 
 [node name="RestOverlay" type="Control" parent="RunScreen" unique_id=15522777]
 unique_name_in_owner = true
 process_mode = 1
 visible = false
-z_index = 10
+z_index = 500
+z_as_relative = false
 anchors_preset = 0
 offset_right = 1200.0
 offset_bottom = 700.0
@@ -2548,7 +1857,8 @@ text = "恢复进程"
 unique_name_in_owner = true
 process_mode = 1
 visible = false
-z_index = 10
+z_index = 500
+z_as_relative = false
 anchors_preset = 0
 offset_right = 1200.0
 offset_bottom = 700.0
@@ -2631,7 +1941,8 @@ text = "恢复进程"
 unique_name_in_owner = true
 process_mode = 1
 visible = false
-z_index = 10
+z_index = 500
+z_as_relative = false
 anchors_preset = 0
 offset_right = 1200.0
 offset_bottom = 700.0
@@ -2712,7 +2023,8 @@ layout_mode = 0
 unique_name_in_owner = true
 process_mode = 1
 visible = false
-z_index = 10
+z_index = 500
+z_as_relative = false
 anchors_preset = 0
 offset_right = 1200.0
 offset_bottom = 700.0
@@ -2771,7 +2083,8 @@ alignment = 1
 unique_name_in_owner = true
 process_mode = 1
 visible = false
-z_index = 10
+z_index = 500
+z_as_relative = false
 anchors_preset = 0
 offset_right = 1200.0
 offset_bottom = 700.0
@@ -2834,7 +2147,8 @@ layout_mode = 0
 unique_name_in_owner = true
 process_mode = 1
 visible = false
-z_index = 10
+z_index = 500
+z_as_relative = false
 anchors_preset = 0
 offset_right = 1200.0
 offset_bottom = 700.0
@@ -2898,7 +2212,8 @@ grow_vertical = 2
 unique_name_in_owner = true
 process_mode = 1
 visible = false
-z_index = 100
+z_index = 500
+z_as_relative = false
 anchors_preset = 0
 offset_right = 1200.0
 offset_bottom = 700.0
@@ -2997,7 +2312,8 @@ mouse_filter = 2
 unique_name_in_owner = true
 process_mode = 3
 visible = false
-z_index = 100
+z_index = 500
+z_as_relative = false
 anchors_preset = 0
 offset_right = 1200.0
 offset_bottom = 700.0
@@ -3069,7 +2385,8 @@ text = "放弃本轮"
 [node name="ForgeOverlay" parent="RunScreen" unique_id=1305490746 instance=ExtResource("forge_overlay_scene")]
 unique_name_in_owner = true
 visible = false
-z_index = 20
+z_index = 500
+z_as_relative = false
 layout_mode = 0
 anchors_preset = 0
 anchor_right = 0.0

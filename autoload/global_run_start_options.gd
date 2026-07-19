@@ -93,7 +93,7 @@ static func _add_tradeoff_options() -> void:
 	_register_option(
 		"run_start_tradeoff_common_artifact_max_health_10",
 		RunStartOptionData.RUN_START_OPTION_TYPES.TRADEOFF,
-		"[color=green]获得[artifact_count]个随机[artifact_rarities]外设插件[/color]，[color=red]失去[health_max_amount]点最大完整度[/color]",
+		"[color=green]获得[artifact_count]个随机[artifact_rarities]外设[/color]，[color=red]失去[health_max_amount]点最大完整度[/color]",
 		[
 			{Scripts.ACTION_ADD_ARTIFACTS_FROM_POOL: {"target_override": BaseAction.TARGET_OVERRIDES.PLAYER, "artifact_count": 1, "artifact_rarities": [ArtifactData.ARTIFACT_RARITIES.COMMON]}},
 			{Scripts.ACTION_ADD_HEALTH: {"target_override": BaseAction.TARGET_OVERRIDES.PLAYER, "health_max_amount": -10}},
@@ -195,7 +195,7 @@ static func _add_tradeoff_options() -> void:
 	_register_option(
 		"run_start_tradeoff_uncommon_artifact_max_health_15",
 		RunStartOptionData.RUN_START_OPTION_TYPES.TRADEOFF,
-		"[color=green]获得[artifact_count]个随机[artifact_rarities]外设插件[/color]，[color=red]失去[health_max_amount]点最大完整度[/color]",
+		"[color=green]获得[artifact_count]个随机[artifact_rarities]外设[/color]，[color=red]失去[health_max_amount]点最大完整度[/color]",
 		[
 			{Scripts.ACTION_ADD_ARTIFACTS_FROM_POOL: {"target_override": BaseAction.TARGET_OVERRIDES.PLAYER, "artifact_count": 1, "artifact_rarities": [ArtifactData.ARTIFACT_RARITIES.UNCOMMON]}},
 			{Scripts.ACTION_ADD_HEALTH: {"target_override": BaseAction.TARGET_OVERRIDES.PLAYER, "health_max_amount": -15}},
@@ -275,7 +275,7 @@ static func _add_tradeoff_options() -> void:
 	_register_option(
 		"run_start_tradeoff_boss_artifact_swap",
 		RunStartOptionData.RUN_START_OPTION_TYPES.TRADEOFF,
-		"[color=red]失去初始外设插件[/color]，[color=green]获得[artifact_count]个随机动态生成外设插件[/color]",
+		"[color=red]失去初始外设[/color]，[color=green]获得[artifact_count]个随机动态生成外设[/color]",
 		[{Scripts.ACTION_SWAP_BOSS_ARTIFACT: {"artifact_count": 1}}],
 	)
 
@@ -290,7 +290,7 @@ static func _add_positive_options() -> void:
 	_register_option(
 		"run_start_positive_two_common_artifacts",
 		RunStartOptionData.RUN_START_OPTION_TYPES.POSITIVE_ONLY,
-		"[color=green]获得[artifact_count]个随机[artifact_rarities]外设插件[/color]",
+		"[color=green]获得[artifact_count]个随机[artifact_rarities]外设[/color]",
 		[{Scripts.ACTION_ADD_ARTIFACTS_FROM_POOL: {"target_override": BaseAction.TARGET_OVERRIDES.PLAYER, "artifact_count": 2, "artifact_rarities": [ArtifactData.ARTIFACT_RARITIES.COMMON]}}],
 	)
 
@@ -314,7 +314,7 @@ static func _add_positive_options() -> void:
 	_register_option(
 		"run_start_positive_common_artifact",
 		RunStartOptionData.RUN_START_OPTION_TYPES.POSITIVE_ONLY,
-		"[color=green]获得[artifact_count]个随机[artifact_rarities]外设插件[/color]",
+		"[color=green]获得[artifact_count]个随机[artifact_rarities]外设[/color]",
 		[{Scripts.ACTION_ADD_ARTIFACTS_FROM_POOL: {"target_override": BaseAction.TARGET_OVERRIDES.PLAYER, "artifact_count": 1, "artifact_rarities": [ArtifactData.ARTIFACT_RARITIES.COMMON]}}],
 	)
 

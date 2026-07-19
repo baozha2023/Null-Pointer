@@ -14,6 +14,7 @@ class_name BaseCombatant
 @onready var image_fade_container: Node2D = %ImageFadeContainer
 
 @onready var selection_button: Button = %SelectionButton
+@onready var world_scale_root: Node2D = %WorldScaleRoot
 
 @onready var status_container: GridContainer = $Visible/StatusContainer
 @onready var custom_ui_container = $Visible/CustomUIContainer
@@ -22,6 +23,9 @@ class_name BaseCombatant
 
 var status_id_to_status_effects: Dictionary = {}	# maps status id to the array of ui element(s) it matches
 var custom_ui_object_id_to_custom_ui: Dictionary = {} # maps a custom ui id to the ui component it matches. Duplicate registrations will be ignored
+var _world_depth_scale: float = 1.0
+var _world_scale_tween: Tween = null
+var _blocking_animation_name: StringName = &""
 
 func _ready():
 	Signals.combat_started.connect(_on_combat_started)
@@ -36,20 +40,68 @@ func _ready():
 	animated_sprite_2d.animation_finished.connect(_on_animation_finished)
 
 	selection_button.button_up.connect(_on_selection_button_up)
-	selection_button.mouse_entered.connect(func(): UIHover.scale_up($Visible/CombatantCenter))
-	selection_button.mouse_exited.connect(func(): UIHover.scale_down($Visible/CombatantCenter))
+	selection_button.mouse_entered.connect(_on_world_visual_hovered)
+	selection_button.mouse_exited.connect(_on_world_visual_unhovered)
+
+func set_world_depth_scale(depth_scale: float) -> void:
+	_world_depth_scale = depth_scale
+	world_scale_root.scale = Vector2.ONE * _world_depth_scale
+	_on_world_depth_scale_changed()
+
+## Extension point for fixed-size combat UI that must follow the scaled world visual.
+func _on_world_depth_scale_changed() -> void:
+	pass
+
+func _on_world_visual_hovered() -> void:
+	_tween_world_scale(Vector2.ONE * _world_depth_scale * UIHover.DEFAULT_HOVER_SCALE)
+
+func _on_world_visual_unhovered() -> void:
+	_tween_world_scale(Vector2.ONE * _world_depth_scale)
+
+func _tween_world_scale(target_scale: Vector2) -> void:
+	if _world_scale_tween != null and _world_scale_tween.is_valid():
+		_world_scale_tween.kill()
+	_world_scale_tween = create_tween()
+	_world_scale_tween.tween_property(world_scale_root, "scale", target_scale, UIHover.DEFAULT_DURATION)
 
 func _on_selection_button_up():
 	breakpoint
 
 #region Animations
 
-## Keep.
 func play_animation(animation_name: String) -> void:
+	if animation_name == AnimationData.ANIMATION_NONE:
+		return
+	if animated_sprite_2d.sprite_frames == null or not animated_sprite_2d.sprite_frames.has_animation(animation_name):
+		DebugLogger.log_warning("BaseCombatant: Missing animation {0}".format([animation_name]))
+		return
+	if animation_name != AnimationData.ANIMATION_IDLE:
+		_begin_blocking_animation(animation_name)
+	elif _is_blocking_animation_playing():
+		_finish_blocking_animation(String(_blocking_animation_name))
 	animated_sprite_2d.play(animation_name)
 	_resize_sprite_to_fixed_size()
 
-## Keep
+func _is_blocking_animation_playing() -> bool:
+	return not _blocking_animation_name.is_empty()
+
+func _begin_blocking_animation(animation_name: String) -> void:
+	var animation_string_name: StringName = StringName(animation_name)
+	if _blocking_animation_name == animation_string_name:
+		return
+	_blocking_animation_name = animation_string_name
+	CombatPresentation.track(self)
+
+func _finish_blocking_animation(animation_name: String) -> void:
+	if _blocking_animation_name != StringName(animation_name):
+		return
+	_blocking_animation_name = &""
+	CombatPresentation.release(self)
+
+## Death has a separate fade AnimationPlayer and releases from the subclass callback.
+func _sprite_finish_releases_animation_lock(animation_name: String) -> bool:
+	return animation_name != AnimationData.ANIMATION_DEATH
+
 func get_animation_sprite_frames() -> SpriteFrames:
 	var animation_data: AnimationData = get_animation_data()
 	if animation_data == null:
@@ -61,7 +113,7 @@ func get_animation_data() -> AnimationData:
 	breakpoint
 	return null
 
-## Keep. Moves to next animation in the animation state machine. If none exist does nothing.
+## Moves to the next animation in the state machine when one is configured.
 func play_next_animation() -> void:
 	var animation_data: AnimationData = get_animation_data()
 	if animation_data == null:
@@ -81,6 +133,9 @@ func _resize_sprite_to_fixed_size() -> void:
 				animated_sprite_2d.scale = Vector2(128.0 / tex_size.x, 128.0 / tex_size.y)
 
 func _on_animation_finished() -> void:
+	var completed_animation_name: String = animated_sprite_2d.animation
+	if _sprite_finish_releases_animation_lock(completed_animation_name):
+		_finish_blocking_animation(completed_animation_name)
 	play_next_animation()
 
 #endregion
@@ -196,19 +251,19 @@ func queue_speech_message(message_bbcode: String) -> void:
 #region Fades
 
 func create_block_text() -> void:
-	var text_fade: TextFade = Scenes.TEXT_FADE.instantiate()
-	fade_container.add_child(text_fade)
-	text_fade.init("Blocked")
+	_create_text_fade("Blocked")
 
 func create_damage_text(damage_amount: int) -> void:
-	var text_fade: TextFade = Scenes.TEXT_FADE.instantiate()
-	fade_container.add_child(text_fade)
-	text_fade.init(str(damage_amount))
+	_create_text_fade(str(damage_amount))
 
 func create_health_text(health_amount: int) -> void:
+	_create_text_fade("+" + str(health_amount), Color.GREEN)
+
+func _create_text_fade(text: String, color: Color = Color.WHITE) -> void:
 	var text_fade: TextFade = Scenes.TEXT_FADE.instantiate()
 	fade_container.add_child(text_fade)
-	text_fade.init("+" + str(health_amount), Color.GREEN)
+	CombatPresentation.track(text_fade)
+	text_fade.init(text, color)
 
 func create_block_fade() -> void:
 	if block and block.base_sprite and block.base_sprite.texture:
@@ -217,6 +272,7 @@ func create_block_fade() -> void:
 func create_image_fade(texture: Texture) -> void:
 	var image_fade: ImageFade = Scenes.IMAGE_FADE.instantiate()
 	image_fade_container.add_child(image_fade)
+	CombatPresentation.track(image_fade)
 	image_fade.init(texture)
 
 ## Spawns an animated effect over the combatant
@@ -228,6 +284,7 @@ func create_effect_animation(animation_id: String) -> void:
 
 	var animated_combat_effect: AnimatedCombatEffect = Scenes.COMBAT_EFFECT_ANIMATION.instantiate()
 	image_fade_container.add_child(animated_combat_effect)
+	CombatPresentation.track(animated_combat_effect)
 	animated_combat_effect.init(animation_data)
 
 #endregion
@@ -349,11 +406,6 @@ func _decay_status_effect(status_effect_object_id: String) -> void:
 			ActionGenerator.generate_decay_status_effect(self, status_effect_object_id, decay_amount)
 			#
 			# add_status_effect_charges(status_effect_object_id, decay_amount, 0)
-
-## DEPRECATED Left in for being potentially useful, but not used anywhere
-func _decay_all_status_effects():
-	for status_effect_object_id in status_id_to_status_effects.keys().duplicate():
-		_decay_status_effect(status_effect_object_id)
 
 func get_status_charges(status_effect_object_id: String) -> int:
 	# returns the amount of status effect charges of a given effect

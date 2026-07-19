@@ -1,6 +1,12 @@
 extends BaseCombatant
 class_name Enemy
 
+const WORLD_VISUAL_BASE_HALF_SIZE: float = 64.0
+const COMBATANT_CENTER_Y: float = -64.0
+const INTENT_VISUAL_GAP: float = 6.0
+const HEALTH_VISUAL_GAP: float = 6.0
+const STATUS_HEALTH_GAP: float = 10.0
+
 @onready var enemy_intent: HBoxContainer = $Visible/Intent
 
 # icons used for displaying specific intent types
@@ -22,12 +28,16 @@ class_name Enemy
 }
 
 @onready var enemy_intent_amount_label: Label = $Visible/Intent/IntentAmount
+@onready var target_highlight: HoverBrackets = %TargetHighlight
 
 @onready var name_label = %NameLabel
 @onready var death_animation_player: AnimationPlayer = $DeathAnimationPlayer
 
 var enemy_data: EnemyData = null
-var enemy_slot: int = 0 # the spawn slot the enemy is in
+## Stable logical formation identity. Rendering animations never change these values.
+var enemy_slot_id: int = -1
+var enemy_formation_order: int = -1
+var enemy_formation_depth: float = 1.0
 
 var enemy_intent_attack_damage: int = 0
 var enemy_intent_number_of_attacks: int = 0
@@ -75,6 +85,56 @@ func init(_enemy_data: EnemyData):
 	buffing_intent.texture = preload("res://sprites/intents/enemy_intent_buffing.png")
 	summoning_intent.texture = preload("res://sprites/intents/enemy_intent_summoning.png")
 	special_intent.texture = preload("res://sprites/intents/enemy_intent_special.png")
+
+## Assigns this enemy to a logical battlefield slot whose position represents the
+## enemy's ground contact point.
+func apply_formation_slot(slot: CombatEnemySlot) -> void:
+	enemy_slot_id = slot.get_slot_id()
+	enemy_formation_order = slot.get_logical_order()
+	enemy_formation_depth = slot.get_depth_scale()
+	position = slot.get_ground_position()
+	z_index = slot.get_render_order()
+	set_world_depth_scale(enemy_formation_depth * enemy_data.enemy_combat_scale)
+
+## The sprite, shadow, and hit area scale in world space. Combat information keeps
+## its UI size and is repositioned around the resulting visual bounds.
+func _on_world_depth_scale_changed() -> void:
+	if not is_node_ready():
+		return
+	call_deferred("_update_scaled_combat_ui_layout")
+
+func _update_scaled_combat_ui_layout() -> void:
+	if not is_instance_valid(enemy_intent) or not is_instance_valid(layered_health_bar):
+		return
+	var visual_half_height: float = WORLD_VISUAL_BASE_HALF_SIZE * _world_depth_scale
+	var visual_top: float = COMBATANT_CENTER_Y - visual_half_height
+
+	# Intent is relative to Visible; place its bottom above the scaled silhouette.
+	enemy_intent.position.y = visual_top - INTENT_VISUAL_GAP - enemy_intent.size.y
+
+	# Ground UI is relative to CombatantCenter. Preserve the authored horizontal
+	# positions and component sizes while moving the stack below the silhouette.
+	var health_top: float = visual_half_height + HEALTH_VISUAL_GAP
+	layered_health_bar.position.y = health_top
+	block.position.y = health_top + 8.0
+	status_container.position.y = (
+		COMBATANT_CENTER_Y
+		+ health_top
+		+ layered_health_bar.size.y
+		+ STATUS_HEALTH_GAP
+	)
+
+func get_target_anchor_global_position() -> Vector2:
+	return selection_button.get_global_rect().get_center()
+
+func contains_global_point(global_point: Vector2) -> bool:
+	return selection_button.get_global_rect().has_point(global_point)
+
+func set_target_highlighted(highlighted: bool) -> void:
+	if highlighted:
+		target_highlight.show_brackets()
+	else:
+		target_highlight.hide_brackets()
 	
 func get_animation_data() -> AnimationData:
 	var animation_data: AnimationData = Global.get_animation_data(enemy_data.enemy_animation_id)
@@ -198,10 +258,13 @@ func update_enemy_intent():
 	var attack_damage: int = 0
 	var number_of_attacks: int = 0
 	if current_enemy_intent == null:
-		breakpoint
-	else:
-		attack_damage = current_enemy_intent.enemy_intent_attack_damage
-		number_of_attacks = current_enemy_intent.enemy_intent_number_of_attacks
+		DebugLogger.log_error("Enemy.update_enemy_intent: Enemy {0} has no current intent".format([enemy_data.object_id]))
+		enemy_intent_attack_damage = 0
+		enemy_intent_number_of_attacks = 0
+		enemy_intent_amount_label.hide()
+		return
+	attack_damage = current_enemy_intent.enemy_intent_attack_damage
+	number_of_attacks = current_enemy_intent.enemy_intent_number_of_attacks
 	
 	# reset intent icon visibility
 	for intent_icon: TextureRect in INTENT_DISPLAY_TYPE_TO_INTENT.values():
@@ -290,6 +353,7 @@ func _on_mouse_exited():
 
 func _on_death_animtation_finished():
 	# called from animation player
+	_finish_blocking_animation(AnimationData.ANIMATION_DEATH)
 	Signals.enemy_death_animation_finished.emit(self)
 
 func _on_single_intent_mouse_entered(display_type: int, intent_icon: Control) -> void:

@@ -1,6 +1,6 @@
 # Action Reference
 
-本文档整理当前项目中 `scripts/actions/` 下的 Action，用于制作卡牌、敌人意图、事件、遗物、锻造、奖励和 Mod 行为。
+本文档整理当前项目中 `scripts/actions/` 下的 Action，用于制作卡牌、敌人意图、事件、外设、锻造、奖励和 Mod 行为。
 
 本文档以当前工作区源码为准，覆盖 `autoload/Scripts.gd` 中注册的 **101 个 `ACTION_*` 常量**，并额外记录抽象基类、共享辅助类和特殊拦截器。参数默认值、读取方式和组合关系均按实际实现描述；已经完成统一的接口按当前规范记录，不再保留旧拼写或旧参数别名。
 
@@ -215,7 +215,7 @@ Action 参数不是只从当前 Action 字典读取。调用 `BaseAction.get_act
 | `CHANGE_CARD_PROPERTIES` / `IMPROVE_CARD_PROPERTIES` | 都修改 `CardData` 字段而非 `card_values`。 | 覆盖与数值增量。 | **合理拆分**，但任意字符串属性名缺少 schema 校验。 |
 | `CHANGE_CARD_ENERGIES` / `RANDOMIZE_CARD_ENERGIES` | 都修改四层能量费用字段。 | 固定赋值与随机赋值。 | **合理拆分**；随机版统一使用 `rng_energy_cost`。 |
 | `UPDATE_CARD_DRAFTS` / `UPDATE_CONSUMABLE_DRAFTS` | 重置包、清空包、增删包、白名单、黑名单的流程几乎一致。 | 操作的数据池类型不同。 | **高重复**。可抽为通用内容池更新帮助方法。 |
-| `INCREASE_ARTIFACT_CHARGE` / `CHANGE_ARTIFACT_CHARGE` | 都按遗物 ID 或实例修改计数器。 | 前者增量且会走增量副作用；后者绝对设置且明确不触发 charge actions。 | **语义合理并均已注册**。按“增量事件”与“绝对赋值”选择，不应互相替代。 |
+| `INCREASE_ARTIFACT_CHARGE` / `CHANGE_ARTIFACT_CHARGE` | 都按外设 ID 或实例修改计数器。 | 前者增量且会走增量副作用；后者绝对设置且明确不触发 charge actions。 | **语义合理并均已注册**。按“增量事件”与“绝对赋值”选择，不应互相替代。 |
 | `OPEN_CHEST` / `GRANT_REWARDS` | 宝箱 Action 负责生成/选择奖励，再交给 Grant Rewards 展示。 | 前者是来源策略，后者是奖励落地。 | **合理分层**，但当前用直接 `perform_action()` 连接，且消耗品分支未完成。 |
 | `GET_SHOP_PRICE` / `GET_ENCHANT_PRICE` / `CARD_PLAY` / `CONSUMABLE` / `DEATH` | Action 本体为空或几乎为空，仅提供可拦截的脚本类型。 | 它们是“语义事件令牌”，由拦截器或外部调用方读取结果。 | **不是冗余**，但文档和命名必须明确“不可单独产生效果”。 |
 
@@ -225,13 +225,13 @@ Action 参数不是只从当前 Action 字典读取。调用 `BaseAction.get_act
 
 | 外层 Action | 内层 Action/数据 | 方式 | 目的与风险 |
 |---|---|---|---|
-| `ACTION_ATTACK_GENERATOR` | `ATTACK`、`PLAY_ANIMATION`、`CREATE_EFFECT_ANIMATION` | 入栈 | 标准多段攻击组合。音效由每个子 `ATTACK` 在造成伤害时播放。 |
-| `ACTION_TIME_ATTACK_GENERATOR` | 同上 | 入栈 | 与普通攻击生成器整段重复，存在同步维护风险。 |
+| `ACTION_ATTACK_GENERATOR` | 多个 `ATTACK` | 入栈 | 每段 `ATTACK` 在同一帧启动攻击动画、命中 VFX、音效和伤害表现。 |
+| `ACTION_TIME_ATTACK_GENERATOR` | 多个 `ATTACK` | 入栈 | 复用普通攻击生成器的命中批次构建器。 |
 | `ACTION_DRAW_GENERATOR` | 多个 `DRAW` | 入栈 | 让每次抽牌独立可拦截。 |
 | `ATTACK` / `DIRECT_DAMAGE` | `actions_on_lethal` | 入栈 | 命中目标死亡后生成任意子动作。 |
 | `BLOCK_TO_STATUS` | `APPLY_STATUS` | **直调** | 保证先加状态再清空格挡，但绕过 ActionHandler 的延迟/异步语义。 |
 | `MULTIPLY_STATUS` | `APPLY_STATUS` | **直调** | 把倍增转换为增量层数；内层会重新运行 Apply Status 拦截器。 |
-| `ADD_ARTIFACTS_FROM_POOL` | `ADD_ARTIFACT` | **经 ActionGenerator 直调** | 每件遗物再次经过 Add Artifact 的拦截入口。 |
+| `ADD_ARTIFACTS_FROM_POOL` | `ADD_ARTIFACT` | **经 ActionGenerator 直调** | 每件外设再次经过 Add Artifact 的拦截入口。 |
 | `USE_CONSUMABLE` | Consumable 的 `consumable_actions` | 入栈或**逐个直调** | `perform_consumable_actions_instantly` 为 true 时会绕过异步等待和 delay；只适合自动复活等强即时场景。 |
 | `PICK_CARDS` 及 Create/Duplicate 变体 | `action_data` | 入栈 | 父级运行时 `picked_cards` 供 Cardset 子 Action 回退读取。 |
 | `VALIDATOR` | passed/failed payload | 入栈 | if/else 包装。 |
@@ -241,7 +241,7 @@ Action 参数不是只从当前 Action 字典读取。调用 `BaseAction.get_act
 | `PICK_OPTIONS` | `OptionData.option_sub_actions` | 入栈 | 每个已选选项生成一组子动作。 |
 | `LOW_LEVEL_FORMAT` | 注入计数后的 `action_data` | 入栈 | 跨牌堆筛选、操作并导出数量。 |
 | `SCHEDULE_DELAYED_ACTIONS` | `APPLY_STATUS`；状态到期后再生成 `action_data` | 入栈 -> 延后入栈 | 两级嵌套：先创建独立延时状态，再由 `StatusEffectDelayedExecution` 恢复原请求值并执行。 |
-| `ADD_TO_FORGE` | `APPLY_STATUS` | 入栈 | 同步锻造负载状态；缺锻造遗物时则直接调用 PlayerData 添加遗物。 |
+| `ADD_TO_FORGE` | `APPLY_STATUS` | 入栈 | 同步锻造负载状态；缺少代码锻炉时则直接调用 PlayerData 添加外设。 |
 | `TAKE_FROM_FORGE` | fallback、锻造条目 Actions、`PLAY_SOUND` | 入栈 | 可直接执行锻造内容或生成一张动态融合卡。 |
 | `SHOP_PURCHASE_ITEMS` | `ADD_MONEY` + Add Card/Artifact/Consumable | 入栈 | 购买交易拆成资源扣除与物品发放。 |
 | `OPEN_CHEST` | `GRANT_REWARDS` | **直调** | 奖励生成后立即写入 UI 奖励组；不经过 Handler delay。 |
@@ -311,7 +311,7 @@ Action 参数不是只从当前 Action 字典读取。调用 `BaseAction.get_act
 | `audio_path` | `[]` | 每段攻击音效组。 |
 | `actions_on_lethal` | `[]` | 击杀目标后追加执行的 Action。 |
 
-`audio_path` 只传给生成的每段 `ACTION_ATTACK`，因此正常情况下每段命中只播放一次攻击音效。
+`attack_animation_name`、`impact_vfx_animation_id` 和 `audio_path` 都传给同一个 `ACTION_ATTACK`。每段命中会同时启动攻击者动画、目标 VFX、音效、伤害结算和 `time_delay` 计时，并等待延迟与阻塞表现中最后一个结束。
 
 ### `ACTION_TIME_ATTACK_GENERATOR`
 
@@ -333,13 +333,15 @@ Action 参数不是只从当前 Action 字典读取。调用 `BaseAction.get_act
 
 路径：`res://scripts/actions/combatant_actions/ActionAttack.gd`
 
-实际造成攻击伤害。一般由 `ACTION_ATTACK_GENERATOR` 生成。
+实际造成攻击伤害。一般由 `ACTION_ATTACK_GENERATOR` 生成；攻击动画、目标 VFX、音效和伤害表现属于同一个并发表现批次。
 
 | 参数 | 默认值 | 作用 |
 |---|---:|---|
 | `damage` | `0` | 伤害。 |
 | `bypass_block` | `false` | 是否绕过格挡。 |
 | `audio_path` | `[]` | 攻击音效。 |
+| `attack_animation_name` | `AnimationData.ANIMATION_NONE` | 本段开始时播放的攻击者动画。 |
+| `impact_vfx_animation_id` | `""` | 本段开始时在目标上播放的命中特效。 |
 | `actions_on_lethal` | `[]` | 击杀后执行。 |
 | `action_short_circuits` | `true` | 无有效目标时短路。 |
 
@@ -530,7 +532,7 @@ Action 参数不是只从当前 Action 字典读取。调用 `BaseAction.get_act
 
 路径：`res://scripts/actions/combatant_actions/player_actions/ActionAddArtifact.gd`
 
-根据 `artifact_id` 从全局遗物原型表取得数据，并调用 `PlayerData.add_artifact()` 添加实例。`artifact_id` 与 `custom_values` 都从 interceptor shadow 层读取，因此拦截器既可拒绝发放，也可替换遗物 ID 或初始化值；ID 无效时记录错误并终止。
+根据 `artifact_id` 从全局外设原型表取得数据，并调用 `PlayerData.add_artifact()` 添加实例。`artifact_id` 与 `custom_values` 都从 interceptor shadow 层读取，因此拦截器既可拒绝发放，也可替换外设 ID 或初始化值；ID 无效时记录错误并终止。
 
 参数：`artifact_id`，`custom_values` 默认 `{}`。
 
@@ -538,7 +540,7 @@ Action 参数不是只从当前 Action 字典读取。调用 `BaseAction.get_act
 
 路径：`res://scripts/actions/combatant_actions/player_actions/ActionAddArtifactsFromPool.gd`
 
-从玩家遗物池抽取并添加遗物。
+从玩家外设池抽取并添加外设。
 
 参数：`artifact_count` 默认 1，`artifact_rarities` 默认 `[]`，`use_rarity_ordering` 默认 true，`from_back` 默认 false。`artifact_id` 仅用于字符串展示。
 
@@ -546,13 +548,13 @@ Action 参数不是只从当前 Action 字典读取。调用 `BaseAction.get_act
 
 路径：`res://scripts/actions/combatant_actions/player_actions/ActionSwapBossArtifact.gd`
 
-移除角色初始遗物，换取一个 boss 遗物。无专用参数。
+移除角色初始外设，换取一个 Boss 外设。无专用参数。
 
 ### `ACTION_ADD_CONSUMABLE`
 
 路径：`res://scripts/actions/combatant_actions/player_actions/ActionAddConsumable.gd`
 
-添加物理删除品/消耗品。
+添加消耗品。
 
 参数：`consumable_object_id`、`fill_all_slots` 默认 false、`random_consumable` 默认 false、`consumable_whitelist_ids`、`consumable_blacklist_ids`、`slot_count` 默认 1、`rng_name` 默认 `rng_consumables`。
 
@@ -952,23 +954,23 @@ Action 参数不是只从当前 Action 字典读取。调用 `BaseAction.get_act
 
 路径：`res://scripts/actions/artifact_actions/ActionIncreaseArtifactCharge.gd`
 
-增加遗物计数。
+增加外设计数。
 
-参数：`artifact_id`、`artifact_charge_increase` 默认 1、`artifact_data` 可直接指定遗物实例。
+参数：`artifact_id`、`artifact_charge_increase` 默认 1、`artifact_data` 可直接指定外设实例。
 
 ### `ACTION_CHANGE_ARTIFACT_ENABLED`
 
 路径：`res://scripts/actions/artifact_actions/ActionChangeArtifactEnabled.gd`
 
-按 `artifact_id` 修改全部同 ID 遗物，或通过 `artifact_data` 修改指定实例。`artifact_disabled` 是严格 bool：true 禁用，false 启用；ID 与实例同时提供时会依次设置。
+按 `artifact_id` 修改全部同 ID 外设，或通过 `artifact_data` 修改指定实例。`artifact_disabled` 是严格 bool：true 禁用，false 启用；ID 与实例同时提供时会依次设置。
 
-参数：`artifact_id`、`artifact_disabled` 默认 true、`artifact_data` 可直接指定遗物实例。
+参数：`artifact_id`、`artifact_disabled` 默认 true、`artifact_data` 可直接指定外设实例。
 
 ### `ACTION_CHANGE_ARTIFACT_CHARGE`
 
 路径：`res://scripts/actions/artifact_actions/ActionChangeArtifactCharge.gd`
 
-绝对设置遗物计数。可按 `artifact_id` 修改玩家持有的全部同 ID 实例，也可通过 `artifact_data` 精确指定一个实例；两者同时提供时会依次设置。它调用 `set_artifact_counter()`，不会触发 `ACTION_INCREASE_ARTIFACT_CHARGE` 所代表的增量副作用。
+绝对设置外设计数。可按 `artifact_id` 修改玩家持有的全部同 ID 实例，也可通过 `artifact_data` 精确指定一个实例；两者同时提供时会依次设置。它调用 `set_artifact_counter()`，不会触发 `ACTION_INCREASE_ARTIFACT_CHARGE` 所代表的增量副作用。
 
 参数：`artifact_id`、`artifact_charges` 默认 1、`artifact_data`。
 
@@ -1116,7 +1118,7 @@ Action 参数不是只从当前 Action 字典读取。调用 `BaseAction.get_act
 
 路径：`res://scripts/actions/forge_actions/ActionAddToForge.gd`
 
-把一条 Action 数据存入 `Global.player_data.player_values["forge_actions"]`，并确保玩家拥有锻造遗物。
+把一条 Action 数据存入 `Global.player_data.player_values["forge_actions"]`，并确保玩家拥有代码锻炉。
 
 参数：`forge_action_data`，`forge_action_load` 默认 0，`forge_action_description` 默认 `""`。
 
@@ -1126,7 +1128,7 @@ Action 参数不是只从当前 Action 字典读取。调用 `BaseAction.get_act
 
 路径：`res://scripts/actions/forge_actions/ActionTakeFromForge.gd`
 
-按 `TAKE_TYPES` 从锻造区取全部、第一条或最后一条代码。可选择清除原条目并同步锻造遗物计数；随后根据总负载计算费用，或者直接扣能量并把代码入栈执行，或者生成一张临时融合牌加入手牌。非法 `take_type` 会记录错误并终止本次处理。
+按 `TAKE_TYPES` 从锻造区取全部、第一条或最后一条代码。可选择清除原条目并同步代码锻炉计数；随后根据总负载计算费用，或者直接扣能量并把代码入栈执行，或者生成一张临时融合牌加入手牌。非法 `take_type` 会记录错误并终止本次处理。
 
 参数：`fallback_action_data`，`take_type` 默认 `ActionTakeFromForge.TAKE_TYPES.ALL`，`clear_after_take` 默认 true，`execute_directly` 默认 false，`override_load` 默认 -1。
 
@@ -1179,10 +1181,10 @@ Dictionary 可用字段：`option_name`、`option_description`、`option_texture
 |  | `damage_random` | `int` | `0` | `I` | 仅 `> 1` 时，从闭区间 `[0, damage_random]` 抽取一次并加到每段基础伤害；所有连击共享同一次随机结果。值为 1 反而不会随机。 |
 |  | `rng_damage_name` | `String` | `"rng_damage"` | `V` | `damage_random` 使用的 RNG 轨道；不能被当前生成器的 shadow 拦截器改写。 |
 |  | `time_delay` | `float` | `0.25` | `I` | 写入每个子 `ACTION_ATTACK`，生成器本身是 instant。 |
-|  | `target_override` | `BaseAction.TARGET_OVERRIDES` | `SELECTED_TARGETS` | `I` | 原样转交给攻击与 VFX 子 Action。 |
-|  | `attack_animation_name` | `String` | `AnimationData.ANIMATION_ATTACK` | `I` | 生成子动作前由 `parent_combatant` 立即播放一次；`ANIMATION_NONE` 禁用。 |
-|  | `per_attack_animation_name` | `String` | `AnimationData.ANIMATION_NONE` | `I` | 每段生成一个 `ACTION_PLAY_ANIMATION`，目标强制为父执行者。 |
-|  | `impact_vfx_animation_id` | `String` | `""` | `I` | 非空时每段生成一个 `ACTION_CREATE_EFFECT_ANIMATION`。 |
+|  | `target_override` | `BaseAction.TARGET_OVERRIDES` | `SELECTED_TARGETS` | `I` | 原样转交给每段攻击。 |
+|  | `attack_animation_name` | `String` | `AnimationData.ANIMATION_ATTACK` | `I` | 写入第一段攻击，与第一段命中表现同时启动；`ANIMATION_NONE` 禁用。 |
+|  | `per_attack_animation_name` | `String` | `AnimationData.ANIMATION_NONE` | `I` | 非空时写入每段攻击，并覆盖一次性攻击动画语义。 |
+|  | `impact_vfx_animation_id` | `String` | `""` | `I` | 写入每段攻击，与伤害和音效同时启动。 |
 |  | `audio_path` | `Array[String]` | `[]` | `I` | 候选音效路径，传给每个子 `ATTACK`，每段伤害结算时随机播放一个。 |
 |  | `actions_on_lethal` | `Array[Dictionary]` | `[]` | `I` | 传给每个子攻击；每个被击杀目标都会用该目标作为唯一 targets 生成 payload。 |
 | `ACTION_TIME_ATTACK_GENERATOR` | `time_extraction_mode` | `int` | `ActionTimeAttackGenerator.TIME_EXTRACTION_MODES.ONES_DIGIT` | `I` | 使用 `TIME_EXTRACTION_MODES`：`ONES_DIGIT` 取整数秒个位，`TOTAL_SECONDS` 取整数秒，`TOTAL_MINUTES` 取整分钟；非法值记录错误并终止该次生成。 |
@@ -1190,7 +1192,9 @@ Dictionary 可用字段：`option_name`、`option_description`、`option_texture
 |  | 其余参数 | 同 `ATTACK_GENERATOR` | 同左 | 同左 | 完整复制普通攻击生成器的连击、合并、随机、目标、动画、音效、VFX 和击杀参数，但没有 `damage` 输入。 |
 | `ACTION_ATTACK` | `damage` | `int` | `0` | `I` | 传给 `target.damage()` 的伤害值。 |
 |  | `bypass_block` | `bool` | `false` | `I` | 为 true 时绕过格挡。 |
-|  | `audio_path` | `Array[String]` | `[]` | `I` | 非空时通过 `ActionGenerator.generate_sound_action()` 立即随机播放一个音效。 |
+|  | `audio_path` | `Array[String]` | `[]` | `I` | 非空时通过 `ActionGenerator.play_combat_sound()` 立即播放，并加入战斗表现锁。 |
+|  | `attack_animation_name` | `String` | `AnimationData.ANIMATION_NONE` | `I` | 与本段伤害同时启动的攻击者动画。 |
+|  | `impact_vfx_animation_id` | `String` | `""` | `I` | 与本段伤害同时启动的目标命中特效。 |
 |  | `actions_on_lethal` | `Array[Dictionary]` | `[]` | `V` | 目标在本次伤害后死亡才生成；该参数支持自动捕获但不会读取 shadow 值。 |
 |  | `action_short_circuits` | `bool` | `true` | `V` | 战斗无剩余敌人时由 Handler 跳过。 |
 | `ACTION_DIRECT_DAMAGE` | `damage` | `int` | `0` | `I` | 直接传给 `target.damage()`；与 Attack 使用不同脚本路径以避开攻击类拦截器。 |
@@ -1255,12 +1259,12 @@ Dictionary 可用字段：`option_name`、`option_description`、`option_texture
 | `ACTION_RESHUFFLE` | `shuffle_discard_into_draw` | `bool` | `true` | `I` | true 时先把弃牌堆并入抽牌堆再洗牌；false 时只洗现有抽牌堆。 |
 | `ACTION_END_TURN` | `end_turn_immediacy_level` | `CombatEndTurn.END_TURN_QUEUE_IMMEDIACY` | `WAIT_FOR_ALL_CARD_PLAYS` | `V` | 发出 `end_turn_requested`；不同值决定等待卡牌队列、Action 队列或立即结束。 |
 | `ACTION_ADD_ARTIFACT` | `artifact_id` | `String` | `""` | `I` | 从全局原型表查找并添加实例；拦截器可拒绝或 shadow 改写该 ID。无效 ID 记录错误并终止。 |
-|  | `custom_values` | `Dictionary` | `{}` | `I` | 初始化新增遗物实例的自定义值，也允许拦截器 shadow 改写。 |
-| `ACTION_ADD_ARTIFACTS_FROM_POOL` | `artifact_count` | `int` | `1` | `I` | 从玩家遗物池获取的数量。 |
+|  | `custom_values` | `Dictionary` | `{}` | `I` | 初始化新增外设实例的自定义值，也允许拦截器 shadow 改写。 |
+| `ACTION_ADD_ARTIFACTS_FROM_POOL` | `artifact_count` | `int` | `1` | `I` | 从玩家外设池获取的数量。 |
 |  | `artifact_rarities` | `Array[int]` | `[]` | `I` | 允许的稀有度；空数组表示不按稀有度限制。 |
 |  | `use_rarity_ordering` | `bool` | `true` | `I` | true 时按数组给出的稀有度先后顺序尝试。 |
-|  | `from_back` | `bool` | `false` | `I` | 是否从遗物池尾部取，商店等系统可用它与正常奖励分流。 |
-| `ACTION_SWAP_BOSS_ARTIFACT` | 无专用参数 | - | - | - | 移除角色定义的全部初始遗物，再从 Boss 遗物池取 1 件。 |
+|  | `from_back` | `bool` | `false` | `I` | 是否从外设池尾部取，商店等系统可用它与正常奖励分流。 |
+| `ACTION_SWAP_BOSS_ARTIFACT` | 无专用参数 | - | - | - | 移除角色定义的全部初始外设，再从 Boss 外设池取 1 件。 |
 | `ACTION_ADD_CONSUMABLE` | `consumable_object_id` | `String` | `""` | `I` | 指定消耗品 ID；`random_consumable == false` 时使用。 |
 |  | `fill_all_slots` | `bool` | `false` | `I` | 为 true 时尝试填满所有空槽，覆盖 `slot_count` 的常规数量意图。 |
 |  | `random_consumable` | `bool` | `false` | `I` | 从可用消耗品池随机选择。 |
@@ -1448,10 +1452,10 @@ Dictionary 可用字段：`option_name`、`option_description`、`option_texture
 
 | Action | 参数 | 类型 | 默认值 | 读取 | 精确说明 |
 |---|---|---|---|---|---|
-| `ACTION_INCREASE_ARTIFACT_CHARGE` | `artifact_id` | `String` | `""` | `I` | 非空时修改玩家持有的全部同 ID 遗物实例。 |
+| `ACTION_INCREASE_ARTIFACT_CHARGE` | `artifact_id` | `String` | `""` | `I` | 非空时修改玩家持有的全部同 ID 外设实例。 |
 |  | `artifact_charge_increase` | `int` | `1` | `I` | 传给 `increment_artifact_counter()` 的增量，可为负并触发计数变化副作用。 |
 |  | `artifact_data` | `ArtifactData` | `null` | `I` | 直接指定实例；若同时给 ID，同一实例可能被修改两次。 |
-| `ACTION_CHANGE_ARTIFACT_CHARGE` | `artifact_id` | `String` | `""` | `I` | 非空时绝对设置玩家持有的全部同 ID 遗物实例计数。 |
+| `ACTION_CHANGE_ARTIFACT_CHARGE` | `artifact_id` | `String` | `""` | `I` | 非空时绝对设置玩家持有的全部同 ID 外设实例计数。 |
 |  | `artifact_charges` | `int` | `1` | `I` | 传给 `set_artifact_counter()` 的绝对值，不触发增量 charge actions。 |
 |  | `artifact_data` | `ArtifactData` | `null` | `I` | 直接指定实例；若同时给 ID，同一实例可能被设置两次。 |
 | `ACTION_CHANGE_ARTIFACT_ENABLED` | `artifact_id` | `String` | `""` | `I` | 修改全部同 ID 实例。 |
@@ -1460,14 +1464,14 @@ Dictionary 可用字段：`option_name`、`option_description`、`option_texture
 | `ACTION_GRANT_REWARDS` | `reward_group` | `int` | `0` | `I` | 0 为标准组，-1 请求自动新建组，正数指定互斥奖励组。 |
 |  | `money_amount` | `int` | `0` | `I` | 奖励金币值，只发给 RewardOverlay，不在此 Action 直接入账。 |
 |  | `card_drafts` | `Array[Array[CardData]]` | `[]` | `I` | 每个内层数组是一组选一 draft。 |
-|  | `artifact_ids` | `Array[String]` | `[]` | `I` | 遗物奖励 ID。 |
+|  | `artifact_ids` | `Array[String]` | `[]` | `I` | 外设奖励 ID。 |
 |  | `custom_action_data` | `Array[Array]` | `[]` | `I` | 自定义奖励按钮 payload；具体内部 schema 由 RewardOverlay 解释。 |
 | `ACTION_CLEAR_REWARDS` | `reward_group` | `int` | `-1` | `I` | -1 清全部组，其他值清指定组。 |
 | `ACTION_SHOP_POPULATE_ITEMS` | `shop_cards` / `shop_card_prices` | `Array[CardData]` / `Array[int]` | `[]` | `I` | 两数组必须等长且按索引对应；长度不一致可能越界。 |
-|  | `shop_artifact_ids` / `shop_artifact_prices` | `Array[String]` / `Array[int]` | `[]` | `I` | 遗物与价格平行数组。 |
+|  | `shop_artifact_ids` / `shop_artifact_prices` | `Array[String]` / `Array[int]` | `[]` | `I` | 外设与价格平行数组。 |
 |  | `shop_consumable_ids` / `shop_consumable_prices` | `Array[String]` / `Array[int]` | `[]` | `I` | 消耗品与价格平行数组。 |
 | `ACTION_SHOP_PURCHASE_ITEMS` | `card_data` | `CardData` | `null` | `I` | 非空时购买卡牌，优先级最高。 |
-|  | `artifact_id` | `String` | `""` | `I` | card_data 为空时尝试购买遗物。 |
+|  | `artifact_id` | `String` | `""` | `I` | card_data 为空时尝试购买外设。 |
 |  | `consumable_object_id` | `String` | `""` | `I` | 前两者均未指定时尝试购买消耗品。三类参数应互斥。 |
 |  | `consumable_slot_index` | `int` | `0` | `I` | 查找商店消耗品价格/移除项时使用的槽索引，不是玩家背包目标槽。 |
 | `ACTION_GET_SHOP_PRICE` | 无专用参数 | - | - | - | 价格拦截查询令牌；Action 本体为空。调用方通常在预览拦截器 shadow 值后读取结果。 |
@@ -1491,9 +1495,9 @@ Dictionary 可用字段：`option_name`、`option_description`、`option_texture
 |  | `chest_generates_cards` | `bool` | `true` | `I` | true 使用 `Random.get_location_card_rewards()`；false 使用 `chest_cards`。 |
 |  | `chest_cards` | `Array[Array[CardData]]` | `[]` | `I` | 固定卡牌 draft，仅 generates_cards 为 false 时生效。 |
 |  | 卡牌 draft 数量参数 | - | - | - | `chest_card_amount_draft`、`chest_cards_per_draft` 的读取代码目前被注释；`ActionGenerator.generate_chest_open()` 虽会写入它们，Open Chest 运行时仍忽略。 |
-|  | `chest_generates_artifacts` | `bool` | `true` | `I` | true 按地点随机遗物；false 使用 `artifact_ids`。 |
-|  | `chest_artifact_count` | `int` | `1` | `I` | 随机遗物数量。 |
-|  | `artifact_ids` | `Array[String]` | `[]` | `I` | 固定遗物列表。 |
+|  | `chest_generates_artifacts` | `bool` | `true` | `I` | true 按地点随机外设；false 使用 `artifact_ids`。 |
+|  | `chest_artifact_count` | `int` | `1` | `I` | 随机外设数量。 |
+|  | `artifact_ids` | `Array[String]` | `[]` | `I` | 固定外设列表。 |
 |  | `custom_action_data` | `Array` | `[]` | `I` | 原样转交 Grant Rewards。 |
 |  | 消耗品相关参数 | - | - | - | `chest_generates_consumables`、`chest_consumable_count`、`consumable_ids` 目前仅存在于注释代码，不是运行时支持参数。 |
 | `ACTION_REST_ACTION_END` | `rest_action_id` | `String` | `""` | `V` | 非空时发出 `rest_action_ended`；空值报错。 |
@@ -1503,6 +1507,7 @@ Dictionary 可用字段：`option_name`、`option_description`、`option_texture
 |  | `audio_crossfade_duration` | `float` | `1.0` | `I` | 切换/停止音乐的淡入淡出秒数。 |
 | `ACTION_PLAY_SOUND` | `audio_path` | `Array[String]` | `[]` | `I` | 使用 `Array.pick_random()` 选一个路径；这里未使用玩家确定性 RNG，因此声音选择不保证随 run seed 重现。 |
 |  | `audio_path_is_absolute` | `bool` | `false` | `I` | 是否按绝对路径加载。音效固定不循环。 |
+|  | `blocks_combat_presentation` | `bool` | `false` | `I` | true 时直到音效播放结束才释放战斗表现锁；战斗音效由 `play_combat_sound()` 明确设置。 |
 | `ACTION_CUSTOM_UI` | `custom_ui_object_id` | `String` | `""` | `I` | 要在目标 combatant 注册/注销的 UI ID；空字符串会记录错误并跳过。 |
 |  | `enable_custom_ui` | `bool` | `true` | `I` | true 注册，false 注销。 |
 | `ACTION_EMIT_CUSTOM_SIGNAL` | `custom_signal_object_id` | `String` | `""` | `I` | 在 `Signals` 注册表中定位 `CustomSignalData.object_id`。 |
@@ -1513,11 +1518,11 @@ Dictionary 可用字段：`option_name`、`option_description`、`option_texture
 |  | `operation` | `int` | `CardMoveOperation.TYPES.NONE` | `I` | 使用共享 `CardMoveOperation.TYPES`；非法枚举值记录错误且不移动。 |
 |  | `variable_name_to_export` | `String` | `"stored_cards"` | `I` | 到期时注入每个一级子 Action：1 张注入 CardData，多张注入数组，0 张注入 null。 |
 | `ACTION_ADD_TO_FORGE` | `forge_action_data` | `Dictionary` | `{}` | `I/C` | 单个 Action 字典。保存前会把参数中“值为字符串且恰好命中 card_values 键”的项替换为快照数值。 |
-|  | `forge_action_load` | `int` | `0` | `I` | 条目负载，累加锻造遗物计数；>0 时还生成 Forge Load 状态。 |
+|  | `forge_action_load` | `int` | `0` | `I` | 条目负载，累加代码锻炉计数；>0 时还生成 Forge Load 状态。 |
 |  | `forge_action_description` | `String` | `""` | `I` | 条目展示文本，存入 forge entry。 |
-| `ACTION_TAKE_FROM_FORGE` | `fallback_action_data` | `Array[Dictionary]` 或 `Dictionary` | `[]` | `I/C` | 锻造为空时执行；单字典会自动包装成数组。 |
+| `ACTION_TAKE_FROM_FORGE` | `fallback_action_data` | `Array[Dictionary]` | `[]` | `I/C` | 锻造为空时按数组顺序生成并执行。 |
 |  | `take_type` | `int` | `ActionTakeFromForge.TAKE_TYPES.ALL` | `I` | 使用 `TAKE_TYPES.ALL`、`FIRST` 或 `LAST`。 |
-|  | `clear_after_take` | `bool` | `true` | `I` | 是否从 forge_actions 删除已取条目，并同步遗物计数。 |
+|  | `clear_after_take` | `bool` | `true` | `I` | 是否从 forge_actions 删除已取条目，并同步代码锻炉计数。 |
 |  | `execute_directly` | `bool` | `false` | `I` | true 时按负载扣当前能量并把条目 Actions 入栈；false 时生成一张动态融合卡加入手牌。名称并非调用 `perform_action()` 直调。 |
 |  | `override_load` | `int` | `-1` | `I` | `>= 0` 时仅覆盖融合卡费用计算所用负载，不改变清除时扣减的实际负载。 |
 | `ACTION_CONSUME_FORGE_LOAD` | `load_amount` | `int` | `0` | `I` | `>0` 时从玩家 `status_effect_turn_forge_load` 减去不超过当前层数的值；不直接删除 forge 条目。 |
@@ -1552,7 +1557,7 @@ Dictionary 可用字段：`option_name`、`option_description`、`option_texture
 
 ## 当前 Scripts.gd 中的 Action 常量覆盖情况
 
-所有可数据驱动使用的具体 Action 均已在 `autoload/Scripts.gd` 里注册为 `Scripts.ACTION_*`，包括绝对设置遗物计数的 `ACTION_CHANGE_ARTIFACT_CHARGE`。
+所有可数据驱动使用的具体 Action 均已在 `autoload/Scripts.gd` 里注册为 `Scripts.ACTION_*`，包括绝对设置外设计数的 `ACTION_CHANGE_ARTIFACT_CHARGE`。
 
 另外这些是基类或特殊拦截器，不应作为普通 Action 数据直接使用：
 

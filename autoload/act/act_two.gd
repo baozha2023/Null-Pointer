@@ -234,6 +234,7 @@ static func add_enemies() -> void:
 	enemy_act_2_boss_1.add_health_bounds(260, 260, DIFFICULTY_BOSS_ENEMIES_HARDER)
 	enemy_act_2_boss_1.add_health_bounds(290, 290, DIFFICULTY_BOSS_ENEMIES_HARDER_2)
 	enemy_act_2_boss_1.enemy_type = EnemyData.ENEMY_TYPES.BOSS
+	enemy_act_2_boss_1.enemy_combat_scale = 1.55
 	enemy_act_2_boss_1.enemy_name = "火墙守将"
 	enemy_act_2_boss_1.enemy_texture_path = "sprites/enemies/act2/enemy_act_2_boss_1.png"
 
@@ -418,8 +419,7 @@ static func add_events() -> void:
 	event_act_2_boss_1.event_weighted_enemy_object_ids = [
 		{"enemy_act_2_boss_1": 1},
 	]
-	event_act_2_boss_1.event_enemy_placement_is_automatic = false
-	event_act_2_boss_1.event_enemy_placement_positions = [[0, 0], [180, 0], [360, 0]]
+	event_act_2_boss_1.event_enemy_slot_ids = [0]
 	event_act_2_boss_1.event_death_message_bbcode = "被火墙守将彻底清除"
 
 	Global.register_rod(event_act_2_boss_1)

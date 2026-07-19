@@ -1,8 +1,7 @@
 # UI element that pauses the game
 extends TextureButton
 
-@onready var map: Control = %Map
-@onready var shop_overlay: Control = %ShopOverlay
+@onready var map: Control = get_tree().current_scene.get_node("RunScreen/Map")
 
 func _ready() -> void:
 	pressed.connect(_on_pause_button_pressed)

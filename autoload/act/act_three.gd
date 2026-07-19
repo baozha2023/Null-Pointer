@@ -254,6 +254,7 @@ static func add_enemies() -> void:
 	enemy_act_3_boss_1.add_health_bounds(320, 320, DIFFICULTY_BOSS_ENEMIES_HARDER)
 	enemy_act_3_boss_1.add_health_bounds(350, 350, DIFFICULTY_BOSS_ENEMIES_HARDER_2)
 	enemy_act_3_boss_1.enemy_type = EnemyData.ENEMY_TYPES.BOSS
+	enemy_act_3_boss_1.enemy_combat_scale = 1.55
 	enemy_act_3_boss_1.enemy_name = "核霸主"
 	enemy_act_3_boss_1.enemy_texture_path = "sprites/enemies/act3/enemy_act_3_boss_1.png"
 	enemy_act_3_boss_1.enemy_initial_status_effects = {"status_effect_pointy": 3}
@@ -440,8 +441,7 @@ static func add_events() -> void:
 	event_act_3_boss_1.event_weighted_enemy_object_ids = [
 		{"enemy_act_3_boss_1": 1},
 	]
-	event_act_3_boss_1.event_enemy_placement_is_automatic = false
-	event_act_3_boss_1.event_enemy_placement_positions = [[0, 0], [180, 0], [360, 0]]
+	event_act_3_boss_1.event_enemy_slot_ids = [0]
 	event_act_3_boss_1.event_death_message_bbcode = "被核霸主的数据吞噬殆尽"
 
 	Global.register_rod(event_act_3_boss_1)

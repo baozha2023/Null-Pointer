@@ -5,19 +5,20 @@
 extends Control
 class_name Tooltip
 
-@onready var pause_button: TextureButton = %PauseButton
-@onready var map_button: TextureButton = %MapButton
+@onready var combat: Control = get_tree().current_scene.get_node("RunScreen/Combat")
+@onready var pause_button: TextureButton = combat.get_node("%PauseButton")
+@onready var map_button: TextureButton = combat.get_node("%MapButton")
 
-@onready var money_container = %MoneyContainer
-@onready var health_container = %HealthContainer
+@onready var money_container: Control = combat.get_node("%MoneyContainer")
+@onready var health_container: Control = combat.get_node("%HealthContainer")
 
-@onready var energy: TextureButton = %Energy
-@onready var deck_button: TextureButton = %DeckButton
-@onready var draw_top_pile_button: TextureButton = %DrawTopPile
-@onready var draw_pile_button: TextureButton = %DrawPile
-@onready var discard_pile_button: TextureButton = %DiscardPile
-@onready var exhaust_pile_button: TextureButton = %ExhaustPile
-@onready var end_turn_button: Button = %EndTurnButton
+@onready var energy: TextureButton = combat.get_node("%Energy")
+@onready var deck_button: TextureButton = combat.get_node("%DeckButton")
+@onready var draw_top_pile_button: TextureButton = combat.get_node("%DrawTopPile")
+@onready var draw_pile_button: TextureButton = combat.get_node("%DrawPile")
+@onready var discard_pile_button: TextureButton = combat.get_node("%DiscardPile")
+@onready var exhaust_pile_button: TextureButton = combat.get_node("%ExhaustPile")
+@onready var end_turn_button: Button = combat.get_node("%EndTurnButton")
 
 @onready var panel_container: PanelContainer = $PanelContainer
 @onready var tooltip_label: RichTextLabel = $PanelContainer/TooltipLabel

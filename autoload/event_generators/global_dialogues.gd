@@ -88,9 +88,9 @@ static func add_dialogues() -> void:
 	dialogue_darkweb.dialogue_name_bbcode = "[wave amp=50.0 freq=2.0 connected=1][color=red]暗网黑市[/color][/wave]"
 	Global.register_rod(dialogue_darkweb)
 
-	# Option A: 购买防火墙 (失去 75 钱，获得随机遗物)
+	# Option A: 购买防火墙 (失去 75 钱，获得随机外设)
 	var option_darkweb_a: DialogueOptionData = DialogueOptionData.new("option_darkweb_a")
-	option_darkweb_a.dialogue_option_bbcode = "[color=red]失去 75 数据币[/color] 并且 [color=green]获得 1 个随机外设插件（开源/闭源/零日）[/color]"
+	option_darkweb_a.dialogue_option_bbcode = "[color=red]失去 75 数据币[/color] 并且 [color=green]获得 1 个随机外设（开源/闭源/零日）[/color]"
 	option_darkweb_a.dialogue_option_failed_validator_bbcode = "[color=grey][锁定]: 数据币不足 75[/color]"
 	option_darkweb_a.dialogue_option_actions = [
 		{ Scripts.ACTION_ADD_MONEY: { "money_amount": -75 } },
@@ -150,7 +150,7 @@ static func add_dialogues() -> void:
 
 	# Option A: 强制下载
 	var option_trojan_a: DialogueOptionData = DialogueOptionData.new("option_trojan_a")
-	option_trojan_a.dialogue_option_bbcode = "[下载并无视警告] [color=green]掠夺 250 数据币和 1 个随机外设插件（开源/闭源/零日）[/color]，但你的牌库会被植入一张[color=red]《异常报错》诅咒卡牌[/color]"
+	option_trojan_a.dialogue_option_bbcode = "[下载并无视警告] [color=green]掠夺 250 数据币和 1 个随机外设（开源/闭源/零日）[/color]，但你的牌库会被植入一张[color=red]《异常报错》诅咒卡牌[/color]"
 	option_trojan_a.dialogue_option_failed_validator_bbcode = ""
 	option_trojan_a.dialogue_option_actions = [
 		{ Scripts.ACTION_ADD_MONEY: { "money_amount": 250 } },
@@ -316,7 +316,7 @@ static func add_dialogues() -> void:
 	Global.register_rod(dialogue_rm)
 
 	var option_rm_a: DialogueOptionData = DialogueOptionData.new("option_rm_a")
-	option_rm_a.dialogue_option_bbcode = "[接收代码] [color=red]失去 20 点最大完整度[/color], [color=green]获得 1 个随机零日外设插件[/color]"
+	option_rm_a.dialogue_option_bbcode = "[接收代码] [color=red]失去 20 点最大完整度[/color], [color=green]获得 1 个随机零日外设[/color]"
 	option_rm_a.dialogue_option_actions = [
 		{ Scripts.ACTION_ADD_HEALTH: { "target_override": BaseAction.TARGET_OVERRIDES.PLAYER, "health_max_amount": -20 } },
 		{ Scripts.ACTION_ADD_ARTIFACTS_FROM_POOL: { "target_override": BaseAction.TARGET_OVERRIDES.PLAYER, "artifact_count": 1, "artifact_rarities": [ArtifactData.ARTIFACT_RARITIES.RARE] } }
@@ -347,7 +347,7 @@ static func add_dialogues() -> void:
 	Global.register_rod(dialogue_996)
 
 	var option_996_a: DialogueOptionData = DialogueOptionData.new("option_996_a")
-	option_996_a.dialogue_option_bbcode = "[燃烧自我] [color=red]失去 15 点完整度[/color], [color=green]获得 1 个随机动态生成外设插件[/color]"
+	option_996_a.dialogue_option_bbcode = "[燃烧自我] [color=red]失去 15 点完整度[/color], [color=green]获得 1 个随机动态生成外设[/color]"
 	option_996_a.dialogue_option_failed_validator_bbcode = "[color=grey][锁定]: 完整度不足 16[/color]"
 	option_996_a.dialogue_option_actions = [
 		{ Scripts.ACTION_ADD_HEALTH: { "target_override": BaseAction.TARGET_OVERRIDES.PLAYER, "health_amount": -15 } },

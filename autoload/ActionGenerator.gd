@@ -292,13 +292,28 @@ func generate_insufficient_energy_speech_bubble() -> void:
 	# immediately process this action without ActionHandler
 	generated_action.perform_action()
 
-## Generates and instantly plays a sound file
-func generate_sound_action(audio_path: Array, audio_path_is_absolute: bool = false):
-	var player: Player = Global.get_player()
-	var action_data: Array[Dictionary] = [{Scripts.ACTION_PLAY_SOUND: {"audio_path": audio_path, "audio_path_is_absolute": audio_path_is_absolute}}]
+## Plays combat audio immediately and keeps the presentation barrier active until
+## playback finishes.
+func play_combat_sound(audio_paths: Array[String], source: BaseCombatant) -> void:
+	_play_sound(audio_paths, false, true, source)
 
-	var generated_action: BaseAction = ActionGenerator.create_actions(player, null, [], action_data, null)[0]
-	# immediately process this action without ActionHandler
+## Plays non-blocking interface audio immediately.
+func play_ui_sound(audio_paths: Array[String], audio_path_is_absolute: bool = false) -> void:
+	_play_sound(audio_paths, audio_path_is_absolute, false, Global.get_player())
+
+func _play_sound(
+	audio_paths: Array[String],
+	audio_path_is_absolute: bool,
+	blocks_combat_presentation: bool,
+	source: BaseCombatant,
+) -> void:
+	var action_data: Array[Dictionary] = [{Scripts.ACTION_PLAY_SOUND: {
+		"audio_path": audio_paths,
+		"audio_path_is_absolute": audio_path_is_absolute,
+		"blocks_combat_presentation": blocks_combat_presentation,
+	}}]
+
+	var generated_action: BaseAction = ActionGenerator.create_actions(source, null, [], action_data, null)[0]
 	generated_action.perform_action()
 
 ## Generates and instantly plays a music track

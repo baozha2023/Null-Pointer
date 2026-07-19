@@ -8,7 +8,6 @@ class_name Hand
 const CARD_TWEEN_TIME: float = 0.2
 const CARD_CANCEL_TWEEN_TIME: float = 0.18
 const CARD_DRAG_THRESHOLD: float = 12.0
-const CARD_PLAY_AREA_OFFSET: float = 48.0
 const MOUSE_POINTER_ID: int = -1
 
 enum CARD_INTERACTION_STATES {
@@ -26,15 +25,10 @@ var targeting_arrow: TargetingArrow = null
 
 # General Nodes
 @onready var player: BaseCombatant = $%Player
-@onready var combat = $%Combat
+@onready var combat: Combat = get_parent() as Combat
+@onready var battlefield: Control = %Battlefield
 @onready var card_container: Control = %CardContainer
-@onready var consumables: Control = get_node("../Consumables")
-
-# a debugging component for displaying hand's physical size
-# should be the same size and position of Hand
-@onready var hand_size_exceeded_rect: ColorRect = %HandSizeExceededRect
-const HAND_EXCEEDED_COLOR: Color = Color.RED
-const HAND_NOT_EXCEEDED_COLOR: Color = Color.LIGHT_GREEN
+@onready var consumables: Consumables = %Consumables
 
 # Card Picking
 @onready var card_picking: Control = $%CardPicking
@@ -51,11 +45,10 @@ var active_card: Card = null
 var active_pointer_id: int = MOUSE_POINTER_ID
 var active_pointer_is_touch: bool = false
 var pointer_press_position: Vector2 = Vector2.ZERO
+var active_pointer_position: Vector2 = Vector2.ZERO
 var card_grab_offset: Vector2 = Vector2.ZERO
 var current_target: Enemy = null
-
-# Card Play Queue
-var hand_disabled: bool = false # the player cannot play additional cards manually
+var hovered_card: Card = null
 
 # Mapping
 ## Maps a CardData object to the actual Card represented by it in hand.
@@ -73,10 +66,10 @@ const HAND_CARD_ROTATION_CURVE_MULTIPLIER: float = 6.0 # multiplies the curve sa
 const HAND_CARD_Y_OFFSET_CURVE_MULTIPLIER: float = -20.0 # multiplies the curve sampling
 
 const CARD_WIDTH: float = 188.0 # how big the Card asset is. NOTE: Update this if you update Card's size at all
-const CARD_SEPERATION_WIDTH: float = CARD_WIDTH * .75 # how far apart each card should be from one another. Generally between .5 to 1X the card width
+const CARD_SEPARATION_WIDTH: float = CARD_WIDTH * .75 # how far apart each card should be from one another. Generally between .5 to 1X the card width
 
 const MIDDLE_OFFSET: float = CARD_WIDTH / 2
-var middle: float = (size[0] / 2) - MIDDLE_OFFSET # calculate middle X position of hand container, with optional offset for fine tuning
+var middle: float = 0.0
 
 # y offsets for when the player hovers over a card
 const CARD_UNHOVERED_HEIGHT = 0.0
@@ -94,11 +87,12 @@ const CARD_PICK_POSITIONS: Array = [
 	[-2.75, -2.25, -1.5, -0.75, 0.0, 0.75, 1.5, 2.25, 2.75],
 	[-3.25, -2.75, -2.25, -1.5, -0.75, 0.75, 1.5, 2.25, 2.75, 3.25],
 ]
-const CARD_PICK_Y_OFFSET = -300 # Where picked cards in hand appear relative to the Hand container
 
 
 func _ready():
 	HandManager.hand = self
+	_recalculate_hand_metrics()
+	resized.connect(_recalculate_hand_metrics)
 
 	Signals.combat_started.connect(_on_combat_started)
 	Signals.combat_ended.connect(_on_combat_ended)
@@ -110,20 +104,36 @@ func _ready():
 
 	Signals.enemy_clicked.connect(_on_enemy_clicked)
 	Signals.enemy_hovered.connect(_on_enemy_hovered)
+	CombatPresentation.blocking_started.connect(_on_blocking_presentation_started)
 
 	confirm_pick_button.button_up.connect(_on_confirm_pick_button_up)
 
 	background_button.button_up.connect(_on_background_button_up)
 
+func _recalculate_hand_metrics() -> void:
+	middle = (size.x / 2.0) - MIDDLE_OFFSET
+	if is_node_ready():
+		tween_hand()
+
 
 func _process(_delta: float) -> void:
 	if interaction_state == CARD_INTERACTION_STATES.IDLE:
+		if _is_current_interaction_locked():
+			_clear_managed_hand_hover()
+		else:
+			_update_managed_hand_hover(get_global_mouse_position())
+		return
+	if _is_current_interaction_locked():
+		cancel_card_interaction()
 		return
 	if not is_instance_valid(active_card) or not HandManager.player_hand.has(active_card.card_data):
 		cancel_card_interaction()
 		return
 	if is_instance_valid(current_target) and not current_target.is_alive():
-		_set_current_target(null)
+		if interaction_state == CARD_INTERACTION_STATES.DRAGGING and active_card.card_data.card_requires_target:
+			_set_current_target(_get_drag_target(active_pointer_position))
+		else:
+			_set_current_target(null)
 
 
 func _input(event: InputEvent) -> void:
@@ -187,16 +197,14 @@ func tween_hand(duration: float = CARD_TWEEN_TIME) -> void:
 		picked_card_count = len(current_card_pick_action.picked_cards)
 		hand_card_count -= picked_card_count
 
-	### Calculate dimensions of all the cards in player hand and a modified card seperation value
-	var all_cards_width := CARD_SEPERATION_WIDTH * hand_card_count
-	var card_x_seperation: float = CARD_SEPERATION_WIDTH
-	hand_size_exceeded_rect.color = HAND_NOT_EXCEEDED_COLOR # used for debugging
+	### Calculate dimensions of all the cards in player hand and a modified card separation value
+	var all_cards_width := CARD_SEPARATION_WIDTH * hand_card_count
+	var card_x_separation: float = CARD_SEPARATION_WIDTH
 
-	# throttle seperation width of cards if it begins to exceed the size of the Hand container
+	# throttle separation width of cards if it begins to exceed the size of the Hand container
 	var hand_width: float = size.x
 	if all_cards_width > hand_width:
-		card_x_seperation *= (size.x / all_cards_width) # make the seperation a proportion of the exceeded size and the size of the Hand container
-		hand_size_exceeded_rect.color = HAND_EXCEEDED_COLOR
+		card_x_separation *= (size.x / all_cards_width) # make the separation a proportion of the exceeded size and the size of the Hand container
 
 	### Recalculate new positions/rotations for each card and tween them
 	var hand_index: int = 0 # counter for number of cards in hand
@@ -239,14 +247,18 @@ func tween_hand(duration: float = CARD_TWEEN_TIME) -> void:
 				card_y_offset *= HAND_CARD_Y_OFFSET_CURVE_MULTIPLIER
 				# x position
 				var card_index_offset: float = float(hand_index) - (float(hand_card_count) / 2.0) + 1.0
-				var card_x_offset: float = middle + (card_x_seperation * card_index_offset)
+				var card_x_offset: float = middle + (card_x_separation * card_index_offset)
 				# final position
 				new_position = Vector2(card_x_offset, card_y_offset)
 
 			hand_index += 1
 		else:
 			# card not in hand
-			new_position = Vector2(middle + CARD_SEPERATION_WIDTH * CARD_PICK_POSITIONS[picked_card_count - 1][pick_index], CARD_PICK_Y_OFFSET)
+			var picking_center: Vector2 = card_container.to_local(card_picking.get_global_rect().get_center())
+			new_position = Vector2(
+				picking_center.x - MIDDLE_OFFSET + CARD_SEPARATION_WIDTH * CARD_PICK_POSITIONS[picked_card_count - 1][pick_index],
+				picking_center.y - card.size.y * 0.5
+			)
 			new_rot = 0
 			pick_index += 1
 
@@ -266,14 +278,6 @@ func _kill_card_transform_tween(card: Card) -> void:
 	if tween != null and tween.is_valid():
 		tween.kill()
 	card_transform_tweens.erase(card)
-
-
-func _on_card_hovered(card: Card):
-	update_hand_card_hover(card)
-
-
-func _on_card_unhovered(_card: Card):
-	update_hand_card_hover(null)
 
 
 func update_hand_card_hover(hovered_card: Card = null) -> void:
@@ -299,6 +303,46 @@ func update_hand_card_hover(hovered_card: Card = null) -> void:
 			z_index_counter += 1
 
 
+func _update_managed_hand_hover(pointer_global_position: Vector2) -> void:
+	var next_hovered_card: Card = _get_hovered_hand_card(pointer_global_position)
+	if next_hovered_card == hovered_card:
+		return
+	if is_instance_valid(hovered_card):
+		hovered_card.set_managed_hand_hover(false)
+	if HandManager.tooltip != null:
+		HandManager.tooltip.hide_tooltip()
+	hovered_card = next_hovered_card
+	if is_instance_valid(hovered_card):
+		hovered_card.set_managed_hand_hover(true)
+	update_hand_card_hover(hovered_card)
+
+
+func _clear_managed_hand_hover() -> void:
+	if not is_instance_valid(hovered_card):
+		hovered_card = null
+		return
+	hovered_card.set_managed_hand_hover(false)
+	hovered_card = null
+	if HandManager.tooltip != null:
+		HandManager.tooltip.hide_tooltip()
+	update_hand_card_hover()
+
+
+func _get_hovered_hand_card(pointer_global_position: Vector2) -> Card:
+	var closest_card: Card = null
+	var closest_horizontal_distance: float = INF
+	for card: Card in get_player_hand_cards():
+		if not card.visible or not card.contains_global_point(pointer_global_position):
+			continue
+		# Card centers do not move horizontally when raised. The nearest center gives
+		# overlapping fan segments one deterministic owner at their boundary.
+		var horizontal_distance: float = absf(pointer_global_position.x - card.pivot.global_position.x)
+		if horizontal_distance < closest_horizontal_distance:
+			closest_horizontal_distance = horizontal_distance
+			closest_card = card
+	return closest_card
+
+
 func _on_hand_pointer_pressed(card: Card, pointer_global_position: Vector2, pointer_id: int, is_touch: bool) -> void:
 	if interaction_state == CARD_INTERACTION_STATES.COMMITTING:
 		return
@@ -311,21 +355,25 @@ func _on_hand_pointer_pressed(card: Card, pointer_global_position: Vector2, poin
 		return
 
 	if current_card_pick_action == null:
-		if hand_disabled:
+		if HandManager.is_manual_combat_input_locked():
 			return
 		if _is_card_queued(card.card_data):
 			return
-		if not card.can_play_card(null, true):
+		if not _can_begin_card_interaction(card):
 			return
 		if consumables != null and consumables.consumable_target_requested:
 			consumables.cancel_target_request()
 
 	interaction_state = CARD_INTERACTION_STATES.PRESSING
 	active_card = card
+	if is_instance_valid(hovered_card):
+		hovered_card.set_managed_hand_hover(false)
+	hovered_card = null
 	active_card.begin_hand_interaction()
 	active_pointer_id = pointer_id
 	active_pointer_is_touch = is_touch
 	pointer_press_position = pointer_global_position
+	active_pointer_position = pointer_global_position
 	card_grab_offset = card.pivot.global_position - pointer_global_position
 	_set_current_target(null)
 
@@ -336,6 +384,7 @@ func _update_pointer_interaction(pointer_global_position: Vector2) -> void:
 		return
 	if current_card_pick_action != null:
 		return
+	active_pointer_position = pointer_global_position
 
 	if interaction_state == CARD_INTERACTION_STATES.PRESSING:
 		if pointer_press_position.distance_to(pointer_global_position) < CARD_DRAG_THRESHOLD:
@@ -355,7 +404,7 @@ func _update_pointer_interaction(pointer_global_position: Vector2) -> void:
 				targeting_arrow.set_pointer_position(pointer_global_position)
 			else:
 				targeting_arrow.clear_pointer_position()
-		_set_current_target(_get_alive_enemy_at(pointer_global_position))
+		_set_current_target(_get_drag_target(pointer_global_position))
 	else:
 		active_card.set_card_play_ready_glow(_is_valid_non_target_release(pointer_global_position))
 
@@ -375,7 +424,7 @@ func _finish_pointer_interaction(pointer_global_position: Vector2) -> void:
 		return
 
 	if active_card.card_data.card_requires_target:
-		var release_target: Enemy = _get_alive_enemy_at(pointer_global_position)
+		var release_target: Enemy = _get_drag_target(pointer_global_position)
 		if release_target != null and _try_commit_card(active_card, release_target):
 			return
 	elif _is_valid_non_target_release(pointer_global_position):
@@ -412,7 +461,7 @@ func _handle_selected_release(pointer_global_position: Vector2) -> void:
 
 
 func _try_commit_card(card: Card, target: Enemy) -> bool:
-	if hand_disabled or not is_instance_valid(card):
+	if HandManager.is_manual_combat_input_locked() or not is_instance_valid(card):
 		return false
 	if not HandManager.player_hand.has(card.card_data):
 		return false
@@ -442,15 +491,39 @@ func _is_card_queued(card_data: CardData) -> bool:
 	return false
 
 
+func _can_begin_card_interaction(card: Card) -> bool:
+	if not card.card_data.card_requires_target:
+		return card.can_play_card(null, true)
+	var enemies: Array[Enemy] = Global.get_alive_enemies_in_formation_order()
+	for enemy: Enemy in enemies:
+		if card.can_play_card(enemy, false):
+			return true
+	# Reuse the normal validation/interceptor path for the player-facing failure.
+	if not enemies.is_empty():
+		card.can_play_card(enemies.front(), true)
+	return false
+
+
 func cancel_card_interaction() -> void:
 	if interaction_state == CARD_INTERACTION_STATES.IDLE:
 		return
 	_clear_card_interaction(true)
 
 
+func _is_current_interaction_locked() -> bool:
+	return current_card_pick_action == null and HandManager.is_manual_combat_input_locked()
+
+
+func _on_blocking_presentation_started(_source: Node) -> void:
+	if current_card_pick_action == null and interaction_state != CARD_INTERACTION_STATES.IDLE:
+		cancel_card_interaction()
+	if current_card_pick_action == null:
+		_clear_managed_hand_hover()
+
+
 func _clear_card_interaction(restore_layout: bool) -> void:
 	var card_to_restore: Card = active_card
-	_set_current_target(null, true)
+	_set_current_target(null)
 	_unprompt_target()
 	if is_instance_valid(card_to_restore):
 		card_to_restore.reset_hand_interaction_visual()
@@ -459,6 +532,7 @@ func _clear_card_interaction(restore_layout: bool) -> void:
 	active_pointer_id = MOUSE_POINTER_ID
 	active_pointer_is_touch = false
 	pointer_press_position = Vector2.ZERO
+	active_pointer_position = Vector2.ZERO
 	card_grab_offset = Vector2.ZERO
 	update_hand_card_hover()
 	if restore_layout:
@@ -487,10 +561,10 @@ func _on_enemy_hovered(enemy: Enemy):
 				_set_current_target(enemy)
 
 
-func _set_current_target(enemy: Enemy, force_refresh: bool = false) -> void:
+func _set_current_target(enemy: Enemy) -> void:
 	if enemy != null and not enemy.is_alive():
 		enemy = null
-	if current_target == enemy and not force_refresh:
+	if current_target == enemy:
 		return
 	current_target = enemy
 	if is_instance_valid(active_card) and active_card.card_data.card_requires_target:
@@ -500,17 +574,40 @@ func _set_current_target(enemy: Enemy, force_refresh: bool = false) -> void:
 
 
 func _get_alive_enemy_at(pointer_global_position: Vector2) -> Enemy:
-	for enemy: Enemy in Global.get_alive_enemies():
-		if enemy.selection_button.get_global_rect().has_point(pointer_global_position):
+	var enemies_by_render_priority: Array[Enemy] = Global.get_alive_enemies_in_formation_order()
+	enemies_by_render_priority.sort_custom(func(a: Enemy, b: Enemy) -> bool:
+		return a.z_index > b.z_index
+	)
+	for enemy: Enemy in enemies_by_render_priority:
+		if enemy.contains_global_point(pointer_global_position):
 			return enemy
 	return null
 
 
+func _get_drag_target(pointer_global_position: Vector2) -> Enemy:
+	var directly_pointed_enemy: Enemy = _get_alive_enemy_at(pointer_global_position)
+	if directly_pointed_enemy != null:
+		return directly_pointed_enemy
+	if not battlefield.get_global_rect().has_point(pointer_global_position):
+		return null
+	return _get_nearest_alive_enemy(active_card.pivot.global_position)
+
+
+func _get_nearest_alive_enemy(origin_global_position: Vector2) -> Enemy:
+	var nearest_enemy: Enemy = null
+	var nearest_distance_squared: float = INF
+	for enemy: Enemy in Global.get_alive_enemies_in_formation_order():
+		var distance_squared: float = origin_global_position.distance_squared_to(
+			enemy.get_target_anchor_global_position()
+		)
+		if distance_squared < nearest_distance_squared:
+			nearest_distance_squared = distance_squared
+			nearest_enemy = enemy
+	return nearest_enemy
+
+
 func _is_valid_non_target_release(pointer_global_position: Vector2) -> bool:
-	return (
-		background_button.get_global_rect().has_point(pointer_global_position)
-		and pointer_global_position.y < self.global_position.y - CARD_PLAY_AREA_OFFSET
-	)
+	return battlefield.get_global_rect().has_point(pointer_global_position)
 
 
 func _prompt_target(_card: Card):
@@ -634,8 +731,6 @@ func create_cards_in_hand(cards: Array[CardData]) -> Array[Card]:
 		card_container.add_child(card)
 		card.init(card_data, 0, true, true)
 
-		card.card_hovered.connect(_on_card_hovered)
-		card.card_unhovered.connect(_on_card_unhovered)
 		card.hand_pointer_pressed.connect(_on_hand_pointer_pressed)
 
 		card_data_to_hand_card[card_data] = card
@@ -649,6 +744,8 @@ func create_cards_in_hand(cards: Array[CardData]) -> Array[Card]:
 ## NOTE: Typeically called from HandManager.
 func clear_hand_cards() -> void:
 	cancel_card_interaction()
+	_unprompt_target()
+	_clear_managed_hand_hover()
 	for tween: Tween in card_transform_tweens.values():
 		if tween != null and tween.is_valid():
 			tween.kill()
@@ -658,10 +755,10 @@ func clear_hand_cards() -> void:
 	card_data_to_hand_card.clear()
 
 
-func disable_hand(_disabled: bool = true):
-	hand_disabled = _disabled
-	if hand_disabled:
+func on_manual_combat_input_lock_changed() -> void:
+	if current_card_pick_action == null and HandManager.is_manual_combat_input_locked():
 		cancel_card_interaction()
+		_clear_managed_hand_hover()
 
 #endregion
 
@@ -673,14 +770,10 @@ func _on_combat_started(_event_id: String):
 
 
 func _on_combat_ended():
-	cancel_card_interaction()
-	_unprompt_target()
 	clear_hand_cards()
 
 
 func _on_run_ended():
-	cancel_card_interaction()
-	_unprompt_target()
 	clear_hand_cards()
 
 

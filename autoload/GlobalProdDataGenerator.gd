@@ -248,8 +248,8 @@ func add_achievements() -> void:
 			"progress": [7, AchievementProgressData.COMPARISONS.LESS_OR_EQUAL, AchievementProgressData.AGGREGATIONS.MINIMUM, AchievementProgressData.SCOPES.LIFETIME, 5],
 		},
 		{
-			"id": "achievement_victory_artifacts_10", "name": "插件生态",
-			"description": "持有至少 10 件遗物并获得标准局胜利。",
+			"id": "achievement_victory_artifacts_10", "name": "外设矩阵",
+			"description": "持有至少 10 件外设并获得标准局胜利。",
 			"category": ["build", "构筑挑战", 3],
 			"triggers": [_achievement_victory_trigger([], "values.run_artifact_count")],
 			"progress": [10, AchievementProgressData.COMPARISONS.GREATER_OR_EQUAL, AchievementProgressData.AGGREGATIONS.MAXIMUM, AchievementProgressData.SCOPES.LIFETIME, 5],
@@ -715,7 +715,7 @@ func add_rest_actions() -> void:
 
 	# add random consumable action
 	var rest_action_add_random_consumable: RestActionData = RestActionData.new("rest_action_add_random_consumable")
-	rest_action_add_random_consumable.rest_action_name = "随机物理删除品"
+	rest_action_add_random_consumable.rest_action_name = "随机消耗品"
 	rest_action_add_random_consumable.rest_action_stat_name = "REST_GAIN_CONSUMABLE_COUNT"
 	rest_action_add_random_consumable.rest_action_cost_type = RestActionData.REST_ACTION_COST_TYPES.EXCLUSIVE
 	rest_action_add_random_consumable.rest_actions = [
@@ -822,8 +822,8 @@ func add_status_effects() -> void:
 	Global.register_rod(status_effect_curiosity2)
 
 	var status_effect_firewall_protocol: StatusEffectData = StatusEffectData.new("status_effect_firewall_protocol")
-	status_effect_firewall_protocol.status_effect_name = "【系统专用】锻造台外设被动防御监听进程"
-	status_effect_firewall_protocol.status_effect_description = "专用于锻造台外设等相关机制的被动防御监听进程。"
+	status_effect_firewall_protocol.status_effect_name = "【系统专用】代码锻炉被动防御监听进程"
+	status_effect_firewall_protocol.status_effect_description = "专用于代码锻炉等相关机制的被动防御监听进程。"
 	status_effect_firewall_protocol.status_effect_tooltip = "每当你打出 [card_name:card_forge_fusion] 时，获得 [color=yellow][charge_amount][/color] 点 防火墙。"
 	status_effect_firewall_protocol.status_effect_decay_rate = 0
 	status_effect_firewall_protocol.status_effect_type = StatusEffectData.STATUS_EFFECT_TYPES.NEUTRAL

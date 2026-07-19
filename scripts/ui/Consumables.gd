@@ -1,10 +1,15 @@
 ## UI element for viewing and using consumables
 extends Control
+class_name Consumables
 
 @onready var background_button: TextureButton = $%BackgroundButton
 @onready var select_target_label: Label = %SelectTargetLabel
 
-@onready var consumable_container: HBoxContainer = $ConsumableContainer
+@onready var consumable_buttons: Array[ConsumableButton] = [
+	%ConsumableSlot0,
+	%ConsumableSlot1,
+	%ConsumableSlot2,
+]
 @onready var consumable_dropdown: Control = $ConsumableActionDropdown
 @onready var use_consumable_button: Button = $%UseConsumableButton
 @onready var use_consumable_label: Label = %UseConsumableLabel
@@ -37,20 +42,21 @@ func _ready():
 	Signals.combat_ended.connect(_on_combat_ended)
 	Signals.run_started.connect(_on_run_started)
 	Signals.run_ended.connect(_on_run_ended)
+	_initialize_consumable_buttons()
 
-func populate_consumable_buttons():
-	clear_consumable_buttons()
-	
-	var player_data: PlayerData = Global.player_data
-	for consumable_slot_index in player_data.player_consumable_slot_count:
-		var consumable_button: ConsumableButton = Scenes.CONSUMABLE_BUTTON.instantiate()
-		consumable_container.add_child(consumable_button)
+func _initialize_consumable_buttons() -> void:
+	assert(
+		Global.player_data.player_consumable_slot_count == consumable_buttons.size(),
+		"Combat.tscn 的消耗品槽位数量必须与 PlayerData.player_consumable_slot_count 一致。",
+	)
+	for consumable_slot_index: int in consumable_buttons.size():
+		var consumable_button: ConsumableButton = consumable_buttons[consumable_slot_index]
 		consumable_button.init(consumable_slot_index)
 		consumable_button.consumable_slot_button_up.connect(_on_consumable_button_up)
-	
-func clear_consumable_buttons() -> void:
-	for child in consumable_container.get_children():
-		child.queue_free()
+
+func refresh_consumable_buttons() -> void:
+	for consumable_slot_index: int in consumable_buttons.size():
+		consumable_buttons[consumable_slot_index].init(consumable_slot_index)
 
 func _on_consumable_button_up(consumable_slot_index: int):
 	select_consumable_slot(consumable_slot_index)
@@ -110,7 +116,7 @@ func _on_background_button_up():
 	selected_consumable_slot_index = NO_CONSUMABLE
 
 func _on_use_consumable_button_up():
-	if not ActionHandler.actions_being_performed:
+	if not HandManager.is_manual_combat_input_locked():
 		if len(HandManager.card_play_queue) == 0:
 			if is_consumable_selected():
 				if HandManager.hand != null:
@@ -127,11 +133,16 @@ func _on_use_consumable_button_up():
 						use_consumable(null, selected_consumable_slot_index)
 
 func _on_discard_consumable_button_up():
+	if HandManager.is_manual_combat_input_locked():
+		return
 	if is_consumable_selected():
 		discard_consumable(selected_consumable_slot_index)
 
 func _on_enemy_clicked(enemy: Enemy):
 	if consumable_target_requested:
+		if HandManager.is_manual_combat_input_locked():
+			cancel_target_request()
+			return
 		if enemy.is_alive():
 			if is_consumable_selected():
 				use_consumable(enemy, selected_consumable_slot_index)
@@ -197,13 +208,13 @@ func _on_add_consumable_requested(consumable_object_id: String):
 
 func _on_consumable_used(_consumable_index: int, _consumable_object_id: String):
 	select_consumable_slot(NO_CONSUMABLE)
-	populate_consumable_buttons()
+	refresh_consumable_buttons()
 func _on_consumable_discarded(_consumable_index: int, _consumable_object_id: String):
 	select_consumable_slot(NO_CONSUMABLE)
-	populate_consumable_buttons()
+	refresh_consumable_buttons()
 func _on_consumable_added(_consumable_index: int, _consumable_object_id: String):
 	select_consumable_slot(NO_CONSUMABLE)
-	populate_consumable_buttons()
+	refresh_consumable_buttons()
 
 func _on_combat_ended():
 	hide_consumable_dropdown()
@@ -213,8 +224,8 @@ func _on_combat_started(_event_id: String):
 
 func _on_run_started():
 	hide_consumable_dropdown()
-	populate_consumable_buttons()
+	refresh_consumable_buttons()
 
 func _on_run_ended():
 	hide_consumable_dropdown()
-	clear_consumable_buttons()
+	refresh_consumable_buttons()

@@ -1,19 +1,20 @@
 # maintains combat UI
 extends Control
+class_name Combat
 
 @onready var money_container = $%MoneyContainer
 @onready var health_container = $%HealthContainer
 @onready var money_label: Label = $%MoneyLabel
 @onready var health_label: Label = $%HealthLabel
 
-@onready var energy_count: Label = $Energy/EnergyCount
-@onready var energy: TextureButton = $Energy
+@onready var energy_count: Label = %EnergyCount
+@onready var energy: TextureButton = %Energy
 @onready var pause_button: TextureButton = $%PauseButton
 @onready var map_button: TextureButton = $%MapButton
-@onready var draw_count: Label = $DrawPile/DrawCount
-@onready var draw_top_count: Label = $DrawTopPile/DrawTopCount
-@onready var discard_count: Label = $DiscardPile/DiscardCount
-@onready var exhaust_count: Label = $ExhaustPile/ExhaustCount
+@onready var draw_count: Label = %DrawCount
+@onready var draw_top_count: Label = %DrawTopCount
+@onready var discard_count: Label = %DiscardCount
+@onready var exhaust_count: Label = %ExhaustCount
 
 @onready var deck_button: TextureButton = %DeckButton
 @onready var draw_pile_button: TextureButton = %DrawPile
@@ -22,19 +23,20 @@ extends Control
 @onready var discard_pile_button: TextureButton = %DiscardPile
 @onready var exhaust_pile_button: TextureButton = %ExhaustPile
 
-@onready var card_selection_overlay = $%CardSelectionOverlay
+@onready var card_selection_overlay: Control = get_node("../CardSelectionOverlay")
 
 @onready var combat_animation_player: AnimationPlayer = $CombatAnimation
-@onready var enemy_container = $EnemyContainer
+@onready var enemy_container: Control = %EnemyContainer
 
-@onready var player = $Player
-@onready var hand = $Hand
-@onready var chest = $Chest
-@onready var shop = $Shop
+@onready var player: Player = %Player
+@onready var hand: Hand = %Hand
+@onready var chest: TextureButton = %Chest
+@onready var shop: TextureButton = %Shop
 
 @onready var background_button: TextureButton = %BackgroundButton
+@onready var background_texture: TextureRect = %BackgroundTexture
 
-@onready var end_turn_button: Button = $EndTurnButton
+@onready var end_turn_button: Button = %EndTurnButton
 var end_turn_object: CombatEndTurn = null
 
 var _is_combat_ending: bool = false
@@ -159,7 +161,7 @@ func _update_background() -> void:
 			background_texture_path = event_data.event_background_texture_path
 	
 	if background_texture_path != "":
-		background_button.texture_normal = FileLoader.load_texture(background_texture_path)
+		background_texture.texture = FileLoader.load_texture(background_texture_path)
 	
 
 func set_combat_display_visibility(display_visibility: bool) -> void:
@@ -277,7 +279,7 @@ func _end_combat_check() -> bool:
 
 func perform_enemy_turn():
 	# generates enemy actions and performs them in order
-	var enemies: Array[Enemy] = Global.get_alive_enemies()
+	var enemies: Array[Enemy] = Global.get_alive_enemies_in_formation_order()
 	if _end_combat_check():
 		return
 	
@@ -359,7 +361,7 @@ func perform_enemy_turn():
 			
 			# play intent sound if one exists and no attacks
 			if enemy_intent.enemy_intent_audio_path != "" and intent_number_of_attacks == 0:
-				ActionGenerator.generate_sound_action([enemy_intent.enemy_intent_audio_path], false)
+				ActionGenerator.play_combat_sound([enemy_intent.enemy_intent_audio_path], enemy)
 			
 			# perform them and wait
 			var enemy_attack_actions: Array = ActionGenerator.create_actions(enemy, null, [player], enemy_actions_data, null)
@@ -401,7 +403,7 @@ func perform_enemy_turn():
 	
 func _on_player_turn_started():
 	# prevent player from playing cards manually
-	HandManager.set_disable_hand(true)
+	HandManager.set_manual_combat_input_disabled(true)
 	
 	# first turn actions
 	if StatsHandler.get_turn_count() == 1:
@@ -493,12 +495,12 @@ func _on_player_turn_started():
 		return
 	
 	# unlock and update hand
-	HandManager.set_disable_hand(false)
+	HandManager.set_manual_combat_input_disabled(false)
 	hand.update_hand_card_display()
 
 func _on_player_turn_ended():
 	# prevent player from playing cards
-	HandManager.set_disable_hand(true)
+	HandManager.set_manual_combat_input_disabled(true)
 	
 	# perform all end of turn actions and await
 	player.perform_status_effect_process_actions(StatusEffectData.STATUS_EFFECT_PROCESS_TIMES.PRE_DISCARD_PLAYER_END_TURN)
@@ -544,6 +546,8 @@ func _on_enemy_turn_ended():
 	start_turn_animation()
 	
 func _on_end_turn_button_up():
+	if HandManager.is_manual_combat_input_locked():
+		return
 	queue_end_turn(CombatEndTurn.END_TURN_QUEUE_IMMEDIACY.WAIT_FOR_ALL_CARD_PLAYS)
 
 func _on_end_turn_requested(immediacy: int):
@@ -555,7 +559,7 @@ func queue_end_turn(immediacy: int = CombatEndTurn.END_TURN_QUEUE_IMMEDIACY.WAIT
 		end_turn_object = CombatEndTurn.new(self, immediacy)
 		end_turn_object.wait()
 		end_turn_button.disabled = true
-	elif immediacy > end_turn_object.end_turn_queue_value:
+	elif immediacy > end_turn_object.end_turn_queue_immediacy:
 		# higher priority end turn, replace the old with a newer one
 		end_turn_object.disable()	# stop the old one working
 		end_turn_object = CombatEndTurn.new(self, immediacy)

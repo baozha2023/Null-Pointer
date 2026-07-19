@@ -7,6 +7,10 @@ class_name EnemyData
 @export var enemy_texture_path: String = "external/sprites/enemies/enemy_blue_small.png"
 ## Maps to a given AnimationData object id
 @export var enemy_animation_id: String = ""
+## Multiplies the battlefield slot's perspective scale. Keep ordinary enemies at
+## 1.0; larger silhouettes such as bosses can opt into a larger value without
+## changing their logical position or any UI element size.
+@export_range(0.5, 2.0, 0.05) var enemy_combat_scale: float = 1.0
 
 ## Enemy's current health. If this reaches 0 the enemy will die.
 @export var enemy_health: int = 20

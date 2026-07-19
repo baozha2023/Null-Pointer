@@ -71,7 +71,7 @@ func add_animation(animation_name: String, animation_next_animation_name: String
 	
 	# set loop if next anim is same as this one
 	animations.set_animation_loop(animation_name, false)
-	if animation_next_animation_name == animation_next_animation_name:
+	if animation_name == animation_next_animation_name:
 		animations.set_animation_loop(animation_name, true)
 	
 	# set anim fps

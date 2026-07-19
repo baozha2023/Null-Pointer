@@ -1,8 +1,8 @@
 [gd_scene format=3 uid="uid://c0sxkaemtqb5x"]
 
 [ext_resource type="Script" uid="uid://bu5jx208ipx8i" path="res://scripts/combatants/Player.gd" id="1_hkgmy"]
-[ext_resource type="AnimationLibrary" uid="uid://c6xlbg8p1y2er" path="res://animations/Player.res" id="2_6d0fj"]
-[ext_resource type="AnimationLibrary" uid="uid://dvbwuh87t2tha" path="res://animations/Combatant.res" id="2_p0uf2"]
+[ext_resource type="AnimationLibrary" path="res://animations/Player.res" id="2_6d0fj"]
+[ext_resource type="AnimationLibrary" path="res://animations/Combatant.res" id="2_p0uf2"]
 [ext_resource type="PackedScene" uid="uid://b0qk0vn81d0kp" path="res://scenes/combatants/LayeredHealthBar.tscn" id="3_ef7si"]
 [ext_resource type="Texture2D" uid="uid://dw4k1k81ap581" path="res://sprites/missing_texture.png" id="4_m3o5b"]
 [ext_resource type="Texture2D" uid="uid://c45xfek4l50e5" path="res://sprites/intents/enemy_intent_attacking.png" id="6_2s8kq"]
@@ -58,8 +58,17 @@ offset_right = 40.0
 offset_bottom = 40.0
 
 [node name="CombatantCenter" type="Node2D" parent="Visible" unique_id=-1214215280]
+position = Vector2(0, -64)
 
-[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="Visible/CombatantCenter" unique_id=346677237]
+[node name="WorldScaleRoot" type="Node2D" parent="Visible/CombatantCenter"]
+unique_name_in_owner = true
+
+[node name="GroundShadow" type="Polygon2D" parent="Visible/CombatantCenter/WorldScaleRoot"]
+z_index = -1
+polygon = PackedVector2Array(-48, -2, -42, -7, -28, -11, 0, -13, 28, -11, 42, -7, 48, -2, 42, 3, 28, 6, 0, 8, -28, 6, -42, 3)
+color = Color(0.005, 0.012, 0.02, 0.38)
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="Visible/CombatantCenter/WorldScaleRoot" unique_id=346677237]
 unique_name_in_owner = true
 scale = Vector2(2, 2)
 sprite_frames = SubResource("SpriteFrames_e5l7p")
@@ -72,7 +81,7 @@ offset_top = 70.0
 offset_right = 64.0
 offset_bottom = 86.0
 
-[node name="SelectionButton" type="Button" parent="Visible/CombatantCenter" unique_id=1345778997]
+[node name="SelectionButton" type="Button" parent="Visible/CombatantCenter/WorldScaleRoot" unique_id=1345778997]
 unique_name_in_owner = true
 self_modulate = Color(1, 1, 1, 0)
 offset_left = -64.0
@@ -80,33 +89,33 @@ offset_top = -64.0
 offset_right = 64.0
 offset_bottom = 64.0
 
-[node name="ImageFadeContainer" type="Node2D" parent="Visible/CombatantCenter" unique_id=1575134022]
+[node name="ImageFadeContainer" type="Node2D" parent="Visible/CombatantCenter/WorldScaleRoot" unique_id=1575134022]
 unique_name_in_owner = true
 
-[node name="IncomingDamage" type="Control" parent="Visible" unique_id=485530369]
+[node name="IncomingDamage" type="HBoxContainer" parent="Visible" unique_id=485530369]
 anchors_preset = 0
-offset_left = -104.0
-offset_top = -128.0
-offset_right = 104.0
-offset_bottom = -104.0
+offset_left = -46.0
+offset_top = -184.0
+offset_right = 46.0
+offset_bottom = -136.0
+theme_override_constants/separation = -2
+alignment = 1
 
 [node name="TextureRect" type="TextureRect" parent="Visible/IncomingDamage" unique_id=1670663658]
-layout_mode = 0
-offset_left = 79.0
-offset_top = -4.0
-offset_right = 127.0
-offset_bottom = 44.0
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 2
 texture = ExtResource("6_2s8kq")
 expand_mode = 1
+stretch_mode = 5
 
 [node name="IncomingDamageAmount" type="Label" parent="Visible/IncomingDamage" unique_id=366869573]
-layout_mode = 0
-offset_left = 130.0
-offset_top = 5.0
-offset_right = 163.0
-offset_bottom = 38.0
+custom_minimum_size = Vector2(34, 48)
+layout_mode = 2
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.9)
+theme_override_constants/outline_size = 4
 theme_override_font_sizes/font_size = 20
 text = "15"
+vertical_alignment = 1
 
 [node name="FadeContainer" type="Node2D" parent="Visible" unique_id=1501128475]
 position = Vector2(0, -160)
@@ -118,9 +127,9 @@ scale = Vector2(0.4, 0.4)
 [node name="StatusContainer" type="GridContainer" parent="Visible" unique_id=1540858454]
 layout_mode = 0
 offset_left = -81.0
-offset_top = 103.0
+offset_top = 39.0
 offset_right = -41.0
-offset_bottom = 143.0
+offset_bottom = 79.0
 columns = 6
 
 [node name="SpeechBubble" parent="Visible" unique_id=863155305 instance=ExtResource("6_jg3sr")]

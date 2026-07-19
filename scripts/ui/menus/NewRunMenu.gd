@@ -103,7 +103,7 @@ func populate_character_info(character_object_id: String) -> void:
 		
 		# play character selection audio if it exists
 		if character_data.character_selection_audio_path != "":
-			ActionGenerator.generate_sound_action([character_data.character_selection_audio_path], false)
+			ActionGenerator.play_ui_sound([character_data.character_selection_audio_path])
 
 func _on_character_selected(character_object_id: String):
 	selected_character_object_id = character_object_id

@@ -20,7 +20,6 @@ var ARTIFACT_REWARD_BUTTON: PackedScene = load("res://scenes/ui/rewards/Artifact
 
 var REST_ACTION_BUTTON: PackedScene = load("res://scenes/ui/RestActionButton.tscn")
 
-var CONSUMABLE_BUTTON: PackedScene = load("res://scenes/ui/ConsumableButton.tscn")
 var CHARACTER_SELECTION_BUTTON: PackedScene = load("res://scenes/ui/CharacterSelectionButton.tscn")
 
 var CUSTOM_RUN_MODIFIER_CHECKBOX: PackedScene = load("res://scenes/ui/CustomRunModifierCheckbox.tscn")
