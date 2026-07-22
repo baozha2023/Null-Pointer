@@ -1,23 +1,11 @@
 @tool
 ## A normalized battlefield anchor with stable targeting and render-order metadata.
-extends Control
+extends CombatFormationSlot
 class_name CombatEnemySlot
 
 const EDITOR_PREVIEW_TEXTURE: Texture2D = preload("res://sprites/enemies/act1/enemy_patrol_sweeper.png")
 const RING_POINT_COUNT: int = 48
 const EDITOR_PREVIEW_BASE_SIZE: Vector2 = Vector2(128.0, 128.0)
-const BATTLEFIELD_RENDER_BASE: int = 10
-const BATTLEFIELD_RENDER_RANGE: int = 20
-
-@export_range(0, 4, 1) var slot_id: int = 0:
-	set(value):
-		slot_id = value
-		queue_redraw()
-@export_range(0, 4, 1) var logical_order: int = 0
-@export_range(0.75, 1.1, 0.01) var depth_scale: float = 1.0:
-	set(value):
-		depth_scale = value
-		queue_redraw()
 @export var show_editor_preview: bool = true:
 	set(value):
 		show_editor_preview = value
@@ -27,28 +15,9 @@ var _summon_preview_active: bool = false
 var _summon_preview_phase: float = 0.0
 
 func _ready() -> void:
-	mouse_filter = Control.MOUSE_FILTER_IGNORE
+	super._ready()
 	set_process(false)
 	queue_redraw()
-
-func get_ground_position() -> Vector2:
-	return position + size * 0.5
-
-func get_slot_id() -> int:
-	return slot_id
-
-func get_logical_order() -> int:
-	return logical_order
-
-func get_depth_scale() -> float:
-	return depth_scale
-
-func get_render_order() -> int:
-	# CanvasItem z order follows the ground-contact line. This keeps overlap correct
-	# when a designer moves a slot in Combat.tscn without maintaining a second value.
-	var formation_height: float = maxf(get_parent_control().size.y, 1.0)
-	var normalized_depth: float = clampf(get_ground_position().y / formation_height, 0.0, 1.0)
-	return BATTLEFIELD_RENDER_BASE + roundi(normalized_depth * BATTLEFIELD_RENDER_RANGE)
 
 func set_summon_preview(active: bool) -> void:
 	if _summon_preview_active == active:

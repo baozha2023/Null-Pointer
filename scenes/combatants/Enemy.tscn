@@ -47,7 +47,7 @@ animations = [{
 }]
 
 [node name="Enemy" type="Control" unique_id=1559445662 groups=["enemies", "enemies_alive_or_dead"]]
-custom_minimum_size = Vector2(200, 144)
+custom_minimum_size = Vector2(200, 192)
 layout_mode = 3
 anchors_preset = 0
 offset_right = 200.0
@@ -120,7 +120,8 @@ unique_name_in_owner = true
 position = Vector2(-65, 78)
 scale = Vector2(0.4, 0.4)
 
-[node name="Intent" type="HBoxContainer" parent="Visible" unique_id=785213509]
+[node name="OverheadCombatInfo" type="HBoxContainer" parent="Visible" unique_id=785213509]
+unique_name_in_owner = true
 layout_mode = 0
 offset_left = -99.0
 offset_top = -177.0
@@ -129,7 +130,7 @@ offset_bottom = -129.0
 mouse_filter = 2
 alignment = 1
 
-[node name="AttackingIntent" type="TextureRect" parent="Visible/Intent" unique_id=207607739]
+[node name="AttackingIntent" type="TextureRect" parent="Visible/OverheadCombatInfo" unique_id=207607739]
 visible = false
 custom_minimum_size = Vector2(32, 32)
 layout_mode = 2
@@ -138,7 +139,7 @@ texture = ExtResource("6_gmsgo")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="BlockingIntent" type="TextureRect" parent="Visible/Intent" unique_id=715747906]
+[node name="BlockingIntent" type="TextureRect" parent="Visible/OverheadCombatInfo" unique_id=715747906]
 visible = false
 custom_minimum_size = Vector2(32, 32)
 layout_mode = 2
@@ -147,7 +148,7 @@ texture = ExtResource("7_mxi1b")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="DebuffingIntent" type="TextureRect" parent="Visible/Intent" unique_id=1389660352]
+[node name="DebuffingIntent" type="TextureRect" parent="Visible/OverheadCombatInfo" unique_id=1389660352]
 visible = false
 custom_minimum_size = Vector2(32, 32)
 layout_mode = 2
@@ -156,7 +157,7 @@ texture = ExtResource("8_gu0s6")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="BuffingIntent" type="TextureRect" parent="Visible/Intent" unique_id=686456663]
+[node name="BuffingIntent" type="TextureRect" parent="Visible/OverheadCombatInfo" unique_id=686456663]
 visible = false
 custom_minimum_size = Vector2(32, 32)
 layout_mode = 2
@@ -165,7 +166,7 @@ texture = ExtResource("9_7in10")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="SummoningIntent" type="TextureRect" parent="Visible/Intent" unique_id=1393204665]
+[node name="SummoningIntent" type="TextureRect" parent="Visible/OverheadCombatInfo" unique_id=1393204665]
 visible = false
 custom_minimum_size = Vector2(32, 32)
 layout_mode = 2
@@ -174,7 +175,7 @@ texture = ExtResource("10_mxi1b")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="SpecialIntent" type="TextureRect" parent="Visible/Intent" unique_id=2000111222]
+[node name="SpecialIntent" type="TextureRect" parent="Visible/OverheadCombatInfo" unique_id=2000111222]
 visible = false
 custom_minimum_size = Vector2(32, 32)
 layout_mode = 2
@@ -183,7 +184,7 @@ texture = ExtResource("11_special")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="IntentAmount" type="Label" parent="Visible/Intent" unique_id=12370422]
+[node name="IntentAmount" type="Label" parent="Visible/OverheadCombatInfo" unique_id=12370422]
 visible = false
 layout_mode = 2
 theme_override_font_sizes/font_size = 18

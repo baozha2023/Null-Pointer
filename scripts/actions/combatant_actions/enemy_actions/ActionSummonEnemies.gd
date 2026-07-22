@@ -43,10 +43,10 @@ func perform_action() -> void:
 		var enemies: Array[Enemy] = Global.get_all_enemies_in_formation_order()
 		var populated_enemy_slots: Dictionary[int, Enemy] = {}
 		for enemy in enemies:
-			if populated_enemy_slots.has(enemy.enemy_slot_id):
-				DebugLogger.log_error("ActionSummonEnemies: Multiple enemies in slot {0}".format([enemy.enemy_slot_id]))
+			if populated_enemy_slots.has(enemy.combatant_slot_id):
+				DebugLogger.log_error("ActionSummonEnemies: Multiple enemies in slot {0}".format([enemy.combatant_slot_id]))
 			else:
-				populated_enemy_slots[enemy.enemy_slot_id] = enemy
+				populated_enemy_slots[enemy.combatant_slot_id] = enemy
 
 		# spawn enemies
 		var remaining_spawns: int = number_of_spawns

@@ -40,6 +40,7 @@ extends Node
 	["AchievementData", AchievementData, "_id_to_achievement_data", ["achievements/"]],
 	# 原型数据 (Prototype data) - 游戏运行时会基于这些原型克隆出可修改的实例数据
 	["EnemyData", EnemyData,"_id_to_enemy_data", ["enemies/"]],
+	["FriendlyData", FriendlyData, "_id_to_friendly_data", ["friendlies/"]],
 	["CardData", CardData, "_id_to_card_data", ["cards/"]],
 	["ArtifactData", ArtifactData, "_id_to_artifact_data", ["artifacts/"]],
 	["PlayerData", PlayerData, "_id_to_player_data", ["player/"]],
@@ -84,6 +85,7 @@ var _id_to_achievement_data: Dictionary[String, AchievementData] = {}
 
 # 原型数据（Prototyped data）；这些也是只读的，它们的作用是作为模板，在需要时被克隆（Duplicate）成可变的数据实例。
 var _id_to_enemy_data: Dictionary[String, EnemyData] = {}
+var _id_to_friendly_data: Dictionary[String, FriendlyData] = {}
 var _id_to_card_data: Dictionary[String, CardData] = {}
 var _id_to_artifact_data: Dictionary[String, ArtifactData] = {}
 var _id_to_player_data: Dictionary[String, PlayerData] = {}
@@ -423,7 +425,7 @@ func get_all_enemies_in_formation_order() -> Array[Enemy]:
 	for enemy: Enemy in Global.get_tree().get_nodes_in_group("enemies_alive_or_dead"):
 		returned_enemies.append(enemy)
 	returned_enemies.sort_custom(func(a: Enemy, b: Enemy) -> bool:
-		return a.enemy_formation_order < b.enemy_formation_order
+		return a.combatant_formation_order < b.combatant_formation_order
 	)
 	return returned_enemies
 
@@ -435,6 +437,34 @@ func get_alive_enemies_in_formation_order() -> Array[Enemy]:
 		if enemy.is_alive():
 			returned_enemies.append(enemy)
 	return returned_enemies
+
+func get_all_friendlies_in_formation_order() -> Array[BaseCombatant]:
+	var returned: Array[BaseCombatant] = []
+	for node: Node in get_tree().get_nodes_in_group("friendlies_alive_or_dead"):
+		if node is BaseCombatant:
+			returned.append(node as BaseCombatant)
+	returned.sort_custom(func(a: BaseCombatant, b: BaseCombatant) -> bool:
+		return a.combatant_formation_order < b.combatant_formation_order
+	)
+	return returned
+
+func get_alive_friendlies_in_formation_order() -> Array[BaseCombatant]:
+	var returned: Array[BaseCombatant] = []
+	for combatant: BaseCombatant in get_all_friendlies_in_formation_order():
+		if combatant.is_alive():
+			returned.append(combatant)
+	return returned
+
+func get_summoned_friendlies_in_formation_order(include_dead: bool = false) -> Array[Friendly]:
+	var returned: Array[Friendly] = []
+	for combatant: BaseCombatant in get_all_friendlies_in_formation_order():
+		if combatant is Friendly and (include_dead or combatant.is_alive()):
+			returned.append(combatant as Friendly)
+	return returned
+
+func get_rightmost_friendly() -> BaseCombatant:
+	var friendlies: Array[BaseCombatant] = get_alive_friendlies_in_formation_order()
+	return friendlies.back() if not friendlies.is_empty() else null
 
 func get_leftmost_enemy() -> Enemy:
 	var enemies: Array[Enemy] = get_alive_enemies_in_formation_order()
@@ -698,6 +728,15 @@ func get_enemy_data_from_prototype(enemy_object_id: String) -> EnemyData:
 	# 根据给定的 EnemyData 原型生成一份它的拷贝（实例）
 	var enemy_data: EnemyData = get_enemy_data(enemy_object_id)
 	return enemy_data.get_prototype(true)
+#endregion
+
+#region Friendly Data Prototypes
+func get_friendly_data(friendly_object_id: String) -> FriendlyData:
+	return _id_to_friendly_data.get(friendly_object_id, null)
+
+func get_friendly_data_from_prototype(friendly_object_id: String) -> FriendlyData:
+	var friendly_data: FriendlyData = get_friendly_data(friendly_object_id)
+	return friendly_data.get_prototype(true) if friendly_data != null else null
 #endregion
 
 #region Player Data Prototypes

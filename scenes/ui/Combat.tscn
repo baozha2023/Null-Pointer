@@ -26,6 +26,8 @@
 [ext_resource type="Texture2D" uid="uid://bkrlkjojwbv77" path="res://sprites/btn_common_pressed.png" id="23_btn_pressed"]
 [ext_resource type="Texture2D" uid="uid://djt1sc74fp60x" path="res://sprites/btn_common_hover.png" id="24_btn_hover"]
 [ext_resource type="PackedScene" uid="uid://c7qo6l6ra5jhr" path="res://scenes/ui/ConsumableButton.tscn" id="25_consumable_button"]
+[ext_resource type="Script" uid="uid://lccgc2mbbn73" path="res://scripts/ui/FriendlyContainer.gd" id="friendly_container"]
+[ext_resource type="Script" uid="uid://dlx7kkmuv21t0" path="res://scripts/ui/CombatFriendlySlot.gd" id="friendly_slot"]
 
 [sub_resource type="StyleBoxTexture" id="ButtonNormal"]
 texture = ExtResource("22_btn_normal")
@@ -85,7 +87,7 @@ tracks/0/keys = {
 tracks/1/type = "value"
 tracks/1/imported = false
 tracks/1/enabled = true
-tracks/1/path = NodePath("TurnOverlay:modulate")
+tracks/1/path = NodePath("CombatPromptLayer/TurnOverlay:modulate")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/keys = {
@@ -97,7 +99,7 @@ tracks/1/keys = {
 tracks/2/type = "method"
 tracks/2/imported = false
 tracks/2/enabled = true
-tracks/2/path = NodePath("TurnOverlay")
+tracks/2/path = NodePath("CombatPromptLayer/TurnOverlay")
 tracks/2/interp = 1
 tracks/2/loop_wrap = true
 tracks/2/keys = {
@@ -111,7 +113,7 @@ tracks/2/keys = {
 tracks/3/type = "value"
 tracks/3/imported = false
 tracks/3/enabled = true
-tracks/3/path = NodePath("TurnOverlay:visible")
+tracks/3/path = NodePath("CombatPromptLayer/TurnOverlay:visible")
 tracks/3/interp = 1
 tracks/3/loop_wrap = true
 tracks/3/keys = {
@@ -204,18 +206,89 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 
-[node name="Player" parent="Battlefield" unique_id=2008465235 instance=ExtResource("5_player")]
+[node name="FriendlyContainer" type="Control" parent="Battlefield" unique_id=215544284]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("friendly_container")
+
+[node name="FriendlySlots" type="Control" parent="Battlefield/FriendlyContainer" unique_id=175830674]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Slot0" type="Control" parent="Battlefield/FriendlyContainer/FriendlySlots" unique_id=1878154747]
+layout_mode = 1
+anchor_left = 0.12
+anchor_top = 0.56
+anchor_right = 0.12
+anchor_bottom = 0.56
+offset_left = -80.0
+offset_top = -60.0
+offset_right = 80.0
+offset_bottom = 60.0
+mouse_filter = 2
+script = ExtResource("friendly_slot")
+
+[node name="Slot1" type="Control" parent="Battlefield/FriendlyContainer/FriendlySlots" unique_id=2012829652]
+layout_mode = 1
+anchor_left = 0.255
+anchor_top = 0.63
+anchor_right = 0.255
+anchor_bottom = 0.63
+offset_left = -80.0
+offset_top = -60.0
+offset_right = 80.0
+offset_bottom = 60.0
+mouse_filter = 2
+script = ExtResource("friendly_slot")
+slot_id = 1
+logical_order = 1
+depth_scale = 1.03
+
+[node name="Player" parent="Battlefield/FriendlyContainer/FriendlySlots/Slot1" unique_id=2008465235 instance=ExtResource("5_player")]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 0.25300002
-anchor_top = 0.674
-anchor_right = 0.25300002
-anchor_bottom = 0.674
-offset_left = 0.39996338
-offset_top = 0.17599487
-offset_right = 200.39996
-offset_bottom = 144.176
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+
+[node name="Slot2" type="Control" parent="Battlefield/FriendlyContainer/FriendlySlots" unique_id=609031070]
+layout_mode = 1
+anchor_left = 0.42
+anchor_top = 0.6
+anchor_right = 0.42
+anchor_bottom = 0.6
+offset_left = -80.0
+offset_top = -60.0
+offset_right = 80.0
+offset_bottom = 60.0
+mouse_filter = 2
+script = ExtResource("friendly_slot")
+slot_id = 2
+logical_order = 2
+
+[node name="FriendlyLayer" type="Control" parent="Battlefield/FriendlyContainer" unique_id=1542035748]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
 
 [node name="EnemyContainer" type="Control" parent="Battlefield" unique_id=566103395]
 unique_name_in_owner = true
@@ -837,17 +910,20 @@ theme_override_font_sizes/font_size = 18
 disabled = true
 text = "结束时钟周期"
 
-[node name="CardPicking" type="Control" parent="." unique_id=615920597]
+[node name="CombatPromptLayer" type="CanvasLayer" parent="." unique_id=1853848689]
+layer = 10
+
+[node name="CardPicking" type="Control" parent="CombatPromptLayer" unique_id=615920597]
 unique_name_in_owner = true
 visible = false
-layout_mode = 1
+layout_mode = 3
 anchor_left = 0.1
 anchor_top = 0.26
 anchor_right = 0.9
 anchor_bottom = 0.78
 mouse_filter = 2
 
-[node name="CardPickLabel" type="Label" parent="CardPicking" unique_id=817621991]
+[node name="CardPickLabel" type="Label" parent="CombatPromptLayer/CardPicking" unique_id=817621991]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 10
@@ -857,7 +933,7 @@ grow_horizontal = 2
 text = "选择脚本"
 horizontal_alignment = 1
 
-[node name="ConfirmPickButton" type="Button" parent="CardPicking" unique_id=1519910075]
+[node name="ConfirmPickButton" type="Button" parent="CombatPromptLayer/CardPicking" unique_id=1519910075]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 7
@@ -875,22 +951,23 @@ theme_override_styles/pressed = SubResource("ButtonPressed")
 theme_override_styles/hover = SubResource("ButtonHover")
 text = "确认"
 
-[node name="SelectTargetLabel" type="Label" parent="." unique_id=613296981]
+[node name="SelectTargetLabel" type="Label" parent="CombatPromptLayer" unique_id=613296981]
 unique_name_in_owner = true
 visible = false
-layout_mode = 1
 anchors_preset = -1
 anchor_top = 0.22
 anchor_right = 1.0
 anchor_bottom = 0.29
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.92)
+theme_override_constants/outline_size = 8
 theme_override_font_sizes/font_size = 34
 text = "选择一个目标"
 horizontal_alignment = 1
 
-[node name="TurnOverlay" type="Control" parent="." unique_id=868662966]
+[node name="TurnOverlay" type="Control" parent="CombatPromptLayer" unique_id=868662966]
 visible = false
 modulate = Color(1, 1, 1, 0)
-layout_mode = 1
+layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -898,7 +975,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("10_turn")
 
-[node name="ColorRect" type="ColorRect" parent="TurnOverlay" unique_id=615393358]
+[node name="ColorRect" type="ColorRect" parent="CombatPromptLayer/TurnOverlay" unique_id=615393358]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -907,15 +984,18 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0.0862745, 0.0862745, 0.0862745, 0.192157)
 
-[node name="TurnLabel" type="Label" parent="TurnOverlay" unique_id=129165181]
+[node name="TurnLabel" type="Label" parent="CombatPromptLayer/TurnOverlay" unique_id=129165181]
 unique_name_in_owner = true
 layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
+anchors_preset = -1
+anchor_left = 0.3
+anchor_right = 0.7
+offset_top = 72.0
+offset_bottom = 128.0
 grow_horizontal = 2
-grow_vertical = 2
-theme_override_font_sizes/font_size = 54
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.92)
+theme_override_constants/outline_size = 9
+theme_override_font_sizes/font_size = 44
 text = "时钟周期 1"
 horizontal_alignment = 1
 vertical_alignment = 1

@@ -23,10 +23,10 @@ func _build_slot_cache() -> void:
 		assert(child is CombatEnemySlot, "EnemySlots may only contain CombatEnemySlot nodes")
 		var slot: CombatEnemySlot = child as CombatEnemySlot
 		var slot_id: int = slot.get_slot_id()
-		assert(CombatFormation.is_valid_slot_id(slot_id), "Invalid combat slot id %d" % slot_id)
+		assert(CombatFormation.is_valid_enemy_slot_id(slot_id), "Invalid combat slot id %d" % slot_id)
 		assert(not slot_id_to_slot.has(slot_id), "Duplicate combat slot id %d" % slot_id)
 		slot_id_to_slot[slot_id] = slot
-	assert(slot_id_to_slot.size() == CombatFormation.SLOT_COUNT, "Combat must define exactly five enemy slots")
+	assert(slot_id_to_slot.size() == CombatFormation.ENEMY_SLOT_COUNT, "Combat must define exactly five enemy slots")
 
 func populate_enemies_from_event(event_data: EventData = Global.get_player_event_data()) -> void:
 	clear_enemies()
@@ -99,7 +99,7 @@ func spawn_enemy_at_slot(enemy_object_id: String, slot_id: int, is_minion: bool 
 
 func get_enemy_in_slot(slot_id: int) -> Enemy:
 	for enemy: Enemy in Global.get_all_enemies_in_formation_order():
-		if enemy.enemy_slot_id != slot_id:
+		if enemy.combatant_slot_id != slot_id:
 			continue
 		return enemy
 	return null
@@ -144,7 +144,7 @@ func _detach_and_queue_free_enemy(enemy: Enemy) -> void:
 
 func _on_resized() -> void:
 	for enemy: Enemy in enemy_layer.get_children():
-		var slot: CombatEnemySlot = slot_id_to_slot.get(enemy.enemy_slot_id)
+		var slot: CombatEnemySlot = slot_id_to_slot.get(enemy.combatant_slot_id)
 		if slot != null:
 			enemy.apply_formation_slot(slot)
 

@@ -2,33 +2,25 @@
 extends BaseCombatant
 class_name Player
 
-@onready var incoming_damage: Control = $Visible/IncomingDamage
-@onready var incoming_damage_amount_text: Label = $Visible/IncomingDamage/IncomingDamageAmount
-@onready var incoming_damage_texture: TextureRect = $Visible/IncomingDamage/TextureRect
-
-const INTENT_UPDATES_LAZILY: bool = true	# batches intent updates
-var _intent_is_updating: bool = false
-
 func _ready():
 	super()
-	Signals.enemy_intent_changed.connect(_on_enemy_intent_changed)
-	Signals.enemy_death_animation_finished.connect(_on_enemy_death_animation_finished)
 	Signals.player_health_changed.connect(_on_player_health_changed)
 	Signals.artifact_proc.connect(_on_artifact_proc)
 	Signals.run_started.connect(_on_run_started)
 	Signals.run_ended.connect(_on_run_ended)
 	
-	incoming_damage.mouse_filter = Control.MOUSE_FILTER_PASS
-	incoming_damage.mouse_entered.connect(_on_incoming_damage_mouse_entered.bind(incoming_damage))
-	incoming_damage.mouse_exited.connect(_on_incoming_damage_mouse_exited.bind(incoming_damage))
-	incoming_damage_amount_text.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	incoming_damage_texture.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	
 	Signals.player_artifact_added.connect(_on_artifact_added)
 	Signals.player_artifact_removed.connect(_on_artifact_removed)
 
+func get_combat_side() -> int:
+	return COMBAT_SIDES.PLAYER
+
+func apply_player_formation_slot(slot: CombatFormationSlot) -> void:
+	apply_formation_slot(slot, 1.0)
+
 func reset_player() -> void:
 	var character_data: CharacterData = Global.get_player_character_data()
+	set_combatant_display_name(character_data.character_name)
 	animated_sprite_2d.sprite_frames = get_animation_sprite_frames()
 	play_animation(AnimationData.ANIMATION_IDLE)
 	
@@ -144,39 +136,6 @@ func update_player_display(_player_data: PlayerData):
 
 #endregion
 
-func update_incoming_damage_amount(recalculate_enemy_intent: bool = true) -> void:
-	# updates the damage preview above the player's head
-	# flag to force recalculation of all enemy intents as well
-	
-	# optional lazy updating
-	if _intent_is_updating:
-		return
-	if INTENT_UPDATES_LAZILY:
-		_intent_is_updating = true
-		await get_tree().process_frame
-		_intent_is_updating = false
-	
-	var incoming_damage_amount: int = 0
-	for enemy: Enemy in Global.get_alive_enemies_in_formation_order():
-		if recalculate_enemy_intent:
-			enemy.update_enemy_intent()
-		incoming_damage_amount += enemy.enemy_intent_attack_damage * enemy.enemy_intent_number_of_attacks
-
-	incoming_damage_amount_text.text = str(incoming_damage_amount)
-	incoming_damage.visible = incoming_damage_amount > 0
-
-func _on_incoming_damage_mouse_entered(ctrl: Control) -> void:
-	UIHover.scale_up(ctrl)
-	if HandManager.tooltip != null:
-		var total_dmg: String = incoming_damage_amount_text.text
-		var bbcode: String = "[color=red]总威胁[/color]\n本时钟周期即将受到 " + total_dmg + " 点总伤害"
-		HandManager.tooltip.display_tooltip(bbcode, true)
-
-func _on_incoming_damage_mouse_exited(ctrl: Control) -> void:
-	UIHover.scale_down(ctrl)
-	if HandManager.tooltip != null:
-		HandManager.tooltip.hide_tooltip()
-
 func is_alive() -> bool:
 	return Global.player_data.player_health > 0
 
@@ -230,12 +189,6 @@ func _on_combat_started(_event_id: String):
 func _on_combat_ended():
 	clear_all_status_effects()
 	reset_block()
-	update_incoming_damage_amount()
-
-func _on_enemy_intent_changed():
-	update_incoming_damage_amount(true)
-
-func _on_enemy_death_animation_finished(_enemy: Enemy):
 	update_incoming_damage_amount()
 
 func _on_player_health_changed():

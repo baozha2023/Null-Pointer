@@ -351,10 +351,8 @@ static func add_dialogues() -> void:
 	option_996_a.dialogue_option_failed_validator_bbcode = "[color=grey][锁定]: 完整度不足 16[/color]"
 	option_996_a.dialogue_option_actions = [
 		{ Scripts.ACTION_ADD_HEALTH: { "target_override": BaseAction.TARGET_OVERRIDES.PLAYER, "health_amount": -15 } },
-		{ Scripts.ACTION_ADD_ARTIFACT: { "artifact_id": "artifact_energy_battery" } } # Fallback energy relic if exists, else max hp? I'll use random boss relic.
+		{ Scripts.ACTION_ADD_ARTIFACTS_FROM_POOL: { "target_override": BaseAction.TARGET_OVERRIDES.PLAYER, "artifact_count": 1, "artifact_rarities": [ArtifactData.ARTIFACT_RARITIES.BOSS] } },
 	]
-	# To make sure it gives energy, I'll just give a Boss Relic since Boss relics often give energy.
-	option_996_a.dialogue_option_actions[1] = { Scripts.ACTION_ADD_ARTIFACTS_FROM_POOL: { "target_override": BaseAction.TARGET_OVERRIDES.PLAYER, "artifact_count": 1, "artifact_rarities": [ArtifactData.ARTIFACT_RARITIES.BOSS] } }
 	option_996_a.dialogue_option_validators = [{ Scripts.VALIDATOR_PLAYER_HEALTH: { "health_amount": 16 } }]
 
 	var option_996_b: DialogueOptionData = DialogueOptionData.new("option_996_b")

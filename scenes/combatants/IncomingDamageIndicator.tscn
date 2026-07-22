@@ -1,0 +1,29 @@
+[gd_scene format=3 uid="uid://dky0t0e4t1v8m"]
+
+[ext_resource type="Script" uid="uid://dqgmt6ojxicpr" path="res://scripts/combatants/IncomingDamageIndicator.gd" id="1_indicator"]
+[ext_resource type="Texture2D" uid="uid://c45xfek4l50e5" path="res://sprites/intents/enemy_intent_attacking.png" id="2_attack"]
+
+[node name="OverheadCombatInfo" type="HBoxContainer"]
+offset_right = 72.0
+offset_bottom = 48.0
+mouse_filter = 1
+alignment = 1
+script = ExtResource("1_indicator")
+
+[node name="TextureRect" type="TextureRect" parent="."]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+mouse_filter = 2
+texture = ExtResource("2_attack")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="IncomingDamageAmount" type="Label" parent="."]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.9)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 18
+text = "0"
+vertical_alignment = 1

@@ -46,7 +46,12 @@ enum TARGET_OVERRIDES {
 	RANDOM_COMBATANT, # a random existing combatant is chosen
 	RIGHTMOST_ENEMY,
 	LEFT_ADJACENT_ENEMY, # living enemy directly left of each selected enemy
-	RIGHT_ADJACENT_ENEMY # living enemy directly right of each selected enemy
+	RIGHT_ADJACENT_ENEMY, # living enemy directly right of each selected enemy
+	ALL_FRIENDLIES,
+	LEFTMOST_FRIENDLY,
+	RIGHTMOST_FRIENDLY,
+	FRIENDLY_ID,
+	RANDOM_FRIENDLY,
 	}
 
 ## Centralized target-input semantics used by card/action builders. Unknown values
@@ -55,7 +60,7 @@ static func target_override_requires_selected_target(target_override: int) -> bo
 	match target_override:
 		TARGET_OVERRIDES.SELECTED_TARGETS, TARGET_OVERRIDES.LEFT_ADJACENT_ENEMY, TARGET_OVERRIDES.RIGHT_ADJACENT_ENEMY:
 			return true
-		TARGET_OVERRIDES.PARENT, TARGET_OVERRIDES.PLAYER, TARGET_OVERRIDES.ALL_COMBATANTS, TARGET_OVERRIDES.ALL_ENEMIES, TARGET_OVERRIDES.LEFTMOST_ENEMY, TARGET_OVERRIDES.RIGHTMOST_ENEMY, TARGET_OVERRIDES.ENEMY_ID, TARGET_OVERRIDES.RANDOM_ENEMY, TARGET_OVERRIDES.RANDOM_COMBATANT:
+		TARGET_OVERRIDES.PARENT, TARGET_OVERRIDES.PLAYER, TARGET_OVERRIDES.ALL_COMBATANTS, TARGET_OVERRIDES.ALL_ENEMIES, TARGET_OVERRIDES.LEFTMOST_ENEMY, TARGET_OVERRIDES.RIGHTMOST_ENEMY, TARGET_OVERRIDES.ENEMY_ID, TARGET_OVERRIDES.RANDOM_ENEMY, TARGET_OVERRIDES.RANDOM_COMBATANT, TARGET_OVERRIDES.ALL_FRIENDLIES, TARGET_OVERRIDES.LEFTMOST_FRIENDLY, TARGET_OVERRIDES.RIGHTMOST_FRIENDLY, TARGET_OVERRIDES.FRIENDLY_ID, TARGET_OVERRIDES.RANDOM_FRIENDLY:
 			return false
 		_:
 			return true
@@ -129,6 +134,7 @@ func get_adjusted_action_targets() -> Array[BaseCombatant]:
 	var force_dead_targets: bool = get_action_value("force_dead_targets", false)
 	var returned_targets: Array[BaseCombatant] = []
 	var formation_enemies: Array[Enemy] = _get_formation_enemies(force_dead_targets)
+	var formation_friendlies: Array[BaseCombatant] = _get_formation_friendlies(force_dead_targets)
 	
 	match target_override:
 		TARGET_OVERRIDES.SELECTED_TARGETS:
@@ -143,9 +149,7 @@ func get_adjusted_action_targets() -> Array[BaseCombatant]:
 				if player.is_alive() or force_dead_targets:
 					returned_targets.append(player)
 		TARGET_OVERRIDES.ALL_COMBATANTS:
-			for player in Global.get_tree().get_nodes_in_group("players"):
-				if player.is_alive() or force_dead_targets:
-					returned_targets.append(player)
+			returned_targets.append_array(formation_friendlies)
 			returned_targets.append_array(formation_enemies)
 		TARGET_OVERRIDES.ALL_ENEMIES:
 			returned_targets.append_array(formation_enemies)
@@ -174,28 +178,39 @@ func get_adjusted_action_targets() -> Array[BaseCombatant]:
 				if enemy_ids.has(enemy.enemy_data.object_id):
 					returned_targets.append(enemy)
 		TARGET_OVERRIDES.RANDOM_ENEMY:
-			var valid_enemies: Array[BaseCombatant] = []
-			valid_enemies.assign(formation_enemies)
-					
-			if valid_enemies.size() > 0:
+			if not formation_enemies.is_empty():
 				var rng_name: String = get_action_value("rng_name", "rng_targeting")
 				var rng_targeting: RandomNumberGenerator = Global.player_data.get_player_rng(rng_name)
-				valid_enemies = Random.shuffle_array(rng_targeting, valid_enemies)
-				returned_targets.append(valid_enemies[0])
+				var shuffled_enemies: Array = Random.shuffle_array(rng_targeting, formation_enemies)
+				returned_targets.append(shuffled_enemies[0])
 		TARGET_OVERRIDES.RANDOM_COMBATANT:
-			var combatants: Array[Node] = []
-			combatants.append_array(Global.get_tree().get_nodes_in_group("players"))
-			combatants.append_array(formation_enemies)
-			var valid_combatants: Array[BaseCombatant] = []
-			for combatant: BaseCombatant in combatants:
-				if combatant.is_alive() or force_dead_targets:
-					valid_combatants.append(combatant)
-					
-			if valid_combatants.size() > 0:
+			var valid_combatants: Array[BaseCombatant] = formation_friendlies.duplicate()
+			valid_combatants.append_array(formation_enemies)
+			if not valid_combatants.is_empty():
 				var rng_name: String = get_action_value("rng_name", "rng_targeting")
 				var rng_targeting: RandomNumberGenerator = Global.player_data.get_player_rng(rng_name)
 				valid_combatants = Random.shuffle_array(rng_targeting, valid_combatants)
 				returned_targets.append(valid_combatants[0])
+		TARGET_OVERRIDES.ALL_FRIENDLIES:
+			returned_targets.append_array(formation_friendlies)
+		TARGET_OVERRIDES.LEFTMOST_FRIENDLY:
+			if not formation_friendlies.is_empty():
+				returned_targets.append(formation_friendlies.front())
+		TARGET_OVERRIDES.RIGHTMOST_FRIENDLY:
+			if not formation_friendlies.is_empty():
+				returned_targets.append(formation_friendlies.back())
+		TARGET_OVERRIDES.FRIENDLY_ID:
+			var friendly_ids: Array[String] = []
+			friendly_ids.assign(get_action_value("friendly_ids", []))
+			for friendly: BaseCombatant in formation_friendlies:
+				if friendly is Friendly and friendly_ids.has((friendly as Friendly).friendly_data.object_id):
+					returned_targets.append(friendly)
+		TARGET_OVERRIDES.RANDOM_FRIENDLY:
+			if not formation_friendlies.is_empty():
+				var rng_name: String = get_action_value("rng_name", "rng_targeting")
+				var rng_targeting: RandomNumberGenerator = Global.player_data.get_player_rng(rng_name)
+				var shuffled: Array = Random.shuffle_array(rng_targeting, formation_friendlies)
+				returned_targets.append(shuffled[0])
 			
 	return returned_targets
 
@@ -203,6 +218,11 @@ func _get_formation_enemies(include_dead: bool) -> Array[Enemy]:
 	if include_dead:
 		return Global.get_all_enemies_in_formation_order()
 	return Global.get_alive_enemies_in_formation_order()
+
+func _get_formation_friendlies(include_dead: bool) -> Array[BaseCombatant]:
+	if include_dead:
+		return Global.get_all_friendlies_in_formation_order()
+	return Global.get_alive_friendlies_in_formation_order()
 
 ## Searches down the value hierarchy to find a corresponding value to use for this action.
 ## Returns given given default if none found.

@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://c2ftr3dvpi75p" path="res://scripts/combatants/BaseCombatant.gd" id="1_fjkbl"]
 [ext_resource type="AnimationLibrary" uid="uid://dvbwuh87t2tha" path="res://animations/Combatant.res" id="2_38nwr"]
-[ext_resource type="Texture2D" uid="uid://0njvxop6fqtf" path="res://sprites/ui/spr_shield_icon.png" id="2_nc4eu"]
+[ext_resource type="PackedScene" uid="uid://bblblockind01" path="res://scenes/combatants/BlockIndicator.tscn" id="2_block"]
 [ext_resource type="PackedScene" uid="uid://b0qk0vn81d0kp" path="res://scenes/combatants/LayeredHealthBar.tscn" id="3_bf3nk"]
 [ext_resource type="Texture2D" uid="uid://dw4k1k81ap581" path="res://sprites/missing_texture.png" id="3_vo0gv"]
 [ext_resource type="PackedScene" uid="uid://d3ay0q2ywlmkj" path="res://scenes/combatants/SpeechBubble.tscn" id="5_yv466"]
@@ -39,11 +39,11 @@ animations = [{
 }]
 
 [node name="BaseCombatant" type="Control" unique_id=431108974]
-custom_minimum_size = Vector2(200, 144)
+custom_minimum_size = Vector2(200, 192)
 layout_mode = 3
 anchors_preset = 0
 offset_right = 200.0
-offset_bottom = 144.0
+offset_bottom = 192.0
 script = ExtResource("1_fjkbl")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=2144833403]
@@ -55,13 +55,27 @@ offset_right = 40.0
 offset_bottom = 40.0
 
 [node name="CombatantCenter" type="Node2D" parent="Visible" unique_id=1496561905]
-position = Vector2(64, 48)
+position = Vector2(0, -64)
 
-[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="Visible/CombatantCenter" unique_id=1675256748]
+[node name="WorldScaleRoot" type="Node2D" parent="Visible/CombatantCenter"]
+unique_name_in_owner = true
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="Visible/CombatantCenter/WorldScaleRoot" unique_id=1675256748]
 unique_name_in_owner = true
 scale = Vector2(2, 2)
 sprite_frames = SubResource("SpriteFrames_e5l7p")
 animation = &"idle"
+
+[node name="NameLabel" type="Label" parent="Visible/CombatantCenter"]
+unique_name_in_owner = true
+visible = false
+offset_left = -75.0
+offset_top = 89.0
+offset_right = 75.0
+offset_bottom = 112.0
+theme_override_font_sizes/font_size = 15
+text = "实体"
+horizontal_alignment = 1
 
 [node name="LayeredHealthBar" parent="Visible/CombatantCenter" unique_id=1896829377 instance=ExtResource("3_bf3nk")]
 unique_name_in_owner = true
@@ -70,7 +84,7 @@ offset_top = 70.0
 offset_right = 64.0
 offset_bottom = 86.0
 
-[node name="SelectionButton" type="Button" parent="Visible/CombatantCenter" unique_id=935374447]
+[node name="SelectionButton" type="Button" parent="Visible/CombatantCenter/WorldScaleRoot" unique_id=935374447]
 unique_name_in_owner = true
 self_modulate = Color(1, 1, 1, 0)
 offset_left = -64.0
@@ -78,55 +92,21 @@ offset_top = -64.0
 offset_right = 64.0
 offset_bottom = 64.0
 
-[node name="ImageFadeContainer" type="Node2D" parent="Visible/CombatantCenter" unique_id=808977065]
+[node name="ImageFadeContainer" type="Node2D" parent="Visible/CombatantCenter/WorldScaleRoot" unique_id=808977065]
 unique_name_in_owner = true
 
-[node name="IncomingDamage" type="Control" parent="Visible" unique_id=1314413203]
-anchors_preset = 0
-offset_left = -40.0
-offset_top = -64.0
-offset_right = 168.0
-offset_bottom = -40.0
-
-[node name="TextureRect" type="TextureRect" parent="Visible/IncomingDamage" unique_id=1257468564]
-layout_mode = 0
-offset_left = 24.0
-offset_top = 175.0
-offset_right = 54.0
-offset_bottom = 205.0
-texture = ExtResource("2_nc4eu")
-expand_mode = 1
-
-[node name="IncomingDamageAmount" type="Label" parent="Visible/IncomingDamage" unique_id=1577283462]
-layout_mode = 0
-offset_left = 30.0
-offset_top = 176.0
-offset_right = 70.0
-offset_bottom = 199.0
-text = "15"
+[node name="OverheadCombatInfo" type="Control" parent="Visible"]
+unique_name_in_owner = true
+visible = false
+offset_right = 72.0
+offset_bottom = 48.0
 
 [node name="FadeContainer" type="Node2D" parent="Visible" unique_id=1116273955]
-position = Vector2(64, -96)
+position = Vector2(0, -128)
 
-[node name="Block" type="Sprite2D" parent="Visible/CombatantCenter" unique_id=176878287]
-visible = false
-self_modulate = Color(0.188235, 0.188235, 0.188235, 1)
-position = Vector2(-80, 70)
-scale = Vector2(0.25, 0.25)
-texture = ExtResource("2_nc4eu")
-metadata/_edit_group_ = true
-
-[node name="BaseSprite" type="Node2D" parent="Visible/CombatantCenter/Block"]
-
-[node name="BlockAmount" type="Label" parent="Visible/CombatantCenter/Block/BaseSprite" unique_id=1538525232]
-offset_left = -64.0
-offset_top = -64.0
-offset_right = 64.0
-offset_bottom = 64.0
-theme_override_font_sizes/font_size = 48
-text = "999"
-horizontal_alignment = 1
-vertical_alignment = 1
+[node name="Block" parent="Visible/CombatantCenter" unique_id=176878287 instance=ExtResource("2_block")]
+position = Vector2(-65, 78)
+scale = Vector2(0.4, 0.4)
 
 [node name="StatusContainer" type="GridContainer" parent="Visible" unique_id=616507041]
 layout_mode = 0

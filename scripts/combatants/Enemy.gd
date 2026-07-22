@@ -1,21 +1,15 @@
 extends BaseCombatant
 class_name Enemy
 
-const WORLD_VISUAL_BASE_HALF_SIZE: float = 64.0
-const COMBATANT_CENTER_Y: float = -64.0
-const INTENT_VISUAL_GAP: float = 6.0
-const HEALTH_VISUAL_GAP: float = 6.0
-const STATUS_HEALTH_GAP: float = 10.0
-
-@onready var enemy_intent: HBoxContainer = $Visible/Intent
+@onready var enemy_intent: HBoxContainer = %OverheadCombatInfo
 
 # icons used for displaying specific intent types
-@onready var attacking_intent: TextureRect = $Visible/Intent/AttackingIntent
-@onready var blocking_intent: TextureRect = $Visible/Intent/BlockingIntent
-@onready var debuffing_intent: TextureRect = $Visible/Intent/DebuffingIntent
-@onready var buffing_intent: TextureRect = $Visible/Intent/BuffingIntent
-@onready var summoning_intent: TextureRect = $Visible/Intent/SummoningIntent
-@onready var special_intent: TextureRect = $Visible/Intent/SpecialIntent
+@onready var attacking_intent: TextureRect = $Visible/OverheadCombatInfo/AttackingIntent
+@onready var blocking_intent: TextureRect = $Visible/OverheadCombatInfo/BlockingIntent
+@onready var debuffing_intent: TextureRect = $Visible/OverheadCombatInfo/DebuffingIntent
+@onready var buffing_intent: TextureRect = $Visible/OverheadCombatInfo/BuffingIntent
+@onready var summoning_intent: TextureRect = $Visible/OverheadCombatInfo/SummoningIntent
+@onready var special_intent: TextureRect = $Visible/OverheadCombatInfo/SpecialIntent
 
 # maps the EnemyIntentData.enemy_intent_display_type to the texture to display
 @onready var INTENT_DISPLAY_TYPE_TO_INTENT: Dictionary[int, TextureRect] = {
@@ -27,26 +21,21 @@ const STATUS_HEALTH_GAP: float = 10.0
 	EnemyIntentData.INTENT_DISPLAY_TYPES.SPECIAL: special_intent,
 }
 
-@onready var enemy_intent_amount_label: Label = $Visible/Intent/IntentAmount
+@onready var enemy_intent_amount_label: Label = $Visible/OverheadCombatInfo/IntentAmount
 @onready var target_highlight: HoverBrackets = %TargetHighlight
 
-@onready var name_label = %NameLabel
 @onready var death_animation_player: AnimationPlayer = $DeathAnimationPlayer
 
 var enemy_data: EnemyData = null
-## Stable logical formation identity. Rendering animations never change these values.
-var enemy_slot_id: int = -1
-var enemy_formation_order: int = -1
-var enemy_formation_depth: float = 1.0
 
 var enemy_intent_attack_damage: int = 0
 var enemy_intent_number_of_attacks: int = 0
+var enemy_intent_target: BaseCombatant = null
+var enemy_intent_is_pending: bool = false
+var enemy_intent_is_executing: bool = false
 
 func init(_enemy_data: EnemyData):
 	enemy_data = _enemy_data
-	
-	selection_button.mouse_entered.connect(_on_mouse_entered)
-	selection_button.mouse_exited.connect(_on_mouse_exited)
 	
 	enemy_intent.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	enemy_intent_amount_label.mouse_filter = Control.MOUSE_FILTER_PASS
@@ -73,7 +62,7 @@ func init(_enemy_data: EnemyData):
 		var custom_values: Dictionary = enemy_data.enemy_initial_status_custom_values.get(status_effect_object_id, {})
 		add_new_status_effect(status_effect_object_id, charge_amount, 0, custom_values)
 	
-	name_label.text = enemy_data.enemy_name
+	set_combatant_display_name(enemy_data.enemy_name)
 	
 	# update_health_bar()
 	layered_health_bar.init(enemy_data.enemy_health, enemy_data.enemy_health_max)
@@ -88,47 +77,8 @@ func init(_enemy_data: EnemyData):
 
 ## Assigns this enemy to a logical battlefield slot whose position represents the
 ## enemy's ground contact point.
-func apply_formation_slot(slot: CombatEnemySlot) -> void:
-	enemy_slot_id = slot.get_slot_id()
-	enemy_formation_order = slot.get_logical_order()
-	enemy_formation_depth = slot.get_depth_scale()
-	position = slot.get_ground_position()
-	z_index = slot.get_render_order()
-	set_world_depth_scale(enemy_formation_depth * enemy_data.enemy_combat_scale)
-
-## The sprite, shadow, and hit area scale in world space. Combat information keeps
-## its UI size and is repositioned around the resulting visual bounds.
-func _on_world_depth_scale_changed() -> void:
-	if not is_node_ready():
-		return
-	call_deferred("_update_scaled_combat_ui_layout")
-
-func _update_scaled_combat_ui_layout() -> void:
-	if not is_instance_valid(enemy_intent) or not is_instance_valid(layered_health_bar):
-		return
-	var visual_half_height: float = WORLD_VISUAL_BASE_HALF_SIZE * _world_depth_scale
-	var visual_top: float = COMBATANT_CENTER_Y - visual_half_height
-
-	# Intent is relative to Visible; place its bottom above the scaled silhouette.
-	enemy_intent.position.y = visual_top - INTENT_VISUAL_GAP - enemy_intent.size.y
-
-	# Ground UI is relative to CombatantCenter. Preserve the authored horizontal
-	# positions and component sizes while moving the stack below the silhouette.
-	var health_top: float = visual_half_height + HEALTH_VISUAL_GAP
-	layered_health_bar.position.y = health_top
-	block.position.y = health_top + 8.0
-	status_container.position.y = (
-		COMBATANT_CENTER_Y
-		+ health_top
-		+ layered_health_bar.size.y
-		+ STATUS_HEALTH_GAP
-	)
-
-func get_target_anchor_global_position() -> Vector2:
-	return selection_button.get_global_rect().get_center()
-
-func contains_global_point(global_point: Vector2) -> bool:
-	return selection_button.get_global_rect().has_point(global_point)
+func apply_formation_slot(slot: CombatFormationSlot, combat_scale: float = 1.0) -> void:
+	super.apply_formation_slot(slot, enemy_data.enemy_combat_scale * combat_scale)
 
 func set_target_highlighted(highlighted: bool) -> void:
 	if highlighted:
@@ -208,11 +158,11 @@ func add_block(amount: int) -> void:
 		Signals.combatant_block_added.emit(self)
 
 #region Health
-func heal_percentage(percent: float):
+func heal_percentage(percent: float) -> void:
 	var percentage_health: int = int(ceil(float(enemy_data.enemy_health_max) * percent))
 	add_health(percentage_health, 0)
 
-func add_health(health_amount: int, health_amount_max: int = 0) -> void:
+func add_health(health_amount: int, health_amount_max: int) -> void:
 	set_health(enemy_data.enemy_health + health_amount, enemy_data.enemy_health_max + health_amount_max)
 	if health_amount > 0:
 		create_health_text(health_amount)
@@ -259,6 +209,7 @@ func update_enemy_intent():
 	var number_of_attacks: int = 0
 	if current_enemy_intent == null:
 		DebugLogger.log_error("Enemy.update_enemy_intent: Enemy {0} has no current intent".format([enemy_data.object_id]))
+		enemy_intent_target = null
 		enemy_intent_attack_damage = 0
 		enemy_intent_number_of_attacks = 0
 		enemy_intent_amount_label.hide()
@@ -280,7 +231,14 @@ func update_enemy_intent():
 		else:
 			intent_icon.show()
 	
-	var player: Player = Global.get_player()
+	enemy_intent_target = Global.get_rightmost_friendly()
+	if enemy_intent_target == null:
+		enemy_intent_attack_damage = 0
+		enemy_intent_number_of_attacks = 0
+		enemy_intent_amount_label.hide()
+		return
+	enemy_intent_attack_damage = 0
+	enemy_intent_number_of_attacks = 0
 	
 	### damage
 	# intercept an attack action in preview mode
@@ -288,10 +246,10 @@ func update_enemy_intent():
 			Scripts.ACTION_ATTACK: 
 				{
 				"damage": attack_damage,
-				"target_override": BaseAction.TARGET_OVERRIDES.PLAYER
+				"target_override": BaseAction.TARGET_OVERRIDES.SELECTED_TARGETS
 				}}]
-	var generated_action: BaseAction = ActionGenerator.create_actions(self, null, [player], action_data, null)[0]
-	var action_interceptor_processors: Array[ActionInterceptorProcessor] = generated_action._intercept_action([player], true)
+	var generated_action: BaseAction = ActionGenerator.create_actions(self, null, [enemy_intent_target], action_data, null)[0]
+	var action_interceptor_processors: Array[ActionInterceptorProcessor] = generated_action._intercept_action([enemy_intent_target], true)
 	
 	if len(action_interceptor_processors) == 1:
 		var action_interceptor_processor: ActionInterceptorProcessor = action_interceptor_processors[0]
@@ -306,10 +264,10 @@ func update_enemy_intent():
 			{
 			"damage": attack_damage,
 			"number_of_attacks": number_of_attacks,
-			"target_override": BaseAction.TARGET_OVERRIDES.PLAYER
+			"target_override": BaseAction.TARGET_OVERRIDES.SELECTED_TARGETS
 			}}]
-	generated_action = ActionGenerator.create_actions(self, null, [player], action_data, null)[0]
-	action_interceptor_processors = generated_action._intercept_action([player], true)
+	generated_action = ActionGenerator.create_actions(self, null, [enemy_intent_target], action_data, null)[0]
+	action_interceptor_processors = generated_action._intercept_action([enemy_intent_target], true)
 	
 	if len(action_interceptor_processors) == 1:
 		var action_interceptor_processor: ActionInterceptorProcessor = action_interceptor_processors[0]
@@ -337,19 +295,16 @@ func _on_combat_ended():
 	queue_free()
 
 func _on_player_turn_started():
+	enemy_intent_is_pending = true
+	enemy_intent_is_executing = false
 	cycle_enemy_intent()
 
 func _on_selection_button_up():
 	if is_alive():
 		Signals.enemy_clicked.emit(self)
 
-func _on_mouse_entered():
-	Signals.enemy_hovered.emit(self)
-	name_label.visible = true
-
-func _on_mouse_exited():
-	Signals.enemy_hovered.emit(null)
-	name_label.visible = false
+func _on_combatant_hover_changed(hovered: bool) -> void:
+	Signals.enemy_hovered.emit(self if hovered else null)
 
 func _on_death_animtation_finished():
 	# called from animation player

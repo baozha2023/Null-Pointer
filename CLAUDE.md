@@ -73,6 +73,7 @@ Resource
     └── PrototypeData         # Template pattern — adds object_uid for unique instances
         ├── CardData          # Cloned via get_prototype(true) for each card instance
         ├── EnemyData
+        ├── FriendlyData      # Player-side summoned combatant template
         ├── ArtifactData
         └── PlayerData        # The central mutable run-state object
 ```
@@ -111,6 +112,7 @@ Order is critical because later autoloads depend on earlier ones. `Global._ready
 
 - **`data/CardPlayRequest.gd`** — Extends `RefCounted` (not `Resource`/`SerializableData`). A request payload carrying `card_data`, `selected_target`, `card_values`, refund/input energy, and pile routing info. Created by `HandManager` when a player clicks a hand card; flows through the action system as a value/targeting reference. Also used for card-less action payloads via `card_values` alone. Runtime wrapper actions must call `duplicate_for_child_actions()` before changing inherited values so sibling action branches remain isolated.
 - **`data/EnemySpawnRequest.gd`** — A typed synchronous request/response payload emitted through `Signals.enemy_spawn_requested`. `EnemyContainer` is the only owner that turns a requested enemy ID and logical slot ID into an `Enemy` node and writes the result back to `spawned_enemy`.
+- **`data/FriendlySpawnRequest.gd`** — The equivalent typed synchronous request/response payload for player-side summons. `FriendlyContainer` owns the three friendly slots, instantiates `FriendlyData` prototypes, and writes the spawned `Friendly` back to the request.
 - **`data/prototype/`** — Read-only template data. Call `Global.get_card_data_from_prototype(id)` (which internally calls `.get_prototype(true)`) to get a mutable copy. `CardData` now includes `card_hint` (new-player hint text), `card_status_effect_object_ids` (explicit status effect tooltip bindings), and `CARD_TYPE_DISPLAY` / `CARD_RARITY_DISPLAY` constants (moved from `Card.gd` to the data layer for reuse across all UI).
 - **`data/readonly/`** — Immutable lookup data (ActData, EventData, DialogueData, KeywordData, ColorData, StatusEffectData, RunModifierData, CustomSignalData, CharacterData, mod configs, etc.).
 - **`data/readonly/embedded/`** — Nested readonly data types embedded inside parent data objects: `DialogueOptionData`, `DialogueStateData` (used by `DialogueData`), `EnemyIntentData` (used by `EnemyData`).
@@ -130,7 +132,7 @@ All game behavior flows through Actions. Inheritance chain: `BaseAction` → `Ba
 - **ActionGenerator** is the factory — it builds action trees from JSON/dictionary action data payloads.
 - Key action categories:
   - `card_actions/` — play cards, pick cards, transform, discard, upgrade
-  - `combatant_actions/` — attack, block, heal, apply status (to players and enemies)
+  - `combatant_actions/` — attack, block, heal, apply status, and summon/operate player-side friendlies
   - `meta_actions/` — random selection, validators, action generation/modification
   - `world_generation_actions/` — generate Act maps
   - `world_interaction_actions/` — visit locations, start combat, open chests
@@ -153,6 +155,8 @@ Shared card-action helpers include `CardMoveOperation` for discard/exhaust/banis
 **Card Keywords** (`KeywordData`, `KeywordContainer`, `KeywordTooltip`): Card keyword metadata (e.g., "保留", "物理删除", "虚无") is displayed as keyword chips when hovering over a card — no longer embedded in `CardData.get_card_description()`. `KeywordData.keyword_prefix` (e.g., `[前置] `, `[后置] `) indicates when a keyword triggers (before or after an action), displayed as a prefix on the keyword tooltip. Certain keywords are auto-appended based on card properties or actions: `keyword_unplayable` (if `card_is_playable = false`), `keyword_ethereal` (if `card_end_of_turn_destination = EXHAUST_PILE`), `keyword_fleeting` (if `card_end_of_turn_destination = BANISH_PILE`), `keyword_exhaust` (if `card_play_destination = EXHAUST_PILE`), and `keyword_consumable` (if play actions include removing the played card from deck). `[energy_icon]` placeholders in keyword text are replaced at display time.
 
 Keywords, status effects, and card hints can each be independently toggled on/off via user settings (`settings_enable_card_keywords`, `settings_enable_card_status_effects`, `settings_enable_card_hints`), accessible from the Settings menu. When enabled, `KeywordContainer.populate_card_keywords()` auto-parses `ACTION_APPLY_STATUS` and `ACTION_CREATE_CARDS` from `card_play_actions`, as well as `[card_name:card_id]` references in descriptions, to discover implicit status effects and generated cards, displaying them alongside explicit keywords. Card hints (`card_hint`) are shown as `init_custom()` tooltips, status effects use `init_status_effect()`, and cards use `init_card()`.
+
+Status-effect hover text parses `StatusEffectData.status_effect_tooltip` with `BaseStatusEffect.get_tooltip_context()`. The base context exposes current primary/secondary charges plus `status_custom_values`; specialized status scripts should override this method to inject live calculated values or dynamic IDs for macros such as `[card_name:value_key]` without moving gameplay calculations into the UI.
 
 **Card Decorator Tooltips** (`CardDecorator.gd`): Decorator descriptions are now shown as standalone tooltips when hovering over the decorator icon on a card, rather than being injected into the card's description text. `CardDecoratorData.card_decorator_description` drives the tooltip text, supporting `[key_name]` dynamic value substitution from `card_values`. The `card_decorator_pre_description` / `card_decorator_post_description` fields on `CardDecoratorData` are retained for future use but no longer automatically mutate card text.
 
@@ -216,15 +220,15 @@ The central mutable data object for the current Run. Key subsystems:
 Combat is a **signal-driven state machine** in `scripts/ui/Combat.gd` (no dedicated CombatManager class). Its scene is isolated in `scenes/ui/Combat.tscn` and instantiated by `Root.tscn`:
 
 1. `combat_started` → enemies spawn, play turn start animations
-2. `start_turn()` → reset energy, process pre-draw status effects, reset block, draw cards, unlock hand
+2. `start_turn()` → reset energy, process player-side combatants in formation order (block reset and pre-draw statuses), draw cards, process post-draw statuses, unlock hand
 3. Player plays cards through the `CardPlayRequest` queue → Actions execute via `ActionHandler`; manual input stays locked until the action delay and every registered presentation have finished
 4. `end_turn` → `CombatEndTurn` object manages immediacy levels (WAIT_FOR_ALL_CARD_PLAYS, WAIT_FOR_ACTIONS, IMMEDIATE)
-5. Player turn ends → discard/exhaust/retain logic, process post-turn status effects
-6. Enemy turn → for each living enemy in stable formation order: pre-intent status processing → execute intent → post-intent status processing
+5. Player turn ends → process player-side statuses in formation order, resolve discard/exhaust/retain logic, then cross an explicit completion barrier before the enemy phase
+6. Enemy turn → for each living enemy in stable formation order: pre-intent status processing → lock the current rightmost living friendly target → execute intent → post-intent status processing
 7. Loop back to step 2
 8. Combat ends when all non-summon enemies die or player dies
 
-The battlefield uses five authored `CombatEnemySlot` nodes in `Combat.tscn`. A slot stores the logical ID, left-to-right order, and depth scale; its scene position is the enemy's ground-contact point and also drives render order. `CombatFormation` owns only deterministic slot rules and automatic formations. Initial events optionally provide `event_enemy_slot_ids`; summon actions provide `spawn_slots`. Gameplay target queries (`get_leftmost_enemy()`, adjacent lookups, and enemy-turn order) use stable formation order rather than animated screen coordinates. Enemy sprite scale is `slot.depth_scale * EnemyData.enemy_combat_scale`, while intent, health, and status UI retain fixed display scale and reposition around the resulting silhouette.
+The battlefield uses five authored `CombatEnemySlot` nodes and three `CombatFriendlySlot` nodes in `Combat.tscn`, all sharing the `CombatFormationSlot` contract. Friendly slot 1 is reserved for the player; summoned friendlies occupy slots 0 or 2, and the rightmost living player-side combatant receives ordinary enemy attacks. A slot stores its logical ID, formation order, depth scale, ground-contact position, and derived render order. `CombatFormation` owns deterministic enemy formations plus enemy/friendly slot validation. Initial events optionally provide `event_enemy_slot_ids`; summon actions provide `spawn_slots`. Gameplay target queries use stable formation order rather than animated screen coordinates. World sprites scale by slot depth and per-combatant scale, while names, intents/incoming-damage previews, health, block, and status UI retain fixed display scale. Enemy intent previews and execution share the same locked target and interceptor path; formation changes refresh pending targets but never retarget an intent already executing.
 
 ### Run Modifiers
 
@@ -257,7 +261,7 @@ Uses `EventPoolData` with weighted pools. `PlayerData.get_next_event_object_id_f
 
 ### Mod Support (`external/`)
 
-Mods are loaded from `external/`. Each mod has a `mod_info.json` specifying folders and data types. Scripts can be loaded from mods to inject or override behavior. `mod_list.json` controls which mods are active. An example mod is at `external/mods/mod_data_example_mod/`.
+Mods are loaded from `external/`. Each mod has a `mod_info.json` specifying folders and data types, including `external/data/friendlies/` for `FriendlyData` definitions. Scripts can be loaded from mods to inject or override behavior. `mod_list.json` controls which mods are active. An example mod is at `external/mods/mod_data_example_mod/`.
 
 ### Dynamic Mod Support (Asset Override System)
 
@@ -299,13 +303,14 @@ All UI scenes are preloaded in the `Scenes` singleton. UI scripts are in `script
 
 ### Combatants (`scenes/combatants/`, `scripts/combatants/`)
 
-`Player.tscn` and `Enemy.tscn` are combatant scenes whose root position represents ground contact. `WorldScaleRoot` contains the depth-scaled world sprite, shadow, and hit area; fixed-size intent, health, and status UI remains outside that scaled subtree. Health is displayed via `LayeredHealthBar` + `HealthLayer`. `StatusEffect.tscn` renders status icons. Combat floaters (text, artifact, image) provide visual feedback for actions and participate in the shared presentation barrier.
+`Player.tscn`, `Enemy.tscn`, and `Friendly.tscn` share the `BaseCombatant` runtime/presentation contract; their root position represents ground contact. `FriendlyData` supplies health, block, animation/static textures, initial statuses, death actions, in-combat revival policy, and status-driven visual states. `WorldScaleRoot` contains the depth-scaled world sprite, shadow, and hit area; fixed-size names, intent/incoming-damage, health, block, and status UI remains outside that scaled subtree. Health is displayed via `LayeredHealthBar` + `HealthLayer`. `StatusEffect.tscn` renders status icons. Combat floaters (text, artifact, image) provide visual feedback for actions and participate in the shared presentation barrier.
 
 ## Key Patterns & Best Practices
 
 - **Read-only → prototype pattern**: Data templates in Global's lookup tables are read-only. To get a mutable instance, call `Global.get_card_data_from_prototype(id)` (internally calls `.get_prototype(true)`).
 - **Signal-driven communication**: Cross-system events go through the `Signals` singleton. Avoid direct coupling between systems.
 - **Action composition**: Actions can contain child actions enabling nested behavior (for loops, conditionals, random branches via meta_actions).
+- **Independently evolvable content stays explicit**: Keep card and status-effect definitions individually declared when they are expected to diverge. Do not compress them into parallel arrays/index-coupled loops or extract generator helpers solely to reduce repetition; share only stable runtime mechanics through Actions or status scripts.
 - **Validator sharing**: Game logic ("Can this card be played?") and UI ("Should this card glow? Should this text be highlighted?") both use the same `Global.validate()` pipeline.
 - **Startup caching**: Card/artifact/consumable filter caches are generated once at startup. Don't repeatedly query raw data.
 - **`class_name` requirement**: The serialization system resolves class names at runtime through Godot's global class list. New data classes must use a `class_name` matching their filename.

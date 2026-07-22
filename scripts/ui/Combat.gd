@@ -2,6 +2,10 @@
 extends Control
 class_name Combat
 
+signal player_turn_end_resolved
+
+var _player_turn_end_is_resolved: bool = false
+
 @onready var money_container = $%MoneyContainer
 @onready var health_container = $%HealthContainer
 @onready var money_label: Label = $%MoneyLabel
@@ -51,6 +55,7 @@ func _ready():
 	
 	Signals.enemy_killed.connect(_on_enemy_killed)
 	Signals.enemy_death_animation_finished.connect(_on_enemy_death_animation_finished)
+	Signals.friendly_formation_changed.connect(_on_friendly_formation_changed)
 	
 	Signals.combat_started.connect(_on_combat_started)
 	Signals.combat_ended.connect(_on_combat_ended)
@@ -296,7 +301,6 @@ func perform_enemy_turn():
 	for e in enemies:
 		# get enemy standard attack data
 		var enemy: Enemy = e	# typecast iterator
-		var enemy_intent: EnemyIntentData = enemy.enemy_data.get_current_intent()
 		
 		### perform enemy start of turn statuses
 		if enemy.is_alive():
@@ -307,6 +311,11 @@ func perform_enemy_turn():
 		### perform intent
 		# NOTE: remember these go in reverse order on the stack
 		if enemy.is_alive():
+			enemy.enemy_intent_is_executing = true
+			enemy.update_enemy_intent()
+			# PRE_ENEMY_INTENT statuses are allowed to change intent state, so the
+			# execution payload must be read only after that phase has resolved.
+			var enemy_intent: EnemyIntentData = enemy.enemy_data.get_current_intent()
 			var enemy_actions_data: Array[Dictionary] = []
 			var intent_attack_damage: int = 0
 			var intent_number_of_attacks: int = 0
@@ -360,14 +369,21 @@ func perform_enemy_turn():
 			)
 			
 			# play intent sound if one exists and no attacks
-			if enemy_intent.enemy_intent_audio_path != "" and intent_number_of_attacks == 0:
-				ActionGenerator.play_combat_sound([enemy_intent.enemy_intent_audio_path], enemy)
+			if not intent_audio_path.is_empty() and intent_number_of_attacks == 0:
+				ActionGenerator.play_combat_sound([intent_audio_path], enemy)
 			
 			# perform them and wait
-			var enemy_attack_actions: Array = ActionGenerator.create_actions(enemy, null, [player], enemy_actions_data, null)
+			var locked_target: BaseCombatant = enemy.enemy_intent_target
+			var locked_targets: Array[BaseCombatant] = []
+			if locked_target != null:
+				locked_targets.append(locked_target)
+			var enemy_attack_actions: Array = ActionGenerator.create_actions(enemy, null, locked_targets, enemy_actions_data, null)
 			ActionHandler.add_actions(enemy_attack_actions)
 			if ActionHandler.actions_being_performed:
 				await ActionHandler.actions_ended
+			enemy.enemy_intent_is_executing = false
+			enemy.enemy_intent_is_pending = false
+			Signals.enemy_intent_changed.emit()
 			
 			# if player is dead stop
 			if _end_combat_check():
@@ -473,10 +489,13 @@ func _on_player_turn_started():
 	
 	# perform pre draw actions
 	player.update_incoming_damage_amount(true)
-	player.generate_reset_block_action()
-	player.perform_status_effect_process_actions(StatusEffectData.STATUS_EFFECT_PROCESS_TIMES.PRE_DRAW_PLAYER_START_TURN)
-	if ActionHandler.actions_being_performed:
-		await ActionHandler.actions_ended
+	for friendly: BaseCombatant in Global.get_alive_friendlies_in_formation_order():
+		friendly.generate_reset_block_action()
+		if ActionHandler.actions_being_performed:
+			await ActionHandler.actions_ended
+		friendly.perform_status_effect_process_actions(StatusEffectData.STATUS_EFFECT_PROCESS_TIMES.PRE_DRAW_PLAYER_START_TURN)
+		if ActionHandler.actions_being_performed:
+			await ActionHandler.actions_ended
 	if _end_combat_check():
 		return
 	
@@ -489,7 +508,7 @@ func _on_player_turn_started():
 		return
 	
 	# perform post draw actions
-	player.perform_status_effect_process_actions(StatusEffectData.STATUS_EFFECT_PROCESS_TIMES.POST_DRAW_PLAYER_START_TURN)
+	await _process_friendly_statuses(StatusEffectData.STATUS_EFFECT_PROCESS_TIMES.POST_DRAW_PLAYER_START_TURN)
 	# if player is dead stop
 	if _end_combat_check():
 		return
@@ -503,10 +522,9 @@ func _on_player_turn_ended():
 	HandManager.set_manual_combat_input_disabled(true)
 	
 	# perform all end of turn actions and await
-	player.perform_status_effect_process_actions(StatusEffectData.STATUS_EFFECT_PROCESS_TIMES.PRE_DISCARD_PLAYER_END_TURN)
-	if ActionHandler.actions_being_performed:
-		await ActionHandler.actions_ended
+	await _process_friendly_statuses(StatusEffectData.STATUS_EFFECT_PROCESS_TIMES.PRE_DISCARD_PLAYER_END_TURN)
 	if _end_combat_check():
+		_finish_player_turn_end_resolution()
 		return
 	
 	# discard non retained cards and perform card actions
@@ -514,14 +532,19 @@ func _on_player_turn_ended():
 	if ActionHandler.actions_being_performed:
 		await ActionHandler.actions_ended
 	if _end_combat_check():
+		_finish_player_turn_end_resolution()
 		return
 	
 	# perform all end of turn actions and await
-	player.perform_status_effect_process_actions(StatusEffectData.STATUS_EFFECT_PROCESS_TIMES.POST_DISCARD_PLAYER_END_TURN)
-	if ActionHandler.actions_being_performed:
-		await ActionHandler.actions_ended
+	await _process_friendly_statuses(StatusEffectData.STATUS_EFFECT_PROCESS_TIMES.POST_DISCARD_PLAYER_END_TURN)
 	if _end_combat_check():
+		_finish_player_turn_end_resolution()
 		return
+	_finish_player_turn_end_resolution()
+
+func _finish_player_turn_end_resolution() -> void:
+	_player_turn_end_is_resolved = true
+	player_turn_end_resolved.emit()
 
 func _on_player_start_turn_animation_finished():
 	# called from animation player
@@ -529,15 +552,33 @@ func _on_player_start_turn_animation_finished():
 
 func _on_player_end_turn_animation_finished():
 	# called from animation player
+	_player_turn_end_is_resolved = false
 	Signals.player_turn_ended.emit()
-	
-	# wait for all end of turn actions to process
-	if ActionHandler.actions_being_performed:
-		await ActionHandler.actions_ended
-	
-	# start enemy turn if they're alive
-	if len(get_tree().get_nodes_in_group("enemies")) > 0:
+	# Godot signals do not await asynchronous listeners. The explicit completion
+	# barrier keeps discard/status phases and every synchronous turn-end listener
+	# ahead of the enemy phase, even when no Action happened in the first phase.
+	if not _player_turn_end_is_resolved:
+		await player_turn_end_resolved
+
+	if not Global.get_alive_enemies_in_formation_order().is_empty():
 		Signals.enemy_turn_started.emit()
+
+func _process_friendly_statuses(process_time: int) -> void:
+	for friendly: BaseCombatant in Global.get_alive_friendlies_in_formation_order():
+		friendly.perform_status_effect_process_actions(process_time)
+		# The action handler is stack-based. Resolve one formation member before
+		# advancing so player-side status timing follows logical left-to-right order.
+		if ActionHandler.actions_being_performed:
+			await ActionHandler.actions_ended
+		if not player.is_alive() or Global.get_alive_enemies_in_formation_order().is_empty():
+			return
+
+func _on_friendly_formation_changed() -> void:
+	# Target locks and previews share one refresh path whenever the frontline changes.
+	for enemy: Enemy in Global.get_alive_enemies_in_formation_order():
+		if enemy.enemy_intent_is_pending and not enemy.enemy_intent_is_executing:
+			enemy.update_enemy_intent()
+	Signals.enemy_intent_changed.emit()
 
 func _on_enemy_turn_started():
 	perform_enemy_turn()

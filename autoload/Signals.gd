@@ -140,6 +140,10 @@ signal enemy_clicked(enemy: Enemy)
 signal enemy_hovered(enemy: Enemy)
 signal enemy_spawn_requested(request: EnemySpawnRequest)	# requests spawning an enemy in a slot
 
+# player-side summoned combatants
+signal friendly_spawn_requested(request: FriendlySpawnRequest)
+signal friendly_formation_changed
+
 # artifacts
 signal artifact_proc(artifact_data: ArtifactData)	# an artifact's effect has been triggered
 signal artifact_counter_changed(artifact_data: ArtifactData)

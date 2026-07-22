@@ -82,6 +82,10 @@ const ACTION_CYCLE_ENEMY_INTENT: String = "res://scripts/actions/combatant_actio
 const ACTION_CHANGE_ENEMY_INTENT_STATE: String = "res://scripts/actions/combatant_actions/enemy_actions/ActionChangeEnemyIntentState.gd"
 const ACTION_SUMMON_ENEMIES: String = "res://scripts/actions/combatant_actions/enemy_actions/ActionSummonEnemies.gd"
 
+# friendly actions
+const ACTION_SUMMON_FRIENDLIES: String = "res://scripts/actions/combatant_actions/friendly_actions/ActionSummonFriendlies.gd"
+const ACTION_OPERATE_FRIENDLY: String = "res://scripts/actions/combatant_actions/friendly_actions/ActionOperateFriendly.gd"
+
 # reward actions
 const ACTION_GRANT_REWARDS = "res://scripts/actions/rewards/ActionGrantRewards.gd"
 const ACTION_CLEAR_REWARDS = "res://scripts/actions/rewards/ActionClearRewards.gd"

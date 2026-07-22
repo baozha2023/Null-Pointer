@@ -1,6 +1,14 @@
-## Base abstract class for shared interface of player and enemies
+## Shared runtime and presentation contract for every battlefield combatant.
 extends Control
 class_name BaseCombatant
+
+enum COMBAT_SIDES {PLAYER, ENEMY}
+
+const WORLD_VISUAL_BASE_HALF_SIZE: float = 64.0
+const COMBATANT_CENTER_Y: float = -64.0
+const OVERHEAD_VISUAL_GAP: float = 6.0
+const HEALTH_VISUAL_GAP: float = 6.0
+const STATUS_HEALTH_GAP: float = 10.0
 
 @onready var block: BlockIndicator = $Visible/CombatantCenter/Block
 @onready var block_amount: Label = $Visible/CombatantCenter/Block/BaseSprite/BlockAmount
@@ -9,6 +17,8 @@ class_name BaseCombatant
 
 @onready var animated_sprite_2d: AnimatedSprite2D = %AnimatedSprite2D
 @onready var layered_health_bar: LayeredHealthBar = %LayeredHealthBar
+@onready var name_label: Label = %NameLabel
+@onready var overhead_combat_info: Control = %OverheadCombatInfo
 
 @onready var fade_container = $Visible/FadeContainer
 @onready var image_fade_container: Node2D = %ImageFadeContainer
@@ -26,10 +36,17 @@ var custom_ui_object_id_to_custom_ui: Dictionary = {} # maps a custom ui id to t
 var _world_depth_scale: float = 1.0
 var _world_scale_tween: Tween = null
 var _blocking_animation_name: StringName = &""
+var combatant_slot_id: int = -1
+var combatant_formation_order: int = -1
+var _combat_ui_layout_queued: bool = false
+var _intent_preview_is_updating: bool = false
 
 func _ready():
+	z_as_relative = false
 	Signals.combat_started.connect(_on_combat_started)
 	Signals.combat_ended.connect(_on_combat_ended)
+	Signals.enemy_intent_changed.connect(_on_enemy_intent_changed)
+	Signals.enemy_killed.connect(_on_enemy_killed_for_intent_preview)
 
 	block_amount.mouse_filter = Control.MOUSE_FILTER_PASS
 	block_amount.mouse_entered.connect(_on_block_mouse_entered.bind(block_amount))
@@ -42,21 +59,136 @@ func _ready():
 	selection_button.button_up.connect(_on_selection_button_up)
 	selection_button.mouse_entered.connect(_on_world_visual_hovered)
 	selection_button.mouse_exited.connect(_on_world_visual_unhovered)
+	name_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	name_label.hide()
+	overhead_combat_info.resized.connect(_queue_combat_ui_layout)
+	layered_health_bar.resized.connect(_queue_combat_ui_layout)
+	name_label.resized.connect(_queue_combat_ui_layout)
+	status_container.resized.connect(_queue_combat_ui_layout)
+	_queue_combat_ui_layout()
+
+func _exit_tree() -> void:
+	if Signals.enemy_intent_changed.is_connected(_on_enemy_intent_changed):
+		Signals.enemy_intent_changed.disconnect(_on_enemy_intent_changed)
+	if Signals.enemy_killed.is_connected(_on_enemy_killed_for_intent_preview):
+		Signals.enemy_killed.disconnect(_on_enemy_killed_for_intent_preview)
+	# Interceptor registrations outlive their source nodes unless explicitly
+	# removed. Clean them at the shared combatant boundary so enemies, players,
+	# and summoned friendlies follow the same lifecycle contract.
+	for status_effect_object_id: String in status_id_to_status_effects.keys():
+		var status_effect_data: StatusEffectData = Global.get_status_effect_data(status_effect_object_id)
+		if status_effect_data != null:
+			_unregister_status_effect_interceptors(status_effect_object_id, status_effect_data)
 
 func set_world_depth_scale(depth_scale: float) -> void:
 	_world_depth_scale = depth_scale
 	world_scale_root.scale = Vector2.ONE * _world_depth_scale
 	_on_world_depth_scale_changed()
 
-## Extension point for fixed-size combat UI that must follow the scaled world visual.
+func get_combat_side() -> int:
+	return COMBAT_SIDES.ENEMY
+
+func is_player_side() -> bool:
+	return get_combat_side() == COMBAT_SIDES.PLAYER
+
+func apply_formation_slot(slot: CombatFormationSlot, combat_scale: float = 1.0) -> void:
+	combatant_slot_id = slot.get_slot_id()
+	combatant_formation_order = slot.get_logical_order()
+	global_position = slot.get_ground_global_position()
+	z_index = slot.get_render_order()
+	set_world_depth_scale(slot.get_depth_scale() * combat_scale)
+
+func set_combatant_display_name(display_name: String) -> void:
+	name_label.text = display_name
+	_queue_combat_ui_layout()
+
+## Shared hit area geometry used by targeting and hover systems. Keeping this on
+## the combatant contract allows future player-side targeting without duplicating
+## enemy-only coordinate calculations.
+func get_target_anchor_global_position() -> Vector2:
+	return selection_button.get_global_rect().get_center()
+
+func contains_global_point(global_point: Vector2) -> bool:
+	return selection_button.get_global_rect().has_point(global_point)
+
+## World visuals scale with formation depth; combat information remains readable
+## and is laid out from the resulting silhouette bounds for every combatant type.
 func _on_world_depth_scale_changed() -> void:
-	pass
+	_queue_combat_ui_layout()
+
+func _queue_combat_ui_layout() -> void:
+	if not is_node_ready() or _combat_ui_layout_queued:
+		return
+	_combat_ui_layout_queued = true
+	call_deferred("_update_combat_ui_layout")
+
+func _update_combat_ui_layout() -> void:
+	_combat_ui_layout_queued = false
+	if not is_instance_valid(overhead_combat_info) or not is_instance_valid(layered_health_bar):
+		return
+	var visual_half_height: float = WORLD_VISUAL_BASE_HALF_SIZE * _world_depth_scale
+	var visual_top: float = COMBATANT_CENTER_Y - visual_half_height
+	var health_top: float = visual_half_height + HEALTH_VISUAL_GAP
+
+	overhead_combat_info.position = Vector2(
+		-overhead_combat_info.size.x * 0.5,
+		visual_top - OVERHEAD_VISUAL_GAP - overhead_combat_info.size.y,
+	)
+	layered_health_bar.position = Vector2(-layered_health_bar.size.x * 0.5, health_top)
+	block.position = Vector2(-layered_health_bar.size.x * 0.5 - 1.0, health_top + 8.0)
+	name_label.position = Vector2(
+		-name_label.size.x * 0.5,
+		health_top - name_label.size.y + 1.0,
+	)
+	status_container.position = Vector2(
+		-status_container.size.x * 0.5,
+		COMBATANT_CENTER_Y + health_top + layered_health_bar.size.y + STATUS_HEALTH_GAP,
+	)
+	fade_container.position = Vector2(0.0, visual_top)
 
 func _on_world_visual_hovered() -> void:
+	name_label.show()
 	_tween_world_scale(Vector2.ONE * _world_depth_scale * UIHover.DEFAULT_HOVER_SCALE)
+	_on_combatant_hover_changed(true)
 
 func _on_world_visual_unhovered() -> void:
+	name_label.hide()
 	_tween_world_scale(Vector2.ONE * _world_depth_scale)
+	_on_combatant_hover_changed(false)
+
+## Extension point for domain-specific hover signals; presentation stays shared.
+func _on_combatant_hover_changed(_hovered: bool) -> void:
+	pass
+
+func update_incoming_damage_amount(recalculate_enemy_intents: bool = true) -> void:
+	if not is_player_side():
+		return
+	if not overhead_combat_info is IncomingDamageIndicator:
+		return
+	if _intent_preview_is_updating:
+		return
+	var scene_tree: SceneTree = get_tree()
+	if scene_tree == null:
+		return
+	_intent_preview_is_updating = true
+	await scene_tree.process_frame
+	_intent_preview_is_updating = false
+	if not is_inside_tree() or not is_instance_valid(overhead_combat_info):
+		return
+
+	var incoming_damage_amount: int = 0
+	for enemy: Enemy in Global.get_alive_enemies_in_formation_order():
+		if recalculate_enemy_intents and not enemy.enemy_intent_is_executing:
+			enemy.update_enemy_intent()
+		if enemy.enemy_intent_is_pending and enemy.enemy_intent_target == self:
+			incoming_damage_amount += enemy.enemy_intent_attack_damage * enemy.enemy_intent_number_of_attacks
+	(overhead_combat_info as IncomingDamageIndicator).set_amount(incoming_damage_amount, is_alive())
+
+func _on_enemy_intent_changed() -> void:
+	update_incoming_damage_amount(true)
+
+func _on_enemy_killed_for_intent_preview(_enemy: Enemy) -> void:
+	update_incoming_damage_amount(true)
 
 func _tween_world_scale(target_scale: Vector2) -> void:
 	if _world_scale_tween != null and _world_scale_tween.is_valid():
@@ -65,7 +197,8 @@ func _tween_world_scale(target_scale: Vector2) -> void:
 	_world_scale_tween.tween_property(world_scale_root, "scale", target_scale, UIHover.DEFAULT_DURATION)
 
 func _on_selection_button_up():
-	breakpoint
+	# Combatants are non-interactive unless a domain subclass exposes targeting.
+	pass
 
 #region Animations
 
@@ -344,6 +477,7 @@ func add_status_effect_charges(status_effect_object_id: String, charge_amount: i
 			status_effect.update_status_charge_display()
 
 	update_health_bar(false)
+	_on_status_effects_changed()
 
 	Signals.enemy_intent_changed.emit()	# update enemy intent in case statuses affect them
 
@@ -376,6 +510,7 @@ func add_new_status_effect(status_effect_object_id: String, charge_amount: int, 
 			status_effect.update_status_charge_display()
 
 	update_health_bar(false)
+	_on_status_effects_changed()
 
 	Signals.enemy_intent_changed.emit()	# update enemy intent in case statuses affect them
 
@@ -387,6 +522,7 @@ func clear_all_status_effects():
 
 	status_id_to_status_effects.clear()
 	update_health_bar(false)
+	_on_status_effects_changed()
 
 ## Decrements statuses by the decay rate and potentially removes them.
 func _decay_status_effect(status_effect_object_id: String) -> void:
@@ -441,11 +577,21 @@ func _remove_status_effect(status_effect: StatusEffect) -> void:
 	if len(status_effects) == 0:
 		# remove the status keys if no other effects of that type
 		status_id_to_status_effects.erase(status_effect_object_id)
-		# unregister action interceptors
-		for interceptor_id in status_effect_data.status_effect_interceptor_ids:
-			ActionHandler.unregister_action_interceptor(self, interceptor_id, "status:" + status_effect_object_id)
+		_unregister_status_effect_interceptors(status_effect_object_id, status_effect_data)
 
 	status_effect.queue_free()
+	_on_status_effects_changed()
+
+func _unregister_status_effect_interceptors(
+	status_effect_object_id: String,
+	status_effect_data: StatusEffectData,
+) -> void:
+	for interceptor_id: String in status_effect_data.status_effect_interceptor_ids:
+		ActionHandler.unregister_action_interceptor(
+			self,
+			interceptor_id,
+			"status:" + status_effect_object_id,
+		)
 
 func _create_status_effect(status_effect_object_id: String) -> StatusEffect:
 	# creates a status on the combatant and creates bindings and back references for it
@@ -479,6 +625,10 @@ func _create_status_effect(status_effect_object_id: String) -> StatusEffect:
 
 		return status_effect
 	return null
+
+## UI subclasses can react to status presence without status logic knowing about visuals.
+func _on_status_effects_changed() -> void:
+	_queue_combat_ui_layout()
 #endregion
 
 #region Turns/Combat

@@ -1,10 +1,12 @@
-## Shared logical rules for the five-slot combat formation.
-## Rendering metadata remains on CombatEnemySlot nodes; gameplay code depends only
-## on slot ids and these deterministic initial formations.
+## Shared logical rules for enemy and friendly battlefield formations.
+## Rendering metadata lives on the common CombatFormationSlot contract; gameplay
+## depends only on slot ids, logical order, and deterministic initial formations.
 extends RefCounted
 class_name CombatFormation
 
-const SLOT_COUNT: int = 5
+const ENEMY_SLOT_COUNT: int = 5
+const FRIENDLY_SLOT_COUNT: int = 3
+const PLAYER_SLOT_ID: int = 1
 const AUTO_FORMATIONS: Dictionary = {
 	1: [0],
 	2: [1, 2],
@@ -13,8 +15,11 @@ const AUTO_FORMATIONS: Dictionary = {
 	5: [1, 3, 0, 4, 2],
 }
 
-static func is_valid_slot_id(slot_id: int) -> bool:
-	return slot_id >= 0 and slot_id < SLOT_COUNT
+static func is_valid_enemy_slot_id(slot_id: int) -> bool:
+	return slot_id >= 0 and slot_id < ENEMY_SLOT_COUNT
+
+static func is_valid_friendly_slot_id(slot_id: int) -> bool:
+	return slot_id >= 0 and slot_id < FRIENDLY_SLOT_COUNT
 
 static func get_auto_slot_ids(enemy_count: int) -> Array[int]:
 	var slot_ids: Array[int] = []
@@ -30,7 +35,7 @@ static func get_summon_slot_ids(action_values: Dictionary) -> Array[int]:
 	configured_slot_ids.assign(action_values.get("spawn_slots", []))
 	var valid_slot_ids: Array[int] = []
 	for slot_id: int in configured_slot_ids:
-		if not is_valid_slot_id(slot_id):
+		if not is_valid_enemy_slot_id(slot_id):
 			DebugLogger.log_error("Summon action references invalid combat slot %d" % slot_id)
 			return []
 		if valid_slot_ids.has(slot_id):

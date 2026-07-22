@@ -643,6 +643,29 @@ static func add_artifacts() -> void:
 	]
 	Global.register_rod(artifact_taskmgr)
 
+	var artifact_eden_root_core := ArtifactData.new("artifact_eden_root_core")
+	artifact_eden_root_core.artifact_name = "伊甸根核"
+	artifact_eden_root_core.artifact_description = "每场战斗召唤位于友方前排的 [color=green]伊甸母树[/color]。与大树联动的脚本会自动取得此外设。"
+	artifact_eden_root_core.artifact_rarity = ArtifactData.ARTIFACT_RARITIES.BASIC
+	artifact_eden_root_core.artifact_color_id = "color_green"
+	artifact_eden_root_core.artifact_appears_in_artifact_packs = false
+	artifact_eden_root_core.artifact_texture_path = "sprites/artifacts/artifact_eden_root_core.png"
+	artifact_eden_root_core.artifact_add_actions = [{
+		Scripts.ACTION_SUMMON_FRIENDLIES: {
+			"friendly_object_ids": ["friendly_eden_world_tree"],
+			"spawn_slots": [2],
+			"number_of_spawns": 1,
+		}
+	}]
+	artifact_eden_root_core.artifact_first_turn_actions = [{
+		Scripts.ACTION_SUMMON_FRIENDLIES: {
+			"friendly_object_ids": ["friendly_eden_world_tree"],
+			"spawn_slots": [2],
+			"number_of_spawns": 1,
+		}
+	}]
+	Global.register_rod(artifact_eden_root_core)
+
 	### Filler Artifacts
 	#endregion
 

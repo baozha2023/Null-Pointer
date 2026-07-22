@@ -27,7 +27,7 @@ func _connect_signals() -> void:
 func perform_status_effect_process_actions() -> void:
 	# get actions to perform
 	var action_data: Array[Dictionary] = []
-	if parent_combatant.is_in_group("players"):
+	if parent_combatant.is_player_side():
 		action_data = status_effect_data.status_effect_player_process_actions
 	else:
 		action_data = status_effect_data.status_effect_enemy_process_actions
@@ -43,7 +43,7 @@ func perform_status_effect_process_actions() -> void:
 func perform_status_effect_actions() -> void:
 	# get actions to perform
 	var action_data: Array[Dictionary] = []
-	if parent_combatant.is_in_group("players"):
+	if parent_combatant.is_player_side():
 		action_data = status_effect_data.status_effect_player_actions
 	else:
 		action_data = status_effect_data.status_effect_enemy_actions
@@ -59,7 +59,7 @@ func perform_status_effect_actions() -> void:
 func perform_status_effect_flow_actions(flow_count: int = 1) -> void:
 	# get actions to perform
 	var action_data: Array[Dictionary] = []
-	if parent_combatant.is_in_group("players"):
+	if parent_combatant.is_player_side():
 		action_data = status_effect_data.status_effect_player_flow_actions
 	else:
 		action_data = status_effect_data.status_effect_enemy_flow_actions
@@ -84,12 +84,20 @@ func _generate_status_effect_card_play_request() -> CardPlayRequest:
 	}
 	return card_play_request
 
+## Values exposed to StatusEffect tooltip parsing. Custom status scripts can
+## extend this context without coupling their calculations to the UI node.
+func get_tooltip_context() -> Dictionary:
+	var context: Dictionary = status_custom_values.duplicate()
+	context["charge_amount"] = status_charges
+	context["secondary_charges"] = status_secondary_charges
+	return context
+
 ### Status Charges
 
 func add_status_charges(charge_amount: int) -> void:
 	status_charges = status_charges + charge_amount
 
-func set_status_charges(value: int):
+func set_status_charges(value: int) -> void:
 	# provides setter validation of a status's charge bounds
 	var lower_bound: int = status_effect_data.status_effect_charge_lower_bound
 	var upper_bound: int = status_effect_data.status_effect_charge_upper_bound

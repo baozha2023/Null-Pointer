@@ -41,9 +41,7 @@ func _on_mouse_entered() -> void:
 		tooltip_text = status_effect_data.status_effect_description
 		
 	if tooltip_text != "":
-		var context: Dictionary = status_effect_script.status_custom_values.duplicate()
-		context["charge_amount"] = status_effect_script.status_charges
-		context["secondary_charges"] = status_effect_script.status_secondary_charges
+		var context: Dictionary = status_effect_script.get_tooltip_context()
 		if not context.has("curiosity_current_counter"):
 			context["curiosity_current_counter"] = 0
 			

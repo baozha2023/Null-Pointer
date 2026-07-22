@@ -10,6 +10,7 @@ func generate_production_data() -> void:
 
 	add_status_effects() # must be defined before enemies
 	add_action_interceptors()
+	add_friendlies()
 
 	add_enemies()
 	add_dialogue()
@@ -1484,7 +1485,143 @@ func add_status_effects() -> void:
 	status_effect_deadlock.status_effect_interceptor_ids = ["interceptor_deadlock"]
 	Global.register_rod(status_effect_deadlock)
 
+	var spring := StatusEffectData.new("status_effect_world_tree_spring")
+	spring.status_effect_name = "春序"
+	spring.status_effect_description = "生长满 6 时，所有存活友方恢复生命，然后进入夏季。"
+	spring.status_effect_tooltip = "生长达到 [world_tree_growth_threshold] 时，所有存活友方恢复 [color=green][world_tree_spring_value][/color] 点完整度，然后进入 [status_icon:status_effect_world_tree_summer][status_name:status_effect_world_tree_summer]。\n当前年轮：[world_tree_ring_amount]。"
+	spring.status_effect_texture_path = "sprites/status_effects/world_tree_spring.png"
+	spring.status_effect_script_path = "res://scripts/status_effects/StatusEffectWorldTreeBase.gd"
+	spring.status_effect_charge_upper_bound = 1
+	spring.status_effect_action_process_times = []
+	Global.register_rod(spring)
+
+	var summer := StatusEffectData.new("status_effect_world_tree_summer")
+	summer.status_effect_name = "夏盛"
+	summer.status_effect_description = "生长满 6 时，对所有敌人造成伤害，然后进入秋季。"
+	summer.status_effect_tooltip = "生长达到 [world_tree_growth_threshold] 时，对所有敌人造成 [color=red][world_tree_summer_value][/color] 点伤害，然后进入 [status_icon:status_effect_world_tree_autumn][status_name:status_effect_world_tree_autumn]。\n当前年轮：[world_tree_ring_amount]。"
+	summer.status_effect_texture_path = "sprites/status_effects/world_tree_summer.png"
+	summer.status_effect_script_path = "res://scripts/status_effects/StatusEffectWorldTreeBase.gd"
+	summer.status_effect_charge_upper_bound = 1
+	summer.status_effect_action_process_times = []
+	Global.register_rod(summer)
+
+	var autumn := StatusEffectData.new("status_effect_world_tree_autumn")
+	autumn.status_effect_name = "秋实"
+	autumn.status_effect_description = "生长满 6 时，将数据果实加入当前线程，然后进入冬季。"
+	autumn.status_effect_tooltip = "生长达到 [world_tree_growth_threshold] 时，将 [color=yellow][world_tree_autumn_card_count][/color] 个 [card_name:world_tree_autumn_card_object_id] 加入当前线程，然后进入 [status_icon:status_effect_world_tree_winter][status_name:status_effect_world_tree_winter]。\n当前年轮：[world_tree_ring_amount]。"
+	autumn.status_effect_texture_path = "sprites/status_effects/world_tree_autumn.png"
+	autumn.status_effect_script_path = "res://scripts/status_effects/StatusEffectWorldTreeBase.gd"
+	autumn.status_effect_charge_upper_bound = 1
+	autumn.status_effect_action_process_times = []
+	Global.register_rod(autumn)
+
+	var winter := StatusEffectData.new("status_effect_world_tree_winter")
+	winter.status_effect_name = "冬藏"
+	winter.status_effect_description = "生长满 6 时，所有存活友方获得防火墙、增加年轮，然后回到春季。"
+	winter.status_effect_tooltip = "生长达到 [world_tree_growth_threshold] 时，所有存活友方获得 [color=cyan][world_tree_winter_value][/color] 点防火墙，伊甸母树获得 [world_tree_rings_per_cycle] 层 [status_icon:status_effect_world_tree_rings][status_name:status_effect_world_tree_rings]，然后回到 [status_icon:status_effect_world_tree_spring][status_name:status_effect_world_tree_spring]。\n当前年轮：[world_tree_ring_amount]。"
+	winter.status_effect_texture_path = "sprites/status_effects/world_tree_winter.png"
+	winter.status_effect_script_path = "res://scripts/status_effects/StatusEffectWorldTreeBase.gd"
+	winter.status_effect_charge_upper_bound = 1
+	winter.status_effect_action_process_times = []
+	Global.register_rod(winter)
+
+	var rings := StatusEffectData.new("status_effect_world_tree_rings")
+	rings.status_effect_name = "年轮"
+	rings.status_effect_description = "记录伊甸母树完成的四季循环，强化所有季节收益。最多 3 层。"
+	rings.status_effect_tooltip = "已积累 [color=yellow][charge_amount]/[world_tree_rings_max][/color] 层年轮。\n每层使春序额外恢复 [color=green][world_tree_spring_per_ring][/color] 点完整度、夏盛额外造成 [color=red][world_tree_summer_per_ring][/color] 点伤害、冬藏额外获得 [color=cyan][world_tree_winter_per_ring][/color] 点防火墙；每 [world_tree_autumn_ring_interval] 层使秋实额外生成 [color=yellow][world_tree_autumn_card_per_interval][/color] 个 [card_name:world_tree_autumn_card_object_id]。"
+	rings.status_effect_texture_path = "sprites/status_effects/world_tree_rings.png"
+	rings.status_effect_script_path = "res://scripts/status_effects/StatusEffectWorldTreeBase.gd"
+	rings.status_effect_charge_upper_bound = 3
+	rings.status_effect_action_process_times = []
+	Global.register_rod(rings)
+
+	var growth := StatusEffectData.new("status_effect_world_tree_growth")
+	growth.status_effect_name = "生长"
+	growth.status_effect_description = "达到 6 层时结算当前季节并进入下一季。"
+	growth.status_effect_tooltip = "当前生长：[color=yellow][charge_amount]/[world_tree_growth_threshold][/color]。达到阈值时结算当前季节并进入下一季。"
+	growth.status_effect_texture_path = "sprites/status_effects/world_tree_growth.png"
+	growth.status_effect_script_path = "res://scripts/status_effects/StatusEffectWorldTreeGrowth.gd"
+	growth.status_effect_charge_upper_bound = 999
+	growth.status_effect_action_process_times = []
+	Global.register_rod(growth)
+
 #endregion
+
+func add_friendlies() -> void:
+	var tree := FriendlyData.new("friendly_eden_world_tree")
+	tree.friendly_name = "伊甸母树"
+	tree.friendly_texture_path = "sprites/combatants/world_tree/world_tree_spring.png"
+	tree.friendly_combat_scale = 1.45
+	tree.friendly_health = 24
+	tree.friendly_health_max = 24
+	tree.friendly_can_revive_in_combat = true
+	tree.friendly_initial_status_effects = {"status_effect_world_tree_spring": 1}
+	tree.friendly_initial_status_custom_values = {
+		"status_effect_world_tree_spring": {
+			"world_tree_growth_threshold": 6,
+			"world_tree_rings_status_id": "status_effect_world_tree_rings",
+			"world_tree_rings_per_cycle": 1,
+			"world_tree_cycle_start_status_id": "status_effect_world_tree_spring",
+			"world_tree_season_configs": {
+				"status_effect_world_tree_spring": {
+					"next_status_id": "status_effect_world_tree_summer",
+					"base": 3,
+					"per_ring": 2,
+					"action_data": [{
+						Scripts.ACTION_ADD_HEALTH: {
+							"target_override": BaseAction.TARGET_OVERRIDES.ALL_FRIENDLIES,
+							"custom_key_names": {"health_amount": "season_value"},
+						},
+					}],
+				},
+				"status_effect_world_tree_summer": {
+					"next_status_id": "status_effect_world_tree_autumn",
+					"base": 5,
+					"per_ring": 2,
+					"action_data": [{
+						Scripts.ACTION_DIRECT_DAMAGE: {
+							"target_override": BaseAction.TARGET_OVERRIDES.ALL_ENEMIES,
+							"custom_key_names": {"damage": "season_value"},
+						},
+					}],
+				},
+				"status_effect_world_tree_autumn": {
+					"next_status_id": "status_effect_world_tree_winter",
+					"card_base": 1,
+					"card_ring_interval": 2,
+					"card_per_interval": 1,
+					"card_object_id": "card_fruit",
+					"action_data": [{
+						Scripts.ACTION_CREATE_CARDS: {
+							"custom_key_names": {
+								"created_card_object_id": "season_card_object_id",
+								"number_of_cards": "season_card_count",
+							},
+							"action_data": [{Scripts.ACTION_ADD_CARDS_TO_HAND: {}}],
+						},
+					}],
+				},
+				"status_effect_world_tree_winter": {
+					"next_status_id": "status_effect_world_tree_spring",
+					"base": 4,
+					"per_ring": 3,
+					"action_data": [{
+						Scripts.ACTION_BLOCK: {
+							"target_override": BaseAction.TARGET_OVERRIDES.ALL_FRIENDLIES,
+							"custom_key_names": {"block": "season_value"},
+						},
+					}],
+				},
+			},
+		},
+	}
+	tree.friendly_visual_state_status_texture_paths = {
+		"status_effect_world_tree_spring": "sprites/combatants/world_tree/world_tree_spring.png",
+		"status_effect_world_tree_summer": "sprites/combatants/world_tree/world_tree_summer.png",
+		"status_effect_world_tree_autumn": "sprites/combatants/world_tree/world_tree_autumn.png",
+		"status_effect_world_tree_winter": "sprites/combatants/world_tree/world_tree_winter.png",
+	}
+	Global.register_rod(tree)
 
 #region Acts
 func add_acts() -> void:
@@ -1845,6 +1982,12 @@ func add_keywords() -> void:
 	keyword_block.keyword_text_bb_code = "抵消等量的伤害。在时钟周期结束时消失。"
 	Global.register_rod(keyword_block)
 
+	var keyword_cultivate := KeywordData.new("keyword_cultivate")
+	keyword_cultivate.keyword_name = "培育"
+	keyword_cultivate.keyword_status_effect_id = "status_effect_world_tree_growth"
+	keyword_cultivate.keyword_text_bb_code = "若未持有伊甸根核，则先获得它并召唤伊甸母树；随后[color=green]伊甸母树恢复等量生命并获得等量生长[/color]。"
+	Global.register_rod(keyword_cultivate)
+
 
 
 	### These are automatically added to cards based on flags
@@ -1941,7 +2084,7 @@ func add_characters() -> void:
 	character_green.character_background_texture_path = "sprites/characters/character_green/character_green_poster.png"
 	character_green.character_starting_health = 75
 	character_green.character_starting_card_draft_card_pack_ids = ["card_pack_{0}".format([character_color])]
-	character_green.character_starting_artifact_ids = ["artifact_draw_on_combat_start"]
+	character_green.character_starting_artifact_ids = ["artifact_eden_root_core"]
 	character_green.character_starting_artifact_pack_ids = ["artifact_pack_white", "artifact_pack_{0}".format([character_color])]
 	character_green.character_starting_consumable_pack_ids = ["consumable_pack_white", "consumable_pack_{0}".format([character_color])]
 	character_green.character_starting_card_object_ids = [

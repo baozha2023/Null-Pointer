@@ -10,6 +10,7 @@ var MAP_LOCATION: PackedScene = load("res://scenes/ui/MapLocation.tscn")
 
 var ENEMY: PackedScene = load("res://scenes/combatants/Enemy.tscn")
 var PLAYER: PackedScene = load("res://scenes/combatants/Player.tscn")
+var FRIENDLY: PackedScene = load("res://scenes/combatants/Friendly.tscn")
 var STATUS_EFFECT: PackedScene = load("res://scenes/combatants/StatusEffect.tscn")
 var HEALTH_LAYER: PackedScene = load("res://scenes/combatants/HealthLayer.tscn")
 
